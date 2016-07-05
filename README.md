@@ -2,6 +2,8 @@
 
 This is a Rails 5.0.0 app.
 
+[ ![Codeship Status for rabid/undp-human-rights-national-reporting](https://codeship.com/projects/0278cdb0-2525-0134-bb7e-0e3391f87f23/status?branch=master)](https://codeship.com/projects/161691)
+
 ## Documentation
 
 This README describes the purpose of this repository and how to set up a development environment. Other sources of documentation are as follows:
