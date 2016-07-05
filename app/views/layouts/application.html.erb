@@ -1,0 +1,33 @@
+
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <%# CSS should go closest to the top of the document as possible. %>
+    <%= stylesheet_link_tag("application",
+                            :media => "all") %>
+
+    <%= javascript_include_tag("application") %>
+
+    <%= yield(:head) %>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="apple-mobile-web-app-title" content="Human Rights National Reporting">
+
+    <%= csrf_meta_tags %>
+
+    <title>
+      <%= strip_tags(yield(:title)) + " – " if content_for?(:title) %>
+      Human Rights National Reporting
+    </title>
+  </head>
+  <body>
+
+    <%= render("shared/flash") %>
+    <%= yield %>
+
+  </body>
+</html>
