@@ -6,6 +6,7 @@ gem "jquery-rails"
 gem "pg", "~> 0.18"
 gem "sass-rails", "~> 5.0"
 gem "secure_headers", ">= 3.0"
+gem "devise"
 
 group :production, :staging do
   gem "unicorn"
