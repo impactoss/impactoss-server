@@ -20,13 +20,26 @@ This project requires:
 * PhantomJS (in order to use the [poltergeist][] gem)
 * PostgreSQL must be installed and accepting connections
 
-On a Mac, you can obtain all of the above packages using [Homebrew][].
+On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
 
 If you need help setting up a Ruby development environment, check out this [Rails OS X Setup Guide](https://mattbrictson.com/rails-osx-setup-guide).
 
 ## Getting started
 
-### bin/setup
+
+#### With Docker
+
+Run `docker-compose up` to create and start a DB and app image, with the app listening on port 3000. You will also need to run `docker-compose run app rake db:setup to create and seed a development database. The app has several configuration value that can be set that are listed in the `example.env` file. You can either copy this file to `.env` and provide your own configuration, or explicitly pass in your configuration to the `docker run` command.
+
+If you already have a database instance and just wish to run the app you will need to build the image:
+
+`docker build . -t "undp-human-rights-national-reporting"`
+
+And then run the resulting image:
+
+`docker run undp-human-rights-national-reporting -P -e PGHOST=YOUR_DB_HOST -e PGUSER=YOUR_PG_USER`
+
+#### Without Docker
 
 Run the `bin/setup` script. This script will:
 
@@ -35,7 +48,7 @@ Run the `bin/setup` script. This script will:
 * Create local copies of `.env` and `database.yml`
 * Create, migrate, and seed the database
 
-### Run it!
+##### Run it!
 
 1. Run `rake spec` to make sure everything works.
 2. Run `rails s` to start the Rails app.
