@@ -10,7 +10,6 @@ RUN mkdir /app
 WORKDIR /tmp
 ADD Gemfile /tmp/Gemfile
 ADD Gemfile.lock /tmp/Gemfile.lock
-ADD example.env /app/.env
 RUN bundle install
 WORKDIR /app
 CMD bundle exec rails server -b0.0.0.0
