@@ -20,4 +20,9 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  sitewide_header:
+    logo:
+      alt: "The Coat of Arms of Samoa"
+    title:
+      main: National Mechanism for Reporting and Follow-Up
+      sub: Samoa's National Plan of Action for Human Rights
