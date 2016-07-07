@@ -28,6 +28,20 @@ If you need help setting up a Ruby development environment, check out this [Rail
 
 ### bin/setup
 
+#### With Docker
+
+Run `docker-compose up` to create and start a DB and app image, with the app listening on port 3000. You will also need to run `docker-compose run app rake db:setup to create and seed a development database.
+
+If you already have a database instance and just wish to run the app you will need to build the image:
+
+`docker build . -t "undp-human-rights-national-reporting"`
+
+And then run the resulting image:
+
+`docker run undp-human-rights-national-reporting -P -e PGHOST=YOUR_DB_HOST -e PGUSER=YOUR_PG_USER`
+
+#### Without Docker
+
 Run the `bin/setup` script. This script will:
 
 * Check you have the required Ruby version
