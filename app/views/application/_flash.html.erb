@@ -1,0 +1,9 @@
+<%# Notice %>
+<% if flash[:notice] %>
+  <div class="callout callout-success"><%= flash[:notice] %></div>
+<% end %>
+
+<%# Alert %>
+<% if flash[:callout] %>
+  <div class="callout callout-warning"><%= flash[:alert] %></div>
+<% end %>

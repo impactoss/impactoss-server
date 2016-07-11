@@ -6,4 +6,21 @@
   config.x_xss_protection = "1; mode=block"
   config.x_content_type_options = "nosniff"
   config.x_permitted_cross_domain_policies = "none"
+
+  # rubocop:disable Lint/PercentStringArray
+  config.csp = {
+    default_src: %w(https: 'self'),
+    frame_src: %w('self'),
+    connect_src: %w(wss:),
+    font_src: %w('self' data:),
+    img_src: %w('self' data:),
+    object_src: %w('self'),
+    script_src: %w('self'),
+    style_src: %w('self'),
+    base_uri: %w('self'),
+    form_action: %w('self'),
+    frame_ancestors: %w('none'),
+    block_all_mixed_content: true, # see http://www.w3.org/TR/mixed-content/
+    upgrade_insecure_requests: !(Rails.env.development? || Rails.env.test?), # see https://www.w3.org/TR/upgrade-insecure-requests/
+  }
 end

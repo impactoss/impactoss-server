@@ -1,32 +1,20 @@
-
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <%# CSS should go closest to the top of the document as possible. %>
-    <%= stylesheet_link_tag("application",
-                            :media => "all") %>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <%= javascript_include_tag("application") %>
+    <title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
 
-    <%= yield(:head) %>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="apple-mobile-web-app-title" content="Human Rights National Reporting">
-
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application", 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
-
-    <title>
-      <%= strip_tags(yield(:title)) + " – " if content_for?(:title) %>
-      Human Rights National Reporting
-    </title>
   </head>
-  <body>
 
-    <%= render("shared/flash") %>
+  <body>
+    <%= render "application/sitewide_header" %>
+    <%= render "application/flash" %>
+
     <%= yield %>
 
   </body>

@@ -7,6 +7,7 @@ gem "pg", "~> 0.18"
 gem "sass-rails", "~> 5.0"
 gem "secure_headers", ">= 3.0"
 gem "devise"
+gem "foundation-rails"
 
 group :production, :staging do
   gem "unicorn"
@@ -20,7 +21,6 @@ group :development do
   gem "letter_opener"
   gem "web-console", "~> 2.0"
   gem "spring"
-  gem "dotenv-rails"
   gem "listen"
 end
 
@@ -33,6 +33,7 @@ end
 
 group :development, :test do
   gem "rspec-rails"
+  gem "dotenv-rails"
 end
 
 group :test do
