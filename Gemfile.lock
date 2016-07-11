@@ -71,6 +71,12 @@ GEM
     daemons (1.2.3)
     database_cleaner (1.5.3)
     debug_inspector (0.0.2)
+    devise (4.2.0)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0, < 5.1)
+      responders
+      warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
     dotenv (2.1.1)
@@ -122,6 +128,7 @@ GEM
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
+    orm_adapter (0.5.0)
     parser (2.3.1.2)
       ast (~> 2.2)
     pg (0.18.4)
@@ -169,6 +176,8 @@ GEM
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
+    responders (2.2.0)
+      railties (>= 4.2.0, < 5.1)
     rspec-core (3.5.0)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
@@ -238,6 +247,8 @@ GEM
       get_process_mem (~> 0)
       unicorn (>= 4, < 6)
     useragent (0.16.7)
+    warden (1.2.6)
+      rack (>= 1.0)
     web-console (2.3.0)
       activemodel (>= 4.0)
       binding_of_caller (>= 0.7.2)
@@ -261,6 +272,7 @@ DEPENDENCIES
   capybara
   connection_pool
   database_cleaner
+  devise
   dotenv-rails
   factory_girl_rails
   foundation-rails
