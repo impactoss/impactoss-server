@@ -12,6 +12,11 @@ This README describes the purpose of this repository and how to set up a develop
 * Server setup instructions are in `PROVISIONING.md`
 * Staging and production deployment instructions are in `DEPLOYMENT.md`
 
+## API documentation
+
+API documentation is available in the `doc/` folder in Swagger format. Documentation can either be viewed locally using [Swagger UI](https://github.com/swagger-api/swagger-ui), or via the [online editor tool](editor.swagger.io). Using the editor tools, API
+clients in several languages can be generated.
+
 ## Prerequisites
 
 This project requires:
