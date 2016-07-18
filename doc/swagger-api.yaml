@@ -66,6 +66,14 @@ paths:
       responses:
         200:
           description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/ImplementationPlanJSONAPI"
   "/implementation-plans/{planId}":
     get:
       parameters:
