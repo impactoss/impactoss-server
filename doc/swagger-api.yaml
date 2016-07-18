@@ -9,6 +9,7 @@ info:
 basePath: /api/v1
 schemes:
   - https
+  - http
 consumes:
   - application/vnd.api+json
 produces:
@@ -62,8 +63,8 @@ paths:
                   $ref: "#/definitions/AgencyJSONAPI"
   "/implementation-plans":
     get:
-      responses: 
-        200: 
+      responses:
+        200:
           description: Successful response
   "/implementation-plans/{planId}":
     get:
@@ -80,7 +81,7 @@ paths:
           schema:
             required: ["data"]
             properties:
-              data: 
+              data:
                 $ref: "#/definitions/ImplementationPlanJSONAPI"
         404:
           description: Implementation plan not found
@@ -203,7 +204,7 @@ paths:
             properties:
               data:
                 "$ref": "#/definitions/IndicatorJSONAPI"
-    
+
   "/indicators/{indicatorId}/indicator-updates":
    get:
       summary: Get updates for this indicator
@@ -224,14 +225,14 @@ paths:
             required: ["data"]
             properties:
               data:
-                "$ref": "#/definitions/IndicatorUpdateJSONAPI"         
-      
+                "$ref": "#/definitions/IndicatorUpdateJSONAPI"
+
 definitions:
   RecommendationModel:
     type: object
     description: A recommendation put forward by another state via a UN session
     properties:
-      name: 
+      name:
         type: string
       affected-persons:
         type: array
@@ -241,14 +242,14 @@ definitions:
       human-rights:
         type: array
         description: Array of human rights associated with this recommendation
-        items: 
+        items:
           type: string
       mechanisms:
         type: array
         description: Array of UN Mechanisms associated with this recommendation
-        items: 
+        items:
           type: string
-        
+
   AgencyModel:
     description: A government agency responsible for contributing to meeting strategic goals relating to recommendations.
     type: object
@@ -259,11 +260,11 @@ definitions:
   RecommendationJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/RecommendationModel"
       relationships:
         type: object
@@ -277,16 +278,16 @@ definitions:
           agencies:
             description: URI to access agencies associated with this recommendation (via implementation plans)
             type: string
-          
-  
+
+
   AgencyJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/AgencyModel"
       relationships:
         type: object
@@ -294,15 +295,15 @@ definitions:
           implementation-plans:
             description: URI to access implementation plans associated with this agency
             type: string
-            
+
   GoalJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/GoalModel"
       relationships:
         type: object
@@ -314,11 +315,11 @@ definitions:
   ActionJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/ActionModel"
       relationships:
         type: object
@@ -329,15 +330,15 @@ definitions:
           indicators:
             description: URI to access indicators associated with this action
             type: string
-  
+
   IndicatorJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/IndicatorModel"
       relationships:
         type: object
@@ -351,11 +352,11 @@ definitions:
   IndicatorUpdateJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/IndicatorUpdateModel"
       relationships:
         type: object
@@ -363,15 +364,15 @@ definitions:
           indicator:
             description: URI to access the indicator associated with this report
             type: string
-            
+
   ImplementationPlanJSONAPI:
     required: ["id", "type"]
     properties:
-      id: 
+      id:
         type: string
       type:
         type: string
-      attributes: 
+      attributes:
         $ref: "#/definitions/ImplementationPlanModel"
       relationships:
         type: object
@@ -385,12 +386,12 @@ definitions:
           actions:
             description: URI to access actions associated with this implementation plan
             type: string
-  
+
   GoalModel:
     description: A strategic goal that the state is working towards
     type: object
     properties:
-      title: 
+      title:
         type: string
   ImplementationPlanModel:
     description: A collation of related UN recommendations and action points to achieve the goal associated with the implementation plan.
@@ -407,7 +408,7 @@ definitions:
       title:
         type: string
       due_at:
-        type: string  
+        type: string
   IndicatorModel:
     description: A request for data to aid with decision making, particularly relating to one or more actions.
     type: object
@@ -420,7 +421,7 @@ definitions:
     description: A data point contributed by a public or agency towards an indicator
     type: object
     properties:
-      title: 
+      title:
         type: string
       document_url:
         type: string
@@ -428,4 +429,4 @@ definitions:
         type: string
       public:
         type: boolean
-  
+
