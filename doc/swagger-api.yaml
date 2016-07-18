@@ -29,11 +29,11 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/RecommendationJSONAPI"
-  /recommendations/{id}:
+  /recommendations/{recommendationId}:
     get:
       parameters:
         - in: path
-          name: id
+          name: recommendationId
           description: ID of recommendation to fetch
           required: true
           type: integer
@@ -79,7 +79,7 @@ paths:
       parameters:
         - in: path
           name: planId
-          description: ID of recommendation to fetch
+          description: ID of plan to fetch
           required: true
           type: integer
           format: int64
@@ -120,7 +120,7 @@ paths:
         parameters:
           - in: path
             name: planId
-            description: ID of recommendation to fetch
+            description: ID of plan to fetch
             required: true
             type: integer
             format: int64
@@ -141,7 +141,7 @@ paths:
         parameters:
           - in: path
             name: planId
-            description: ID of recommendation to fetch
+            description: ID of plan to fetch
             required: true
             type: integer
             format: int64
@@ -197,7 +197,7 @@ paths:
       parameters:
         - in: path
           name: actionId
-          description: ID of goal to fetch
+          description: ID of action to fetch
           required: true
           type: integer
           format: int64
