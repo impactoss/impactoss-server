@@ -16,5 +16,5 @@ RUN adduser deploy && mkdir /app && chown -R deploy /app/
 # Run as the 'deploy' user
 USER deploy
 WORKDIR /app
-CMD bundle exec rails server -b0.0.0.0
+ADD . /app
 CMD bundle exec rails server -b0.0.0.0 -p $PORT
