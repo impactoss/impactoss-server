@@ -1,0 +1,440 @@
+---
+swagger: '2.0'
+info:
+  version: 0.0.0
+  title: Sadata API V1
+  description: |
+    The Sadata API exposes reporting on progress for a country complying with UN
+    recommendations for improving human rights.
+basePath: /api/v1
+schemes:
+  - https
+  - http
+consumes:
+  - application/vnd.api+json
+produces:
+  - application/vnd.api+json
+paths:
+  /recommendations:
+    get:
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: Recommendations Index
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/RecommendationJSONAPI"
+  /recommendations/{recommendationId}:
+    get:
+      parameters:
+        - in: path
+          name: recommendationId
+          description: ID of recommendation to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        404:
+          description: Recommendation not found
+        200:
+          description: Successful response
+          schema:
+            required: ["data"]
+            properties:
+              data:
+                $ref: "#/definitions/RecommendationJSONAPI"
+  /agencies:
+    get:
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/AgencyJSONAPI"
+  "/implementation-plans":
+    get:
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/ImplementationPlanJSONAPI"
+  "/implementation-plans/{planId}":
+    get:
+      parameters:
+        - in: path
+          name: planId
+          description: ID of plan to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful response
+          schema:
+            required: ["data"]
+            properties:
+              data:
+                $ref: "#/definitions/ImplementationPlanJSONAPI"
+        404:
+          description: Implementation plan not found
+  "/implementation-plans/{planId}/recommendations":
+    get:
+      summary: Get a list of recommendations added to an implementation plan
+      parameters:
+        - in: path
+          name: planId
+          description: ID of recommendation to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/RecommendationJSONAPI"
+  "/implementation-plans/{planId}/agencies":
+      get:
+        summary: Get a list of agencies assigned to an implementation plan
+        parameters:
+          - in: path
+            name: planId
+            description: ID of plan to fetch
+            required: true
+            type: integer
+            format: int64
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: object
+              required: ["data"]
+              properties:
+                data:
+                  type: array
+                  items:
+                    "$ref": "#/definitions/AgencyJSONAPI"
+  "/implementation-plans/{planId}/actions":
+      get:
+        summary: Get a list of actions assigned to an implementation plan
+        parameters:
+          - in: path
+            name: planId
+            description: ID of plan to fetch
+            required: true
+            type: integer
+            format: int64
+        responses:
+          200:
+            description: Successful response
+            schema:
+              type: object
+              required: ["data"]
+              properties:
+                data:
+                  type: array
+                  items:
+                    "$ref": "#/definitions/ActionJSONAPI"
+  /goals:
+    get:
+      summary: Get a list of strategy goals
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/GoalJSONAPI"
+  /goals/{goalId}:
+    get:
+      summary: Get a specific strategy goal
+      parameters:
+        - in: path
+          name: goalId
+          description: ID of goal to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        404:
+          description: Goal not found
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                "$ref": "#/definitions/GoalJSONAPI"
+  /actions/{actionId}/indicators:
+   get:
+      summary: Get a indicators for an action
+      parameters:
+        - in: path
+          name: actionId
+          description: ID of action to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        404:
+          description: Action not found
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                "$ref": "#/definitions/IndicatorJSONAPI"
+
+  "/indicators/{indicatorId}/indicator-updates":
+   get:
+      summary: Get updates for this indicator
+      parameters:
+        - in: path
+          name: indicatorId
+          description: ID of indicator to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        404:
+          description: Indicator not found
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                "$ref": "#/definitions/IndicatorUpdateJSONAPI"
+
+definitions:
+  RecommendationModel:
+    type: object
+    description: A recommendation put forward by another state via a UN session
+    properties:
+      name:
+        type: string
+      affected-persons:
+        type: array
+        items:
+          type: string
+        description: Array of affected persons associated with this recommendation
+      human-rights:
+        type: array
+        description: Array of human rights associated with this recommendation
+        items:
+          type: string
+      mechanisms:
+        type: array
+        description: Array of UN Mechanisms associated with this recommendation
+        items:
+          type: string
+
+  AgencyModel:
+    description: A government agency responsible for contributing to meeting strategic goals relating to recommendations.
+    type: object
+    properties:
+      name:
+        type: string
+        description: string
+  RecommendationJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/RecommendationModel"
+      relationships:
+        type: object
+        properties:
+          implementation-plans:
+            description: URI to access implementation plans associated with this recommendation
+            type: string
+          goals:
+            description: URI to access goals associated with this recommendation (via implementation plans)
+            type: string
+          agencies:
+            description: URI to access agencies associated with this recommendation (via implementation plans)
+            type: string
+
+
+  AgencyJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/AgencyModel"
+      relationships:
+        type: object
+        properties:
+          implementation-plans:
+            description: URI to access implementation plans associated with this agency
+            type: string
+
+  GoalJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/GoalModel"
+      relationships:
+        type: object
+        properties:
+          implementation-plans:
+            description: URI to access implementation plans associated with this goal
+            type: string
+
+  ActionJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/ActionModel"
+      relationships:
+        type: object
+        properties:
+          implementation-plans:
+            description: URI to access implementation plans associated with this action
+            type: string
+          indicators:
+            description: URI to access indicators associated with this action
+            type: string
+
+  IndicatorJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/IndicatorModel"
+      relationships:
+        type: object
+        properties:
+          indicator-updates:
+            description: URI to access progress reports associated with this indicator
+            type: string
+          actions:
+            description: URI to access the actions associated with this indicator
+            type: string
+  IndicatorUpdateJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/IndicatorUpdateModel"
+      relationships:
+        type: object
+        properties:
+          indicator:
+            description: URI to access the indicator associated with this report
+            type: string
+
+  ImplementationPlanJSONAPI:
+    required: ["id", "type"]
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        $ref: "#/definitions/ImplementationPlanModel"
+      relationships:
+        type: object
+        properties:
+          agencies:
+            description: URI to access agencies associated with this implementation plan
+            type: string
+          recommendations:
+            description: URI to access recommendations associated with this implementation plan
+            type: string
+          actions:
+            description: URI to access actions associated with this implementation plan
+            type: string
+
+  GoalModel:
+    description: A strategic goal that the state is working towards
+    type: object
+    properties:
+      title:
+        type: string
+  ImplementationPlanModel:
+    description: A collation of related UN recommendations and action points to achieve the goal associated with the implementation plan.
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+  ActionModel:
+    description: A task that must be performed to work towards completing an implementation plan
+    type: object
+    properties:
+      title:
+        type: string
+      due_at:
+        type: string
+  IndicatorModel:
+    description: A request for data to aid with decision making, particularly relating to one or more actions.
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+  IndicatorUpdateModel:
+    description: A data point contributed by a public or agency towards an indicator
+    type: object
+    properties:
+      title:
+        type: string
+      document_url:
+        type: string
+      description:
+        type: string
+      public:
+        type: boolean
+
