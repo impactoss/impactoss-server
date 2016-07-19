@@ -10,9 +10,6 @@ RUN apt-get update -qq &&\
     apt-get install -y nodejs
 
 RUN mkdir /app
-WORKDIR /tmp
-ADD Gemfile /tmp/Gemfile
-ADD Gemfile.lock /tmp/Gemfile.lock
 RUN bundle install
 WORKDIR /app
 CMD bundle exec rails server -b0.0.0.0
