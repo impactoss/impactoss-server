@@ -34,6 +34,7 @@ end
 group :development, :test do
   gem "rspec-rails"
   gem "dotenv-rails"
+  gem "brakeman"
 end
 
 group :test do
