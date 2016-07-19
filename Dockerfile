@@ -1,6 +1,6 @@
 FROM ruby:2.3.1-slim
 ENV PORT 3000
-EXPOSE 3000
+EXPOSE $PORT
 
 # Run as root to install dependencies and set up user
 RUN apt-get update -qq &&\
