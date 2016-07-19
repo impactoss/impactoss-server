@@ -10,11 +10,11 @@ RUN apt-get update -qq &&\
     curl -sL https://deb.nodesource.com/setup_4.x | bash - &&\
     apt-get install -y nodejs
 
-RUN bundle install
 RUN adduser deploy && mkdir /app && chown -R deploy /app/
 
 # Run as the 'deploy' user
 USER deploy
 WORKDIR /app
 ADD . /app
+RUN bundle install
 CMD bundle exec rails server -b0.0.0.0 -p $PORT
