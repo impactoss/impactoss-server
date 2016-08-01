@@ -31,6 +31,10 @@ en:
       form:
         heading: Forgot your password?
         submit: Send me reset password instructions
+    edit:
+      form:
+        heading: Change your password
+        submit: Change my password
   registrations:
     new:
       form:
