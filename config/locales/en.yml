@@ -26,3 +26,23 @@ en:
     title:
       main: National Mechanism for Reporting and Follow-Up
       sub: Samoa's National Plan of Action for Human Rights
+  passwords:
+    new:
+      form:
+        heading: Forgot your password?
+        submit: Send me reset password instructions
+  registrations:
+    new:
+      form:
+        heading: Sign Up
+        submit: Complete Sign Up
+  sessions:
+    new:
+      form:
+        heading: "Log in with your email address"
+        submit: "Log in"
+  confirmations:
+    new:
+      form:
+        heading: Resend confirmation instructions
+        submit: Resend instructions
