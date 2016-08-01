@@ -19,7 +19,7 @@ group :development do
   gem "awesome_print"
   gem "better_errors"
   gem "binding_of_caller"
-  gem "letter_opener"
+  gem "letter_opener_web"
   gem "web-console", "~> 2.0"
   gem "spring"
   gem "listen"
