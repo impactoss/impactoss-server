@@ -36,6 +36,7 @@ group :development, :test do
   gem "rspec-rails"
   gem "dotenv-rails"
   gem "brakeman"
+  gem "factory_girl_rails"
 end
 
 group :test do
@@ -44,6 +45,5 @@ group :test do
   gem "launchy"
   gem "pry-rails"
   gem "database_cleaner"
-  gem "factory_girl_rails"
   gem "poltergeist"
 end
