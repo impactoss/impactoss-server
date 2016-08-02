@@ -1,4 +1,4 @@
-<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { method: :post, class: "row column authentication-form" } ) do |f| %>
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "row column authentication-form" } ) do |f| %>
   <%= content_tag :h4, t("passwords.edit.form.heading"), class: "text-center" %>
   <%= devise_error_messages! %>
 
