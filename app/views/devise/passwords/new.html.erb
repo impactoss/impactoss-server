@@ -1,5 +1,6 @@
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "row column authentication-form" } ) do |f| %>
   <%= content_tag :h4, t("passwords.new.form.heading"), class: "text-center" %>
+  <%= render "devise/shared/form_errors", resource: f.object %>
   <%= f.label :email %>
   <%= f.email_field :email, autofocus: true, placeholder: true %>
   <p>
