@@ -19,7 +19,7 @@
     style_src: %w('self'),
     base_uri: %w('self'),
     form_action: %w('self'),
-    frame_ancestors: %w('none'),
+    frame_ancestors: %w('self'),
     block_all_mixed_content: true, # see http://www.w3.org/TR/mixed-content/
     upgrade_insecure_requests: !(Rails.env.development? || Rails.env.test?), # see https://www.w3.org/TR/upgrade-insecure-requests/
   }

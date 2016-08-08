@@ -19,7 +19,7 @@ group :development do
   gem "awesome_print"
   gem "better_errors"
   gem "binding_of_caller"
-  gem "letter_opener"
+  gem "letter_opener_web"
   gem "web-console", "~> 2.0"
   gem "spring"
   gem "listen"
@@ -36,6 +36,8 @@ group :development, :test do
   gem "rspec-rails"
   gem "dotenv-rails"
   gem "brakeman"
+  gem "factory_girl_rails"
+  gem "faker"
 end
 
 group :test do
@@ -44,6 +46,5 @@ group :test do
   gem "launchy"
   gem "pry-rails"
   gem "database_cleaner"
-  gem "factory_girl_rails"
   gem "poltergeist"
 end

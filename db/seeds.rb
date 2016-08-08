@@ -5,3 +5,34 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+class Seeds
+  def initialize
+    base_seeds!
+    run_env_seeds!
+  end
+
+  private
+
+  def run_env_seeds!
+    send("#{Rails.env}_seeds!")
+  rescue NameError
+    log "Seeds for #{Rails.env} not defined, skipping.", level: :warn
+  end
+
+  def base_seeds!
+  end
+
+  def development_seeds!
+    FactoryGirl.create(:user).tap do |user|
+      log "Seed user created: Log in with #{user.email} and password #{user.password}"
+    end if User.count.zero?
+  end
+
+  def log(msg, level: :info)
+    puts msg
+    Rails.logger.public_send(level, msg)
+  end
+end
+
+Seeds.new

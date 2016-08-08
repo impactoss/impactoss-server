@@ -1,9 +1,19 @@
 <%# Notice %>
 <% if flash[:notice] %>
-  <div class="callout callout-success"><%= flash[:notice] %></div>
+  <div class="callout success"><%= flash[:notice] %></div>
 <% end %>
 
 <%# Alert %>
-<% if flash[:callout] %>
-  <div class="callout callout-warning"><%= flash[:alert] %></div>
+<% if flash[:alert] %>
+  <div class="callout warning"><%= flash[:alert] %></div>
+<% end %>
+
+<%# Error %>
+<% if flash[:error] %>
+  <div class="callout error"><%= flash[:error] %></div>
+<% end %>
+
+<%# Warning %>
+<% if flash[:warning] %>
+  <div class="callout warning"><%= flash[:warning] %></div>
 <% end %>
