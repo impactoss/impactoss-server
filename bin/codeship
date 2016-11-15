@@ -15,11 +15,11 @@ bundle install
 
 # Install Linters
 pip install --upgrade pip && pip install yamllint
-npm install -g jslint
+npm install -g jshint
 
 # Run linters
 bundle exec rubocop --display-cop-names --rails
-jslint `git ls-tree  -r HEAD --name-only | grep js`
+jshint `git ls-tree  -r HEAD --name-only | grep js`
 yamllint `git ls-tree  -r HEAD --name-only | grep yml`
 
 bundle-audit

@@ -28,7 +28,7 @@ PreCommit:
   RuboCop:
     enabled: true
     command: ['bundle', 'exec', 'rubocop']
-  JsLint:
+  JsHint:
     enabled: true
   YamlLint:
     enabled: true

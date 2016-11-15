@@ -48,7 +48,7 @@ overcommit --sign
 To install the extra linters, run
 ```
 [sudo] pip install yamllint
-npm install -g jslint
+npm install -g jshint
 ```
 
 ## Getting started
