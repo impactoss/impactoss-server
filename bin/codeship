@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euv
+
 # Install and update bundle-audit
 gem install bundler-audit
 
