@@ -30,6 +30,8 @@ PreCommit:
     command: ['bundle', 'exec', 'rubocop']
   JsHint:
     enabled: true
+    exclue:
+      - 'coverage/**/*'
   YamlLint:
     enabled: true
   HardTabs:
