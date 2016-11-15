@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Install and update bundle-audit
+gem install bundler-audit
+
+# You need to update bundle-audit so that has the most recent list of
+# vulnerabilities to check against. Don't forget this or your bundle-audit
+# check will not be effective.
+bundle-audit update
+
+bundle install
+
+# Install Linters
+pip install --upgrade pip && pip install yamllint
+npm install -g jshint
+
+# Run linters
+bundle exec rubocop --display-cop-names --rails
+jshint app/
+yamllint `git ls-tree  -r HEAD --name-only | grep yml`
+
+bundle-audit
+bundle exec brakeman --run-all-checks --exit-on-warn .
+
+# Finally, run the specs
+bundle exec rspec
