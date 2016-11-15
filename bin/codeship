@@ -1,8 +1,5 @@
 #!/bin/bash
 
-rvm use 2.3.1 --install
-
-
 # Install and update bundle-audit
 gem install bundler-audit
 
