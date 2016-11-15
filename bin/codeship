@@ -3,7 +3,8 @@
 set -euv
 
 # Install and update bundle-audit
-gem install bundler-audit
+gem install bundler-audit brakeman
+gem update bundler-audit brakeman
 
 # You need to update bundle-audit so that has the most recent list of
 # vulnerabilities to check against. Don't forget this or your bundle-audit
@@ -22,7 +23,8 @@ jshint app/
 yamllint `git ls-tree  -r HEAD --name-only | grep yml`
 
 bundle-audit
-bundle exec brakeman --run-all-checks --exit-on-warn .
+
+brakeman --run-all-checks --exit-on-warn --format plain .
 
 # Finally, run the specs
 bundle exec rspec
