@@ -16,7 +16,7 @@ npm install -g jshint
 
 # Run linters
 bundle exec rubocop --display-cop-names --rails
-jshint `git ls-tree  -r HEAD --name-only | grep js`
+jshint app/
 yamllint `git ls-tree  -r HEAD --name-only | grep yml`
 
 bundle-audit
