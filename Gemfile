@@ -1,7 +1,8 @@
+# frozen_string_literal: true
 source "https://rubygems.org"
 ruby "2.3.1"
 
-gem "rails", "5.0.0"
+gem "rails", "~> 5.0.0"
 gem "bcrypt", "~> 3.1.7"
 gem "jquery-rails"
 gem "pg", "~> 0.18"
@@ -26,10 +27,9 @@ group :development do
 end
 
 group :development do
-  gem "bundler-audit", :require => false
-  gem "simplecov", :require => false
-  gem "thin", :require => false
-  gem "rubocop", :require => false
+  gem "bundler-audit", require: false
+  gem "simplecov", require: false
+  gem "thin", require: false
 end
 
 group :development, :test do
@@ -38,6 +38,8 @@ group :development, :test do
   gem "brakeman"
   gem "factory_girl_rails"
   gem "faker"
+  # Code style
+  gem "rubocop", require: false
 end
 
 group :test do

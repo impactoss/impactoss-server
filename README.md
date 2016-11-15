@@ -29,6 +29,28 @@ On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wi
 
 If you need help setting up a Ruby development environment, check out this [Rails OS X Setup Guide](https://mattbrictson.com/rails-osx-setup-guide).
 
+## Code style
+
+This project uses overcommit to enforce code style. To enable overcommit locally
+
+`
+gem install overcommit
+overcommit -i
+`
+
+You'll need to sign the overcommit (verify you're happy with it executing).
+Do this after installing, and again every time the overcommit config changes.
+
+```
+overcommit --sign
+```
+
+To install the extra linters, run
+```
+[sudo] pip install yamllint
+npm install -g jshint
+```
+
 ## Getting started
 
 
