@@ -8,6 +8,9 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, unless: :devise_controller?
   layout :layout_by_resource
 
+  # after_action :verify_authorized, except: [:index, :sign_in]
+  # after_action :verify_policy_scoped, only: :index
+
   protected
 
   def layout_by_resource
@@ -18,6 +21,6 @@ class ApplicationController < ActionController::Base
 
   def user_not_authorized
     flash[:error] = "You are not authorized to perform this action."
-    redirect_to(request_referrer || root_path)
+    redirect_to(root_path)
   end
 end
