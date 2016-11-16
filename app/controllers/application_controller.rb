@@ -8,8 +8,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, unless: :devise_controller?
   layout :layout_by_resource
 
-  # after_action :verify_authorized, except: [:index, :sign_in]
-  # after_action :verify_policy_scoped, only: :index
+  after_action :verify_authorized, except: [:index, :sign_in], unless: :devise_controller?
+  after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
 
   protected
 

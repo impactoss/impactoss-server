@@ -8,4 +8,24 @@ class ApplicationPolicy
   def show?
     false
   end
+
+  def edit?
+    false
+  end
+
+  def update?
+    false
+  end
+
+  class Scope
+    attr_reader :user, :scope
+    def resolve
+      scope.all if user && user.role?("admin")
+    end
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+  end
 end
