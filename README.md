@@ -33,10 +33,10 @@ If you need help setting up a Ruby development environment, check out this [Rail
 
 This project uses overcommit to enforce code style. To enable overcommit locally
 
-`
+```
 gem install overcommit
 overcommit -i
-`
+```
 
 You'll need to sign the overcommit (verify you're happy with it executing).
 Do this after installing, and again every time the overcommit config changes.
