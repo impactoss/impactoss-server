@@ -24,13 +24,13 @@ class Seeds
   end
 
   def development_seeds!
+    return unless User.count.zero?
     FactoryGirl.create(:user).tap do |user|
       log "Seed user created: Log in with #{user.email} and password #{user.password}"
-    end if User.count.zero?
+    end
   end
 
   def log(msg, level: :info)
-    puts msg
     Rails.logger.public_send(level, msg)
   end
 end
