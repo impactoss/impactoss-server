@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_user, only: [:show, :update]
+  before_action :set_user, only: [:edit, :update]
   after_action :verify_authorized, except: :index
 
   def index
@@ -9,7 +9,6 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
     authorize @user
     @roles = Role.all
   end
@@ -17,11 +16,10 @@ class UsersController < ApplicationController
   def update
     authorize @user
     @user.update(user_params)
-    if @user.save
-      redirect_to users_path
-    else
-      render :edit, @user
-    end
+    @user.save!
+    redirect_to users_path
+  rescue
+    render :edit, @user
   end
 
   private
@@ -33,7 +31,7 @@ class UsersController < ApplicationController
   end
 
   def set_user
-    @user = policy_scope(User).find(params[:id])
+    @user = User.find(params[:id])
     authorize @user
   end
 end
