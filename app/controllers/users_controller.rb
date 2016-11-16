@@ -4,6 +4,7 @@ class UsersController < ApplicationController
   after_action :verify_authorized, except: :index
 
   def index
+    authorize :user
     @users = policy_scope(User)
   end
 
