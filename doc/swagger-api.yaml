@@ -115,47 +115,47 @@ paths:
                 items:
                   "$ref": "#/definitions/RecommendationJSONAPI"
   "/implementation-plans/{planId}/agencies":
-      get:
-        summary: Get a list of agencies assigned to an implementation plan
-        parameters:
-          - in: path
-            name: planId
-            description: ID of plan to fetch
-            required: true
-            type: integer
-            format: int64
-        responses:
-          200:
-            description: Successful response
-            schema:
-              type: object
-              required: ["data"]
-              properties:
-                data:
-                  type: array
-                  items:
-                    "$ref": "#/definitions/AgencyJSONAPI"
+    get:
+      summary: Get a list of agencies assigned to an implementation plan
+      parameters:
+        - in: path
+          name: planId
+          description: ID of plan to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/AgencyJSONAPI"
   "/implementation-plans/{planId}/actions":
-      get:
-        summary: Get a list of actions assigned to an implementation plan
-        parameters:
-          - in: path
-            name: planId
-            description: ID of plan to fetch
-            required: true
-            type: integer
-            format: int64
-        responses:
-          200:
-            description: Successful response
-            schema:
-              type: object
-              required: ["data"]
-              properties:
-                data:
-                  type: array
-                  items:
-                    "$ref": "#/definitions/ActionJSONAPI"
+    get:
+      summary: Get a list of actions assigned to an implementation plan
+      parameters:
+        - in: path
+          name: planId
+          description: ID of plan to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            required: ["data"]
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/ActionJSONAPI"
   /goals:
     get:
       summary: Get a list of strategy goals
@@ -192,7 +192,7 @@ paths:
               data:
                 "$ref": "#/definitions/GoalJSONAPI"
   /actions/{actionId}/indicators:
-   get:
+    get:
       summary: Get a indicators for an action
       parameters:
         - in: path
@@ -214,7 +214,7 @@ paths:
                 "$ref": "#/definitions/IndicatorJSONAPI"
 
   "/indicators/{indicatorId}/indicator-updates":
-   get:
+    get:
       summary: Get updates for this indicator
       parameters:
         - in: path
@@ -437,4 +437,3 @@ definitions:
         type: string
       public:
         type: boolean
-
