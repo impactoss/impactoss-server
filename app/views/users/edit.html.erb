@@ -1,0 +1,18 @@
+<h2>Edit user</h2>
+<%= @user.email %>
+
+<%= form_for(@user) do |f| %>
+  <%= f.label :email %>
+  <%= f.text_field :email %>
+  <ul>
+    <% @roles.each do |r| %>
+      <li>
+        <label>
+          <%= check_box_tag "user[role_ids][]", r.id, f.object.roles.include?(r) %>
+          <%= r.friendly_name %>
+        </label>
+      </li>
+    <% end %>
+  </ul>
+  <%= f.submit "update" %>
+<% end %>
