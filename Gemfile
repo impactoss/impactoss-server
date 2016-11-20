@@ -10,6 +10,7 @@ gem "sass-rails", "~> 5.0"
 gem "secure_headers", ">= 3.0"
 gem "devise"
 gem "foundation-rails"
+gem "pundit"
 
 group :production, :staging do
   gem "unicorn"
