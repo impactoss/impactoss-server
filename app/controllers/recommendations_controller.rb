@@ -2,23 +2,21 @@
 class RecommendationsController < ApplicationController
   def new
     @recommendation = Recommendation.new
-    # authorize @recommendation
+    authorize @recommendation
   end
 
   def index
-    # @recommendations = policy_scope(Recommendation.all)
-    @recommendations = Recommendation.all
-    # authorize @recommendations
+    @recommendations = policy_scope(Recommendation.all)
   end
 
   def edit
     @recommendation = Recommendation.find(params[:id])
-    # authorize @recommendation
+    authorize @recommendation
   end
 
   def update
     @recommendation = Recommendation.find(params[:id])
-    # authorize @recommendation
+    authorize @recommendation
 
     if @recommendation.update_attributes(permitted_attributes(@recommendation))
       redirect_to recommendation_path, notice: "Recommendation updated"
@@ -29,12 +27,12 @@ class RecommendationsController < ApplicationController
 
   def show
     @recommendation = Recommendation.find(params[:id])
-    # authorize @recommendation
+    authorize @recommendation
   end
 
   def destroy
     @recommendation = Recommendation.find(params[:id])
-    # authorize @recommendation
+    authorize @recommendation
 
     if @recommendation.destroy
       redirect_to recommendations_path, notice: "Recommendation deleted"
