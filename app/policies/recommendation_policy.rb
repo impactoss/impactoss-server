@@ -19,4 +19,13 @@ class RecommendationPolicy < ApplicationPolicy
   def destroy?
     false
   end
+
+  class Scope < Scope
+    def resolve
+      scope.all
+      # Turn on the code below once we have organisation
+      # scope.all if user.role?("admin")
+      # scope.where(organisation_id: user.organisation.id)
+    end
+  end
 end
