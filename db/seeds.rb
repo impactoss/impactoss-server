@@ -21,16 +21,19 @@ class Seeds
   end
 
   def base_seeds!
+    Role.new(name: "admin", friendly_name: "Admin").save!
+    Role.new(name: "manager", friendly_name: "Manager").save!
+    Role.new(name: "reporter", friendly_name: "Reporter").save!
   end
 
   def development_seeds!
+    return unless User.count.zero?
     FactoryGirl.create(:user).tap do |user|
       log "Seed user created: Log in with #{user.email} and password #{user.password}"
-    end if User.count.zero?
+    end
   end
 
   def log(msg, level: :info)
-    puts msg
     Rails.logger.public_send(level, msg)
   end
 end
