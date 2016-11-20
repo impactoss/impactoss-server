@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="column small-9">
+    <%= f.label :name, "Title: " %>
+    <%= f.text_field :name, placeholder: @element.name || "Title" %>
+  </div>
+  <div class="column small-1">
+      <%= f.label :number, "NO:" %>
+      <%= f.text_field :number, placeholder: @element.number || "NO" %>
+  </div>
+  <div class="column small-2">
+    <label>STATUS
+      <input type="text" placeholder="status" />
+    </label>
+  </div>
+</div>
