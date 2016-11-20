@@ -1,0 +1,8 @@
+<div>
+  <%= link_to t("edit"), edit_recommendation_path(@recommendation) %>
+  <%= link_to t("close"), recommendations_path %>
+</div>
+<div>
+  <h2>Title</h2>
+  <%= @recommendation.title %>
+</div>

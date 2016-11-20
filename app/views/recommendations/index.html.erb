@@ -1,0 +1,7 @@
+<h1>Recommendations</h1>
+<% @recommendations.each do |recommendation| %>
+  <div>
+    <%= recommendation.number %> | <%= link_to(recommendation.title, recommendation_path(recommendation)) %>
+  </div>
+<% end %>
+

@@ -10,10 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160801021807) do
+ActiveRecord::Schema.define(version: 20161115195226) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "actions", force: :cascade do |t|
+    t.string   "title",       null: false
+    t.text     "description"
+    t.text     "target_date"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "recommendation_actions", force: :cascade do |t|
+    t.integer  "recommendation_id"
+    t.integer  "action_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["action_id"], name: "index_recommendation_actions_on_action_id", using: :btree
+    t.index ["recommendation_id"], name: "index_recommendation_actions_on_recommendation_id", using: :btree
+  end
+
+  create_table "recommendations", force: :cascade do |t|
+    t.string   "title",      null: false
+    t.integer  "number",     null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false

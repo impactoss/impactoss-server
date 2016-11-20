@@ -1,0 +1,7 @@
+<h1><%= t("actions") %></h1>
+<% @actions.each do |action| %>
+  <div>
+    <%= action.id %> | <%= link_to(action.title, action_path(action)) %>
+  </div>
+<% end %>
+
