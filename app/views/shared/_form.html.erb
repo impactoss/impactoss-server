@@ -1,4 +1,4 @@
-<%= form_for @element do |f| %>
+<%= form_for @recommendation do |f| %>
 
   <div class="row">
     <div class="column small-8">
@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="column small-4">
-      <div class="list-new-action"> <h4> <%= link_to 'Cancel', static_pages_path %>  Save </h4></div>
+      <div class="list-new-action"> <h4> <%= link_to 'Cancel', recommendations_path %> <%= f.submit %> </h4></div>
     </div>
   </div>
 
@@ -15,7 +15,7 @@
     <div class="column small-12">
       <div class="model-body">
         <div class="form-body">
-          <%= render partial: 'form_model_base_fields', locals: { f: f} %>
+          <%= render partial: 'shared/form_model_base_fields', locals: { f: f} %>
         </div>
       </div>
     </div>

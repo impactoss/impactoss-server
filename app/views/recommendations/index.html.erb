@@ -1,7 +1,40 @@
-<h1>Recommendations</h1>
-<% @recommendations.each do |recommendation| %>
-  <div>
-    <%= recommendation.number %> | <%= link_to(recommendation.title, recommendation_path(recommendation)) %>
+<main>
+<div class="row">
+  <div class="column small-8">
+    <h2><%= t '.title' %></h2>
   </div>
-<% end %>
+  <div class="column small-4">
+    <div class="list-new-action"> <h4> <%= link_to 'New', new_recommendation_path(Recommendation.new) %>  </h4></div>
+  </div>
+</div>
 
+
+<div class="row">
+  <div class="column">
+      <div class="list-controls"
+        <h1>This is the search area</h1>
+      </div>
+  </div>
+</div>
+
+
+<% @recommendations.each do |element|  %>
+
+<div class="row card">
+  <div class="column small-1">
+    <div class="card-checkbox">  <input id="checkbox1" type="checkbox"><label for="checkbox1"></label></div>
+  </div>
+  <div class="column small-9">
+    <div class="card-body">
+        <div class="card-title"> <%= "#{element.number }" %> | <%= link_to("#{element.title}",recommendation_path(element.id) ) %> </div>
+        <div class="card-tags"> Tags can be super duper long and this is a test to make sure they fit </div>
+    </div>
+  </div>
+  <div class="column small-2">
+    <div class="card-status"> status </div>
+  </div>
+</div>
+
+
+<% end %>
+</main>

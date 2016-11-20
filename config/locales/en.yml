@@ -50,10 +50,12 @@ en:
       form:
         heading: Resend confirmation instructions
         submit: Resend instructions
-  static_pages:
+  recommendation_plural: Recommendations
+  recommendations:
     index:
       title: Recomendations
     form:
       title: Recomendations
       return: Cancel
       submit: Save
+  
