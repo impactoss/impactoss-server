@@ -50,3 +50,10 @@ en:
       form:
         heading: Resend confirmation instructions
         submit: Resend instructions
+  static_pages:
+    index:
+      title: Recomendations
+    form:
+      title: Recomendations
+      return: Cancel
+      submit: Save
