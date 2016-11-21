@@ -3,11 +3,11 @@
   <div class="row">
     <div class="column small-8">
       <div class="model-title">
-        <h2><%= t '.title' %></h2>
+        <h2><%= t('actions') %></h2>
       </div>
     </div>
     <div class="column small-4">
-      <div class="list-new-action"> <h4> <%= link_to 'Cancel', actions_path %> <%= f.submit "Save" %> </h4></div>
+      <div class="list-new-action"> <h4> <%= link_to t('cancel'), actions_path %> <%= f.submit t('save') %> </h4></div>
     </div>
   </div>
   <div class="row">
@@ -15,16 +15,16 @@
       <div class="model-body">
         <div class="row">
           <div class="column small-9">
-            <%= f.label :title, "Title: " %>
-            <%= f.text_field :title, placeholder: @action.title || "Title" %>
+            <%= f.label :title, t('title') %>
+            <%= f.text_field :title, placeholder: @action.title || t('title') %>
           </div>
           <div class="column small-1">
-              <%= f.label :description, "Description:" %>
-              <%= f.text_field :description, placeholder: @action.description || "Description" %>
+              <%= f.label :description, t('description') %>
+              <%= f.text_field :description, placeholder: @action.description || t('description') %>
           </div>
           <div class="column small-2">
-            <label>STATUS
-              <input type="text" placeholder="status" />
+            <label> <%= t('status') %>
+              <input type="text" placeholder=t('status') />
             </label>
           </div>
         </div>

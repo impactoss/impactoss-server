@@ -3,11 +3,11 @@
   <div class="row">
     <div class="column small-8">
       <div class="model-title">
-        <h2><%= t '.title' %></h2>
+        <h2><%= t('recommendations') %></h2>
       </div>
     </div>
     <div class="column small-4">
-      <div class="list-new-action"> <h4> <%= link_to 'Cancel', recommendations_path %> <%= f.submit "Save" %> </h4></div>
+      <div class="list-new-action"> <h4> <%= link_to t('cancel'), recommendations_path %> <%= f.submit t('save') %> </h4></div>
     </div>
   </div>
   <div class="row">
@@ -15,15 +15,15 @@
       <div class="model-body">
         <div class="row">
           <div class="column small-9">
-            <%= f.label :title, "Title: " %>
+            <%= f.label :title, t('title') %>
             <%= f.text_field :title, placeholder: @recommendation.title || "Title" %>
           </div>
           <div class="column small-1">
-              <%= f.label :number, "NO:" %>
+              <%= f.label :number, t('number') %>
               <%= f.text_field :number, placeholder: @recommendation.number || "NO" %>
           </div>
           <div class="column small-2">
-            <label>STATUS
+            <label> <%= t('status') %>
               <input type="text" placeholder="status" />
             </label>
           </div>
