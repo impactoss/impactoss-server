@@ -15,7 +15,7 @@ RSpec.feature "User can see recommendation views", type: :feature do
 
     scenario "User can log in and see show page" do
       login_as(user)
-      visit recommendation_path(@recommendations.first)
+      visit recommendation_path(recommendations.first)
       expect(page).to have_content("Recommendations")
       expect(page).to have_content(recommendations.first.title)
       expect(page).to have_content(recommendations.first.number)
@@ -26,17 +26,17 @@ RSpec.feature "User can see recommendation views", type: :feature do
       login_as(user)
       visit new_recommendation_path(Recommendation.first)
       expect(page).to have_content("Recommendations")
-      expect(page).to have_content("Save")
+      expect(page).to have_button("Save")
       expect(page).to have_content("Cancel")
     end
 
     scenario "User can log in and see edit page" do
       login_as(user)
-      visit edit_recommendation_path(@recommendations.first)
+      visit edit_recommendation_path(recommendations.first)
       expect(page).to have_content("Recommendations")
-      expect(page).to have_content(recommendations.first.title)
-      expect(page).to have_content(recommendations.first.number)
-      expect(page).to have_content("Save")
+      expect(find_field('Title').value).to eq(recommendations.first.title)
+      expect(find_field('NO').value).to eq(recommendations.first.number.to_s)
+      expect(page).to have_button("Save")
       expect(page).to have_content("Cancel")
     end
 
