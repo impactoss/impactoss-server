@@ -7,7 +7,7 @@ class ActionsController < ApplicationController
 
   def index
     # @actions = policy_scope(Action.all)
-    @actions = Action.all
+    @actions = Action.order(:name).page params[:page]
     # authorize @actions
   end
 

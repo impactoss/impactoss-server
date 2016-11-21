@@ -1,24 +1,24 @@
 <main>
-<div class="row">
-  <div class="column small-8">
-    <h2><%= t '.title' %></h2>
+  <div class="row">
+    <div class="column small-8">
+      <h2><%= t '.title' %></h2>
+    </div>
+    <div class="column small-4">
+      <div class="list-new-action"> <h4> <%= link_to 'New', new_action_path(Action.new) %>  </h4></div>
+    </div>
   </div>
-  <div class="column small-4">
-    <div class="list-new-action"> <h4> <%= link_to 'New', new_action_path(Action.new) %>  </h4></div>
+
+
+  <div class="row">
+    <div class="column">
+        <div class="list-controls"
+          <h1>This is the search area</h1>
+        </div>
+    </div>
   </div>
-</div>
 
-
-<div class="row">
-  <div class="column">
-      <div class="list-controls"
-        <h1>This is the search area</h1>
-      </div>
-  </div>
-</div>
-
-
-<% @actions.each do |action|  %>
-  <%= render partial: "action_card", locals: { action: action} %>
-<% end %>
+  <% @actions.each do |action|  %>
+    <%= render partial: "action_card", locals: { action: action} %>
+  <% end %>
+  
 </main>

@@ -11,6 +11,7 @@ gem "secure_headers", ">= 3.0"
 gem "devise"
 gem "foundation-rails"
 gem "pundit"
+gem 'kaminari'
 
 group :production, :staging do
   gem "unicorn"
