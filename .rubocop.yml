@@ -34,7 +34,7 @@ Style/FileName:
   Exclude:
     - 'Gemfile'
     - 'Gemfile.lock'
-    - '-sample.*'
+    - 'config/initializers/devise-sample.rb'
 
 Style/FrozenStringLiteralComment:
   Enabled: false
