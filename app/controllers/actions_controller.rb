@@ -2,23 +2,23 @@
 class ActionsController < ApplicationController
   def new
     @action = Action.new
-    # authorize @action
+    authorize @action
   end
 
   def index
-    # @actions = policy_scope(Action.all)
+    @actions = policy_scope(Action.all)
     @actions = Action.all
-    # authorize @actions
+    authorize @actions
   end
 
   def edit
     @action = Action.find(params[:id])
-    # authorize @action
+    authorize @action
   end
 
   def update
     @action = Action.find(params[:id])
-    # authorize @action
+    authorize @action
 
     if @action.update_attributes(permitted_attributes(@action))
       redirect_to action_path, notice: "Action updated"
@@ -29,12 +29,12 @@ class ActionsController < ApplicationController
 
   def show
     @action = Action.find(params[:id])
-    # authorize @action
+    authorize @action
   end
 
   def destroy
     @action = Action.find(params[:id])
-    # authorize @action
+    authorize @action
 
     if @action.destroy
       redirect_to actions_path, notice: "Action deleted"

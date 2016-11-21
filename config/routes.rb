@@ -2,6 +2,8 @@
 Rails.application.routes.draw do
   resources :actions
   resources :recommendations
+  resources :indicators
+
   devise_for :users
   resources :users
 
