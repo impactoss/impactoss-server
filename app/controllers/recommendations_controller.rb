@@ -6,7 +6,7 @@ class RecommendationsController < ApplicationController
   end
 
   def index
-    @recommendations = policy_scope(Recommendation.order(:title).page params[:page])
+    @recommendations = policy_scope(Recommendation.order(:title).page(params[:page]))
   end
 
   def edit
