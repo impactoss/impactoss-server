@@ -26,6 +26,7 @@ en:
   action: "Action"
   save: "Save"
   cancel: "Cancel"
+  new: "New"
   fields:
     title: "Title"
     number: "NO"

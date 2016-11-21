@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="column small-4">
-    <div class="list-new-action"> <h4> <%= link_to t("edit"), edit_action_path(@action) %> </h4></div>
+    <div class="list-new-action"> <h4><%= link_to t("edit"), edit_action_path(@action) %></h4></div>
   </div>
 </div>
 <div class="row">
@@ -14,11 +14,11 @@
       <div class="field-body">
           <div class="row">
             <div class="column small-9">
-                <h4> <%= @action.title %> </h4>
+                <h4><%= @action.title %></h4>
             </div>
             <div class="column small-1">
-              <row> <%= t('description') %> </row>
-              <row> <%= @action.description %> </row>
+              <row><%= t('description') %></row>
+              <row><%= @action.description %></row>
             </div>
             <div class="column small-2">
                 <%= t('status') %>
