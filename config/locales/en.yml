@@ -54,8 +54,19 @@ en:
   recommendations:
     index:
       title: Recomendations
+    show:
+      title: Recomendations  
     form:
       title: Recomendations
       return: Cancel
       submit: Save
-  
+  action_plural: Actions
+  actions:
+    index:
+      title: Actions
+    show:
+      title: Actions
+    form:
+      title: Actions
+      return: Cancel
+      submit: Save
