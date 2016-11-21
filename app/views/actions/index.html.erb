@@ -20,5 +20,5 @@
   <% @actions.each do |action|  %>
     <%= render partial: "action_card", locals: { action: action} %>
   <% end %>
-  
+  <%= paginate @actions %>
 </main>
