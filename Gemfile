@@ -29,6 +29,7 @@ group :development do
   gem "bundler-audit", require: false
   gem "simplecov", require: false
   gem "thin", require: false
+  gem "overcommit"
 end
 
 group :development, :test do

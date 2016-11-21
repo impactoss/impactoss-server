@@ -16,6 +16,10 @@ class RecommendationPolicy < ApplicationPolicy
     @user.role?("admin") || @user.role?("manager")
   end
 
+  def show?
+    true
+  end
+
   def destroy?
     false
   end

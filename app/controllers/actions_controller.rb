@@ -2,7 +2,7 @@
 class ActionsController < ApplicationController
   def new
     @action = Action.new
-    # authorize @action
+    authorize @action
   end
 
   def index
