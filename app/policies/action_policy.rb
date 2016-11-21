@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class RecommendationPolicy < ApplicationPolicy
+class ActionPolicy < ApplicationPolicy
   def index?
     true
   end
