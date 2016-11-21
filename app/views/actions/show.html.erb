@@ -1,7 +1,7 @@
 <div class="row">
   <div class="column small-8">
     <div class="model-title">
-      <h2><%= t '.title' %></h2>
+      <h2><%= t('actions') %></h2>
     </div>
   </div>
   <div class="column small-4">
@@ -17,11 +17,11 @@
                 <h4> <%= @action.title %> </h4>
             </div>
             <div class="column small-1">
-              <row> Description </row>
+              <row> <%= t('description') %> </row>
               <row> <%= @action.description %> </row>
             </div>
             <div class="column small-2">
-                Status
+                <%= t('status') %>
             </div>
         </div>
       </div>

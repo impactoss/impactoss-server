@@ -20,12 +20,27 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  recommendations: "Recommendations"
+  recommendation: "Recommendation"
+  actions: "Actions"
+  action: "Action"
+  save: "Save"
+  cancel: "Cancel"
+  fields:
+    title: "Title"
+    number: "NO"
+    description: "Description"
+    status: "Status"
   sitewide_header:
     logo:
       alt: "The Coat of Arms of Samoa"
     title:
       main: National Mechanism for Reporting and Follow-Up
       sub: Samoa's National Plan of Action for Human Rights
+  menu:
+    password: Edit password
+    signout: Sign out
+    users: Users
   passwords:
     new:
       form:
@@ -50,23 +65,3 @@ en:
       form:
         heading: Resend confirmation instructions
         submit: Resend instructions
-  recommendation_plural: Recommendations
-  recommendations:
-    index:
-      title: Recomendations
-    show:
-      title: Recomendations  
-    form:
-      title: Recomendations
-      return: Cancel
-      submit: Save
-  action_plural: Actions
-  actions:
-    index:
-      title: Actions
-    show:
-      title: Actions
-    form:
-      title: Actions
-      return: Cancel
-      submit: Save

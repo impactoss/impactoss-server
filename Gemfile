@@ -26,9 +26,6 @@ group :development do
   gem "web-console", "~> 2.0"
   gem "spring"
   gem "listen"
-end
-
-group :development do
   gem "bundler-audit", require: false
   gem "simplecov", require: false
   gem "thin", require: false
@@ -42,6 +39,7 @@ group :development, :test do
   gem "faker"
   # Code style
   gem "rubocop", require: false
+  gem "byebug"
 end
 
 group :test do
