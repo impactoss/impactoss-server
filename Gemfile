@@ -38,6 +38,7 @@ group :development, :test do
   gem "faker"
   # Code style
   gem "rubocop", require: false
+  gem "byebug"
 end
 
 group :test do
