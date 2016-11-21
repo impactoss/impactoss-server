@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161115235525) do
+ActiveRecord::Schema.define(version: 20161116031446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,11 +39,28 @@ ActiveRecord::Schema.define(version: 20161115235525) do
     t.datetime "updated_at", null: false
   end
 
+<<<<<<< HEAD
   create_table "static_pages", force: :cascade do |t|
     t.text     "name"
     t.integer  "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+=======
+  create_table "roles", force: :cascade do |t|
+    t.string   "name",          null: false
+    t.string   "friendly_name", null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  create_table "user_roles", force: :cascade do |t|
+    t.integer  "user_id",    null: false
+    t.integer  "role_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_user_roles_on_role_id", using: :btree
+    t.index ["user_id"], name: "index_user_roles_on_user_id", using: :btree
+>>>>>>> master
   end
 
   create_table "users", force: :cascade do |t|
