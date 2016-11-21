@@ -1,8 +1,30 @@
-<div>
-  <%= link_to t("edit"), edit_recommendation_path(@recommendation) %>
-  <%= link_to t("close"), recommendations_path %>
+<div class="row">
+  <div class="column small-8">
+    <div class="model-title">
+      <h2><%= t '.title' %></h2>
+    </div>
+  </div>
+  <div class="column small-4">
+    <div class="list-new-action"> <h4> <%= link_to t("edit"), edit_recommendation_path(@recommendation) %> </h4></div>
+  </div>
 </div>
-<div>
-  <h2>Title</h2>
-  <%= @recommendation.title %>
+<div class="row">
+  <div class="column small-12">
+    <div class="model-body">
+      <div class="field-body">
+          <div class="row">
+            <div class="column small-9">
+                <h4> <%= @recommendation.title %> </h4>
+            </div>
+            <div class="column small-1">
+              <row> NO </row>
+              <row> <%= @recommendation.number %> </row>
+            </div>
+            <div class="column small-2">
+                Status
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

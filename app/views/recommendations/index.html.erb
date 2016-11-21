@@ -18,23 +18,7 @@
 </div>
 
 
-<% @recommendations.each do |element|  %>
-
-<div class="row card">
-  <div class="column small-1">
-    <div class="card-checkbox">  <input id="checkbox1" type="checkbox"><label for="checkbox1"></label></div>
-  </div>
-  <div class="column small-9">
-    <div class="card-body">
-        <div class="card-title"> <%= "#{element.number }" %> | <%= link_to("#{element.title}",recommendation_path(element.id) ) %> </div>
-        <div class="card-tags"> Tags can be super duper long and this is a test to make sure they fit </div>
-    </div>
-  </div>
-  <div class="column small-2">
-    <div class="card-status"> status </div>
-  </div>
-</div>
-
-
+<% @recommendations.each do |recommendation|  %>
+  <%= render partial: "recommendation_card", locals: { recommendation: recommendation} %>
 <% end %>
 </main>

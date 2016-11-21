@@ -1,1 +1,34 @@
-TODO: Edit form
+<%= form_for @action do |f| %>
+
+  <div class="row">
+    <div class="column small-8">
+      <div class="model-title">
+        <h2><%= t '.title' %></h2>
+      </div>
+    </div>
+    <div class="column small-4">
+      <div class="list-new-action"> <h4> <%= link_to 'Cancel', actions_path %> <%= f.submit "Save" %> </h4></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column small-12">
+      <div class="model-body">
+        <div class="row">
+          <div class="column small-9">
+            <%= f.label :title, "Title: " %>
+            <%= f.text_field :title, placeholder: @action.title || "Title" %>
+          </div>
+          <div class="column small-1">
+              <%= f.label :description, "Description:" %>
+              <%= f.text_field :description, placeholder: @action.description || "Description" %>
+          </div>
+          <div class="column small-2">
+            <label>STATUS
+              <input type="text" placeholder="status" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
