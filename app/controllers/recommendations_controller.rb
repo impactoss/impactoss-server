@@ -19,7 +19,7 @@ class RecommendationsController < ApplicationController
     authorize @recommendation
 
     if @recommendation.update_attributes(permitted_attributes(@recommendation))
-      redirect_to recommendation_path, notice: 'Recommendation updated'
+      redirect_to recommendation_path, notice: "Recommendation updated"
     else
       render :edit
     end
@@ -35,9 +35,9 @@ class RecommendationsController < ApplicationController
     authorize @recommendation
 
     if @recommendation.destroy
-      redirect_to recommendations_path, notice: 'Recommendation deleted'
+      redirect_to recommendations_path, notice: "Recommendation deleted"
     else
-      redirect_to recommendations_path, notice: 'Unable to delete Recommendation'
+      redirect_to recommendations_path, notice: "Unable to delete Recommendation"
     end
   end
 end
