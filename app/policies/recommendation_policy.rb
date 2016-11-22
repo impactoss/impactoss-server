@@ -24,6 +24,10 @@ class RecommendationPolicy < ApplicationPolicy
     false
   end
 
+  def permitted_attributes
+    [:title, :number]
+  end
+
   class Scope < Scope
     def resolve
       scope.all

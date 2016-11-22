@@ -5,8 +5,21 @@ class ActionsController < ApplicationController
     authorize @action
   end
 
+  def create
+    @action = Action.new
+    @action.assign_attributes(permitted_attributes(@action))
+
+    authorize @action
+
+    if @action.save
+      redirect_to case_path(@action), notice: 'Action created'
+    else
+      render :new
+    end
+  end
+
   def index
-    @actions = policy_scope(Action.order(:title).page(params[:page]))
+    @actions = policy_scope(Action.order(created_at: :desc).page(params[:page]))
     authorize @actions
   end
 

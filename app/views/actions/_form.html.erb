@@ -15,16 +15,16 @@
       <div class="model-body">
         <div class="row">
           <div class="column small-9">
-            <%= f.label :title, t('title') %>
-            <%= f.text_field :title, placeholder: @action.title || t('title') %>
+            <%= f.label :title, t('fields.title') %>
+            <%= f.text_field :title, value: @action.title, placeholder: t('fields.title') %>
           </div>
           <div class="column small-1">
-              <%= f.label :description, t('description') %>
-              <%= f.text_field :description, placeholder: @action.description || t('description') %>
+              <%= f.label :description, t('fields.description') %>
+              <%= f.text_field :description, value: @action.description, placeholder: t('fields.description') %>
           </div>
           <div class="column small-2">
-            <label> <%= t('status') %>
-              <input type="text" placeholder=t('status') />
+            <label> <%= t('fields.status') %>
+              <input type="text" placeholder=t('fields.status') />
             </label>
           </div>
         </div>

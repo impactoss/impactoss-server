@@ -16,11 +16,11 @@
         <div class="row">
           <div class="column small-9">
             <%= f.label :title, t('title') %>
-            <%= f.text_field :title, placeholder: @recommendation.title || "Title" %>
+            <%= f.text_field :title, value: @recommendation.title, placeholder: t('fields.title') %>
           </div>
           <div class="column small-1">
               <%= f.label :number, t('number') %>
-              <%= f.text_field :number, placeholder: @recommendation.number || "NO" %>
+              <%= f.text_field :number, value: @recommendation.number, placeholder: t('fields.number') %>
           </div>
           <div class="column small-2">
             <label> <%= t('status') %>

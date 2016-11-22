@@ -24,6 +24,10 @@ class ActionPolicy < ApplicationPolicy
     false
   end
 
+  def permitted_attributes
+    [:title, :description]
+  end
+
   class Scope < Scope
     def resolve
       scope.all
