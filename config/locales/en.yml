@@ -20,6 +20,18 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  recommendations: "Recommendations"
+  recommendation: "Recommendation"
+  actions: "Actions"
+  action: "Action"
+  save: "Save"
+  cancel: "Cancel"
+  new: "New"
+  fields:
+    title: "Title"
+    number: "NO"
+    description: "Description"
+    status: "Status"
   sitewide_header:
     logo:
       alt: "The Coat of Arms of Samoa"

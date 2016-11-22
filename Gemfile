@@ -11,6 +11,7 @@ gem 'secure_headers', '>= 3.0'
 gem 'devise'
 gem 'foundation-rails'
 gem 'pundit'
+gem 'kaminari'
 
 group :production, :staging do
   gem 'unicorn'
@@ -28,6 +29,7 @@ group :development do
   gem 'bundler-audit', require: false
   gem 'simplecov', require: false
   gem 'thin', require: false
+  gem 'overcommit'
 end
 
 group :development, :test do

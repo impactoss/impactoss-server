@@ -5,8 +5,21 @@ class RecommendationsController < ApplicationController
     authorize @recommendation
   end
 
+  def create
+    @recommendation = Recommendation.new
+    @recommendation.assign_attributes(permitted_attributes(@recommendation))
+
+    authorize @recommendation
+
+    if @recommendation.save
+      redirect_to case_path(@recommendation), notice: 'Recommendation created'
+    else
+      render :new
+    end
+  end
+
   def index
-    @recommendations = policy_scope(Recommendation.all)
+    @recommendations = policy_scope(Recommendation.order(created_at: :desc).page(params[:page]))
   end
 
   def edit
