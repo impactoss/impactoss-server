@@ -30,7 +30,7 @@ class Seeds
     return unless User.count.zero?
     FactoryGirl.create(:user).tap do |user|
       log "Seed user created: Log in with #{user.email} and password #{user.password}"
-      user.roles << Role.find_by(name: "manager")
+      user.roles << Role.find_by(name: 'manager')
       user.save!
     end
   end
