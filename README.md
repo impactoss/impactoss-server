@@ -29,6 +29,43 @@ On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wi
 
 If you need help setting up a Ruby development environment, check out this [Rails OS X Setup Guide](https://mattbrictson.com/rails-osx-setup-guide).
 
+## Config
+
+### Set up database
+
+```
+cp config/database-sample.yml config/database.yml
+```
+
+or symlink to it if you need no changes
+
+### Set up secrets
+```
+cp config/secrets-sample.yml config/secrets.yml
+```
+
+and edit. You can generate a new secret to use, like this:
+
+```
+rake secret
+```
+
+### Set up Devise
+
+```
+cp config/initializers/devise-sample.rb config/initializers/devise.rb
+```
+
+Then edit to include a secret_key, example:
+
+```
+# rubocop:disable Metrics/LineLength
+config.secret_key = 'your-secret-goes-here'
+# rubocop:enable Metrics/LineLength
+```
+
+
+
 ## Code style
 
 This project uses overcommit to enforce code style. To enable overcommit locally
