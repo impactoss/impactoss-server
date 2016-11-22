@@ -2,7 +2,7 @@
 Rails.application.config.version = begin
   `git describe --always --tag 2> /dev/null`.chomp
 rescue
-  'N/A'
+  "N/A"
 end
 
 Rails.application.config.version_time = begin

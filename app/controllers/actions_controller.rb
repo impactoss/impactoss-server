@@ -33,7 +33,7 @@ class ActionsController < ApplicationController
     authorize @action
 
     if @action.update_attributes(permitted_attributes(@action))
-      redirect_to action_path, notice: 'Action updated'
+      redirect_to action_path, notice: "Action updated"
     else
       render :edit
     end
@@ -49,9 +49,9 @@ class ActionsController < ApplicationController
     authorize @action
 
     if @action.destroy
-      redirect_to actions_path, notice: 'Action deleted'
+      redirect_to actions_path, notice: "Action deleted"
     else
-      redirect_to actions_path, notice: 'Unable to delete Action'
+      redirect_to actions_path, notice: "Unable to delete Action"
     end
   end
 end

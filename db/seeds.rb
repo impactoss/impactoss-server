@@ -21,9 +21,9 @@ class Seeds
   end
 
   def base_seeds!
-    Role.new(name: 'admin', friendly_name: 'Admin').save!
-    Role.new(name: 'manager', friendly_name: 'Manager').save!
-    Role.new(name: 'reporter', friendly_name: 'Reporter').save!
+    Role.new(name: "admin", friendly_name: "Admin").save!
+    Role.new(name: "manager", friendly_name: "Manager").save!
+    Role.new(name: "reporter", friendly_name: "Reporter").save!
   end
 
   def development_seeds!

@@ -5,15 +5,15 @@ class RecommendationPolicy < ApplicationPolicy
   end
 
   def new?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?("admin") || @user.role?("manager")
   end
 
   def edit?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?("admin") || @user.role?("manager")
   end
 
   def update?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?("admin") || @user.role?("manager")
   end
 
   def show?
