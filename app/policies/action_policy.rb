@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class RecommendationPolicy < ApplicationPolicy
+class ActionPolicy < ApplicationPolicy
   def index?
     true
   end
@@ -25,7 +25,7 @@ class RecommendationPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:title, :number]
+    [:title, :description]
   end
 
   class Scope < Scope

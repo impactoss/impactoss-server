@@ -1,7 +1,24 @@
-<h1>Recommendations</h1>
-<% @recommendations.each do |recommendation| %>
-  <div>
-    <%= recommendation.number %> | <%= link_to(recommendation.title, recommendation_path(recommendation)) %>
+<main>
+  <div class="row">
+    <div class="column small-8">
+      <h2><%= t('recommendations') %></h2>
+    </div>
+    <div class="column small-4">
+      <div class="list-new-action"> <h4><%= link_to t('new'), new_recommendation_path(Recommendation.new) %></h4></div>
+    </div>
   </div>
-<% end %>
 
+  <div class="row">
+    <div class="column">
+        <div class="list-controls"
+          <h1>This is the search area</h1>
+        </div>
+    </div>
+  </div>
+
+
+  <% @recommendations.each do |recommendation|  %>
+    <%= render partial: "recommendation_card", locals: { recommendation: recommendation} %>
+  <% end %>
+  <%= paginate @recommendations %>
+</main>
