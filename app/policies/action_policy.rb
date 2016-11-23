@@ -29,7 +29,7 @@ class ActionPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:title, :description]
+    [:title, :description, :target_date]
   end
 
   class Scope < Scope
