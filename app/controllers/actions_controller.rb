@@ -12,7 +12,7 @@ class ActionsController < ApplicationController
     authorize @action
 
     if @action.save
-      redirect_to case_path(@action), notice: 'Action created'
+      redirect_to action_path(@action), notice: 'Action created'
     else
       render :new
     end

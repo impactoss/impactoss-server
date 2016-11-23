@@ -8,6 +8,10 @@ class RecommendationPolicy < ApplicationPolicy
     @user.role?('admin') || @user.role?('manager')
   end
 
+  def create?
+    @user.role?('admin') || @user.role?('manager')
+  end
+
   def edit?
     @user.role?('admin') || @user.role?('manager')
   end

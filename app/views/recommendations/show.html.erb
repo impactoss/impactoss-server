@@ -1,7 +1,7 @@
 <div class="row">
   <div class="column small-8">
     <div class="model-title">
-      <h2><%= t('recommendations') %></h2>
+      <h2><%= t('recommendation') %></h2>
     </div>
   </div>
   <div class="column small-4">
@@ -14,11 +14,11 @@
       <div class="field-body">
           <div class="row">
             <div class="column small-9">
-                <h4> <%= @recommendation.title %> </h4>
+                <h4><%= @recommendation.title %></h4>
             </div>
             <div class="column small-1">
-              <row> NO </row>
-              <row> <%= @recommendation.number %> </row>
+              <row><%= t('fields.number') %></row>
+              <row><%= @recommendation.number %></row>
             </div>
             <div class="column small-2">
                 Status

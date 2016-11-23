@@ -12,7 +12,7 @@ class RecommendationsController < ApplicationController
     authorize @recommendation
 
     if @recommendation.save
-      redirect_to case_path(@recommendation), notice: 'Recommendation created'
+      redirect_to recommendation(@recommendation), notice: 'Recommendation created'
     else
       render :new
     end
