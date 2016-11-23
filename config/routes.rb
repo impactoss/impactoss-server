@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  resources :indicators
   resources :actions
   resources :recommendations
   devise_for :users

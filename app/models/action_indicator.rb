@@ -1,0 +1,2 @@
+class ActionIndicator < ApplicationRecord
+end

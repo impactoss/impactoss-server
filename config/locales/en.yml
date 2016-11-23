@@ -22,6 +22,8 @@
 en:
   recommendations: "Recommendations"
   recommendation: "Recommendation"
+  indicators: "Indicators"
+  indicator: "Indicators"
   actions: "Actions"
   action: "Action"
   save: "Save"

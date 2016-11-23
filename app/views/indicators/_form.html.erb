@@ -1,0 +1,34 @@
+<%= form_for @indicator do |f| %>
+
+  <div class="row">
+    <div class="column small-8">
+      <div class="model-title">
+        <h2><%= t('indicator') %></h2>
+      </div>
+    </div>
+    <div class="column small-4">
+      <div class="list-new-action"><h4><%= link_to t('cancel'), indicators_path %> <%= f.submit t('save') %></h4></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column small-12">
+      <div class="model-body">
+        <div class="row">
+          <div class="column small-9">
+            <%= f.label :title, t('title') %>
+            <%= f.text_field :title, value: @indicator.title, placeholder: t('fields.title') %>
+          </div>
+          <div class="column small-1">
+              <%= f.label :description, t('description') %>
+              <%= f.text_field :description, value: @indicator.description, placeholder: t('fields.description') %>
+          </div>
+          <div class="column small-2">
+            <label> <%= t('status') %>
+              <input type="text" placeholder="status" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
