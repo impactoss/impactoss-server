@@ -1,13 +1,13 @@
-<%= form_for @action do |f| %>
+<%= form_for @measure do |f| %>
 
   <div class="row">
     <div class="column small-8">
       <div class="model-title">
-        <h2><%= t('action') %></h2>
+        <h2><%= t('measure') %></h2>
       </div>
     </div>
     <div class="column small-4">
-      <div class="list-new-action"> <h4><%= link_to t('cancel'), actions_path %> <%= f.submit t('save') %></h4></div>
+      <div class="list-new-action"> <h4><%= link_to t('cancel'), measures_path %> <%= f.submit t('save') %></h4></div>
     </div>
   </div>
   <div class="row">
@@ -16,11 +16,11 @@
         <div class="row">
           <div class="column small-9">
             <%= f.label :title, t('fields.title') %>
-            <%= f.text_field :title, value: @action.title, placeholder: t('fields.title') %>
+            <%= f.text_field :title, value: @measure.title, placeholder: t('fields.title') %>
           </div>
           <div class="column small-1">
               <%= f.label :description, t('fields.description') %>
-              <%= f.text_field :description, value: @action.description, placeholder: t('fields.description') %>
+              <%= f.text_field :description, value: @measure.description, placeholder: t('fields.description') %>
           </div>
           <div class="column small-2">
             <label> <%= t('fields.status') %>

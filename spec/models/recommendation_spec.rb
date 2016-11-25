@@ -11,10 +11,10 @@ RSpec.describe Recommendation, type: :model do
     expect(@recommendation.number > 0)
   end
 
-  it 'remembers an action' do
-    @action = FactoryGirl.create(:action)
-    @recommendation.actions << @action
-    expect(@recommendation.actions.count == 1)
+  it 'remembers a measure' do
+    @measure = FactoryGirl.create(:measure)
+    @recommendation.measures << @measure
+    expect(@recommendation.measures.count == 1)
   end
 
   it 'enforces required fields' do

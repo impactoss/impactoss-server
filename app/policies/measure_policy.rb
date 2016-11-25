@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class ActionPolicy < ApplicationPolicy
+class MeasurePolicy < ApplicationPolicy
   def index?
     true
   end

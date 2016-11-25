@@ -32,7 +32,7 @@ class IndicatorsController < ApplicationController
     authorize @indicator
 
     if @indicator.update_attributes(permitted_attributes(@indicator))
-      redirect_to action_path, notice: 'Indicator updated'
+      redirect_to indicator_path, notice: 'Indicator updated'
     else
       render :edit
     end
@@ -48,9 +48,9 @@ class IndicatorsController < ApplicationController
     authorize @indicator
 
     if @indicator.destroy
-      redirect_to actions_path, notice: 'Indicator deleted'
+      redirect_to indicators_path, notice: 'Indicator deleted'
     else
-      redirect_to actions_path, notice: 'Unable to delete Indicator'
+      redirect_to indicators_path, notice: 'Unable to delete Indicator'
     end
   end
 end
