@@ -10,6 +10,13 @@
       <div class="list-new-action"><h4><%= link_to t('cancel'), recommendations_path %> <%= f.submit t('save') %></h4></div>
     </div>
   </div>
+  <% if @recommendation.errors %>
+    <div class="row error-message">
+      <% @recommendation.errors.full_messages.each do |error| %>
+        <p><%= error %></p>
+      <% end %>
+    </div>
+  <% end %>
   <div class="row">
     <div class="column small-12">
       <div class="model-body">
