@@ -31,14 +31,6 @@ If you need help setting up a Ruby development environment, check out this [Rail
 
 ## Config
 
-### Set up database
-
-```
-cp config/database-sample.yml config/database.yml
-```
-
-or symlink to it if you need no changes
-
 ### Set up secrets
 ```
 cp config/secrets-sample.yml config/secrets.yml
