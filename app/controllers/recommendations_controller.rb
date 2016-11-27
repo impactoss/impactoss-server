@@ -19,7 +19,7 @@ class RecommendationsController < ApplicationController
   end
 
   def index
-    @recommendations = policy_scope(Recommendation.order(created_at: :desc).page(params[:page]))
+    @recommendations = policy_scope(Recommendation).order(created_at: :desc).page(params[:page])
   end
 
   def edit
