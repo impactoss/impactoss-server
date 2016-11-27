@@ -8,7 +8,7 @@ RSpec.describe Recommendation, type: :model do
 
   it 'remembers title and number' do
     expect(!@recommendation.title.empty?)
-    expect(@recommendation.number > 0)
+    expect(@recommendation.number.positive?)
   end
 
   it 'remembers a measure' do
@@ -19,12 +19,12 @@ RSpec.describe Recommendation, type: :model do
 
   it 'enforces required fields' do
     @broken_recommendation = Recommendation.new
-    expect { @broken_recommendation.save }.to raise_error ActiveRecord::StatementInvalid
+    expect { @broken_recommendation.save! }.to raise_error ActiveRecord::RecordInvalid
 
     @broken_recommendation.title = 'Test'
-    expect { @broken_recommendation.save }.to raise_error ActiveRecord::StatementInvalid
+    expect { @broken_recommendation.save! }.to raise_error ActiveRecord::RecordInvalid
 
     @broken_recommendation.number = 1
-    expect { @broken_recommendation.save }.to_not raise_error
+    expect { @broken_recommendation.save! }.to_not raise_error
   end
 end
