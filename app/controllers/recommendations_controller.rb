@@ -12,14 +12,14 @@ class RecommendationsController < ApplicationController
     authorize @recommendation
 
     if @recommendation.save
-      redirect_to case_path(@recommendation), notice: 'Recommendation created'
+      redirect_to recommendation_path(@recommendation), notice: 'Recommendation created'
     else
       render :new
     end
   end
 
   def index
-    @recommendations = policy_scope(Recommendation.order(created_at: :desc).page(params[:page]))
+    @recommendations = policy_scope(Recommendation).order(created_at: :desc).page(params[:page])
   end
 
   def edit

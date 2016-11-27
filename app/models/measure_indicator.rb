@@ -1,0 +1,2 @@
+class MeasureIndicator < ApplicationRecord
+end

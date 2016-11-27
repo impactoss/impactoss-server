@@ -1,18 +1,18 @@
-<%= form_for @recommendation do |f| %>
+<%= form_for @indicator do |f| %>
 
   <div class="row">
     <div class="column small-8">
       <div class="model-title">
-        <h2><%= t('recommendation') %></h2>
+        <h2><%= t('indicator') %></h2>
       </div>
     </div>
     <div class="column small-4">
-      <div class="list-new-action"><h4><%= link_to t('cancel'), recommendations_path %> <%= f.submit t('save') %></h4></div>
+      <div class="list-new-action"><h4><%= link_to t('cancel'), indicators_path %> <%= f.submit t('save') %></h4></div>
     </div>
   </div>
-  <% if @recommendation.errors %>
+  <% if @indicator.errors %>
     <div class="row error-message">
-      <% @recommendation.errors.full_messages.each do |error| %>
+      <% @indicator.errors.full_messages.each do |error| %>
         <p><%= error %></p>
       <% end %>
     </div>
@@ -23,15 +23,15 @@
         <div class="row">
           <div class="column small-9">
             <%= f.label :title, t('fields.title') %>
-            <%= f.text_field :title, value: @recommendation.title, placeholder: t('fields.title') %>
+            <%= f.text_field :title, value: @indicator.title, placeholder: t('fields.title') %>
           </div>
           <div class="column small-1">
-              <%= f.label :number, t('number') %>
-              <%= f.text_field :number, value: @recommendation.number, placeholder: t('fields.number') %>
+              <%= f.label :description, t('description') %>
+              <%= f.text_field :description, value: @indicator.description, placeholder: t('fields.description') %>
           </div>
           <div class="column small-2">
             <label> <%= t('status') %>
-              <input type="text" placeholder="status" />
+              <input type="text" placeholder=t('status') />
             </label>
           </div>
         </div>
