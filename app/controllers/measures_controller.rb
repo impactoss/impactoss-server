@@ -18,7 +18,7 @@ class MeasuresController < ApplicationController
   end
 
   def index
-    @measures = policy_scope(Measure.order(created_at: :desc).page(params[:page]))
+    @measures = policy_scope(Measure).order(created_at: :desc).page(params[:page])
     authorize @measures
   end
 

@@ -18,7 +18,7 @@ class IndicatorsController < ApplicationController
   end
 
   def index
-    @indicators = policy_scope(Indicator.order(created_at: :desc).page(params[:page]))
+    @indicators = policy_scope(Indicator).order(created_at: :desc).page(params[:page])
     authorize @indicators
   end
 
