@@ -125,6 +125,7 @@ RSpec.feature 'Indicators', type: :feature do
       include_examples 'need_to_sign_in'
     end
   end
+  pending 'create'
 
   describe 'edit' do
     before { visit edit_indicator_path(indicator) }
@@ -156,4 +157,5 @@ RSpec.feature 'Indicators', type: :feature do
       include_examples 'need_to_sign_in'
     end
   end
+  pending 'update'
 end
