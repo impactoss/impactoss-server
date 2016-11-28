@@ -42,7 +42,7 @@ RSpec.feature 'User can see recommendation views', type: :feature do
     visit edit_recommendation_path(recommendations.first)
     expect(page).to have_content('Recommendations')
     expect(find_field('Title').value).to eq(recommendations.first.title)
-    expect(find_field('Number').value).to eq(recommendations.first.number.to_s)
+    expect(find_field('No').value).to eq(recommendations.first.number.to_s)
     expect(page).to have_button('Save')
     expect(page).to have_content('Cancel')
   end

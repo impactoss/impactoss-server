@@ -31,7 +31,7 @@ en:
   new: "New"
   fields:
     title: "Title"
-    number: "NO"
+    number: "No"
     description: "Description"
     status: "Status"
   sitewide_header:
