@@ -2,6 +2,7 @@
 require 'rails_helper'
 
 RSpec.feature 'User resets password', type: :feature do
+  include FeatureSpecHelpers
   let!(:user) { FactoryGirl.create(:user) }
 
   scenario 'User provides valid email' do
@@ -9,14 +10,14 @@ RSpec.feature 'User resets password', type: :feature do
     fill_in 'Email', with: user.email
     click_button 'Send me reset password instructions'
     expect(current_path).to eq new_user_session_path
-    expect(has_flash?('You will receive an email with instructions on how to reset your password in a few minutes.'))
+    expect(flash?('You will receive an email with instructions on how to reset your password in a few minutes.'))
   end
 
   scenario 'User provides invalid email' do
     visit new_user_password_path
     fill_in 'Email', with: Faker::Internet.email
     click_button 'Send me reset password instructions'
-    expect(has_flash?('Email not found'))
+    expect(flash?('Email not found'))
   end
 
   scenario 'User changes password with a valid reset password token' do
@@ -25,7 +26,7 @@ RSpec.feature 'User resets password', type: :feature do
     fill_in 'Password', with: user.password
     fill_in 'Password confirmation', with: user.password
     click_button 'Change my password'
-    expect(has_flash?('Your password has been changed successfully. You are now signed in.')).to be true
+    expect(flash?('Your password has been changed successfully. You are now signed in.')).to be true
   end
 
   scenario 'User changes password with an invalid/consumed reset password token' do
@@ -33,13 +34,6 @@ RSpec.feature 'User resets password', type: :feature do
     fill_in 'Password', with: user.password
     fill_in 'Password confirmation', with: user.password
     click_button 'Change my password'
-    expect(has_flash?('Reset password token is invalid')).to be true
-  end
-
-  private
-
-  # TODO: JM candidate for moving to shared module
-  def has_flash?(content)
-    page.has_css?('.callout', text: content)
+    expect(flash?('Reset password token is invalid')).to be true
   end
 end
