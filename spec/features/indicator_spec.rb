@@ -125,7 +125,37 @@ RSpec.feature 'Indicators', type: :feature do
       include_examples 'need_to_sign_in'
     end
   end
-  pending 'create'
+
+  describe 'create' do
+    before do
+      visit new_indicator_path
+      fill_in 'Title', with: 'title of awesome'
+      click_button 'Save'
+    end
+    shared_examples 'indicator_created' do
+      it { expect(Indicator.last.title).to eq 'title of awesome' }
+      it { expect(page).to have_content('Indicator created') }
+    end
+    context 'when logged in as admin' do
+      let(:our_user) { admin }
+      include_examples 'indicator_created'
+    end
+    context 'when logged in as manager' do
+      let(:our_user) { manager }
+      include_examples 'indicator_created'
+    end
+    context 'when logged in as reporter' do
+      let(:our_user) { reporter }
+      include_examples 'indicator_created'
+    end
+    pending 'when logged in but has no roles' do
+      let(:our_user) { user }
+      include_examples 'not_authorized'
+    end
+    pending 'anonymous' do
+      include_examples 'need_to_sign_in'
+    end
+  end
 
   describe 'edit' do
     before { visit edit_indicator_path(indicator) }
