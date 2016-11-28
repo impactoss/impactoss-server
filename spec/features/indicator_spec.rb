@@ -187,5 +187,37 @@ RSpec.feature 'Indicators', type: :feature do
       include_examples 'need_to_sign_in'
     end
   end
-  pending 'update'
+
+  describe 'update' do
+    before do
+      visit edit_indicator_path(indicator)
+      fill_in 'Title', with: 'new awesome title'
+      click_button 'Save'
+    end
+    shared_examples 'update_saves' do
+      it do
+        indicator.reload
+        expect(indicator.title).to eq('new awesome title')
+      end
+    end
+    context 'when logged in as admin' do
+      let(:our_user) { admin }
+      include_examples 'update_saves'
+    end
+    context 'when logged in as manager' do
+      let(:our_user) { manager }
+      include_examples 'update_saves'
+    end
+    context 'when logged in as reporter' do
+      let(:our_user) { reporter }
+      include_examples 'update_saves'
+    end
+    pending 'when logged in but has no roles' do
+      let(:our_user) { user }
+      include_examples 'not_authorized'
+    end
+    pending 'anonymous' do
+      include_examples 'need_to_sign_in'
+    end
+  end
 end
