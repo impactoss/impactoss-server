@@ -1,10 +1,14 @@
 # frozen_string_literal: true
-class ActionPolicy < ApplicationPolicy
+class MeasurePolicy < ApplicationPolicy
   def index?
     true
   end
 
   def new?
+    @user.role?('admin') || @user.role?('manager')
+  end
+
+  def create?
     @user.role?('admin') || @user.role?('manager')
   end
 
@@ -25,7 +29,7 @@ class ActionPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:title, :description]
+    [:title, :description, :target_date]
   end
 
   class Scope < Scope

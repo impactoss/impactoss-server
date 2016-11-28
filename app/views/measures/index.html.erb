@@ -1,0 +1,23 @@
+<main>
+  <div class="row">
+    <div class="column small-8">
+      <h2><%= t('actions')%></h2>
+    </div>
+    <div class="column small-4">
+      <div class="list-new-action"> <h4><%= link_to t('new'), new_measure_path(Measure.new) %></h4></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="column">
+        <div class="list-controls"
+          <h1>This is the search area</h1>
+        </div>
+    </div>
+  </div>
+
+  <% @measures.each do |measure|  %>
+    <%= render partial: "action_card", locals: { measure: measure} %>
+  <% end %>
+  <%= paginate @measures %>
+</main>
