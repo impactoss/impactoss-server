@@ -42,7 +42,7 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_link('New', href: new_indicator_path) }
     end
 
-    context 'when logged with no roles' do
+    context 'when logged in but has no roles' do
       let(:our_user) { user }
       it { expect(page).not_to have_link('New', href: new_indicator_path) }
     end
@@ -80,7 +80,7 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_link('Edit', href: edit_indicator_path(indicators.first)) }
     end
 
-    context 'when logged with no roles' do
+    context 'when logged in but has no roles' do
       let(:our_user) { user }
       include_examples 'show_page'
       it { expect(page).not_to have_link('Edit', href: edit_indicator_path(indicators.first)) }
@@ -116,7 +116,7 @@ RSpec.feature 'Indicators', type: :feature do
       include_examples 'new_page'
     end
 
-    context 'when logged with no roles' do
+    context 'when logged in but has no roles' do
       let(:our_user) { user }
       include_examples 'not_authorized'
     end
@@ -178,11 +178,10 @@ RSpec.feature 'Indicators', type: :feature do
       let(:our_user) { reporter }
       include_examples 'edit_page'
     end
-    context 'when logged with no roles' do
+    context 'when logged in but has no roles' do
       let(:our_user) { user }
       include_examples 'not_authorized'
     end
-
     context 'anonymous' do
       include_examples 'need_to_sign_in'
     end
