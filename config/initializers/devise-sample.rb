@@ -8,9 +8,6 @@ Devise.setup do |config|
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
   # config.secret_key =  ''
-  # rubocop:disable Metrics/LineLength
-  config.secret_key = '614f3e26b052ca70cd336870796c6c797f37ab054bf940757956dd85c7647d097493632492ad394a89b2707f973b620cd354acccd250a9ca01e972e95e0c0202'
-  # rubocop:enable Metrics/LineLength
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
