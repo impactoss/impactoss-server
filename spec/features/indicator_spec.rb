@@ -1,11 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Indicators', type: :feature do
-  let(:admin) { FactoryGirl.create(:user, :admin) }
-  let(:manager) { FactoryGirl.create(:user, :manager) }
-  let(:reporter) { FactoryGirl.create(:user, :reporter) }
-  let(:user) { FactoryGirl.create(:user) }
-
+  include FeatureSpecHelpers
   let!(:indicators) { FactoryGirl.create_list(:indicator, 5) }
   let(:indicator) { FactoryGirl.create(:indicator) }
   let(:our_user) { false }
@@ -26,18 +22,18 @@ RSpec.feature 'Indicators', type: :feature do
     end
 
     context 'when logged in as admin' do
-      let(:our_user) { admin }
+      let(:our_user) { admin_user }
       it { expect_index_page }
       it { expect(page).to have_content('New') }
     end
     context 'when logged in as manager' do
-      let(:our_user) { manager }
+      let(:our_user) { manager_user }
       it { expect_index_page }
       it { expect(page).to have_content('New') }
     end
 
     context 'when logged in as reporter' do
-      let(:our_user) { reporter }
+      let(:our_user) { reporter_user }
       it { expect_index_page }
       it { expect(page).to have_link('New', href: new_indicator_path) }
     end
@@ -67,18 +63,18 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_link('Edit', href: edit_indicator_path(indicators.first)) }
     end
     context 'when logged in as admin' do
-      let(:our_user) { admin }
+      let(:our_user) { admin_user }
       include_examples 'show_page'
       include_examples 'edit_link'
     end
     context 'when logged in as manager' do
-      let(:our_user) { manager }
+      let(:our_user) { manager_user }
       include_examples 'show_page'
       include_examples 'edit_link'
     end
 
     context 'when logged in as reporter' do
-      let(:our_user) { reporter }
+      let(:our_user) { reporter_user }
       include_examples 'show_page'
       include_examples 'edit_link'
     end
@@ -106,16 +102,16 @@ RSpec.feature 'Indicators', type: :feature do
     end
     before { visit edit_indicator_path(indicator) }
     context 'when logged in as admin' do
-      let(:our_user) { admin }
+      let(:our_user) { admin_user }
       include_examples 'new_page'
     end
     context 'when logged in as manager' do
-      let(:our_user) { manager }
+      let(:our_user) { manager_user }
       include_examples 'new_page'
     end
 
     context 'when logged in as reporter' do
-      let(:our_user) { reporter }
+      let(:our_user) { reporter_user }
       include_examples 'new_page'
     end
 
@@ -140,15 +136,15 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_content(I18n.t('notice.indicator.create.success')) }
     end
     context 'when logged in as admin' do
-      let(:our_user) { admin }
+      let(:our_user) { admin_user }
       include_examples 'indicator_created'
     end
     context 'when logged in as manager' do
-      let(:our_user) { manager }
+      let(:our_user) { manager_user }
       include_examples 'indicator_created'
     end
     context 'when logged in as reporter' do
-      let(:our_user) { reporter }
+      let(:our_user) { reporter_user }
       include_examples 'indicator_created'
     end
     pending 'when logged in but has no roles' do
@@ -170,15 +166,15 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_link('Cancel') }
     end
     context 'when logged in as admin' do
-      let(:our_user) { admin }
+      let(:our_user) { admin_user }
       include_examples 'edit_page'
     end
     context 'when logged in as manager' do
-      let(:our_user) { manager }
+      let(:our_user) { manager_user }
       include_examples 'edit_page'
     end
     context 'when logged in as reporter' do
-      let(:our_user) { reporter }
+      let(:our_user) { reporter_user }
       include_examples 'edit_page'
     end
     context 'when logged in but has no roles' do
@@ -204,15 +200,15 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_content(I18n.t('notice.indicator.update.success')) }
     end
     context 'when logged in as admin' do
-      let(:our_user) { admin }
+      let(:our_user) { admin_user }
       include_examples 'update_saves'
     end
     context 'when logged in as manager' do
-      let(:our_user) { manager }
+      let(:our_user) { manager_user }
       include_examples 'update_saves'
     end
     context 'when logged in as reporter' do
-      let(:our_user) { reporter }
+      let(:our_user) { reporter_user }
       include_examples 'update_saves'
     end
     pending 'when logged in but has no roles' do
