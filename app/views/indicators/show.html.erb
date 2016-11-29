@@ -5,7 +5,10 @@
     </div>
   </div>
   <div class="column small-4">
-    <div class="list-new-action"> <h4><%= link_to t("edit"), edit_indicator_path(@indicator) %></h4></div>
+    <div class="list-new-action">
+    <% if policy(:indicator).edit? %>
+      <h4><%= link_to t("edit"), edit_indicator_path(@indicator) %></h4></div>
+    <% end %>
   </div>
 </div>
 <div class="row">
