@@ -13,7 +13,7 @@ class IndicatorsController < ApplicationController
     authorize @indicator
 
     @indicator.save!
-    redirect_to indicator_path(@indicator), notice: 'Indicator created'
+    redirect_to indicator_path(@indicator), notice: t('notice.indicator.create.success')
   rescue
     render :new
   end
@@ -28,7 +28,7 @@ class IndicatorsController < ApplicationController
 
   def update
     @indicator.update_attributes!(permitted_attributes(@indicator))
-    redirect_to indicator_path, notice: 'Indicator updated'
+    redirect_to indicator_path, notice: t('notice.indicator.update.success')
   rescue
     render :edit
   end
@@ -38,9 +38,9 @@ class IndicatorsController < ApplicationController
 
   def destroy
     @indicator.destroy!
-    redirect_to indicators_path, notice: 'Indicator deleted'
+    redirect_to indicators_path, notice: t('notice.indicator.delete.success')
   rescue
-    redirect_to indicators_path, notice: 'Unable to delete Indicator'
+    redirect_to indicators_path, notice: t('notice.indicator.delete.fail')
   end
 
   private
