@@ -137,7 +137,7 @@ RSpec.feature 'Indicators', type: :feature do
     end
     shared_examples 'indicator_created' do
       it { expect(Indicator.last.title).to eq 'title of awesome' }
-      it { expect(page).to have_content('Indicator created') }
+      it { expect(page).to have_content(I18n.t('notice.indicator.create.success')) }
     end
     context 'when logged in as admin' do
       let(:our_user) { admin }
@@ -201,6 +201,7 @@ RSpec.feature 'Indicators', type: :feature do
         indicator.reload
         expect(indicator.title).to eq('new awesome title')
       end
+      it { expect(page).to have_content(I18n.t('notice.indicator.update.success')) }
     end
     context 'when logged in as admin' do
       let(:our_user) { admin }
