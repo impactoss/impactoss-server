@@ -20,6 +20,15 @@ en:
     signout: Sign out
     users: Users
   new: New
+  notice:
+    indicator:
+      create:
+        success: Indicator created
+      delete:
+        fail: Fail
+        success: Unable to delete Indicator
+      update:
+        success: Indicator updated
   passwords:
     edit:
       form:
