@@ -2,6 +2,7 @@
 require 'rails_helper'
 
 RSpec.feature 'User logs in', type: :feature do
+  include FeatureSpecHelpers
   let!(:user) { FactoryGirl.create(:user) }
   scenario 'User provides valid email and password' do
     fill_in_login_form
@@ -23,12 +24,7 @@ RSpec.feature 'User logs in', type: :feature do
 
   def assert_login_failed
     expect(current_path).to eq new_user_session_path
-    expect(has_flash?('Invalid Email or password.'))
-  end
-
-  # TODO: JM candidate for moving to shared module
-  def has_flash?(content)
-    page.has_css?('.callout', text: content)
+    expect(flash?('Invalid Email or password.'))
   end
 
   def fill_in_login_form(email: user.email, password: user.password, submit: true)
