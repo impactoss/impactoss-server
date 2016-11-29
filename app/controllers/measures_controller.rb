@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class MeasuresController < ApplicationController
+  before_action :set_measure, only: [:show, :edit, :update, :destroy]
+
   def new
     @measure = Measure.new
     authorize @measure
@@ -7,14 +9,12 @@ class MeasuresController < ApplicationController
 
   def create
     @measure = Measure.new
-    @measure.assign_attributes(permitted_attributes(@measure))
     authorize @measure
-
-    if @measure.save
-      redirect_to measure_path(@measure), notice: 'Measure created'
-    else
-      render :new
-    end
+    @measure.assign_attributes!(permitted_attributes(@measure))
+    @measure.save!
+    redirect_to measure_path(@measure), notice: t('notice.measure.create.success')
+  rescue
+    render :new
   end
 
   def index
@@ -23,34 +23,29 @@ class MeasuresController < ApplicationController
   end
 
   def edit
-    @measure = Measure.find(params[:id])
-    authorize @measure
   end
 
   def update
-    @measure = Measure.find(params[:id])
-    authorize @measure
-
-    if @measure.update_attributes(permitted_attributes(@measure))
-      redirect_to measure_path, notice: 'Measure updated'
-    else
-      render :edit
-    end
+    @measure.update_attributes(permitted_attributes(@measure))
+    redirect_to measure_path, notice: t('notice.measure.update.success')
+  rescue
+    render :edit
   end
 
   def show
-    @measure = Measure.find(params[:id])
-    authorize @measure
   end
 
   def destroy
+    @measure.destroy!
+    redirect_to measures_path, notice: t('notice.measure.delete.success')
+  rescue
+    redirect_to measures_path, notice: t('notice.measure.delete.fail')
+  end
+
+  private
+
+  def set_measure
     @measure = Measure.find(params[:id])
     authorize @measure
-
-    if @measure.destroy
-      redirect_to measures_path, notice: 'Measure deleted'
-    else
-      redirect_to measures_path, notice: 'Unable to delete Measure'
-    end
   end
 end
