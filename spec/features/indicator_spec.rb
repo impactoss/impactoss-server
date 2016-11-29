@@ -63,21 +63,24 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).to have_content(indicators.first.title) }
       it { expect(page).to have_content(indicators.first.description) }
     end
+    shared_examples 'edit_link' do
+      it { expect(page).to have_link('Edit', href: edit_indicator_path(indicators.first)) }
+    end
     context 'when logged in as admin' do
       let(:our_user) { admin }
       include_examples 'show_page'
-      it { expect(page).to have_link('Edit', href: edit_indicator_path(indicators.first)) }
+      include_examples 'edit_link'
     end
     context 'when logged in as manager' do
       let(:our_user) { manager }
       include_examples 'show_page'
-      it { expect(page).to have_link('Edit', href: edit_indicator_path(indicators.first)) }
+      include_examples 'edit_link'
     end
 
     context 'when logged in as reporter' do
       let(:our_user) { reporter }
       include_examples 'show_page'
-      it { expect(page).to have_link('Edit', href: edit_indicator_path(indicators.first)) }
+      include_examples 'edit_link'
     end
 
     context 'when logged in but has no roles' do
@@ -91,7 +94,7 @@ RSpec.feature 'Indicators', type: :feature do
       it { expect(page).not_to have_content(indicators.first.title) }
       it { expect(page).not_to have_content(indicators.first.description) }
       it { expect(page).not_to have_link('Edit', href: edit_indicator_path(indicators.first)) }
-      it { expect(page).to have_content('You need to sign in or sign up before continuing') }
+      include_examples 'need_to_sign_in'
     end
   end
 
