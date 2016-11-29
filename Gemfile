@@ -41,6 +41,7 @@ group :development, :test do
   # Code style
   gem 'rubocop', require: false
   gem 'byebug'
+  gem 'i18n-tasks', '~> 0.9.6'
 end
 
 group :test do

@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 class IndicatorPolicy < ApplicationPolicy
   def index?
-    true
+    @user.present?
   end
 
   def new?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?('admin') || @user.role?('manager') || @user.role?('reporter')
   end
 
   def create?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?('admin') || @user.role?('manager') || @user.role?('reporter')
   end
 
   def edit?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?('admin') || @user.role?('manager') || @user.role?('reporter')
   end
 
   def update?
-    @user.role?('admin') || @user.role?('manager')
+    @user.role?('admin') || @user.role?('manager') || @user.role?('reporter')
   end
 
   def show?
-    true
+    @user.present?
   end
 
   def destroy?

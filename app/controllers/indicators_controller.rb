@@ -1,4 +1,6 @@
 class IndicatorsController < ApplicationController
+  before_action :set_indicator, only: [:show, :edit, :update, :destroy]
+
   def new
     @indicator = Indicator.new
     authorize @indicator
@@ -10,11 +12,10 @@ class IndicatorsController < ApplicationController
 
     authorize @indicator
 
-    if @indicator.save
-      redirect_to indicator_path(@indicator), notice: 'Indicator created'
-    else
-      render :new
-    end
+    @indicator.save!
+    redirect_to indicator_path(@indicator), notice: t('notice.indicator.create.success')
+  rescue
+    render :new
   end
 
   def index
@@ -23,34 +24,29 @@ class IndicatorsController < ApplicationController
   end
 
   def edit
-    @indicator = Indicator.find(params[:id])
-    authorize @indicator
   end
 
   def update
-    @indicator = Indicator.find(params[:id])
-    authorize @indicator
-
-    if @indicator.update_attributes(permitted_attributes(@indicator))
-      redirect_to indicator_path, notice: 'Indicator updated'
-    else
-      render :edit
-    end
+    @indicator.update_attributes!(permitted_attributes(@indicator))
+    redirect_to indicator_path, notice: t('notice.indicator.update.success')
+  rescue
+    render :edit
   end
 
   def show
-    @indicator = Indicator.find(params[:id])
-    authorize @indicator
   end
 
   def destroy
+    @indicator.destroy!
+    redirect_to indicators_path, notice: t('notice.indicator.delete.success')
+  rescue
+    redirect_to indicators_path, notice: t('notice.indicator.delete.fail')
+  end
+
+  private
+
+  def set_indicator
     @indicator = Indicator.find(params[:id])
     authorize @indicator
-
-    if @indicator.destroy
-      redirect_to indicators_path, notice: 'Indicator deleted'
-    else
-      redirect_to indicators_path, notice: 'Unable to delete Indicator'
-    end
   end
 end

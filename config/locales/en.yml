@@ -1,70 +1,59 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
-
+---
 en:
-  recommendations: "Recommendations"
-  recommendation: "Recommendation"
-  indicators: "Indicators"
-  indicator: "Indicators"
-  measures: "Actions"
-  measure: "Action"
-  save: "Save"
-  cancel: "Cancel"
-  new: "New"
-  fields:
-    title: "Title"
-    number: "NO"
-    description: "Description"
-    status: "Status"
-  sitewide_header:
-    logo:
-      alt: "The Coat of Arms of Samoa"
-    title:
-      main: National Mechanism for Reporting and Follow-Up
-      sub: Samoa's National Plan of Action for Human Rights
-  menu:
-    password: Edit password
-    signout: Sign out
-    users: Users
-  passwords:
-    new:
-      form:
-        heading: Forgot your password?
-        submit: Send me reset password instructions
-    edit:
-      form:
-        heading: Change your password
-        submit: Change my password
-  registrations:
-    new:
-      form:
-        heading: Sign Up
-        submit: Complete Sign Up
-  sessions:
-    new:
-      form:
-        heading: "Log in with your email address"
-        submit: "Log in"
+  cancel: Cancel
   confirmations:
     new:
       form:
         heading: Resend confirmation instructions
         submit: Resend instructions
+  fields:
+    description: Description
+    number: 'NO'
+    status: Status
+    title: Title
+  indicator: Indicators
+  indicators: Indicators
+  measure: Action
+  measures: Actions
+  menu:
+    password: Edit password
+    signout: Sign out
+    users: Users
+  new: New
+  notice:
+    indicator:
+      create:
+        success: Indicator created
+      delete:
+        fail: Fail
+        success: Unable to delete Indicator
+      update:
+        success: Indicator updated
+  passwords:
+    edit:
+      form:
+        heading: Change your password
+        submit: Change my password
+    new:
+      form:
+        heading: Forgot your password?
+        submit: Send me reset password instructions
+  recommendation: Recommendation
+  recommendations: Recommendations
+  registrations:
+    new:
+      form:
+        heading: Sign Up
+        submit: Complete Sign Up
+  save: Save
+  sessions:
+    new:
+      form:
+        heading: Log in with your email address
+        submit: Log in
+  sitewide_header:
+    logo:
+      alt: The Coat of Arms of Samoa
+    title:
+      main: National Mechanism for Reporting and Follow-Up
+      sub: Samoa's National Plan of Action for Human Rights
