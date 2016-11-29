@@ -4,9 +4,13 @@
       <h2><%= t('measure') %></h2>
     </div>
   </div>
-  <div class="column small-4">
-    <div class="list-new-action"> <h4><%= link_to t("edit"), edit_measure_path(@measure) %></h4></div>
-  </div>
+  <% if policy(@measure).edit? %>
+    <div class="column small-4">
+      <div class="list-new-action">
+        <h4><%= link_to t("edit"), edit_measure_path(@measure) %></h4>
+      </div>
+    </div>
+  <%end%>
 </div>
 <div class="row">
   <div class="column small-12">
