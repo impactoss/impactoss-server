@@ -7,10 +7,16 @@ en:
         heading: Resend confirmation instructions
         submit: Resend instructions
   fields:
-    description: Description
-    number: 'NO'
-    status: Status
     title: Title
+    number: "No"
+    description: Description
+    status: Status
+  sitewide_header:
+    logo:
+      alt: "The Coat of Arms of Samoa"
+    title:
+      main: National Mechanism for Reporting and Follow-Up
+      sub: Samoa's National Plan of Action for Human Rights
   indicator: Indicators
   indicators: Indicators
   measure: Action

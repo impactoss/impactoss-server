@@ -11,7 +11,7 @@ class MeasuresController < ApplicationController
     authorize @measure
 
     if @measure.save
-      redirect_to measure_path(@measure), notice: 'Measure created'
+      redirect_to measure_path(@measure), notice: 'Action created'
     else
       render :new
     end
@@ -32,7 +32,7 @@ class MeasuresController < ApplicationController
     authorize @measure
 
     if @measure.update_attributes(permitted_attributes(@measure))
-      redirect_to measure_path, notice: 'Measure updated'
+      redirect_to measure_path, notice: 'Action updated'
     else
       render :edit
     end
@@ -48,9 +48,9 @@ class MeasuresController < ApplicationController
     authorize @measure
 
     if @measure.destroy
-      redirect_to measures_path, notice: 'Measure deleted'
+      redirect_to measures_path, notice: 'Action deleted'
     else
-      redirect_to measures_path, notice: 'Unable to delete Measure'
+      redirect_to measures_path, notice: 'Unable to delete Action'
     end
   end
 end

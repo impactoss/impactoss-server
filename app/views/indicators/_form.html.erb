@@ -26,12 +26,12 @@
             <%= f.text_field :title, value: @indicator.title, placeholder: t('fields.title') %>
           </div>
           <div class="column small-1">
-              <%= f.label :description, t('description') %>
+              <%= f.label :description, t('fields.description') %>
               <%= f.text_field :description, value: @indicator.description, placeholder: t('fields.description') %>
           </div>
           <div class="column small-2">
-            <label> <%= t('status') %>
-              <input type="text" placeholder=t('status') />
+            <label> <%= t('fields.status') %>
+              <input type="text" placeholder= <%= t('fields.status') %> />
             </label>
           </div>
         </div>
