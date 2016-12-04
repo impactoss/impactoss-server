@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  resources :taxonomies do
+    resources :categories
+  end
   resources :indicators
   resources :measures
   resources :recommendations
