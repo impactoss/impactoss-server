@@ -1,4 +1,4 @@
-# human-rights-national-reporting
+# Human-rights-national-reporting
 
 This is a Rails 5.0.0 app.
 
