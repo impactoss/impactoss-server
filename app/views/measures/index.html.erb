@@ -3,9 +3,11 @@
     <div class="column small-8">
       <h2><%= t('actions')%></h2>
     </div>
-    <div class="column small-4">
-      <div class="list-new-action"> <h4><%= link_to t('new'), new_measure_path(Measure.new) %></h4></div>
-    </div>
+    <% if policy(:measure).new? %>
+      <div class="column small-4"><div class="list-new-action">
+          <h4><%= link_to t('new'), new_measure_path(Measure.new) %></h4>
+      </div></div>
+    <% end %>
   </div>
 
   <div class="row">
