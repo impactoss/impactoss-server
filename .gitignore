@@ -22,4 +22,8 @@
 # Never check passwords into source control!
 /.env
 .rubocop-*
+config/initializers/devise.rb
+config/secrets.yml
 
+# Ignore rubymine files
+/.idea
