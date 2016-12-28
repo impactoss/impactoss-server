@@ -2,7 +2,7 @@
 
 This is a Rails 5.0.0 app.
 
-[ ![Codeship Status for rabid/undp-human-rights-national-reporting](https://codeship.com/projects/0278cdb0-2525-0134-bb7e-0e3391f87f23/status?branch=master)](https://codeship.com/projects/161691)
+[ ![Codeship Status for barancw/undp-sadata](https://app.codeship.com/projects/cd931780-aeef-0134-5399-6ab5102948e8/status?branch=master)](https://app.codeship.com/projects/192762)
 
 ## Documentation
 
