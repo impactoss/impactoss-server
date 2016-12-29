@@ -1,0 +1,2 @@
+class IndicatorSerializer < ApplicationSerializer
+end

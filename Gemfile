@@ -13,6 +13,8 @@ gem 'foundation-rails'
 gem 'pundit'
 gem 'kaminari'
 
+gem 'active_model_serializers'
+
 group :production, :staging do
   gem 'unicorn'
   gem 'unicorn-worker-killer'

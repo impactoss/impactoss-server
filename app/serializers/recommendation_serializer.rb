@@ -1,0 +1,2 @@
+class RecommendationSerializer < ApplicationSerializer
+end
