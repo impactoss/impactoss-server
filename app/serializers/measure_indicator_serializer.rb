@@ -1,0 +1,2 @@
+class MeasureIndicatorSerializer < ApplicationSerializer
+end
