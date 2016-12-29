@@ -2,8 +2,8 @@
   background: #fff;
   border-bottom: solid 1em $dark-gray;
   @include grid-row(null, null, 100%);
-  padding-top: $global-padding;
-  padding-bottom: $global-padding;
+  padding: $global-padding;
+
 
   &--logo {
     @include grid-column(1);

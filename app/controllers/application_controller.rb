@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery with: :exception
 
-  before_action :authenticate_user!, unless: :devise_controller?
   layout :layout_by_resource
 
   after_action :verify_authorized, except: [:index, :sign_in], unless: :devise_controller?

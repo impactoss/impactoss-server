@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  get 'static_pages/home'
+
   resources :indicators
   resources :measures
   resources :recommendations
@@ -8,5 +10,5 @@ Rails.application.routes.draw do
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
-  root to: 'dashboards#show'
+  root to: 'static_pages#home'
 end
