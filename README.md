@@ -1,6 +1,6 @@
 # Human-rights-national-reporting
 
-This is a Rails 5.0.0 app.
+This is a Rails 5.0.1 app.
 
 [ ![Codeship Status for barancw/undp-sadata](https://app.codeship.com/projects/cd931780-aeef-0134-5399-6ab5102948e8/status?branch=master)](https://app.codeship.com/projects/192762)
 
@@ -21,7 +21,7 @@ clients in several languages can be generated.
 
 This project requires:
 
-* Ruby 2.3.1, preferably managed using [rbenv][]
+* Ruby 2.3.3, preferably managed using [rbenv][]
 * PhantomJS (in order to use the [poltergeist][] gem)
 * PostgreSQL must be installed and accepting connections
 
