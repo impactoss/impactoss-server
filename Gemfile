@@ -2,7 +2,7 @@
 source 'https://rubygems.org'
 ruby '2.3.3'
 
-gem 'rails', '~> 5.0.0'
+gem 'rails', '~> 5.0.1'
 gem 'bcrypt', '~> 3.1.7'
 gem 'jquery-rails'
 gem 'pg', '~> 0.18'

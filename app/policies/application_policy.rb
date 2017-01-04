@@ -5,22 +5,30 @@ class ApplicationPolicy
     @record = record
   end
 
-  def show?
-    false
+  def index?
+    true
   end
 
-  def edit?
-    false
+  def create?
+    @user.role?('admin') || @user.role?('manager')
   end
 
   def update?
-    false
+    @user.role?('admin') || @user.role?('manager')
+  end
+
+  def show?
+    true
+  end
+
+  def destroy?
+    @user.role?('admin') || @user.role?('manager')
   end
 
   class Scope
     attr_reader :user, :scope
     def resolve
-      scope.all if user && user.role?('admin')
+      scope.all if @user.role?('admin') || @user.role?('manager')
     end
 
     def initialize(user, scope)
