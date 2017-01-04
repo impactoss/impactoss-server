@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  subject { FactoryGirl.build(:user) }
+  subject { FactoryGirl.create(:user) }
   it 'is valid' do
     expect(subject).to be_valid
   end
@@ -19,5 +19,13 @@ RSpec.describe User, type: :model do
     )
 
     expect(subject).not_to be_valid
+  end
+
+  it 'should accept a role' do
+    expect(subject.role?('the_role')).to be false
+
+    subject.roles << Role.new(name: 'the_role', friendly_name: 'bla')
+
+    expect(subject.role?('the_role')).to be true
   end
 end

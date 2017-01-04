@@ -10,16 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161125013750) do
+ActiveRecord::Schema.define(version: 20170104083751) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "indicators", force: :cascade do |t|
-    t.string   "title",       null: false
+    t.string   "title",                       null: false
     t.string   "description"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "draft",       default: false
+    t.index ["draft"], name: "index_indicators_on_draft", using: :btree
   end
 
   create_table "measure_indicators", force: :cascade do |t|
@@ -30,11 +32,13 @@ ActiveRecord::Schema.define(version: 20161125013750) do
   end
 
   create_table "measures", force: :cascade do |t|
-    t.string   "title",       null: false
+    t.string   "title",                       null: false
     t.text     "description"
     t.text     "target_date"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "draft",       default: false
+    t.index ["draft"], name: "index_measures_on_draft", using: :btree
   end
 
   create_table "recommendation_measures", force: :cascade do |t|
@@ -47,10 +51,12 @@ ActiveRecord::Schema.define(version: 20161125013750) do
   end
 
   create_table "recommendations", force: :cascade do |t|
-    t.string   "title",      null: false
-    t.integer  "number",     null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "title",                      null: false
+    t.integer  "number",                     null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.boolean  "draft",      default: false
+    t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
   end
 
   create_table "roles", force: :cascade do |t|

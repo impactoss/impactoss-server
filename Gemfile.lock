@@ -165,7 +165,7 @@ GEM
     mini_portile2 (2.1.0)
     minitest (5.10.1)
     nio4r (1.2.1)
-    nokogiri (1.7.0)
+    nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
     orm_adapter (0.5.0)
     overcommit (0.37.0)
@@ -342,7 +342,7 @@ DEPENDENCIES
   poltergeist
   pry-rails
   pundit
-  rails (~> 5.0.0)
+  rails (~> 5.0.1)
   rspec-rails
   rubocop
   sass-rails (~> 5.0)
