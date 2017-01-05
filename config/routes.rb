@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   end
   get 'static_pages/home'
 
+  resources :categories
   resources :indicators
   resources :measures
   resources :recommendations

@@ -4,5 +4,6 @@ FactoryGirl.define do
     short_title 'MyString'
     description 'MyString'
     url 'MyString'
+    association :taxonomy
   end
 end

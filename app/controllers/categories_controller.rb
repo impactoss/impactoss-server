@@ -1,55 +1,47 @@
 class CategoriesController < ApplicationController
-  def new
-    @category = Category.new
-    authorize @category
+  before_action :set_and_authorize_category, only: [:show, :update, :destroy]
 
-    @taxonomy = Taxonomy.find(params[:taxonomy_id])
-    authorize @taxonomy
+  # GET /categories
+  def index
+    @categories = policy_scope(Category).order(created_at: :desc).page(params[:page])
+    authorize @categories
+
+    render json: @categories
   end
 
-  def create
-    @taxonomy = Taxonomy.find(params[:taxonomy_id])
-    authorize @taxonomy
-
-    @category = Category.new
-    authorize @category
-
-    if @taxonomy.categories.create(permitted_attributes(@category))
-      redirect_to taxonomy_path(@taxonomy), notice: 'Category created'
-    else
-      render :new
-    end
-  end
-
-  def edit
-    @category = category.find(params[:category_id])
-    authorize @category
-  end
-
-  def update
-    @category = category.find(params[:category_id])
-    authorize @category
-
-    if @category.update_attributes(permitted_attributes(@category))
-      redirect_to taxonomy_path, notice: 'category updated'
-    else
-      render :edit
-    end
-  end
-
+  # GET /categories/1
   def show
-    @category = category.find(params[:id])
-    authorize @category
+    render json: @category
   end
 
-  def destroy
-    @category = category.find(params[:id])
+  # POST /categories
+  def create
+    @category = Category.new
+    @category.assign_attributes(permitted_attributes(@category))
     authorize @category
 
-    if @category.destroy
-      redirect_to categorys_path, notice: 'category deleted'
+    if @category.save
+      render json: @category, status: :created, location: @category
     else
-      redirect_to categorys_path, notice: 'Unable to delete category'
+      render json: @category.errors, status: :unprocessable_entity
     end
+  end
+
+  # PATCH/PUT /categories/1
+  def update
+    render json: @category if @category.update_attributes!(permitted_attributes(@category))
+  end
+
+  # DELETE /categories/1
+  def destroy
+    @category.destroy
+  end
+
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_and_authorize_category
+    @category = policy_scope(Category).find(params[:id])
+    authorize @category
   end
 end
