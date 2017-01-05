@@ -1,56 +1,47 @@
 class IndicatorsController < ApplicationController
-  def new
-    @indicator = Indicator.new
-    authorize @indicator
-  end
+  before_action :set_and_authorize_indicator, only: [:show, :update, :destroy]
 
-  def create
-    @indicator = Indicator.new
-    @indicator.assign_attributes(permitted_attributes(@indicator))
-
-    authorize @indicator
-
-    if @indicator.save
-      redirect_to indicator_path(@indicator), notice: 'Indicator created'
-    else
-      render :new
-    end
-  end
-
+  # GET /indicators
   def index
     @indicators = policy_scope(Indicator).order(created_at: :desc).page(params[:page])
     authorize @indicators
+
+    render json: @indicators
   end
 
-  def edit
-    @indicator = Indicator.find(params[:id])
-    authorize @indicator
-  end
-
-  def update
-    @indicator = Indicator.find(params[:id])
-    authorize @indicator
-
-    if @indicator.update_attributes(permitted_attributes(@indicator))
-      redirect_to indicator_path, notice: 'Indicator updated'
-    else
-      render :edit
-    end
-  end
-
+  # GET /indicators/1
   def show
-    @indicator = Indicator.find(params[:id])
-    authorize @indicator
+    render json: @indicator
   end
 
-  def destroy
-    @indicator = Indicator.find(params[:id])
+  # POST /indicators
+  def create
+    @indicator = Indicator.new
+    @indicator.assign_attributes(permitted_attributes(@indicator))
     authorize @indicator
 
-    if @indicator.destroy
-      redirect_to indicators_path, notice: 'Indicator deleted'
+    if @indicator.save
+      render json: @indicator, status: :created, location: @indicator
     else
-      redirect_to indicators_path, notice: 'Unable to delete Indicator'
+      render json: @indicator.errors, status: :unprocessable_entity
     end
+  end
+
+  # PATCH/PUT /indicators/1
+  def update
+    render json: @indicator if @indicator.update_attributes!(permitted_attributes(@indicator))
+  end
+
+  # DELETE /indicators/1
+  def destroy
+    @indicator.destroy
+  end
+
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_and_authorize_indicator
+    @indicator = policy_scope(Indicator).find(params[:id])
+    authorize @indicator
   end
 end

@@ -9,6 +9,6 @@ class User < ApplicationRecord
   has_many :roles, through: :user_roles
 
   def role?(role)
-    roles.any? { |r| r.name == role }
+    roles.where(name: role).any?
   end
 end

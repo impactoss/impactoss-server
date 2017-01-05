@@ -1,56 +1,48 @@
 # frozen_string_literal: true
 class MeasuresController < ApplicationController
-  def new
-    @measure = Measure.new
-    authorize @measure
+  before_action :set_and_authorize_measure, only: [:show, :update, :destroy]
+
+  # GET /measures
+  def index
+    @measures = policy_scope(Measure).order(created_at: :desc).page(params[:page])
+    authorize @measures
+
+    render json: @measures
   end
 
+  # GET /measures/1
+  def show
+    render json: @measure
+  end
+
+  # POST /measures
   def create
     @measure = Measure.new
     @measure.assign_attributes(permitted_attributes(@measure))
     authorize @measure
 
     if @measure.save
-      redirect_to measure_path(@measure), notice: 'Measure created'
+      render json: @measure, status: :created, location: @measure
     else
-      render :new
+      render json: @measure.errors, status: :unprocessable_entity
     end
   end
 
-  def index
-    @measures = policy_scope(Measure).order(created_at: :desc).page(params[:page])
-    authorize @measures
-  end
-
-  def edit
-    @measure = Measure.find(params[:id])
-    authorize @measure
-  end
-
+  # PATCH/PUT /measures/1
   def update
-    @measure = Measure.find(params[:id])
-    authorize @measure
-
-    if @measure.update_attributes(permitted_attributes(@measure))
-      redirect_to measure_path, notice: 'Measure updated'
-    else
-      render :edit
-    end
+    render json: @measure if @measure.update_attributes!(permitted_attributes(@measure))
   end
 
-  def show
-    @measure = Measure.find(params[:id])
-    authorize @measure
-  end
-
+  # DELETE /measures/1
   def destroy
-    @measure = Measure.find(params[:id])
-    authorize @measure
+    @measure.destroy
+  end
 
-    if @measure.destroy
-      redirect_to measures_path, notice: 'Measure deleted'
-    else
-      redirect_to measures_path, notice: 'Unable to delete Measure'
-    end
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_and_authorize_measure
+    @measure = policy_scope(Measure).find(params[:id])
+    authorize @measure
   end
 end

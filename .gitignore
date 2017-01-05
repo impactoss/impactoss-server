@@ -23,3 +23,5 @@
 /.env
 .rubocop-*
 
+# Ignore rubymine files
+/.idea

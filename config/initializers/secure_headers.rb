@@ -10,7 +10,7 @@
   # rubocop:disable Lint/PercentStringArray
   config.csp = {
     default_src: %w(https: 'self'),
-    frame_src: %w('self'),
+    child_src: %w('self'),
     connect_src: %w(wss:),
     font_src: %w('self' data:),
     img_src: %w('self' data:),

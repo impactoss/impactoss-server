@@ -1,8 +1,8 @@
-# human-rights-national-reporting
+# Human-rights-national-reporting
 
-This is a Rails 5.0.0 app.
+This is a Rails 5.0.1 app.
 
-[ ![Codeship Status for rabid/undp-human-rights-national-reporting](https://codeship.com/projects/0278cdb0-2525-0134-bb7e-0e3391f87f23/status?branch=master)](https://codeship.com/projects/161691)
+[ ![Codeship Status for barancw/undp-sadata](https://app.codeship.com/projects/cd931780-aeef-0134-5399-6ab5102948e8/status?branch=master)](https://app.codeship.com/projects/192762)
 
 ## Documentation
 
@@ -21,13 +21,42 @@ clients in several languages can be generated.
 
 This project requires:
 
-* Ruby 2.3.1, preferably managed using [rbenv][]
+* Ruby 2.3.3, preferably managed using [rbenv][]
 * PhantomJS (in order to use the [poltergeist][] gem)
 * PostgreSQL must be installed and accepting connections
 
 On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
 
 If you need help setting up a Ruby development environment, check out this [Rails OS X Setup Guide](https://mattbrictson.com/rails-osx-setup-guide).
+
+## Config
+
+### Set up secrets
+```
+cp config/secrets-sample.yml config/secrets.yml
+```
+
+and edit. You can generate a new secret to use, like this:
+
+```
+rake secret
+```
+
+### Set up Devise
+
+```
+cp config/initializers/devise-sample.rb config/initializers/devise.rb
+```
+
+Then edit to include a secret_key, example:
+
+```
+# rubocop:disable Metrics/LineLength
+config.secret_key = 'your-secret-goes-here'
+# rubocop:enable Metrics/LineLength
+```
+
+
 
 ## Code style
 
@@ -56,7 +85,7 @@ npm install -g jshint
 
 #### With Docker
 
-Run `docker-compose up` to create and start a DB and app image, with the app listening on port 3000. You will also need to run `docker-compose run app rake db:setup to create and seed a development database. The app has several configuration value that can be set that are listed in the `example.env` file. You can either copy this file to `.env` and provide your own configuration, or explicitly pass in your configuration to the `docker run` command.
+Run `docker-compose up` to create and start a DB and app image, with the app listening on port 3000. You will also need to run `docker-compose run app rake db:setup` to create and seed a development database. The app has several configuration value that can be set that are listed in the `example.env` file. You can either copy this file to `.env` and provide your own configuration, or explicitly pass in your configuration to the `docker run` command.
 
 If you already have a database instance and just wish to run the app you will need to build the image:
 

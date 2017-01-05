@@ -1,56 +1,48 @@
 # frozen_string_literal: true
 class RecommendationsController < ApplicationController
-  def new
-    @recommendation = Recommendation.new
-    authorize @recommendation
+  before_action :set_and_authorize_recommendation, only: [:show, :update, :destroy]
+
+  # GET /recommendations
+  def index
+    @recommendations = policy_scope(Recommendation).order(created_at: :desc).page(params[:page])
+    authorize @recommendations
+
+    render json: @recommendations
   end
 
+  # GET /recommendations/1
+  def show
+    render json: @recommendation
+  end
+
+  # POST /recommendations
   def create
     @recommendation = Recommendation.new
     @recommendation.assign_attributes(permitted_attributes(@recommendation))
-
     authorize @recommendation
 
     if @recommendation.save
-      redirect_to recommendation_path(@recommendation), notice: 'Recommendation created'
+      render json: @recommendation, status: :created, location: @recommendation
     else
-      render :new
+      render json: @recommendation.errors, status: :unprocessable_entity
     end
   end
 
-  def index
-    @recommendations = policy_scope(Recommendation).order(created_at: :desc).page(params[:page])
-  end
-
-  def edit
-    @recommendation = Recommendation.find(params[:id])
-    authorize @recommendation
-  end
-
+  # PATCH/PUT /recommendations/1
   def update
-    @recommendation = Recommendation.find(params[:id])
-    authorize @recommendation
-
-    if @recommendation.update_attributes(permitted_attributes(@recommendation))
-      redirect_to recommendation_path, notice: 'Recommendation updated'
-    else
-      render :edit
-    end
+    render json: @recommendation if @recommendation.update_attributes!(permitted_attributes(@recommendation))
   end
 
-  def show
-    @recommendation = Recommendation.find(params[:id])
-    authorize @recommendation
-  end
-
+  # DELETE /recommendations/1
   def destroy
-    @recommendation = Recommendation.find(params[:id])
-    authorize @recommendation
+    @recommendation.destroy
+  end
 
-    if @recommendation.destroy
-      redirect_to recommendations_path, notice: 'Recommendation deleted'
-    else
-      redirect_to recommendations_path, notice: 'Unable to delete Recommendation'
-    end
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_and_authorize_recommendation
+    @recommendation = policy_scope(Recommendation).find(params[:id])
+    authorize @recommendation
   end
 end
