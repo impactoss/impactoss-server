@@ -15,6 +15,17 @@ ActiveRecord::Schema.define(version: 20170104083751) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "categories", force: :cascade do |t|
+    t.string   "title"
+    t.string   "short_title"
+    t.string   "description"
+    t.string   "url"
+    t.integer  "taxonomy_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
+  end
+
   create_table "indicators", force: :cascade do |t|
     t.string   "title",                       null: false
     t.string   "description"
@@ -64,6 +75,14 @@ ActiveRecord::Schema.define(version: 20170104083751) do
     t.string   "friendly_name", null: false
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+  end
+
+  create_table "taxonomies", force: :cascade do |t|
+    t.string   "title",                null: false
+    t.boolean  "tags_recommendations"
+    t.boolean  "tags_measures"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "user_roles", force: :cascade do |t|
