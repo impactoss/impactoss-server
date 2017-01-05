@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  resources :taxonomies do
+    resources :categories
+  end
   get 'static_pages/home'
 
+  resources :categories
   resources :indicators
   resources :measures
   resources :recommendations
