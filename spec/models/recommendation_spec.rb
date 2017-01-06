@@ -2,6 +2,20 @@
 require 'rails_helper'
 
 RSpec.describe Recommendation, type: :model do
+  it { should validate_presence_of :title }
+  it { should have_many :categories }
+  it { should have_many :measures }
+  it { should have_many :indicators }
+  it { should have_many :progress_reports }
+  it { should have_many :due_dates }
+
+  it 'must have at least one category' do
+    @recommendation = FactoryGirl.build(:recommendation, :without_category)
+    expect(@recommendation).not_to be_valid
+    @recommendation.categories << FactoryGirl.create(:category)
+    expect(@recommendation).to be_valid
+  end
+
   before do
     @recommendation = FactoryGirl.create(:recommendation)
   end
@@ -15,16 +29,5 @@ RSpec.describe Recommendation, type: :model do
     @measure = FactoryGirl.create(:measure)
     @recommendation.measures << @measure
     expect(@recommendation.measures.count == 1)
-  end
-
-  it 'enforces required fields' do
-    @broken_recommendation = Recommendation.new
-    expect { @broken_recommendation.save! }.to raise_error ActiveRecord::RecordInvalid
-
-    @broken_recommendation.title = 'Test'
-    expect { @broken_recommendation.save! }.to raise_error ActiveRecord::RecordInvalid
-
-    @broken_recommendation.number = 1
-    expect { @broken_recommendation.save! }.to_not raise_error
   end
 end

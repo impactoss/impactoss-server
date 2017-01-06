@@ -66,8 +66,32 @@ RSpec.describe MeasuresController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:recommendation) { FactoryGirl.create(:recommendation) }
+      let(:category) { FactoryGirl.create(:category) }
+
       subject do
-        post :create, format: :json, params: { measure: { title: 'test', description: 'test', target_date: 'today' } }
+        post :create,
+             format: :json,
+             params: {
+               measure: {
+                 title: 'test',
+                 description: 'test',
+                 target_date: 'today',
+                 recommendation_measures_attributes: [{ recommendation_id: recommendation.id }],
+                 measure_categories_attributes: [{ category_id: category.id }]
+               }
+             }
+        # This is an example creating a new recommendation record in the post
+        # post :create,
+        #      format: :json,
+        #      params: {
+        #        measure: {
+        #          title: 'test',
+        #          description: 'test',
+        #          target_date: 'today',
+        #          recommendation_measures_attributes: [ { recommendation_attributes: { title: 'test 1', number: 1 } } ]
+        #        }
+        #      }
       end
 
       it 'will not allow a guest to create a measure' do

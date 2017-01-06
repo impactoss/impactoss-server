@@ -1,7 +1,21 @@
 # frozen_string_literal: true
 class MeasurePolicy < ApplicationPolicy
   def permitted_attributes
-    [:title, :description, :target_date, :draft]
+    [:title,
+     :description,
+     :target_date,
+     :draft,
+     recommendation_measures_attributes: [:recommendation_id,
+                                          recommendation_attributes: [:id, :title, :number, :draft]],
+     measure_categories_attributes: [:category_id,
+                                     category_attributes: [:id,
+                                                           :title,
+                                                           :short_title,
+                                                           :description,
+                                                           :url,
+                                                           :taxonomy_id,
+                                                           :draft,
+                                                           :manager_id]]]
   end
 
   class Scope < Scope

@@ -1,19 +1,24 @@
 require 'rails_helper'
 
 RSpec.describe Measure, type: :model do
-  before { @measure = FactoryGirl.create(:measure) }
+  it { should validate_presence_of :title }
+  it { should have_many :recommendations }
+  it { should have_many :categories }
+  it { should have_many :indicators }
+  it { should have_many :due_dates }
+  it { should have_many :progress_reports }
 
-  it 'remembers title' do
-    expect(!@measure.title.empty?)
+  it 'must have at least one recommendation' do
+    @measure = FactoryGirl.build(:measure, :without_recommendation)
+    expect(@measure).not_to be_valid
+    @measure.recommendations << FactoryGirl.create(:recommendation)
+    expect(@measure).to be_valid
   end
 
-  it 'enforces required fields' do
-    @measure = Measure.new
-    expect { @measure.save! }.to raise_error ActiveRecord::RecordInvalid
-
-    @measure.title = 'Test'
-    expect { @measure.save! }.not_to raise_error
+  it 'must have at least one category' do
+    @measure = FactoryGirl.build(:measure, :without_category)
+    expect(@measure).not_to be_valid
+    @measure.categories << FactoryGirl.create(:category)
+    expect(@measure).to be_valid
   end
-
-  pending 'measures must belong to a recommendation'
 end

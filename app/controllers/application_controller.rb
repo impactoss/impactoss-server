@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
   after_action :verify_authorized, except: [:index, :sign_in], unless: :devise_controller?
   after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
 
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
   # Allow pundit to authorize a non-logged in user
   def pundit_user
     current_user || User.new
@@ -34,6 +36,10 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActionController::ParameterMissing do |e|
     render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
   end
 
   private

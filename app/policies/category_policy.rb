@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class CategoryPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title, :short_title, :description, :url, :draft, :taxonomy_id]
+    [:title, :short_title, :description, :url, :draft, :taxonomy_id, :manager_id]
   end
 
   class Scope < Scope

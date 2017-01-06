@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170105201356) do
+ActiveRecord::Schema.define(version: 20170106215713) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,8 +24,18 @@ ActiveRecord::Schema.define(version: 20170105201356) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.boolean  "draft",       default: false
+    t.integer  "manager_id"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
+    t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
+  end
+
+  create_table "due_dates", force: :cascade do |t|
+    t.integer  "indicator_id"
+    t.date     "due_date"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["indicator_id"], name: "index_due_dates_on_indicator_id", using: :btree
   end
 
   create_table "indicators", force: :cascade do |t|
@@ -34,7 +44,16 @@ ActiveRecord::Schema.define(version: 20170105201356) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.boolean  "draft",       default: false
+    t.integer  "manager_id"
     t.index ["draft"], name: "index_indicators_on_draft", using: :btree
+    t.index ["manager_id"], name: "index_indicators_on_manager_id", using: :btree
+  end
+
+  create_table "measure_categories", force: :cascade do |t|
+    t.integer  "measure_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "measure_indicators", force: :cascade do |t|
@@ -52,6 +71,27 @@ ActiveRecord::Schema.define(version: 20170105201356) do
     t.datetime "updated_at",                  null: false
     t.boolean  "draft",       default: false
     t.index ["draft"], name: "index_measures_on_draft", using: :btree
+  end
+
+  create_table "progress_reports", force: :cascade do |t|
+    t.integer  "indicator_id"
+    t.integer  "due_date_id"
+    t.string   "title"
+    t.text     "description"
+    t.string   "document_url"
+    t.boolean  "document_public"
+    t.boolean  "draft"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["due_date_id"], name: "index_progress_reports_on_due_date_id", using: :btree
+    t.index ["indicator_id"], name: "index_progress_reports_on_indicator_id", using: :btree
+  end
+
+  create_table "recommendation_categories", force: :cascade do |t|
+    t.integer  "recommendation_id"
+    t.integer  "category_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   create_table "recommendation_measures", force: :cascade do |t|
@@ -86,7 +126,15 @@ ActiveRecord::Schema.define(version: 20170105201356) do
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
     t.boolean  "draft",                default: false
+    t.boolean  "allow_multiple"
     t.index ["draft"], name: "index_taxonomies_on_draft", using: :btree
+  end
+
+  create_table "user_categories", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "user_roles", force: :cascade do |t|
@@ -111,6 +159,7 @@ ActiveRecord::Schema.define(version: 20170105201356) do
     t.inet     "last_sign_in_ip"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
+    t.string   "name"
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
