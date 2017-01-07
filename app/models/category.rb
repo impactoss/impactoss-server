@@ -1,4 +1,6 @@
 class Category < ApplicationRecord
+  has_paper_trail
+
   belongs_to :taxonomy
   belongs_to :manager, class_name: User, foreign_key: :manager_id, optional: true, inverse_of: :categories
   has_many :recommendation_categories

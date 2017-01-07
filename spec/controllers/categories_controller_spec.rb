@@ -91,6 +91,13 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_created
       end
 
+      it 'will record what manager created the category', versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
+      end
+
       it 'will return an error if params are incorrect' do
         sign_in user
         post :create, format: :json, params: { category: { description: 'desc only', taxonomy_id: 999 } }
@@ -126,6 +133,13 @@ RSpec.describe CategoriesController, type: :controller do
       it 'will allow a manager to update a category' do
         sign_in user
         expect(subject).to be_ok
+      end
+
+      it 'will record what manager updated the category', versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
       end
 
       it 'will return an error if params are incorrect' do

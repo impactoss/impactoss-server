@@ -1,4 +1,6 @@
 class Indicator < ApplicationRecord
+  has_paper_trail
+
   validates :title, presence: true
 
   has_many :measure_indicators, inverse_of: :indicator

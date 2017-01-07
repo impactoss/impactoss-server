@@ -89,6 +89,13 @@ RSpec.describe RecommendationsController, type: :controller do
         expect(subject).to be_created
       end
 
+      it 'will record what manager created the recommendation', versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
+      end
+
       it 'will return an error if params are incorrect' do
         sign_in user
         post :create, format: :json, params: { recommendation: { description: 'desc only' } }
@@ -124,6 +131,13 @@ RSpec.describe RecommendationsController, type: :controller do
       it 'will allow a manager to update a recommendation' do
         sign_in user
         expect(subject).to be_ok
+      end
+
+      it 'will record what manager updated the recommendation', versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
       end
 
       it 'will return an error if params are incorrect' do

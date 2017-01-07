@@ -1,4 +1,6 @@
 class Taxonomy < ApplicationRecord
+  has_paper_trail
+
   has_many :categories
 
   validates :title, presence: true
