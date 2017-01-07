@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class Measure < ApplicationRecord
+  has_paper_trail
+
   has_many :recommendation_measures, inverse_of: :measure
   has_many :measure_categories, inverse_of: :measure
   has_many :measure_indicators, inverse_of: :measure

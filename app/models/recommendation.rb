@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class Recommendation < ApplicationRecord
+  has_paper_trail
+
   has_many :recommendation_measures, inverse_of: :recommendation
   has_many :recommendation_categories, inverse_of: :recommendation
   has_many :measures, through: :recommendation_measures
