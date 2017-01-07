@@ -13,13 +13,16 @@ RSpec.feature 'User signs up', type: :feature do
   scenario 'User provides incomplete information' do
     fill_in_sign_up_form email: ''
     expect(flash?("Email can't be blank")).to eq true
+    fill_in_sign_up_form name: ''
+    expect(flash?("Name can't be blank")).to eq true
   end
 
   private
 
-  def fill_in_sign_up_form(email: user.email, password: user.password, submit: true)
+  def fill_in_sign_up_form(email: user.email, name: user.name, password: user.password, submit: true)
     visit new_user_registration_path
     fill_in 'Email', with: email
+    fill_in 'Name', with: name
     fill_in 'Password', with: password
     fill_in 'Password confirmation', with: password
     click_button 'Complete Sign Up' if submit

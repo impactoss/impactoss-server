@@ -66,8 +66,17 @@ RSpec.describe RecommendationsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:category) { FactoryGirl.create(:category) }
       subject do
-        post :create, format: :json, params: { recommendation: { title: 'test', number: '1' } }
+        post :create,
+             format: :json,
+             params: {
+               recommendation: {
+                 title: 'test',
+                 number: '1',
+                 recommendation_categories_attributes: [{ category_id: category.id }]
+               }
+             }
       end
 
       it 'will not allow a guest to create a recommendation' do

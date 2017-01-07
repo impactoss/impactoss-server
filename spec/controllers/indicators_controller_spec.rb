@@ -66,8 +66,18 @@ RSpec.describe IndicatorsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:measure) { FactoryGirl.create(:measure) }
       subject do
-        post :create, format: :json, params: { indicator: { title: 'test', description: 'test', target_date: 'today' } }
+        post :create,
+             format: :json,
+             params: {
+               indicator: {
+                 title: 'test',
+                 description: 'test',
+                 target_date: 'today',
+                 measure_indicators_attributes: [{ measure_id: measure.id }]
+               }
+             }
       end
 
       it 'will not allow a guest to create a indicator' do

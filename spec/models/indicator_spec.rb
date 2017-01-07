@@ -1,19 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe Indicator, type: :model do
-  before { @indicator = FactoryGirl.create(:indicator) }
+  it { should validate_presence_of :title }
+  it { should have_many :measures }
+  it { should have_many :progress_reports }
+  it { should have_many :due_dates }
+  it { should have_many :categories }
+  it { should have_many :recommendations }
+  it { should belong_to :manager }
 
-  it 'remembers title' do
-    expect(!@indicator.title.empty?)
+  it 'must have at least one measure' do
+    @indicator = FactoryGirl.build(:indicator, :without_measure)
+    expect(@indicator).not_to be_valid
+    @indicator.measures << FactoryGirl.create(:measure)
+    expect(@indicator).to be_valid
   end
-
-  it 'enforces required fields' do
-    @indicator = Indicator.new
-    expect { @indicator.save! }.to raise_error ActiveRecord::RecordInvalid
-
-    @indicator.title = 'Test'
-    expect { @indicator.save! }.not_to raise_error
-  end
-
-  pending 'indicators must belong to at least one measure'
 end

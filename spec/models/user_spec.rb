@@ -3,13 +3,15 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   subject { FactoryGirl.create(:user) }
+  it { should validate_presence_of :name }
+  it { should validate_presence_of :email }
+  it { should have_many :roles }
+  it { should have_many :managed_categories }
+  it { should have_many :categories }
+  it { should have_many :managed_indicators }
+
   it 'is valid' do
     expect(subject).to be_valid
-  end
-
-  it 'is invalid without an email' do
-    subject.email = ''
-    expect(subject).not_to be_valid
   end
 
   it 'is invalid without a matching password' do
