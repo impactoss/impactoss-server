@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :progress_report do
-    indicator_id 1
-    due_date_id 1
+    association :indicator
+    association :due_date
     title 'MyString'
     description 'MyText'
     document_url 'MyString'
