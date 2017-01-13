@@ -5,7 +5,7 @@ require 'json'
 RSpec.describe IndicatorsController, type: :controller do
   describe 'Get index' do
     subject { get :index, format: :json }
-    let!(:Indicator) { FactoryGirl.create(:indicator) }
+    let!(:indicator) { FactoryGirl.create(:indicator) }
     let!(:draft_indicator) { FactoryGirl.create(:indicator, draft: true) }
 
     context 'when not signed in' do
@@ -38,6 +38,19 @@ RSpec.describe IndicatorsController, type: :controller do
         sign_in user
         json = JSON.parse(subject.body)
         expect(json['data'].length).to eq(2)
+      end
+    end
+
+    context 'filters' do
+      let(:measure) { FactoryGirl.create(:measure) }
+      let(:indicator_different_measure) { FactoryGirl.create(:indicator) }
+
+      it 'filters from measures' do
+        indicator_different_measure.measures << measure
+        subject = get :index, params: { measure_id: measure.id }, format: :json
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(indicator_different_measure.id.to_s)
       end
     end
   end
