@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  mount_devise_token_auth_for 'User', at: 'auth'
+
   resources :taxonomies do
     resources :categories
   end
@@ -15,7 +17,6 @@ Rails.application.routes.draw do
   resources :recommendation_categories
   resources :recommendation_measures
   resources :progress_reports
-  devise_for :users
   resources :users
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
