@@ -23,7 +23,7 @@ class Seeds
   def base_seeds!
     Role.new(name: 'admin', friendly_name: 'Admin').save!
     Role.new(name: 'manager', friendly_name: 'Manager').save!
-    Role.new(name: 'reporter', friendly_name: 'Reporter').save!
+    Role.new(name: 'contributor', friendly_name: 'Contributor').save!
 
     FactoryGirl.create_list(:measure, 50)
     FactoryGirl.create_list(:recommendation, 50)

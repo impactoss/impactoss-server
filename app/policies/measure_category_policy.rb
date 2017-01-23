@@ -10,6 +10,10 @@ class MeasureCategoryPolicy < ApplicationPolicy
                            :manager_id]]
   end
 
+  def update?
+    false
+  end
+
   class Scope < Scope
     def resolve
       scope.all

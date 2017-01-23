@@ -11,8 +11,8 @@ FactoryGirl.define do
       name { 'manager' }
     end
 
-    trait :reporter do
-      name { 'reporter' }
+    trait :contributor do
+      name { 'contributor' }
     end
   end
 end

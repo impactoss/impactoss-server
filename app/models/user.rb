@@ -19,6 +19,7 @@ class User < ApplicationRecord
   has_many :categories, through: :user_categories
 
   validates :email, presence: true
+  validates :name, presence: true
 
   def role?(role)
     roles.where(name: role).any?

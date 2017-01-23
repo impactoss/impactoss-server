@@ -20,11 +20,18 @@ RSpec.describe IndicatorsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'guest will not see draft indicators' do
         sign_in guest
         json = JSON.parse(subject.body)
         expect(json['data'].length).to eq(1)
+      end
+
+      it 'contributor will see draft indicators' do
+        sign_in contributor
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(2)
       end
 
       it 'manager will see draft indicators' do
@@ -66,6 +73,7 @@ RSpec.describe IndicatorsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:measure) { FactoryGirl.create(:measure) }
       subject do
         post :create,
@@ -82,6 +90,11 @@ RSpec.describe IndicatorsController, type: :controller do
 
       it 'will not allow a guest to create a indicator' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to create a indicator' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
@@ -123,9 +136,15 @@ RSpec.describe IndicatorsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to update a indicator' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to update a indicator' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
@@ -162,9 +181,15 @@ RSpec.describe IndicatorsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to delete a indicator' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to delete a indicator' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 

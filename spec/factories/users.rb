@@ -15,7 +15,7 @@ FactoryGirl.define do
     roles { [create(:role, :manager)] }
   end
 
-  trait :reporter do
-    roles { [create(:role, :reporter)] }
+  trait :contributor do
+    roles { [create(:role, :contributor)] }
   end
 end

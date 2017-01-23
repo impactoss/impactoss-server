@@ -4,10 +4,21 @@ class TaxonomyPolicy < ApplicationPolicy
     [:title, :tags_recommendations, :tags_measures, :allow_multiple, :draft]
   end
 
+  def create?
+    false
+  end
+
+  def update?
+    false
+  end
+
+  def destroy?
+    false
+  end
+
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?('admin') || @user.role?('manager')
-      scope.where(draft: false)
+      scope.all
     end
   end
 end

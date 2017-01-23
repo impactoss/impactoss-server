@@ -19,7 +19,8 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
-      let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:manager) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'guest will not see draft progress_reports' do
         sign_in guest
@@ -27,8 +28,14 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(json['data'].length).to eq(1)
       end
 
+      it 'contributor will see draft progress_reports' do
+        sign_in contributor
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(2)
+      end
+
       it 'manager will see draft progress_reports' do
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
         expect(json['data'].length).to eq(2)
       end
@@ -67,11 +74,13 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:user) { FactoryGirl.create(:user, :manager) }
       let(:due_date) { FactoryGirl.create(:due_date) }
       let(:indicator) { FactoryGirl.create(:indicator) }
+      let(:contributor_indicator) { FactoryGirl.create(:indicator, manager: contributor) }
 
-      subject do
+      subject(:without_contributor_manager) do
         post :create,
              format: :json,
              params: {
@@ -97,9 +106,34 @@ RSpec.describe ProgressReportsController, type: :controller do
         #      }
       end
 
+      subject(:with_contributor_manager) do
+        post :create,
+             format: :json,
+             params: {
+               progress_report: {
+                 indicator_id: contributor_indicator.id,
+                 due_date_id: due_date.id,
+                 title: 'test title',
+                 description: 'test desc',
+                 document_url: 'test_url',
+                 document_public: true
+               }
+             }
+      end
+
       it 'will not allow a guest to create a progress_report' do
         sign_in guest
         expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to create a progress_report when they are not a manager for the indicator' do
+        sign_in contributor
+        expect(without_contributor_manager).to be_forbidden
+      end
+
+      it 'will allow a contributor to create a progress_report when they are the manager for the indicator' do
+        sign_in contributor
+        expect(with_contributor_manager).to be_created
       end
 
       it 'will allow a manager to create a progress_report' do
@@ -124,7 +158,8 @@ RSpec.describe ProgressReportsController, type: :controller do
 
   describe 'Put update' do
     let(:progress_report) { FactoryGirl.create(:progress_report) }
-    subject do
+
+    subject(:without_contributor_manager) do
       put :update,
           format: :json,
           params: { id: progress_report,
@@ -140,10 +175,30 @@ RSpec.describe ProgressReportsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
+      let(:contributor_indicator) { FactoryGirl.create(:indicator, manager: contributor) }
+      let(:progress_report_with_contributor) { FactoryGirl.create(:progress_report, indicator: contributor_indicator) }
+
+      subject(:with_contributor_manager) do
+        put :update,
+            format: :json,
+            params: { id: progress_report_with_contributor,
+                      progress_report: { title: 'test update', description: 'test update' } }
+      end
 
       it 'will not allow a guest to update a progress_report' do
         sign_in guest
         expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to update a progress_report when they are not a manager for the indicator' do
+        sign_in contributor
+        expect(without_contributor_manager).to be_forbidden
+      end
+
+      it 'will allow a contributor to update a progress_report when they are the manager for the indicator' do
+        sign_in contributor
+        expect(with_contributor_manager).to be_ok
       end
 
       it 'will allow a manager to update a progress_report' do
@@ -179,9 +234,15 @@ RSpec.describe ProgressReportsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to delete a progress_report' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to delete a progress_report' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
