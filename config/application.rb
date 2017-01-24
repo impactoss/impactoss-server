@@ -19,7 +19,8 @@ module HumanRightsNationalReporting
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
+        origins '*',
+        expose ['access-token', 'expiry', 'token-type', 'uid', 'client'],
         resource '*', headers: :any, methods: :any
       end
     end
