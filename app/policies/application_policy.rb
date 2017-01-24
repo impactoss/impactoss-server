@@ -28,7 +28,7 @@ class ApplicationPolicy
   class Scope
     attr_reader :user, :scope
     def resolve
-      scope.all if @user.role?('admin') || @user.role?('manager')
+      scope.all if @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
     end
 
     def initialize(user, scope)

@@ -6,9 +6,17 @@ class ProgressReportPolicy < ApplicationPolicy
      due_date_attributes: [:id, :due_date, :indicator_id, :draft]]
   end
 
+  def create?
+    super || (@user.role?('contributor') && @record.manager == @user)
+  end
+
+  def update?
+    super || (@user.role?('contributor') && @record.manager == @user)
+  end
+
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?('admin') || @user.role?('manager')
+      return scope.all if @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
       scope.where(draft: false)
     end
   end

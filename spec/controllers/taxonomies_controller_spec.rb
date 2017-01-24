@@ -5,38 +5,19 @@ RSpec.describe TaxonomiesController, type: :controller do
   describe 'Get index' do
     subject { get :index, format: :json }
     let!(:taxonomy) { FactoryGirl.create(:taxonomy) }
-    let!(:draft_taxonomy) { FactoryGirl.create(:taxonomy, draft: true) }
 
     context 'when not signed in' do
       it { expect(subject).to be_ok }
 
-      it 'all published taxonomies (no drafts)' do
+      it 'all published taxonomies' do
         json = JSON.parse(subject.body)
         expect(json['data'].length).to eq(1)
-      end
-    end
-
-    context 'when signed in' do
-      let(:guest) { FactoryGirl.create(:user) }
-      let(:user) { FactoryGirl.create(:user, :manager) }
-
-      it 'guest will not see draft taxonomies' do
-        sign_in guest
-        json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(1)
-      end
-
-      it 'manager will see draft taxonomies' do
-        sign_in user
-        json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(2)
       end
     end
   end
 
   describe 'Get show' do
     let(:taxonomy) { FactoryGirl.create(:taxonomy) }
-    let(:draft_taxonomy) { FactoryGirl.create(:taxonomy, draft: true) }
     subject { get :show, params: { id: taxonomy }, format: :json }
 
     context 'when not signed in' do
@@ -45,11 +26,6 @@ RSpec.describe TaxonomiesController, type: :controller do
       it 'shows the taxonomy' do
         json = JSON.parse(subject.body)
         expect(json['data']['id'].to_i).to eq(taxonomy.id)
-      end
-
-      it 'will not show draft taxonomy' do
-        get :show, params: { id: draft_taxonomy }, format: :json
-        expect(response).to be_not_found
       end
     end
   end
@@ -65,6 +41,7 @@ RSpec.describe TaxonomiesController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:taxonomy) { FactoryGirl.create(:taxonomy) }
 
       subject do
@@ -89,22 +66,14 @@ RSpec.describe TaxonomiesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to create a taxonomy' do
+      it 'will not allow a contributor to create a taxonomy' do
         sign_in user
-        expect(subject).to be_created
+        expect(subject).to be_forbidden
       end
 
-      it 'will record what manager created the taxonomy', versioning: true do
-        expect(PaperTrail).to be_enabled
+      it 'will not allow a manager to create a taxonomy' do
         sign_in user
-        json = JSON.parse(subject.body)
-        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
-      end
-
-      it 'will return an error if params are incorrect' do
-        sign_in user
-        post :create, format: :json, params: { taxonomy: { description: 'desc only', taxonomy_id: 999 } }
-        expect(response).to have_http_status(422)
+        expect(subject).to be_forbidden
       end
     end
   end
@@ -126,6 +95,7 @@ RSpec.describe TaxonomiesController, type: :controller do
 
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:user) { FactoryGirl.create(:user, :manager) }
 
       it 'will not allow a guest to update a taxonomy' do
@@ -133,22 +103,14 @@ RSpec.describe TaxonomiesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to update a taxonomy' do
-        sign_in user
-        expect(subject).to be_ok
+      it 'will not allow a contributor to update a taxonomy' do
+        sign_in contributor
+        expect(subject).to be_forbidden
       end
 
-      it 'will record what manager updated the taxonomy', versioning: true do
-        expect(PaperTrail).to be_enabled
+      it 'will not allow a manager to update a taxonomy' do
         sign_in user
-        json = JSON.parse(subject.body)
-        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
-      end
-
-      it 'will return an error if params are incorrect' do
-        sign_in user
-        put :update, format: :json, params: { id: taxonomy, taxonomy: { title: '' } }
-        expect(response).to have_http_status(422)
+        expect(subject).to be_forbidden
       end
     end
   end
@@ -166,15 +128,21 @@ RSpec.describe TaxonomiesController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to delete a taxonomy' do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to delete a taxonomy' do
+      it 'will not allow a contributor to delete a taxonomy' do
+        sign_in contributor
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a manager to delete a taxonomy' do
         sign_in user
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
     end
   end

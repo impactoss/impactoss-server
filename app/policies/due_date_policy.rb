@@ -8,10 +8,26 @@ class DueDatePolicy < ApplicationPolicy
                                      measure_attributes: [:id, :title, :description, :target_date, :draft]]]
   end
 
+  def show?
+    super || @user.role?('contributor')
+  end
+
+  def create?
+    false
+  end
+
+  def update?
+    false
+  end
+
+  def destroy?
+    false
+  end
+
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?('admin') || @user.role?('manager')
-      scope.where(draft: false)
+      return scope.all if @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
+      scope.none
     end
   end
 end

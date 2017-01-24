@@ -20,11 +20,18 @@ RSpec.describe RecommendationsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'guest will not see draft recommendations' do
         sign_in guest
         json = JSON.parse(subject.body)
         expect(json['data'].length).to eq(1)
+      end
+
+      it 'contributor will see draft recommendations' do
+        sign_in contributor
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(2)
       end
 
       it 'manager will see draft recommendations' do
@@ -66,6 +73,7 @@ RSpec.describe RecommendationsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:category) { FactoryGirl.create(:category) }
       subject do
         post :create,
@@ -81,6 +89,11 @@ RSpec.describe RecommendationsController, type: :controller do
 
       it 'will not allow a guest to create a recommendation' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to create a recommendation' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
@@ -122,9 +135,15 @@ RSpec.describe RecommendationsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to update a recommendation' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to update a recommendation' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
@@ -161,9 +180,15 @@ RSpec.describe RecommendationsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to delete a recommendation' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to delete a recommendation' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 

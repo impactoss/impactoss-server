@@ -7,4 +7,5 @@ RSpec.describe ProgressReport, type: :model do
   it { should have_many :measures }
   it { should have_many :recommendations }
   it { should have_many :categories }
+  it { should have_one :manager }
 end

@@ -35,6 +35,7 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:measure) { FactoryGirl.create(:measure) }
       let(:indicator) { FactoryGirl.create(:indicator) }
 
@@ -54,6 +55,11 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
         expect(subject).to be_forbidden
       end
 
+      it 'will not allow a contributor to create a measure_indicator' do
+        sign_in contributor
+        expect(subject).to be_forbidden
+      end
+
       it 'will allow a manager to create a measure_indicator' do
         sign_in user
         expect(subject).to be_created
@@ -62,45 +68,6 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
       it 'will return an error if params are incorrect' do
         sign_in user
         post :create, format: :json, params: { measure_indicator: { description: 'desc only', taxonomy_id: 999 } }
-        expect(response).to have_http_status(422)
-      end
-    end
-  end
-
-  describe 'Put update' do
-    let(:measure_indicator) { FactoryGirl.create(:measure_indicator) }
-    subject do
-      put :update,
-          format: :json,
-          params: { id: measure_indicator,
-                    measure_indicator: { title: 'test update',
-                                         description: 'test update',
-                                         target_date: 'today update' } }
-    end
-
-    context 'when not signed in' do
-      it 'not allow updating a measure_indicator' do
-        expect(subject).to be_unauthorized
-      end
-    end
-
-    context 'when user signed in' do
-      let(:guest) { FactoryGirl.create(:user) }
-      let(:user) { FactoryGirl.create(:user, :manager) }
-
-      it 'will not allow a guest to update a measure_indicator' do
-        sign_in guest
-        expect(subject).to be_forbidden
-      end
-
-      it 'will allow a manager to update a measure_indicator' do
-        sign_in user
-        expect(subject).to be_ok
-      end
-
-      it 'will return an error if params are incorrect' do
-        sign_in user
-        put :update, format: :json, params: { id: measure_indicator, measure_indicator: { measure_id: 999 } }
         expect(response).to have_http_status(422)
       end
     end
@@ -119,9 +86,15 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to delete a measure_indicator' do
         sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      it 'will not allow a contributor to delete a measure_indicator' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 

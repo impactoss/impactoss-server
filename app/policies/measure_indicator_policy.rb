@@ -7,6 +7,10 @@ class MeasureIndicatorPolicy < ApplicationPolicy
      indicator_attributes: [:id, :title, :description, :draft]]
   end
 
+  def update?
+    false
+  end
+
   class Scope < Scope
     def resolve
       scope.all

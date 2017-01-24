@@ -8,25 +8,30 @@ RSpec.describe DueDatesController, type: :controller do
     let!(:draft_due_date) { FactoryGirl.create(:due_date, draft: true) }
 
     context 'when not signed in' do
-      it { expect(subject).to be_ok }
-
-      it 'all published due_dates (no drafts)' do
+      it 'no due dates are shown' do
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(1)
+        expect(json['data'].length).to eq(0)
       end
     end
 
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:user) { FactoryGirl.create(:user, :manager) }
 
-      it 'guest will not see draft due_dates' do
+      it 'guest will not see any due_dates' do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(1)
+        expect(json['data'].length).to eq(0)
       end
 
-      it 'manager will see draft due_dates' do
+      it 'contributor will see all due_dates' do
+        sign_in contributor
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(2)
+      end
+
+      it 'manager will see all due_dates' do
         sign_in user
         json = JSON.parse(subject.body)
         expect(json['data'].length).to eq(2)
@@ -40,12 +45,7 @@ RSpec.describe DueDatesController, type: :controller do
     subject { get :show, params: { id: due_date }, format: :json }
 
     context 'when not signed in' do
-      it { expect(subject).to be_ok }
-
-      it 'shows the due_date' do
-        json = JSON.parse(subject.body)
-        expect(json['data']['id'].to_i).to eq(due_date.id)
-      end
+      it { expect(subject).to be_not_found }
 
       it 'will not show draft due_date' do
         get :show, params: { id: draft_due_date }, format: :json
@@ -65,9 +65,22 @@ RSpec.describe DueDatesController, type: :controller do
     context 'when signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:indicator) { FactoryGirl.create(:indicator) }
+      let(:contributor_indicator) { FactoryGirl.create(:indicator, manager: contributor) }
 
-      subject do
+      subject(:with_contributor) do
+        post :create,
+             format: :json,
+             params: {
+               due_date: {
+                 due_date: Time.zone.today.to_s,
+                 indicator_id: contributor_indicator.id
+               }
+             }
+      end
+
+      subject(:without_contributor) do
         post :create,
              format: :json,
              params: {
@@ -83,22 +96,19 @@ RSpec.describe DueDatesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to create a due_date' do
-        sign_in user
-        expect(subject).to be_created
+      it 'will not allow a contributor to create a due_date for a indicator they are not a manager for' do
+        sign_in contributor
+        expect(subject).to be_forbidden
       end
 
-      it 'will record what manager created the due_date', versioning: true do
-        expect(PaperTrail).to be_enabled
-        sign_in user
-        json = JSON.parse(subject.body)
-        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
+      it 'will not allow a contributor to create a due_date for a indicator they are a manager for' do
+        sign_in contributor
+        expect(with_contributor).to be_forbidden
       end
 
-      it 'will return an error if params are incorrect' do
+      it 'will not allow a manager to create a due_date' do
         sign_in user
-        post :create, format: :json, params: { due_date: { description: 'desc only', taxonomy_id: 999 } }
-        expect(response).to have_http_status(422)
+        expect(subject).to be_forbidden
       end
     end
   end
@@ -121,28 +131,21 @@ RSpec.describe DueDatesController, type: :controller do
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
       let(:user) { FactoryGirl.create(:user, :manager) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
 
       it 'will not allow a guest to update a due_date' do
         sign_in guest
+        expect(subject).to be_not_found
+      end
+
+      it 'will not allow a contributor to update a due_date' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to update a due_date' do
+      it 'will not allow a manager to update a due_date' do
         sign_in user
-        expect(subject).to be_ok
-      end
-
-      it 'will record what manager updated the due_date', versioning: true do
-        expect(PaperTrail).to be_enabled
-        sign_in user
-        json = JSON.parse(subject.body)
-        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
-      end
-
-      it 'will return an error if params are incorrect' do
-        sign_in user
-        put :update, format: :json, params: { id: due_date, due_date: { indicator_id: 999 } }
-        expect(response).to have_http_status(422)
+        expect(subject).to be_forbidden
       end
     end
   end
@@ -159,16 +162,22 @@ RSpec.describe DueDatesController, type: :controller do
 
     context 'when user signed in' do
       let(:guest) { FactoryGirl.create(:user) }
+      let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:user) { FactoryGirl.create(:user, :manager) }
 
       it 'will not allow a guest to delete a due_date' do
         sign_in guest
+        expect(subject).to be_not_found
+      end
+
+      it 'will not allow a contributor to delete a due_date' do
+        sign_in contributor
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to delete a due_date' do
+      it 'will not allow a manager to delete a due_date' do
         sign_in user
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
     end
   end
