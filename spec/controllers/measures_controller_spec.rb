@@ -84,9 +84,7 @@ RSpec.describe MeasuresController, type: :controller do
                measure: {
                  title: 'test',
                  description: 'test',
-                 target_date: 'today',
-                 recommendation_measures_attributes: [{ recommendation_id: recommendation.id }],
-                 measure_categories_attributes: [{ category_id: category.id }]
+                 target_date: 'today'
                }
              }
         # This is an example creating a new recommendation record in the post

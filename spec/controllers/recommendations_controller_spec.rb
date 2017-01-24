@@ -81,8 +81,7 @@ RSpec.describe RecommendationsController, type: :controller do
              params: {
                recommendation: {
                  title: 'test',
-                 number: '1',
-                 recommendation_categories_attributes: [{ category_id: category.id }]
+                 number: '1'
                }
              }
       end

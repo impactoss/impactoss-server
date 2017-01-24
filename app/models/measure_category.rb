@@ -5,4 +5,6 @@ class MeasureCategory < ApplicationRecord
   accepts_nested_attributes_for :category
 
   validates :category_id, uniqueness: { scope: :measure_id }
+  validates :measure_id, presence: true
+  validates :category_id, presence: true
 end
