@@ -14,11 +14,4 @@ class Recommendation < ApplicationRecord
 
   validates :title, presence: true
   validates :number, presence: true
-  validate :at_least_one_category?
-
-  private
-
-  def at_least_one_category?
-    errors.add(:categories, 'need at least one category') if recommendation_categories.empty?
-  end
 end

@@ -3,8 +3,6 @@ FactoryGirl.define do
     title 'MyString'
     description 'MyText'
     target_date 'MyText'
-    recommendations { [create(:recommendation)] }
-    categories { [create(:category)] }
 
     trait :without_recommendation do
       recommendations { [] }

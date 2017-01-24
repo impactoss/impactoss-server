@@ -9,4 +9,5 @@ class ProgressReport < ApplicationRecord
   has_one :manager, through: :indicator
 
   validates :title, presence: true
+  validates :indicator_id, presence: true
 end

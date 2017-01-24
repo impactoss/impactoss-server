@@ -82,8 +82,7 @@ RSpec.describe IndicatorsController, type: :controller do
                indicator: {
                  title: 'test',
                  description: 'test',
-                 target_date: 'today',
-                 measure_indicators_attributes: [{ measure_id: measure.id }]
+                 target_date: 'today'
                }
              }
       end
