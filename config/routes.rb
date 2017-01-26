@@ -27,8 +27,8 @@ Rails.application.routes.draw do
   end
   resources :progress_reports
   resources :due_dates
-  resources :progress_reports
   resources :users
+  resources :user_roles
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
