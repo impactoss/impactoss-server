@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   end
   get 'static_pages/home'
 
+  resources :measure_categories
+  resources :measure_indicators
+  resources :recommendation_categories
+  resources :recommendation_measures
   resources :categories do
     resources :recommendations, only: [:index, :show]
     resources :measures, only: [:index, :show]
@@ -23,10 +27,6 @@ Rails.application.routes.draw do
   end
   resources :progress_reports
   resources :due_dates
-  resources :measure_categories
-  resources :measure_indicators
-  resources :recommendation_categories
-  resources :recommendation_measures
   resources :progress_reports
   resources :users
 
