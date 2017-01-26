@@ -25,3 +25,4 @@
 
 # Ignore rubymine files
 /.idea
+/nbproject/
