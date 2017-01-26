@@ -40,6 +40,29 @@ RSpec.describe RecommendationsController, type: :controller do
         expect(json['data'].length).to eq(2)
       end
     end
+
+    context 'filters' do
+      let(:category) { FactoryGirl.create(:category) }
+      let(:recommendation_different_category) { FactoryGirl.create(:recommendation) }
+      let(:measure) { FactoryGirl.create(:measure) }
+      let(:recommendation_different_measure) { FactoryGirl.create(:recommendation) }
+
+      it 'filters from category' do
+        recommendation_different_category.categories << category
+        subject = get :index, params: { category_id: category.id }, format: :json
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(recommendation_different_category.id.to_s)
+      end
+
+      it 'filters from measure' do
+        recommendation_different_measure.measures << measure
+        subject = get :index, params: { measure_id: measure.id }, format: :json
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(recommendation_different_measure.id.to_s)
+      end
+    end
   end
 
   describe 'Get show' do

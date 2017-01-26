@@ -7,10 +7,21 @@ Rails.application.routes.draw do
   end
   get 'static_pages/home'
 
-  resources :categories
-  resources :indicators
-  resources :measures
-  resources :recommendations
+  resources :categories do
+    resources :recommendations, only: [:index, :show]
+    resources :measures, only: [:index, :show]
+  end
+  resources :recommendations do
+    resources :measures, only: [:index, :show]
+  end
+  resources :measures do
+    resources :recommendations, only: [:index, :show]
+  end
+  resources :indicators do
+    resources :measures, only: [:index, :show]
+    resources :progress_reports, only: [:index, :show]
+  end
+  resources :progress_reports
   resources :due_dates
   resources :measure_categories
   resources :measure_indicators

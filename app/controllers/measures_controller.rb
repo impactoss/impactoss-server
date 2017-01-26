@@ -4,7 +4,7 @@ class MeasuresController < ApplicationController
 
   # GET /measures
   def index
-    @measures = policy_scope(Measure).order(created_at: :desc).page(params[:page])
+    @measures = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @measures
 
     render json: @measures
@@ -40,9 +40,17 @@ class MeasuresController < ApplicationController
 
   private
 
+  def base_object
+    return Category.find(params[:category_id]).measures if params[:category_id]
+    return Recommendation.find(params[:recommendation_id]).measures if params[:recommendation_id]
+    return Indicator.find(params[:indicator_id]).measures if params[:indicator_id]
+
+    Measure
+  end
+
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_measure
-    @measure = policy_scope(Measure).find(params[:id])
+    @measure = policy_scope(base_object).find(params[:id])
     authorize @measure
   end
 end

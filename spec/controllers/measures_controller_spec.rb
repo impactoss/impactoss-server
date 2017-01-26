@@ -40,6 +40,39 @@ RSpec.describe MeasuresController, type: :controller do
         expect(json['data'].length).to eq(2)
       end
     end
+
+    context 'filters' do
+      let(:category) { FactoryGirl.create(:category) }
+      let(:measure_different_category) { FactoryGirl.create(:measure) }
+      let(:recommendation) { FactoryGirl.create(:recommendation) }
+      let(:measure_different_recommendation) { FactoryGirl.create(:measure) }
+      let(:indicator) { FactoryGirl.create(:indicator) }
+      let(:measure_different_indicator) { FactoryGirl.create(:measure) }
+
+      it 'filters from category' do
+        measure_different_category.categories << category
+        subject = get :index, params: { category_id: category.id }, format: :json
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(measure_different_category.id.to_s)
+      end
+
+      it 'filters from recommendation' do
+        measure_different_recommendation.recommendations << recommendation
+        subject = get :index, params: { recommendation_id: recommendation.id }, format: :json
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(measure_different_recommendation.id.to_s)
+      end
+
+      it 'filters from indicator' do
+        measure_different_indicator.indicators << indicator
+        subject = get :index, params: { indicator_id: indicator.id }, format: :json
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(measure_different_indicator.id.to_s)
+      end
+    end
   end
 
   describe 'Get show' do
