@@ -25,9 +25,17 @@ class Seeds
     Role.new(name: 'manager', friendly_name: 'Manager').save!
     Role.new(name: 'contributor', friendly_name: 'Contributor').save!
 
-    FactoryGirl.create_list(:measure, 50)
-    FactoryGirl.create_list(:recommendation, 50)
-    FactoryGirl.create_list(:indicator, 50)
+    FactoryGirl.create_list(:recommendation_measure, 50)
+    FactoryGirl.create_list(:recommendation_category, 50)
+    FactoryGirl.create_list(:measure_indicator, 50)
+    FactoryGirl.create_list(:measure_category, 50)
+
+    category_1 = FactoryGirl.create(:category, title: 'Children', short_title: 'Children')
+    recommendation_1 = FactoryGirl.create(:recommendation, title: 'Consider the implications of signing and ratifying the Optional Protocol to the Convention on the Rights of the Child-Individual Communications', number: 3)
+    measure_1 = FactoryGirl.create(:measure, title: 'Consider the implications of signing and ratifying the Optional Protocol to the Convention on the Rights of the Child-Individual Communications', description: 'New Zealand began the process to establish a position on signing and ratifying the OP-CRC in May 2015 in consultation with relevant teams from the Ministries of Social Development, Foreign Affairs and Trade, and Justice.  An initial report will be provided to the Minister for Social Development by 30 June 2016 with recommendations on New Zealand’s position. Next steps to be determined by 31 December 2016.', target_date: Date.today)
+
+    FactoryGirl.create(:recommendation_category, recommendation: recommendation_1, category: category_1)
+    FactoryGirl.create(:recommendation_measure, recommendation: recommendation_1, measure: measure_1 )
   end
 
   def development_seeds!
