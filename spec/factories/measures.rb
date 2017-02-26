@@ -1,8 +1,8 @@
 FactoryGirl.define do
   factory :measure do
-    title 'MyString'
-    description 'MyText'
-    target_date 'MyText'
+    title { Faker::Cat.registry }
+    description { Faker::Beer.name }
+    target_date { Faker::Date.forward(450) }
 
     trait :without_recommendation do
       recommendations { [] }

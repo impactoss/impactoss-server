@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 FactoryGirl.define do
   factory :indicator do
-    title 'MyString'
-    description 'MyText'
+    title { Faker::ChuckNorris.fact }
+    description { Faker::Hipster.sentence }
 
     trait :without_measure do
       measures { [] }
