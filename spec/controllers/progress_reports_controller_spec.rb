@@ -145,7 +145,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
+        expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq user.id
       end
 
       it 'will return an error if params are incorrect' do
@@ -210,7 +210,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json['data']['attributes']['last-modified-user-id'].to_i).to eq user.id
+        expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq user.id
       end
 
       it 'will return an error if params are incorrect' do
