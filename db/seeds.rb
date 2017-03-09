@@ -32,7 +32,6 @@ class Seeds
         title: 'Human rights body',
         tags_recommendations: true,
         tags_actions: false,
-        tags_users: false,
         allow_multiple: false
       ).save!
     # Global taxonomy
@@ -40,7 +39,6 @@ class Seeds
         title: 'UN session',
         tags_recommendations: true,
         tags_actions: false,
-        tags_users: false,
         allow_multiple: false
       ).save!
     # Global taxonomy
@@ -48,7 +46,6 @@ class Seeds
         title: 'Human right',
         tags_recommendations: true,
         tags_actions: false,
-        tags_users: false,
         allow_multiple: true
       ).save!
     # Global taxonomy
@@ -56,7 +53,6 @@ class Seeds
         title: 'Affected persons',
         tags_recommendations: true,
         tags_actions: false,
-        tags_users: false,
         allow_multiple: true
       ).save!
     # Samoa specific taxonomy
@@ -64,7 +60,6 @@ class Seeds
         title: 'Thematic cluster',
         tags_recommendations: true,
         tags_actions: false,
-        tags_users: false,
         allow_multiple: true
       ).save!
     # Samoa specific taxonomy
@@ -72,7 +67,6 @@ class Seeds
         title: 'Organisation',
         tags_recommendations: false,
         tags_actions: true,
-        tags_users: true,
         allow_multiple: false
       ).save!
 
@@ -83,67 +77,78 @@ class Seeds
         :category,
         taxonomy:body,
         title:'Universal Periodic Review',
-        short_title:'UPR'
+        short_title:'UPR',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Human Rights Committee',
-        short_title:'CCPR'
+        short_title:'CCPR',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on Economic, Social and Cultural Rights',
-        short_title:'CESCR'
+        short_title:'CESCR',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on the Elimination of Racial Discrimination',
-        short_title:'CERD'
+        short_title:'CERD',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on the Elimination of Discrimination against Women',
-        short_title:'CEDAW'
+        short_title:'CEDAW',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee against Torture',
-        short_title:'CAT'
+        short_title:'CAT',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Subcommittee on Prevention of Torture',
-        short_title:'SPT'
+        short_title:'SPT',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on the Rights of the Child',
-        short_title:'CRC'
+        short_title:'CRC',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on Migrant Workers',
-        short_title:'CMW'
+        short_title:'CMW',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on the Rights of Persons with Disabilities',
-        short_title:'CRPD'
+        short_title:'CRPD',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:body,
         title:'Committee on Enforced Disappearances',
-        short_title:'CED'
+        short_title:'CED',
+        description:''
       )
 
     # TODO UN Sessions
@@ -154,67 +159,78 @@ class Seeds
         :category,
         taxonomy:right,
         title:'A General framework of implementation',
-        short_title:'A'
+        short_title:'A',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'B Universal or cross-cutting issues',
-        short_title:'B'
+        short_title:'B',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'D Civil & political rights',
-        short_title:'D'
+        short_title:'D',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'E Economic, social and cultural rights',
-        short_title:'E'
+        short_title:'E',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'F Specific persons or groups',
-        short_title:'F'
+        short_title:'F',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'G1 Members of minorities',
-        short_title:'G1'
+        short_title:'G1',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'G3 Indigenous peoples',
-        short_title:'G3'
+        short_title:'G3',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'G4 Migrants',
-        short_title:'G4'
+        short_title:'G4',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'G5 Refugees & asylum seekers',
-        short_title:'G5'
+        short_title:'G5',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'G6 Internally displaced persons',
-        short_title:'G6'
+        short_title:'G6',
+        description:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
         title:'H1 Human rights defenders',
-        short_title:'H1'
+        short_title:'H1',
+        description:''
       )
 
 
@@ -223,217 +239,253 @@ class Seeds
           :category,
           taxonomy:persons,
           title:'Children',
-          short_title:'Children'
+          short_title:'Children',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Children in street situations',
-          short_title:'CSS'
+          short_title:'CSS',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Disappeared persons',
-          short_title:'Disappeared'
+          short_title:'Disappeared',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Educational staff',
-          short_title:'Edu'
+          short_title:'Edu',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'General',
-          short_title:'General'
+          short_title:'General',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Girls',
-          short_title:'Girls'
+          short_title:'Girls',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Human rights defenders',
-          short_title:'HRD'
+          short_title:'HRD',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Indigenous peoples',
-          short_title:'Indigenous'
+          short_title:'Indigenous',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Internally displaced persons',
-          short_title:'IDP'
+          short_title:'IDP',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Judges, lawyers and prosecutors',
-          short_title:'JLP'
+          short_title:'JLP',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Law enforcement / police officials',
-          short_title:'Law'
+          short_title:'Law',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Lesbian, gay, bisexual and transgender and intersex persons (LGBTI)',
-          short_title:'LGBTI'
+          short_title:'LGBTI',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Media',
-          short_title:'Media'
+          short_title:'Media',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Medical staff',
-          short_title:'Medical'
+          short_title:'Medical',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Mercenaries',
-          short_title:'Mercenaries'
+          short_title:'Mercenaries',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Migrants',
-          short_title:'Migrants'
+          short_title:'Migrants',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Military staff',
-          short_title:'Military'
+          short_title:'Military',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Minorities / racial, ethnic, linguistic, religious or descent-based groups',
-          short_title:'Minorities'
+          short_title:'Minorities',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Non-citizens',
-          short_title:'Non-citizens'
+          short_title:'Non-citizens',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Older persons',
-          short_title:'Old'
+          short_title:'Old',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Persons affected by armed conflict',
-          short_title:'Armed conflict'
+          short_title:'Armed conflict',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Persons deprived of their liberty',
-          short_title:'Liberty'
+          short_title:'Liberty',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Persons living in poverty',
-          short_title:'Poverty'
+          short_title:'Poverty',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Persons living in rural areas',
-          short_title:'Rural'
+          short_title:'Rural',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Persons living with HIV/AIDS',
-          short_title:'HIV'
+          short_title:'HIV',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Persons with disabilities',
-          short_title:'Disabilities'
+          short_title:'Disabilities',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Prison officials',
-          short_title:'Prison officials'
+          short_title:'Prison officials',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Private security',
-          short_title:'Private security'
+          short_title:'Private security',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Public officials',
-          short_title:'Public officials'
+          short_title:'Public officials',
+          description:''
         )
         FactoryGirl.create(
             :category,
             taxonomy:persons,
             title:'Refugees & asylum seekers',
-            short_title:'Refugees'
+            short_title:'Refugees',
+            description:''
           )
       FactoryGirl.create(
           :category,
           taxonomy:persons
           title:'Rural women',
-          short_title:'Rural women'
+          short_title:'Rural women',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Social workers',
-          short_title:'Social workers'
+          short_title:'Social workers',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Stateless persons',
-          short_title:'Stateless'
+          short_title:'Stateless',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Vulnerable persons/groups',
-          short_title:'Vulnerable'
+          short_title:'Vulnerable',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Women',
-          short_title:'Women'
+          short_title:'Women',
+          description:''
         )
       FactoryGirl.create(
           :category,
           taxonomy:persons,
           title:'Youth',
-          short_title:'Youth'
+          short_title:'Youth',
+          description:''
         )
 
     # create test data, configure in spec/factories/
