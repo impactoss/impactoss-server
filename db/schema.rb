@@ -125,7 +125,6 @@ ActiveRecord::Schema.define(version: 20170124070117) do
     t.string   "title",                null: false
     t.boolean  "tags_recommendations"
     t.boolean  "tags_measures"
-    t.boolean  "tags_users"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
     t.boolean  "allow_multiple"
