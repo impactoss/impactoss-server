@@ -3,6 +3,10 @@ class UserPolicy < ApplicationPolicy
     @user.role? 'admin'
   end
 
+  def create?
+    false
+  end
+
   def edit?
     @user.role? 'admin'
   end
