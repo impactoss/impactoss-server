@@ -31,42 +31,42 @@ class Seeds
     body = Taxonomy.new(
         title: 'Human rights body',
         tags_recommendations: true,
-        tags_actions: false,
+        tags_measures: false,
         allow_multiple: false
       ).save!
     # Global taxonomy
     session = Taxonomy.new(
         title: 'UN session',
         tags_recommendations: true,
-        tags_actions: false,
+        tags_measures: false,
         allow_multiple: false
       ).save!
     # Global taxonomy
     right = Taxonomy.new(
         title: 'Human right',
         tags_recommendations: true,
-        tags_actions: false,
+        tags_measures: false,
         allow_multiple: true
       ).save!
     # Global taxonomy
     persons = Taxonomy.new(
         title: 'Affected persons',
         tags_recommendations: true,
-        tags_actions: false,
+        tags_measures: false,
         allow_multiple: true
       ).save!
     # Samoa specific taxonomy
     cluster = Taxonomy.new(
         title: 'Thematic cluster',
         tags_recommendations: true,
-        tags_actions: false,
+        tags_measures: false,
         allow_multiple: true
       ).save!
     # Samoa specific taxonomy
     org = Taxonomy.new(
         title: 'Organisation',
         tags_recommendations: false,
-        tags_actions: true,
+        tags_measures: true,
         allow_multiple: false
       ).save!
 
