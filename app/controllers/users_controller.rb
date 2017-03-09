@@ -1,37 +1,53 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_user, only: [:edit, :update]
-  after_action :verify_authorized, except: :index
 
+  before_action :set_and_authorize_user, only: [:show, :update, :destroy]
+
+  # GET /users
   def index
-    authorize :user
-    @users = policy_scope(User)
+    @users = policy_scope(base_object).order(created_at: :desc).page(params[:page])
+    authorize @users
+
+    render json: @users
   end
 
-  def edit
+  # GET /users/1
+  def show
+    render json: @user
+  end
+
+  # POST /users
+  def create
+    @user = User.new
+    @user.assign_attributes(permitted_attributes(@user))
     authorize @user
-    @roles = Role.all
+
+    if @user.save
+      render json: @user, status: :created, location: @user
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
   end
 
+  # PATCH/PUT /users/1
   def update
-    authorize @user
-    @user.update(user_params)
-    @user.save!
-    redirect_to users_path
-  rescue
-    render :edit, @user
+    render json: @user if @user.update_attributes!(permitted_attributes(@user))
+  end
+
+  # DELETE /users/1
+  def destroy
+    @user.destroy
   end
 
   private
 
-  def user_params
-    u = params.require(:user).permit(:name, :email, role_ids: [])
-    u[:role_ids] = [] if u[:role_ids].blank?
-    u
+  def base_object
+    User
   end
 
-  def set_user
-    @user = User.find(params[:id])
+  # Use callbacks to share common setup or constraints between actions.
+  def set_and_authorize_user
+    @user = policy_scope(base_object).find(params[:id])
     authorize @user
   end
 end
