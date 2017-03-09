@@ -447,7 +447,7 @@ class Seeds
           )
       FactoryGirl.create(
           :category,
-          taxonomy:persons
+          taxonomy:persons,
           title:'Rural women',
           short_title:'Rural women',
           description:''
