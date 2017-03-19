@@ -11,6 +11,7 @@
 /log/*.log
 /log/*.log.*
 /tmp
+/*.log
 
 # Ignore test reports
 /coverage
