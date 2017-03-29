@@ -29,7 +29,6 @@ Rails.application.routes.draw do
   resources :due_dates
   resources :users
   resources :user_roles
-  resources :roles
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
