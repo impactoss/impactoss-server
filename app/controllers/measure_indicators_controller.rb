@@ -1,20 +1,20 @@
 class MeasureIndicatorsController < ApplicationController
   before_action :set_and_authorize_measure_indicator, only: [:show, :update, :destroy]
 
-  # GET /measure_categories
+  # GET /measure_indicators
   def index
-    @measure_categories = policy_scope(MeasureIndicator).order(created_at: :desc).page(params[:page])
-    authorize @measure_categories
+    @measure_indicators = policy_scope(MeasureIndicator).order(created_at: :desc).page(params[:page])
+    authorize @measure_indicators
 
-    render json: @measure_categories
+    render json: @measure_indicators
   end
 
-  # GET /measure_categories/1
+  # GET /measure_indicators/1
   def show
     render json: @measure_indicator
   end
 
-  # POST /measure_categories
+  # POST /measure_indicators
   def create
     @measure_indicator = MeasureIndicator.new
     @measure_indicator.assign_attributes(permitted_attributes(@measure_indicator))
@@ -27,12 +27,12 @@ class MeasureIndicatorsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /measure_categories/1
+  # PATCH/PUT /measure_indicators/1
   def update
     render json: @measure_indicator if @measure_indicator.update_attributes!(permitted_attributes(@measure_indicator))
   end
 
-  # DELETE /measure_categories/1
+  # DELETE /measure_indicators/1
   def destroy
     @measure_indicator.destroy
   end
