@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class TaxonomyPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title, :tags_recommendations, :tags_measures, :allow_multiple, :draft]
+    [:title, :tags_recommendations, :tags_measures, :allow_multiple, :tags_users]
   end
 
   def create?
