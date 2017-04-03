@@ -14,8 +14,7 @@ class UserRolePolicy < ApplicationPolicy
 
   def create?
     return true if @user.role?('admin')
-    return true if @user.role?('manager') && (@record.role_name == 'manager' || @record.role_name == 'contributor')
-    @user.role?('contributor') && @record.role_name == 'contributor'
+    @user.role?('manager') && @record.role_name == 'contributor'
   end
 
   def destroy?
@@ -33,9 +32,8 @@ class UserRolePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       return scope.all if @user.role?('admin')
-      return scope.joins(:role).merge(Role.where(name: 'manager').or(Role.where(name: 'contributor'))) if @user.role?('manager')
-      return scope.joins(:role).merge(Role.where(name: 'contributor')) if @user.role?('contributor')
-      scope.none
+      return scope.joins(:role).where('user_id = ? OR roles.name = ?', @user.id, 'contributor') if @user.role?('manager')
+      scope.where(user_id: @user.id)
     end
   end
 end
