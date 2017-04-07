@@ -26,25 +26,25 @@ RSpec.describe UserRolesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'shows all contributors for contributors' do
+      it 'shows only themselves for contributors' do
         contributor2
         manager
         admin
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(2)
+        expect(json['data'].length).to eq(1)
         returned_roles = json['data'].map {|user_role| user_role['attributes']['role_id']}.uniq
         permitted_roles = [contributor.roles.first.id]
         expect(permitted_roles - returned_roles).to be_empty
       end
 
-      it 'shows all managers and contributors for managers' do
+      it 'shows all contributors and themselves for managers' do
         contributor
         contributor2
         manager2
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(4)
+        expect(json['data'].length).to eq(3)
         returned_roles = json['data'].map {|user_role| user_role['attributes']['role_id']}.uniq
         permitted_roles = [contributor.roles.first.id, manager.roles.first.id]
         expect(permitted_roles - returned_roles).to be_empty
@@ -147,7 +147,7 @@ RSpec.describe UserRolesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a contributor to create a contributor user_role' do
+      it 'will not allow a contributor to create a contributor, manager, or admin user_role' do
         sign_in contributor
         subject = post :create,
                        format: :json,
@@ -157,11 +157,7 @@ RSpec.describe UserRolesController, type: :controller do
                            role_id: contributor_role.id
                          }
                        }
-        expect(subject).to be_created
-      end
-
-      it 'will not allow a contributor to create a manager or admin user_role' do
-        sign_in contributor
+        expect(subject).to be_forbidden
         subject = post :create,
                        format: :json,
                        params: {
@@ -182,39 +178,66 @@ RSpec.describe UserRolesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to create a manger or contributor user_role' do
-        sign_in manager
-        post :create,
-             format: :json,
-             params: {
-               user_role: {
-                 user_id: contributor.id,
-                 role_id: manager_role.id
-               }
-             }
-        expect(subject).to be_created
-        post :create,
-             format: :json,
-             params: {
-               user_role: {
-                 user_id: manager.id,
-                 role_id: contributor_role.id
-               }
-             }
-        expect(subject).to be_created
-      end
-
-      it 'will not allow a manager to create an admin user_role' do
+      it 'will allow a manager to create a contributor but not a manager or admin user_role' do
         sign_in manager
         subject = post :create,
                        format: :json,
                        params: {
                          user_role: {
-                           user_id: guest.id,
+                           user_id: contributor.id,
+                           role_id: manager_role.id
+                         }
+                       }
+        expect(subject).to be_forbidden
+        subject = post :create,
+                       format: :json,
+                       params: {
+                         user_role: {
+                           user_id: contributor.id,
                            role_id: admin_role.id
                          }
                        }
         expect(subject).to be_forbidden
+        subject = post :create,
+                       format: :json,
+                       params: {
+                         user_role: {
+                           user_id: manager.id,
+                           role_id: contributor_role.id
+                         }
+                       }
+        expect(subject).to be_created
+      end
+
+      it 'will allow an admin to create a manager, contributor, or admin admin user_role' do
+        sign_in admin
+        subject = post :create,
+                       format: :json,
+                       params: {
+                         user_role: {
+                           user_id: contributor.id,
+                           role_id: manager_role.id
+                         }
+                       }
+        expect(subject).to be_created
+        subject = post :create,
+                       format: :json,
+                       params: {
+                         user_role: {
+                           user_id: manager.id,
+                           role_id: contributor_role.id
+                         }
+                       }
+        expect(subject).to be_created
+        subject = post :create,
+                       format: :json,
+                       params: {
+                         user_role: {
+                           user_id: manager.id,
+                           role_id: admin_role.id
+                         }
+                       }
+        expect(subject).to be_created
       end
 
       it 'will return an error if params are incorrect' do
@@ -261,11 +284,13 @@ RSpec.describe UserRolesController, type: :controller do
         expect(subject).to be_no_content
       end
 
-      it 'will allow an admin to delete a manager and contributor user_role' do
+      it 'will allow an admin to delete a manager, contributor, and admin user_role' do
         sign_in admin
         subject = delete :destroy, format: :json, params: { id: manager.user_roles.first }
         expect(subject).to be_no_content
         subject = delete :destroy, format: :json, params: { id: contributor2.user_roles.first }
+        expect(subject).to be_no_content
+        subject = delete :destroy, format: :json, params: { id: admin.user_roles.first }
         expect(subject).to be_no_content
       end
     end
