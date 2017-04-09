@@ -17,6 +17,16 @@ RSpec.describe UsersController, type: :controller do
       let(:admin) { FactoryGirl.create(:user, :admin) }
       let(:admin2) { FactoryGirl.create(:user, :admin) }
 
+      it 'shows only themselves for guests' do
+        contributor2
+        manager
+        admin
+        sign_in guest
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['id']).to eq(guest.id.to_s)
+      end
+
       it 'shows only themselves for contributors' do
         contributor2
         manager
@@ -27,17 +37,18 @@ RSpec.describe UsersController, type: :controller do
         expect(json['data'][0]['id']).to eq(contributor.id.to_s)
       end
 
-      it 'shows all contributors and themselves for managers' do
+      it 'shows all contributors, guests, and themselves for managers' do
         contributor
         contributor2
         manager2
         admin
+        guest
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(3)
-        expect(json['data'][0]['id']).to eq(manager.id.to_s)
-        expect(json['data'][1]['id']).to eq(contributor2.id.to_s)
-        expect(json['data'][2]['id']).to eq(contributor.id.to_s)
+        expect(json['data'].length).to eq(4)
+        returned_users = json['data'].map {|user_role| user_role['id'].to_i}.uniq
+        expected_users = [manager.id, contributor.id, contributor2.id, guest.id]
+        expect(expected_users - returned_users).to be_empty
       end
 
       it 'shows all users for admin' do
@@ -46,9 +57,10 @@ RSpec.describe UsersController, type: :controller do
         manager
         manager2
         admin2
+        guest
         sign_in admin
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(6)
+        expect(json['data'].length).to eq(7)
       end
 
     end
@@ -97,7 +109,10 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'Put update' do
+    let(:guest) { FactoryGirl.create(:user, :contributor) }
     let(:contributor) { FactoryGirl.create(:user, :contributor) }
+    let(:manager) { FactoryGirl.create(:user, :contributor) }
+    let(:contributor2) { FactoryGirl.create(:user, :contributor) }
     let(:admin) { FactoryGirl.create(:user, :admin) }
     subject do
       put :update,
@@ -121,18 +136,32 @@ RSpec.describe UsersController, type: :controller do
         sign_in guest
         expect(subject).to be_not_found
       end
-
-      it 'will allow a an admin to update any user' do
-        sign_in admin
+      it 'will allow a user to update themselves' do
+        sign_in contributor
         expect(subject).to be_ok
         json = JSON.parse(subject.body)
         expect(json['data']['id'].to_i).to eq(contributor.id)
         expect(json['data']['attributes']['email']).to eq 'test@co.nz'
         expect(json['data']['attributes']['name']).to eq 'Sam'
       end
-
-      it 'will allow a user to update themselves' do
-        sign_in contributor
+      it 'will allow a an manager to update themself, contributors, and guests' do
+        sign_in manager
+        expect(subject).to be_ok
+        json = JSON.parse(subject.body)
+        expect(json['data']['id'].to_i).to eq(contributor.id)
+        expect(json['data']['attributes']['email']).to eq 'test@co.nz'
+        expect(json['data']['attributes']['name']).to eq 'Sam'
+        subject2 = put :update,
+                        format: :json,
+                        params: { id: guest.id, user: { email: 'test@co.guest.nz', password: 'testtest', name: 'Sam' } }
+        expect(subject2).to be_ok
+        json = JSON.parse(subject2.body)
+        expect(json['data']['id'].to_i).to eq(guest.id)
+        expect(json['data']['attributes']['email']).to eq 'test@co.guest.nz'
+        expect(json['data']['attributes']['name']).to eq 'Sam'
+      end
+      it 'will allow a an admin to update any user' do
+        sign_in admin
         expect(subject).to be_ok
         json = JSON.parse(subject.body)
         expect(json['data']['id'].to_i).to eq(contributor.id)
