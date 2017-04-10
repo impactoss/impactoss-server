@@ -33,7 +33,8 @@ class Seeds
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
-        allow_multiple: false
+        allow_multiple: false,
+        has_manager: true
       )
     body.save!
 
@@ -564,7 +565,7 @@ class Seeds
     FactoryGirl.create_list(:recommendation, 50)
     FactoryGirl.create_list(:measure, 50)
     FactoryGirl.create_list(:indicator, 50)
-    
+
     FactoryGirl.create_list(:category, 10, taxonomy: org)
 
   end
