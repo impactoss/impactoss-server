@@ -1,6 +1,6 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
+    true
   end
 
   def create?
@@ -12,7 +12,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    @record.id == @user.id || @user.role?('admin')
+    @record.id == @user.id || @user.role?('admin') || @user.role?('manager')
   end
 
   def destroy?

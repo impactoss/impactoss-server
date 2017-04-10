@@ -17,11 +17,6 @@ RSpec.describe UsersController, type: :controller do
       let(:admin) { FactoryGirl.create(:user, :admin) }
       let(:admin2) { FactoryGirl.create(:user, :admin) }
 
-      it 'does not show anything to guest user' do
-        sign_in guest
-        expect(subject).to be_forbidden
-      end
-
       it 'shows only themselves for contributors' do
         contributor2
         manager
