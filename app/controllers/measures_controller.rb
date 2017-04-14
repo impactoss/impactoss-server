@@ -30,6 +30,9 @@ class MeasuresController < ApplicationController
 
   # PATCH/PUT /measures/1
   def update
+    if params[:measure][:updated_at] && DateTime.parse(params[:measure][:updated_at]).to_i != @measure.updated_at.to_i
+      return render json: 'record outdated', status: :unprocessable_entity
+    end
     render json: @measure if @measure.update_attributes!(permitted_attributes(@measure))
   end
 

@@ -206,6 +206,28 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_ok
       end
 
+      it 'will reject and update where the last_updated_at is older than updated_at in the database' do
+        sign_in user
+        progress_report_get = get :show, params: { id: progress_report_with_contributor }, format: :json
+        json = JSON.parse(progress_report_get.body)
+        current_update_at = json['data']['attributes']['updated_at']
+
+        Timecop.travel(Time.new + 15.days) do
+          subject = put :update,
+                        format: :json,
+                        params: { id: progress_report_with_contributor,
+                                  progress_report: { title: 'test update', description: 'test updateeee', target_date: 'today update', updated_at: current_update_at } }
+          expect(subject).to be_ok
+        end
+        Timecop.travel(Time.new + 5.days) do
+          subject = put :update,
+                        format: :json,
+                        params: { id: progress_report_with_contributor,
+                                  progress_report: { title: 'test update', description: 'test updatebbbb', target_date: 'today update', updated_at: current_update_at } }
+          expect(subject).to_not be_ok
+        end
+      end
+
       it 'will record what manager updated the progress_report', versioning: true do
         expect(PaperTrail).to be_enabled
         sign_in user
