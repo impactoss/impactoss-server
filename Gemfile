@@ -25,7 +25,6 @@ group :production, :staging do
 end
 
 group :development do
-  gem 'awesome_print'
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'bundler-audit', require: false
@@ -39,6 +38,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'awesome_print'
   gem 'brakeman'
   gem 'byebug'
   gem 'dotenv-rails'

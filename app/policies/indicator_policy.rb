@@ -5,6 +5,7 @@ class IndicatorPolicy < ApplicationPolicy
      :description,
      :draft,
      :manager_id,
+     :last_updated_at,
      measure_indicators_attributes: [:measure_id,
                                      measure_attributes: [:id, :title, :description, :target_date, :draft]]]
   end
