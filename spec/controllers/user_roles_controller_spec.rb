@@ -6,7 +6,10 @@ RSpec.describe UserRolesController, type: :controller do
     subject { get :index, format: :json }
 
     context 'when not signed in' do
-      it { expect(subject).to be_forbidden }
+      it 'shows an empty list' do
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(0)
+      end
     end
 
     context 'when signed in' do
@@ -23,7 +26,8 @@ RSpec.describe UserRolesController, type: :controller do
 
       it 'does not show anything to guest user' do
         sign_in guest
-        expect(subject).to be_forbidden
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(0)
       end
 
       it 'shows only themselves for contributors' do

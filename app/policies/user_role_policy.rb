@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class UserRolePolicy < ApplicationPolicy
   def index?
-    @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
+    true
   end
 
   def show?
