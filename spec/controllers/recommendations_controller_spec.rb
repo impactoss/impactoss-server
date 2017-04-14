@@ -174,6 +174,24 @@ RSpec.describe RecommendationsController, type: :controller do
         expect(subject).to be_ok
       end
 
+      it 'will reject and update where the last_updated_at is older than updated_at in the database' do
+        sign_in user
+        recommendation_get = get :show, params: { id: recommendation }, format: :json
+        json = JSON.parse(recommendation_get.body)
+        current_update_at = json['data']['attributes']['last_updated_at']
+
+        subject = put :update,
+                      format: :json,
+                      params: { id: recommendation,
+                                recommendation: { title: 'test update', description: 'test update', target_date: 'today update', last_updated_at: current_update_at } }
+        expect(subject).to be_ok
+        subject = put :update,
+                      format: :json,
+                      params: { id: recommendation,
+                                recommendation: { title: 'test update', description: 'test update', target_date: 'today update', last_updated_at: (Time.now + 5.minutes).in_time_zone.iso8601 } }
+        expect(subject).to_not be_ok
+      end
+
       it 'will record what manager updated the recommendation', versioning: true do
         expect(PaperTrail).to be_enabled
         sign_in user
