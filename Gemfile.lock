@@ -297,6 +297,7 @@ GEM
     thread (0.2.2)
     thread_safe (0.3.5)
     tilt (2.0.5)
+    timecop (0.8.1)
     tins (1.13.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
@@ -364,6 +365,7 @@ DEPENDENCIES
   simplecov
   spring
   thin
+  timecop
   unicorn
   unicorn-worker-killer
   web-console (~> 2.0)

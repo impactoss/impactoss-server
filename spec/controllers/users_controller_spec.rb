@@ -102,7 +102,7 @@ RSpec.describe UsersController, type: :controller do
     subject do
       put :update,
           format: :json,
-          params: { id: contributor, user: { email: 'test@co.nz', password: 'testtest', name: 'Sam' } }
+          params: { id: contributor.id, user: { email: 'test@co.nz', password: 'testtest', name: 'Sam' } }
     end
 
     context 'when not signed in' do
@@ -138,24 +138,6 @@ RSpec.describe UsersController, type: :controller do
         expect(json['data']['id'].to_i).to eq(contributor.id)
         expect(json['data']['attributes']['email']).to eq 'test@co.nz'
         expect(json['data']['attributes']['name']).to eq 'Sam'
-      end
-
-      it 'will reject and update where the last_updated_at is older than updated_at in the database' do
-        sign_in contributor
-        contributor_get = get :show, params: { id: contributor }, format: :json
-        json = JSON.parse(contributor_get.body)
-        current_update_at = json['data']['attributes']['last_updated_at']
-
-        subject = put :update,
-                      format: :json,
-                      params: { id: contributor,
-                                user: { email: 'test@co.nz', password: 'testtest', name: 'Sam', last_updated_at: current_update_at } }
-        expect(subject).to be_ok
-        subject = put :update,
-                      format: :json,
-                      params: { id: contributor,
-                                user: { email: 'test@co.nz', password: 'testtest', name: 'Sam', last_updated_at: (Time.now + 5.minutes).in_time_zone.iso8601 } }
-        expect(subject).to_not be_ok
       end
     end
   end

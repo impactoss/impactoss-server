@@ -55,4 +55,5 @@ group :test do
   gem 'poltergeist'
   gem 'pry-rails'
   gem 'shoulda-matchers'
+  gem 'timecop'
 end

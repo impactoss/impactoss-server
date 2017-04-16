@@ -146,18 +146,22 @@ RSpec.describe CategoriesController, type: :controller do
         sign_in user
         category_get = get :show, params: { id: category }, format: :json
         json = JSON.parse(category_get.body)
-        current_update_at = json['data']['attributes']['last_updated_at']
+        current_update_at = json['data']['attributes']['updated_at']
 
-        subject = put :update,
-                      format: :json,
-                      params: { id: category,
-                                category: { title: 'test update', description: 'test update', target_date: 'today update', last_updated_at: current_update_at } }
-        expect(subject).to be_ok
-        subject = put :update,
-                      format: :json,
-                      params: { id: category,
-                                category: { title: 'test update', description: 'test update', target_date: 'today update', last_updated_at: (Time.now + 5.minutes).in_time_zone.iso8601 } }
-        expect(subject).to_not be_ok
+        Timecop.travel(Time.new + 15.days) do
+          subject = put :update,
+                        format: :json,
+                        params: { id: category,
+                                  category: { title: 'test update', description: 'test updateeee', target_date: 'today update', updated_at: current_update_at } }
+          expect(subject).to be_ok
+        end
+        Timecop.travel(Time.new + 5.days) do
+          subject = put :update,
+                        format: :json,
+                        params: { id: category,
+                                  category: { title: 'test update', description: 'test updatebbbb', target_date: 'today update', updated_at: current_update_at } }
+          expect(subject).to_not be_ok
+        end
       end
 
       it 'will record what manager updated the category', versioning: true do
