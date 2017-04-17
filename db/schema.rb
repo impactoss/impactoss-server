@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170409074800) do
+ActiveRecord::Schema.define(version: 20170416232351) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,12 +41,16 @@ ActiveRecord::Schema.define(version: 20170409074800) do
   end
 
   create_table "indicators", force: :cascade do |t|
-    t.string   "title",                       null: false
+    t.string   "title",                            null: false
     t.string   "description"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.boolean  "draft",       default: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.boolean  "draft",            default: false
     t.integer  "manager_id"
+    t.integer  "frequency_months"
+    t.date     "start_date"
+    t.boolean  "repeat",           default: false
+    t.date     "end_date"
     t.index ["draft"], name: "index_indicators_on_draft", using: :btree
     t.index ["manager_id"], name: "index_indicators_on_manager_id", using: :btree
   end
