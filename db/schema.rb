@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170416232351) do
+ActiveRecord::Schema.define(version: 20170417045333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,6 +77,16 @@ ActiveRecord::Schema.define(version: 20170416232351) do
     t.datetime "updated_at",                  null: false
     t.boolean  "draft",       default: false
     t.index ["draft"], name: "index_measures_on_draft", using: :btree
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.string   "title"
+    t.text     "content"
+    t.string   "menu_title"
+    t.boolean  "draft",      default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.index ["draft"], name: "index_pages_on_draft", using: :btree
   end
 
   create_table "progress_reports", force: :cascade do |t|
