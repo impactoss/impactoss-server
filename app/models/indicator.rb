@@ -30,21 +30,23 @@ class Indicator < ApplicationRecord
 
   def build_due_dates
     if repeat
-      date_iterator = start_date > Date.today ? start_date : Date.today
+      date_iterator = start_date
       while date_iterator <= end_date
-        due_dates.find_or_create_by!(due_date: date_iterator)
+        if date_iterator >= Date.today
+          due_dates.find_or_create_by!(due_date: date_iterator)
+        end
         date_iterator = date_iterator + frequency_months.months
       end
     else # No repeating
       if start_date
-        due_dates.create!(due_date: start_date)
+        due_dates.find_or_create_by!(due_date: start_date)
       end
     end
   end
 
   def regenerate_due_dates
     return unless start_date_changed? || end_date_changed? || frequency_months_changed? || repeat_changed?
-    due_dates.no_progress_reports.destroy_all
+    due_dates.future_with_no_progress_reports.destroy_all
     build_due_dates
   end
 end
