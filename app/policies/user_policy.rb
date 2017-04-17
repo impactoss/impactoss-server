@@ -27,7 +27,7 @@ class UserPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       return scope.all if @user.role?('admin')
-      return scope.joins(:roles).where('user_id = ? OR roles.name = ?', @user.id, 'contributor') if @user.role?('manager')
+      return scope.left_joins(:roles).where('users.id = ? OR roles.name = ? OR user_roles.id IS NULL', @user.id, 'contributor') if @user.role?('manager')
       scope.where(id: @user.id)
     end
   end
