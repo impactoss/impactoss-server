@@ -5,6 +5,10 @@ class IndicatorPolicy < ApplicationPolicy
      :description,
      :draft,
      :manager_id,
+     :frequency_months,
+     :start_date,
+     :repeat,
+     :end_date,     
      measure_indicators_attributes: [:measure_id,
                                      measure_attributes: [:id, :title, :description, :target_date, :draft]]]
   end
