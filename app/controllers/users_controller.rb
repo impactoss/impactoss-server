@@ -31,9 +31,6 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    if params[:user][:updated_at] && DateTime.parse(params[:user][:updated_at]).to_i != @user.updated_at.to_i
-      return render json: 'record outdated', status: :unprocessable_entity
-    end
     render json: @user if @user.update_attributes!(permitted_attributes(@user))
   end
 
