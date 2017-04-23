@@ -12,7 +12,9 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    @record.id == @user.id || @user.role?('admin') || @user.role?('manager')
+    return true if @record.id == @user.id
+    return true if @user.role?('admin')
+    @user.role?('manager') && !(@record.role?('admin') || @record.role?('manager'))
   end
 
   def destroy?
@@ -26,8 +28,7 @@ class UserPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?('admin')
-      return scope.left_joins(:roles).where('users.id = ? OR roles.name = ? OR user_roles.id IS NULL', @user.id, 'contributor') if @user.role?('manager')
+      return scope.all if @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
       scope.where(id: @user.id)
     end
   end

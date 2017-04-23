@@ -27,28 +27,30 @@ RSpec.describe UsersController, type: :controller do
         expect(json['data'][0]['id']).to eq(guest.id.to_s)
       end
 
-      it 'shows only themselves for contributors' do
-        contributor2
-        manager
-        admin
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(1)
-        expect(json['data'][0]['id']).to eq(contributor.id.to_s)
-      end
-
-      it 'shows all contributors, guests, and themselves for managers' do
+      it 'shows all users for contributors' do
         contributor
         contributor2
+        manager
         manager2
         admin
+        admin2
+        guest
+        sign_in contributor
+        json = JSON.parse(subject.body)
+        expect(json['data'].length).to eq(7)
+      end
+
+      it 'shows all users for managers' do
+        contributor
+        contributor2
+        manager
+        manager2
+        admin
+        admin2
         guest
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(4)
-        returned_users = json['data'].map {|user_role| user_role['id'].to_i}.uniq
-        expected_users = [manager.id, contributor.id, contributor2.id, guest.id]
-        expect(expected_users - returned_users).to be_empty
+        expect(json['data'].length).to eq(7)
       end
 
       it 'shows all users for admin' do
@@ -131,6 +133,7 @@ RSpec.describe UsersController, type: :controller do
       let(:user) { FactoryGirl.create(:user) }
       let(:contributor) { FactoryGirl.create(:user, :contributor) }
       let(:manager) { FactoryGirl.create(:user, :manager) }
+      let(:manager2) { FactoryGirl.create(:user, :manager) }
       let(:admin) { FactoryGirl.create(:user, :admin) }
 
       it 'will not allow a user to update another user' do
@@ -160,6 +163,17 @@ RSpec.describe UsersController, type: :controller do
         expect(json['data']['id'].to_i).to eq(guest.id)
         expect(json['data']['attributes']['email']).to eq 'test@co.guest.nz'
         expect(json['data']['attributes']['name']).to eq 'Sam'
+      end
+      it 'will not allow a an manager to another manager or admin' do
+        sign_in manager
+        subject2 = put :update,
+                       format: :json,
+                       params: { id: manager2.id, user: { email: 'test@co.guest.nz', password: 'testtest', name: 'Sam' } }
+        expect(subject2).to be_forbidden
+        subject2 = put :update,
+                       format: :json,
+                       params: { id: admin.id, user: { email: 'test@co.guest.nz', password: 'testtest', name: 'Sam' } }
+        expect(subject2).to be_forbidden
       end
       it 'will allow a an admin to update any user' do
         sign_in admin
