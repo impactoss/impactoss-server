@@ -30,25 +30,31 @@ RSpec.describe UserRolesController, type: :controller do
         expect(json['data'].length).to eq(0)
       end
 
-      it 'shows only themselves for contributors' do
+      it 'shows all users roles for contributors' do
+        contributor
         contributor2
         manager
+        manager2
         admin
+        admin2
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(1)
+        expect(json['data'].length).to eq(6)
         returned_roles = json['data'].map {|user_role| user_role['attributes']['role_id']}.uniq
-        permitted_roles = [contributor.roles.first.id]
+        permitted_roles = [contributor.roles.first.id, manager.roles.first.id]
         expect(permitted_roles - returned_roles).to be_empty
       end
 
-      it 'shows all contributors and themselves for managers' do
+      it 'shows all users roles for managers' do
         contributor
         contributor2
+        manager
         manager2
+        admin
+        admin2
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json['data'].length).to eq(3)
+        expect(json['data'].length).to eq(6)
         returned_roles = json['data'].map {|user_role| user_role['attributes']['role_id']}.uniq
         permitted_roles = [contributor.roles.first.id, manager.roles.first.id]
         expect(permitted_roles - returned_roles).to be_empty
@@ -206,7 +212,7 @@ RSpec.describe UserRolesController, type: :controller do
                        format: :json,
                        params: {
                          user_role: {
-                           user_id: manager.id,
+                           user_id: guest.id,
                            role_id: contributor_role.id
                          }
                        }
@@ -256,12 +262,14 @@ RSpec.describe UserRolesController, type: :controller do
     let(:guest) { FactoryGirl.create(:user) }
     let(:manager_role) { FactoryGirl.create(:role, :manager) }
     let(:manager) { FactoryGirl.create(:user, roles: [manager_role]) }
+    let(:manager_role2) { FactoryGirl.create(:role, :manager) }
+    let(:manager2) { FactoryGirl.create(:user, roles: [contributor_role, manager_role2]) }
     let(:contributor_role) { FactoryGirl.create(:role, :contributor) }
     let(:contributor_role2) { FactoryGirl.create(:role, :contributor) }
     let(:contributor) { FactoryGirl.create(:user, roles: [contributor_role]) }
     let(:contributor2) { FactoryGirl.create(:user, roles: [contributor_role2]) }
     let(:admin_role) { FactoryGirl.create(:role, :admin) }
-    let(:admin) { FactoryGirl.create(:user, roles: [admin_role]) }
+    let(:admin) { FactoryGirl.create(:user, roles: [admin_role, contributor_role]) }
 
     subject { delete :destroy, format: :json, params: { id: contributor.user_roles.first } }
 
@@ -282,10 +290,14 @@ RSpec.describe UserRolesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it 'will allow a manager to delete a contributor user_role' do
+      it 'will allow a manager to delete a contributor user_role but not for an admin or another manager' do
         sign_in manager
         subject = delete :destroy, format: :json, params: { id: contributor.user_roles.first }
         expect(subject).to be_no_content
+        subject = delete :destroy, format: :json, params: { id: manager2.user_roles.find_by(role_id: contributor_role.id) }
+        expect(subject).to be_forbidden
+        subject = delete :destroy, format: :json, params: { id: admin.user_roles.find_by(role_id: contributor_role.id) }
+        expect(subject).to be_forbidden
       end
 
       it 'will allow an admin to delete a manager, contributor, and admin user_role' do
