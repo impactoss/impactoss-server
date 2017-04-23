@@ -183,28 +183,6 @@ RSpec.describe UsersController, type: :controller do
         expect(json['data']['attributes']['email']).to eq 'test@co.nz'
         expect(json['data']['attributes']['name']).to eq 'Sam'
       end
-
-      it 'will reject an update where the last_updated_at is older than updated_at in the database' do
-        sign_in user
-        user_get = get :show, params: { id: user }, format: :json
-        json = JSON.parse(user_get.body)
-        current_update_at = json['data']['attributes']['updated_at']
-
-        Timecop.travel(Time.new + 15.days) do
-          subject = put :update,
-                        format: :json,
-                        params: { id: user,
-                                  user: { name: 'test update', updated_at: current_update_at } }
-          expect(subject).to be_ok
-        end
-        Timecop.travel(Time.new + 5.days) do
-          subject = put :update,
-                        format: :json,
-                        params: { id: user,
-                                  user: { name: 'test update', updated_at: current_update_at } }
-          expect(subject).to_not be_ok
-        end
-      end
     end
   end
 
