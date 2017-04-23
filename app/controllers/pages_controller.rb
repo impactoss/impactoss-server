@@ -3,7 +3,7 @@ class PagesController < ApplicationController
 
   # GET /pages
   def index
-    @pages = policy_scope(Page).order(created_at: :desc).page(params[:page])
+    @pages = policy_scope(Page).order(created_at: :desc)
     authorize @pages
 
     render json: @pages
