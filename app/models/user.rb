@@ -11,7 +11,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  has_many :user_roles
+  has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :managed_categories, foreign_key: :manager_id, class_name: Category
   has_many :managed_indicators, foreign_key: :manager_id, class_name: Indicator
