@@ -48,7 +48,7 @@ RSpec.describe Indicator, type: :model do
     due_date = indicator.due_dates.last
     progress_report = due_date.progress_reports.create!(indicator: indicator, title: 'test')
     expect(indicator.due_dates.count).to be 12
-    indicator.end_date = Date.today + 2.years - 1.days
+    indicator.end_date = Date.today + 2.years - 15.days
     indicator.save!
     expect(indicator.due_dates.count).to be 24
     expect(indicator.due_dates.has_progress_reports.count).to be 1
