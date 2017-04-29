@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :categories
   end
   get 'static_pages/home'
+  post 's3/sign'
 
   resources :measure_categories
   resources :measure_indicators
