@@ -22,7 +22,7 @@ FactoryGirl.define do
 
     trait :with_12_due_dates do
       repeat true
-      end_date { Date.today + 1.year - 1.day }
+      end_date { Date.today + 1.year - 15.days }
       start_date { Date.today }
       frequency_months 1
     end
