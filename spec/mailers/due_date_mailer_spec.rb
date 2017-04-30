@@ -8,7 +8,7 @@ RSpec.describe DueDateMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.due.subject'))
       expect(mail.to).to eq([manager.email])
-      expect(mail.from).to eq(["donotreply@undp-sadata-staging.herokuapp.com"])
+      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
     end
 
     it "renders the body" do
@@ -23,7 +23,7 @@ RSpec.describe DueDateMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.overdue.subject'))
       expect(mail.to).to eq([manager.email])
-      expect(mail.from).to eq(["donotreply@undp-sadata-staging.herokuapp.com"])
+      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
     end
 
     it "renders the body" do
