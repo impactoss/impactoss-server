@@ -9,7 +9,7 @@ class Category < ApplicationRecord
   has_many :recommendations, through: :recommendation_categories
   has_many :users, through: :user_categories
   has_many :measures, through: :measure_categories
-  has_many :indicators, through: :measures
+  has_many :indicators, through: :recommendations
   has_many :progress_reports, through: :indicators
   has_many :due_dates, through: :indicators
 

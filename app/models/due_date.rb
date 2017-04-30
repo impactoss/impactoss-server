@@ -5,6 +5,10 @@ class DueDate < ApplicationRecord
   has_one :manager, through: :indicator
   has_many :progress_reports
 
+  delegate :manager, to: :indicator, allow_nil: true
+  delegate :email, to: :manager, prefix: true, allow_nil: true
+  delegate :name, to: :manager, prefix: true, allow_nil: true
+  
   validates :due_date, presence: true
 
   scope :no_progress_reports, -> { left_outer_joins(:progress_reports).where( progress_reports: { id: nil } ) }

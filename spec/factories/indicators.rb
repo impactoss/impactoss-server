@@ -26,5 +26,9 @@ FactoryGirl.define do
       start_date { Date.today }
       frequency_months 1
     end
+
+    trait :with_manager do
+      manager { create(:user) }
+    end
   end
 end

@@ -57,3 +57,9 @@ en:
     title:
       main: National Mechanism for Reporting and Follow-Up
       sub: Samoa's National Plan of Action for Human Rights
+  due_date_mailer:
+      due:
+        subject: Indicator progress report is due
+      overdue:
+        subject: Indicator progress report is overdue
+
