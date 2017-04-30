@@ -11,4 +11,18 @@ class DueDate < ApplicationRecord
   scope :has_progress_reports, -> { left_outer_joins(:progress_reports).where.not( progress_reports: { id: nil } ) }
   scope :future, -> { where('due_date > ?', Date.today) }
   scope :future_with_no_progress_reports, -> { future.no_progress_reports }
+
+  DUE_NUMBER_OF_DAYS = 30.freeze
+
+  def has_progress_report
+    progress_reports.any?
+  end
+
+  def due
+    !has_progress_report && due_date >= Date.today && due_date <= Date.today + DUE_NUMBER_OF_DAYS.days
+  end
+
+  def overdue
+    !has_progress_report && due_date < Date.today
+  end
 end
