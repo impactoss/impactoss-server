@@ -27,3 +27,6 @@
 # Ignore rubymine files
 /.idea
 /nbproject/
+
+#MacOS
+.DS_Store
