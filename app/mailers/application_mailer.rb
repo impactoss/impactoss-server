@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 class ApplicationMailer < ActionMailer::Base
-  default from: 'donotreply@undp-sadata-staging.herokuapp.com'
+  default from: 'donotreply@sadata.baran.co.nz'
   layout 'mailer'
 end
