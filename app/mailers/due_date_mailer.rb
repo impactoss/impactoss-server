@@ -7,7 +7,9 @@ class DueDateMailer < ApplicationMailer
   #
   def due(due_date)
     return unless due_date.manager_email
-    @greeting = "Hi #{due_date.manager_name}"
+    @indicator = due_date.indicator
+    @due_date = due_date
+    @manager_name = due_date.manager_name
 
     mail to: due_date.manager_email, subject: I18n.t('due_date_mailer.due.subject')
   end
@@ -19,7 +21,9 @@ class DueDateMailer < ApplicationMailer
   #
   def overdue(due_date)
     return unless due_date.manager_email
-    @greeting = "Hi #{due_date.manager_name}"
+    @indicator = due_date.indicator
+    @due_date = due_date
+    @manager_name = due_date.manager_name
 
     mail to: due_date.manager_email, subject: I18n.t('due_date_mailer.overdue.subject')
   end

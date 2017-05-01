@@ -3,7 +3,8 @@ require "rails_helper"
 RSpec.describe DueDateMailer, type: :mailer do
   describe "due" do
     let(:manager) { FactoryGirl.create(:user) }
-    let(:mail) { DueDateMailer.due(FactoryGirl.create(:due_date, manager: manager)) }
+    let(:due_date) { FactoryGirl.create(:due_date, manager: manager) }
+    let(:mail) { DueDateMailer.due(due_date) }
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.due.subject'))
@@ -11,14 +12,19 @@ RSpec.describe DueDateMailer, type: :mailer do
       expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
     end
 
-    it "renders the body" do
-      expect(mail.body.encoded).to match("Hi")
+    it "mentions the managers name" do
+      expect(mail.body.encoded).to match(manager.name)
+    end
+
+    it "mentions the indicator title" do
+      expect(mail.body.encoded).to match(due_date.indicator.title)
     end
   end
 
   describe "overdue" do
     let(:manager) { FactoryGirl.create(:user) }
-    let(:mail) { DueDateMailer.overdue(FactoryGirl.create(:due_date, manager: manager)) }
+    let(:due_date) { FactoryGirl.create(:due_date, manager: manager) }
+    let(:mail) { DueDateMailer.overdue(due_date) }
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.overdue.subject'))
@@ -26,8 +32,12 @@ RSpec.describe DueDateMailer, type: :mailer do
       expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
     end
 
-    it "renders the body" do
-      expect(mail.body.encoded).to match("Hi")
+    it "mentions the managers name" do
+      expect(mail.body.encoded).to match(manager.name)
+    end
+
+    it "mentions the indicator title" do
+      expect(mail.body.encoded).to match(due_date.indicator.title)
     end
   end
 
