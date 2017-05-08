@@ -112,3 +112,12 @@ Run the `bin/setup` script. This script will:
 [rbenv]:https://github.com/sstephenson/rbenv
 [poltergeist]:https://github.com/teampoltergeist/poltergeist
 [Homebrew]:http://brew.sh
+
+
+## Contributors
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md)
+
+## License
+
+This project is licensed under the MIT license, see [LICENSE.md](LICENSE.md).
