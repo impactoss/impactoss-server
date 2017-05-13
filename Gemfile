@@ -20,7 +20,6 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails', '~> 5.0.1'
 gem 'sass-rails', '~> 5.0'
 gem 'secure_headers', '>= 3.0'
-gem 'sidekiq'
 
 group :production, :staging do
   gem 'unicorn'
