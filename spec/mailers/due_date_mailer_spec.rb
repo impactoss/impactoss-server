@@ -41,4 +41,45 @@ RSpec.describe DueDateMailer, type: :mailer do
     end
   end
 
+  describe "category due" do
+    let(:manager) { FactoryGirl.create(:user) }
+    let(:due_date) { FactoryGirl.create(:due_date) }
+    let(:category) { FactoryGirl.create(:category, manager: manager) }
+    let(:mail) { DueDateMailer.category_due(due_date, category) }
+
+    it "renders the headers" do
+      expect(mail.subject).to eq(I18n.t('due_date_mailer.category_due.subject'))
+      expect(mail.to).to eq([manager.email])
+      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
+    end
+
+    it "mentions the managers name" do
+      expect(mail.body.encoded).to match(manager.name)
+    end
+
+    it "mentions the indicator title" do
+      expect(mail.body.encoded).to match(due_date.indicator.title)
+    end
+  end
+
+  describe "category over due" do
+    let(:manager) { FactoryGirl.create(:user) }
+    let(:due_date) { FactoryGirl.create(:due_date) }
+    let(:category) { FactoryGirl.create(:category, manager: manager) }
+    let(:mail) { DueDateMailer.category_overdue(due_date, category) }
+
+    it "renders the headers" do
+      expect(mail.subject).to eq(I18n.t('due_date_mailer.category_due.subject'))
+      expect(mail.to).to eq([manager.email])
+      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
+    end
+
+    it "mentions the managers name" do
+      expect(mail.body.encoded).to match(manager.name)
+    end
+
+    it "mentions the indicator title" do
+      expect(mail.body.encoded).to match(due_date.indicator.title)
+    end
+  end
 end
