@@ -83,7 +83,7 @@ class Seeds
         tags_recommendations: false,
         tags_measures: true,
         tags_users: true,
-        allow_multiple: false
+        allow_multiple: true
       )
     org.save!
 
@@ -560,14 +560,6 @@ class Seeds
           description:'',
           url:''
         )
-
-    # create test data, configure in spec/factories/
-    FactoryGirl.create_list(:recommendation, 50)
-    FactoryGirl.create_list(:measure, 50)
-    FactoryGirl.create_list(:indicator, 50)
-
-    FactoryGirl.create_list(:category, 10, taxonomy: org)
-
   end
 
   def development_seeds!
@@ -577,6 +569,13 @@ class Seeds
       user.roles << Role.find_by(name: 'manager')
       user.save!
     end
+
+    # create test data, configure in spec/factories/
+    FactoryGirl.create_list(:recommendation, 50)
+    FactoryGirl.create_list(:measure, 50)
+    FactoryGirl.create_list(:indicator, 50)
+
+    FactoryGirl.create_list(:category, 10, taxonomy: org)
   end
 
   def log(msg, level: :info)
