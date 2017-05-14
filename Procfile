@@ -1,2 +1,2 @@
-web: bundle exec rails server thin -p $PORT
+web: bin/rails server -p $PORT -e $RAILS_ENV
 clock: bundle exec clockwork scheduler.rb
