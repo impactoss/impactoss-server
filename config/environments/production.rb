@@ -79,10 +79,10 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_url_options = {
-    host: 'undp-sadata-staging.herokuapp.com',
-    protocol: 'https'
+    host: ENV['ACTION_MAILER_HOST'] || 'undp-sadata-staging.herokuapp.com',
+    protocol: ENV['ACTION_MAILER_PROTOCOL'] || 'https'
   }
-  config.action_mailer.asset_host = 'https://undp-sadata-staging.herokuapp.com'
+  config.action_mailer.asset_host = ENV['ACTION_MAILER_ASSET_HOST'] || 'https://undp-sadata-staging.herokuapp.com'
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
