@@ -1,3 +1,3 @@
 class PageSerializer < ApplicationSerializer
-  attributes :title, :content, :menu_title, :draft
+  attributes :title, :content, :menu_title, :order, :draft
 end
