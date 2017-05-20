@@ -1,3 +1,3 @@
 class MeasureSerializer < ApplicationSerializer
-  attributes :title, :description, :draft
+  attributes :title, :description, :target_date, :draft
 end

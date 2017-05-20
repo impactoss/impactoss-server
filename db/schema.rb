@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170417045333) do
+ActiveRecord::Schema.define(version: 20170520105310) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20170417045333) do
     t.datetime "updated_at",                  null: false
     t.boolean  "draft",       default: false
     t.integer  "manager_id"
+    t.integer  "number"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
     t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
@@ -51,6 +52,7 @@ ActiveRecord::Schema.define(version: 20170417045333) do
     t.date     "start_date"
     t.boolean  "repeat",           default: false
     t.date     "end_date"
+    t.string   "reference"
     t.index ["draft"], name: "index_indicators_on_draft", using: :btree
     t.index ["manager_id"], name: "index_indicators_on_manager_id", using: :btree
   end
@@ -86,6 +88,7 @@ ActiveRecord::Schema.define(version: 20170417045333) do
     t.boolean  "draft",      default: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.integer  "order"
     t.index ["draft"], name: "index_pages_on_draft", using: :btree
   end
 
@@ -121,10 +124,12 @@ ActiveRecord::Schema.define(version: 20170417045333) do
 
   create_table "recommendations", force: :cascade do |t|
     t.string   "title",                      null: false
-    t.integer  "number",                     null: false
+    t.string   "number",                     null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.boolean  "draft",      default: false
+    t.boolean  "accepted"
+    t.text     "response"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
   end
 
@@ -144,6 +149,9 @@ ActiveRecord::Schema.define(version: 20170417045333) do
     t.boolean  "allow_multiple"
     t.boolean  "tags_users"
     t.boolean  "has_manager",          default: false
+    t.integer  "priority"
+    t.boolean  "tags_sdgtargets"
+    t.boolean  "is_smart"
   end
 
   create_table "user_categories", force: :cascade do |t|
