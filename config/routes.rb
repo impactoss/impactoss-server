@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :user_roles
   resources :roles
   resources :pages
+  resources :sdgtargets
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
