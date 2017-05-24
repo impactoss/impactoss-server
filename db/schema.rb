@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170520105310) do
+ActiveRecord::Schema.define(version: 20170523084719) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,16 @@ ActiveRecord::Schema.define(version: 20170520105310) do
     t.string   "friendly_name", null: false
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+  end
+
+  create_table "sdgtargets", force: :cascade do |t|
+    t.string   "reference"
+    t.text     "title"
+    t.text     "description"
+    t.boolean  "draft",       default: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.index ["draft"], name: "index_sdgtargets_on_draft", using: :btree
   end
 
   create_table "taxonomies", force: :cascade do |t|
