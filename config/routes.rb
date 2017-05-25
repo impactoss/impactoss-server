@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get 's3/sign'
 
   resources :measure_categories
+  resources :sdgtarget_categories
   resources :measure_indicators
   resources :recommendation_categories
   resources :user_categories
