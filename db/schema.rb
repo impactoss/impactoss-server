@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170525082710) do
+ActiveRecord::Schema.define(version: 20170528055544) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,6 +145,15 @@ ActiveRecord::Schema.define(version: 20170525082710) do
     t.integer  "category_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+  end
+
+  create_table "sdgtarget_indicators", force: :cascade do |t|
+    t.integer  "sdgtarget_id"
+    t.integer  "indicator_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["indicator_id"], name: "index_sdgtarget_indicators_on_indicator_id", using: :btree
+    t.index ["sdgtarget_id"], name: "index_sdgtarget_indicators_on_sdgtarget_id", using: :btree
   end
 
   create_table "sdgtargets", force: :cascade do |t|
