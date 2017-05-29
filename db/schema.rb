@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170528055544) do
+ActiveRecord::Schema.define(version: 20170529220629) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "categories", force: :cascade do |t|
-    t.string   "title"
+    t.text     "title"
     t.string   "short_title"
-    t.string   "description"
+    t.text     "description"
     t.string   "url"
     t.integer  "taxonomy_id"
     t.datetime "created_at",                  null: false
@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(version: 20170528055544) do
   end
 
   create_table "indicators", force: :cascade do |t|
-    t.string   "title",                            null: false
-    t.string   "description"
+    t.text     "title",                            null: false
+    t.text     "description"
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
     t.boolean  "draft",            default: false
@@ -72,7 +72,7 @@ ActiveRecord::Schema.define(version: 20170528055544) do
   end
 
   create_table "measures", force: :cascade do |t|
-    t.string   "title",                       null: false
+    t.text     "title",                       null: false
     t.text     "description"
     t.text     "target_date"
     t.datetime "created_at",                  null: false
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 20170528055544) do
   create_table "progress_reports", force: :cascade do |t|
     t.integer  "indicator_id"
     t.integer  "due_date_id"
-    t.string   "title"
+    t.text     "title"
     t.text     "description"
     t.string   "document_url"
     t.boolean  "document_public"
@@ -123,7 +123,7 @@ ActiveRecord::Schema.define(version: 20170528055544) do
   end
 
   create_table "recommendations", force: :cascade do |t|
-    t.string   "title",                      null: false
+    t.text     "title",                      null: false
     t.string   "number",                     null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
@@ -167,7 +167,7 @@ ActiveRecord::Schema.define(version: 20170528055544) do
   end
 
   create_table "taxonomies", force: :cascade do |t|
-    t.string   "title",                                null: false
+    t.text     "title",                                null: false
     t.boolean  "tags_recommendations"
     t.boolean  "tags_measures"
     t.datetime "created_at",                           null: false
