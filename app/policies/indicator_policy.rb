@@ -9,6 +9,7 @@ class IndicatorPolicy < ApplicationPolicy
      :start_date,
      :repeat,
      :end_date,     
+     :reference,
      measure_indicators_attributes: [:measure_id,
                                      measure_attributes: [:id, :title, :description, :target_date, :draft]]]
   end
