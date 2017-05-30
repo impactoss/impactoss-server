@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170529220629) do
+ActiveRecord::Schema.define(version: 20170530070108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -154,6 +154,24 @@ ActiveRecord::Schema.define(version: 20170529220629) do
     t.datetime "updated_at",   null: false
     t.index ["indicator_id"], name: "index_sdgtarget_indicators_on_indicator_id", using: :btree
     t.index ["sdgtarget_id"], name: "index_sdgtarget_indicators_on_sdgtarget_id", using: :btree
+  end
+
+  create_table "sdgtarget_measures", force: :cascade do |t|
+    t.integer  "sdgtarget_id"
+    t.integer  "measure_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["measure_id"], name: "index_sdgtarget_measures_on_measure_id", using: :btree
+    t.index ["sdgtarget_id"], name: "index_sdgtarget_measures_on_sdgtarget_id", using: :btree
+  end
+
+  create_table "sdgtarget_recommendations", force: :cascade do |t|
+    t.integer  "sdgtarget_id"
+    t.integer  "recommendation_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["recommendation_id"], name: "index_sdgtarget_recommendations_on_recommendation_id", using: :btree
+    t.index ["sdgtarget_id"], name: "index_sdgtarget_recommendations_on_sdgtarget_id", using: :btree
   end
 
   create_table "sdgtargets", force: :cascade do |t|

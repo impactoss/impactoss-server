@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   resources :measure_categories
   resources :sdgtarget_categories
   resources :sdgtarget_indicators
+  resources :sdgtarget_measures
+  resources :sdgtarget_recommendations
   resources :measure_indicators
   resources :recommendation_categories
   resources :user_categories
