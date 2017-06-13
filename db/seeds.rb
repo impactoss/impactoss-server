@@ -70,7 +70,7 @@ class Seeds
         tags_sdgtargets: false,
         allow_multiple: false
       )
-    sdg.save!
+    country.save!
 
     # NZ specific taxonomy
     issue = Taxonomy.new(
@@ -104,7 +104,7 @@ class Seeds
         is_smart: true,
         allow_multiple: false
       )
-    people.save!
+    smart.save!
 
     # NZ specific taxonomy
     org = Taxonomy.new(
