@@ -40,7 +40,7 @@ class Seeds
 
     # Global taxonomy
     session = Taxonomy.new(
-        title: 'UN session',
+        title: 'Cycle',
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
@@ -50,7 +50,7 @@ class Seeds
 
     # Global taxonomy
     right = Taxonomy.new(
-        title: 'Human right',
+        title: 'Human rights issue',
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
@@ -86,7 +86,7 @@ class Seeds
         allow_multiple: true
       )
     org.save!
-    
+
     # Global taxonomy
     sdg = Taxonomy.new(
         title: 'SDGs',
@@ -189,52 +189,277 @@ class Seeds
         url:''
       )
 
-    # Human Rights (level 1 http://uhri.ohchr.org/search/annotations)
+    # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
     # TODO level 2 and 3 human rights
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'A General framework of implementation',
-        short_title:'A',
+        title:'Scope of international obligations',
+        short_title:'A1',
+        reference: 'A1'
         description:'',
         url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'B Universal or cross-cutting issues',
-        short_title:'B',
+        title:'Cooperation with human rights mechanisms and institutions',
+        short_title:'A2',
         description:'',
         url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'D Civil & political rights',
-        short_title:'D',
+        title:'Inter-State cooperation & development assistance',
+        short_title:'A3',
         description:'',
         url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'E Economic, social and cultural rights',
-        short_title:'E',
+        title:'Legal, institutional and policy framework',
+        short_title:'A4',
         description:'',
         url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'F Specific persons or groups',
-        short_title:'F',
+        title:'Human rights education, trainings and awareness raising',
+        short_title:'A5',
         description:'',
         url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'G1 Members of minorities',
+        title:'Context, statistics, budget, civil society',
+        short_title:'A6',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'International criminal and humanitarian law',
+        short_title:'B1',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to self-determination',
+        short_title:'B2',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Equality and non-discrimination',
+        short_title:'B3',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to development',
+        short_title:'B4',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to a remedy',
+        short_title:'B5',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Business & Human Rights',
+        short_title:'B6',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Human rights and environmental issues',
+        short_title:'B7',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Human rights & counter-terrorism',
+        short_title:'B8',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Human rights & use of mercenaries',
+        short_title:'B9',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Civil & political rights - general measures of implementation',
+        short_title:'D1',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to physical and moral integrity',
+        short_title:'D2',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Liberty and security of the person',
+        short_title:'D3',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Fundamental freedoms',
+        short_title:'D4',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Administration of justice',
+        short_title:'D5',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Rights related to name, identity, nationality',
+        short_title:'D6',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to participation in public affairs and right to vote',
+        short_title:'D7',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Rights related to marriage & family',
+        short_title:'D8',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Economic, social & cultural rights - general measures of implementation',
+        short_title:'E1',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to an adequate standard of living',
+        short_title:'E2',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Labour rights',
+        short_title:'E3',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to health',
+        short_title:'E4',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Right to education',
+        short_title:'E5',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Rights to protection of property; financial credit',
+        short_title:'E6',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Cultural rights',
+        short_title:'E7',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Women',
+        short_title:'F1',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Children',
+        short_title:'F3',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Persons with disabilities',
+        short_title:'F4',
+        description:'',
+        url:''
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy:right,
+        title:'Members of minorities',
         short_title:'G1',
         description:'',
         url:''
@@ -242,7 +467,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'G3 Indigenous peoples',
+        title:'Indigenous peoples',
         short_title:'G3',
         description:'',
         url:''
@@ -250,7 +475,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'G4 Migrants',
+        title:'Migrants',
         short_title:'G4',
         description:'',
         url:''
@@ -258,7 +483,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'G5 Refugees & asylum seekers',
+        title:'Refugees & asylum seekers',
         short_title:'G5',
         description:'',
         url:''
@@ -266,15 +491,15 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'G6 Internally displaced persons',
-        short_title:'G6',
+        title:'Internally displaced persons',
+        short_title:'G5',
         description:'',
         url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'H1 Human rights defenders',
+        title:'Human rights defendersh',
         short_title:'H1',
         description:'',
         url:''
