@@ -86,7 +86,17 @@ class Seeds
         allow_multiple: true
       )
     org.save!
-
+    
+    # Global taxonomy
+    sdg = Taxonomy.new(
+        title: 'SDGs',
+        tags_recommendations: false,
+        tags_measures: false,
+        tags_users: false,
+        tags_sdgtargets: true,
+        allow_multiple: false
+      )
+    sdg.save!
 
     # Set up categories
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
