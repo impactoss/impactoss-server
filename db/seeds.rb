@@ -196,7 +196,6 @@ class Seeds
         taxonomy:right,
         title:'Scope of international obligations',
         short_title:'A1',
-        reference: 'A1',
         description:'',
         url:''
       )
