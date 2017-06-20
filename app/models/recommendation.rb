@@ -13,5 +13,5 @@ class Recommendation < ApplicationRecord
   accepts_nested_attributes_for :recommendation_categories
 
   validates :title, presence: true
-  validates :number, presence: true
+  validates :reference, presence: true
 end
