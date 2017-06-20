@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620070445) do
+ActiveRecord::Schema.define(version: 20170620223151) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,6 +199,7 @@ ActiveRecord::Schema.define(version: 20170620070445) do
     t.integer  "priority"
     t.boolean  "tags_sdgtargets"
     t.boolean  "is_smart"
+    t.integer  "grouping_default"
   end
 
   create_table "user_categories", force: :cascade do |t|
