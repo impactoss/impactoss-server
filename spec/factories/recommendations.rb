@@ -2,7 +2,7 @@
 FactoryGirl.define do
   factory :recommendation do
     title { Faker::Superhero.name }
-    number 1
+    reference "1"
 
     trait :without_category do
       categories { [] }
