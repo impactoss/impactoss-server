@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620223151) do
+ActiveRecord::Schema.define(version: 20170620230559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20170620223151) do
     t.boolean  "draft",       default: false
     t.integer  "manager_id"
     t.string   "reference"
+    t.boolean  "user_only"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
     t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree

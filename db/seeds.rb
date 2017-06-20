@@ -34,7 +34,10 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         allow_multiple: false,
-        has_manager: true
+        has_manager: true,
+        priority: 1,
+        is_smart: false,
+        tags_sdgtargets: false
       )
     body.save!
 
@@ -44,7 +47,10 @@ class Seeds
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
-        allow_multiple: false
+        allow_multiple: false,
+        priority: 2,
+        is_smart: false,
+        tags_sdgtargets: false,
       )
     session.save!
 
@@ -54,7 +60,10 @@ class Seeds
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
-        allow_multiple: true
+        allow_multiple: true,
+        priority: 3,
+        is_smart: false,
+        tags_sdgtargets: false
       )
     right.save!
 
@@ -64,7 +73,10 @@ class Seeds
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
-        allow_multiple: true
+        allow_multiple: true,
+        priority: 4,
+        is_smart: false,
+        tags_sdgtargets: false
       )
     persons.save!
     # Samoa specific taxonomy
@@ -73,7 +85,10 @@ class Seeds
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
-        allow_multiple: true
+        allow_multiple: true,
+        priority: 5,
+        is_smart: false,
+        tags_sdgtargets: false
       )
     cluster.save!
 
@@ -83,7 +98,10 @@ class Seeds
         tags_recommendations: false,
         tags_measures: true,
         tags_users: true,
-        allow_multiple: true
+        allow_multiple: true,
+        priority: 6,
+        is_smart: false,
+        tags_sdgtargets: false
       )
     org.save!
 
@@ -94,7 +112,9 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         tags_sdgtargets: true,
-        allow_multiple: false
+        allow_multiple: false,
+        priority: 7,
+        is_smart: false
       )
     sdg.save!
 
