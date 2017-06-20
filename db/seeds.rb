@@ -498,7 +498,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:right,
-        title:'Human rights defendersh',
+        title:'Human rights defenders',
         short_title:'H1',
         description:'',
         url:''
