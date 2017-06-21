@@ -83,7 +83,7 @@ class Seeds
     cluster = Taxonomy.new(
         title: 'Thematic cluster',
         tags_recommendations: true,
-        tags_measures: false,
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 5,
