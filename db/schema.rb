@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620070445) do
+ActiveRecord::Schema.define(version: 20170620230559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20170620070445) do
     t.boolean  "draft",       default: false
     t.integer  "manager_id"
     t.string   "reference"
+    t.boolean  "user_only"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
     t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
@@ -199,6 +200,7 @@ ActiveRecord::Schema.define(version: 20170620070445) do
     t.integer  "priority"
     t.boolean  "tags_sdgtargets"
     t.boolean  "is_smart"
+    t.integer  "grouping_default"
   end
 
   create_table "user_categories", force: :cascade do |t|
