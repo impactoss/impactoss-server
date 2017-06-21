@@ -820,7 +820,7 @@ class Seeds
             taxonomy:sdg,
             description:'End poverty in all its forms everywhere',
             title:'No poverty',
-            number: 1,
+            reference: 1,
             short_title:'SDG 1',
             url:''
           )
@@ -829,7 +829,7 @@ class Seeds
             taxonomy:sdg,
             description:'End hunger, achieve food security and improved nutrition and promote sustainable agriculture',
             title:'Zero hunger',
-            number: 2,
+            reference: 2,
             short_title:'SDG 2',
             url:''
           )
@@ -838,7 +838,7 @@ class Seeds
             taxonomy:sdg,
             description:'Ensure healthy lives and promote well-being for all at all ages',
             title:'Good Health and Well-being',
-            number: 3,
+            reference: 3,
             short_title:'SDG 3',
             url:''
           )
@@ -847,7 +847,7 @@ class Seeds
             taxonomy:sdg,
             description:'Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all',
             title:'Quality Education',
-            number: 4,
+            reference: 4,
             short_title:'SDG 4',
             url:''
           )
@@ -856,7 +856,7 @@ class Seeds
             taxonomy:sdg,
             description:'Achieve gender equality and empower all women and girls',
             title:'Gender Equality',
-            number: 5,
+            reference: 5,
             short_title:'SDG 5',
             url:''
           )
@@ -865,7 +865,7 @@ class Seeds
             taxonomy:sdg,
             description:'Ensure availability and sustainable management of water and sanitation for all',
             title:'Clean Water and Sanitation',
-            number: 6,
+            reference: 6,
             short_title:'SDG 6',
             url:''
           )
@@ -874,7 +874,7 @@ class Seeds
             taxonomy:sdg,
             description:'Ensure access to affordable, reliable, sustainable and modern energy for all',
             title:'Affordable and Clean Energy',
-            number: 7,
+            reference: 7,
             short_title:'SDG 7',
             url:''
           )
@@ -883,7 +883,7 @@ class Seeds
             taxonomy:sdg,
             description:'Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all',
             title:'Decent Work and Economic Growth',
-            number: 8,
+            reference: 8,
             short_title:'SDG 8',
             url:''
           )
@@ -892,7 +892,7 @@ class Seeds
             taxonomy:sdg,
             description:'Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation',
             title:'Industry, Innovation and Infrastructure',
-            number: 9,
+            reference: 9,
             short_title:'SDG 9',
             url:''
           )
@@ -901,7 +901,7 @@ class Seeds
             taxonomy:sdg,
             description:'Reduce income inequality within and among countries',
             title:'Reduced Inequalities',
-            number: 10,
+            reference: 10,
             short_title:'SDG 10',
             url:''
           )
@@ -910,7 +910,7 @@ class Seeds
             taxonomy:sdg,
             description:'Make cities and human settlements inclusive, safe, resilient and sustainable',
             title:'Sustainable Cities and Communities',
-            number: 11,
+            reference: 11,
             short_title:'SDG 11',
             url:''
           )
@@ -919,7 +919,7 @@ class Seeds
             taxonomy:sdg,
             description:'Ensure sustainable consumption and production patterns',
             title:'Responsible Consumption and Production',
-            number: 12,
+            reference: 12,
             short_title:'SDG 12',
             url:''
           )
@@ -928,7 +928,7 @@ class Seeds
             taxonomy:sdg,
             description:'Take urgent action to combat climate change and its impacts by regulating emissions and promoting developments in renewable energy',
             title:'Climate Action',
-            number: 13,
+            reference: 13,
             short_title:'SDG 13',
             url:''
           )
@@ -937,7 +937,7 @@ class Seeds
             taxonomy:sdg,
             description:'Conserve and sustainably use the oceans, seas and marine resources for sustainable development',
             title:'Life Below Water',
-            number: 14,
+            reference: 14,
             short_title:'SDG 14',
             url:''
           )
@@ -946,7 +946,7 @@ class Seeds
             taxonomy:sdg,
             description:'Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss',
             title:'Life on Land',
-            number: 15,
+            reference: 15,
             short_title:'SDG 15',
             url:''
           )
@@ -955,7 +955,7 @@ class Seeds
             taxonomy:sdg,
             description:'Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels',
             title:'Peace, Justice and Strong Institutions',
-            number: 16,
+            reference: 16,
             short_title:'SDG 16',
             url:''
           )
@@ -964,7 +964,7 @@ class Seeds
             taxonomy:sdg,
             description:'Strengthen the means of implementation and revitalize the global partnership for sustainable development',
             title:'Partnerships for the Goals',
-            number: 17,
+            reference: 17,
             short_title:'SDG 17',
             url:''
           )
