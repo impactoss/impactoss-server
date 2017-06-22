@@ -35,7 +35,10 @@ class Seeds
         tags_users: false,
         tags_sdgtargets: false,
         allow_multiple: false,
-        has_manager: true
+        has_manager: true,
+        priority: 1,
+        is_smart: false,
+        tags_sdgtargets: false
       )
     body.save!
 
@@ -45,21 +48,12 @@ class Seeds
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
+        allow_multiple: false,
+        priority: 2,
+        is_smart: false,
         tags_sdgtargets: false,
-        allow_multiple: false
       )
     session.save!
-
-    # Global taxonomy
-    sdg = Taxonomy.new(
-        title: 'SDGs',
-        tags_recommendations: false,
-        tags_measures: false,
-        tags_users: false,
-        tags_sdgtargets: true,
-        allow_multiple: false
-      )
-    sdg.save!
 
     # Global taxonomy
     country = Taxonomy.new(
@@ -68,9 +62,24 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         tags_sdgtargets: false,
-        allow_multiple: false
+        allow_multiple: false,
+        is_smart: false,
+        priority: 3,
       )
     country.save!
+
+    # Global taxonomy
+    sdg = Taxonomy.new(
+        title: 'SDGs',
+        tags_recommendations: false,
+        tags_measures: false,
+        tags_users: false,
+        tags_sdgtargets: true
+        allow_multiple: false,
+        priority: 4,
+        is_smart: false,
+      )
+    sdg.save!
 
     # NZ specific taxonomy
     issue = Taxonomy.new(
@@ -80,6 +89,8 @@ class Seeds
         tags_users: false,
         tags_sdgtargets: false,
         allow_multiple: true
+        priority: 5,
+        is_smart: false,
       )
     issue.save!
 
@@ -90,7 +101,9 @@ class Seeds
         tags_measures: true,
         tags_users: false,
         tags_sdgtargets: false,
-        allow_multiple: true
+        allow_multiple: true,
+        priority: 6,
+        is_smart: false,
       )
     groups.save!
 
@@ -102,6 +115,7 @@ class Seeds
         tags_users: false,
         tags_sdgtargets: false,
         is_smart: true,
+        priority: 7,
         allow_multiple: false
       )
     smart.save!
@@ -114,9 +128,10 @@ class Seeds
         tags_users: true,
         tags_sdgtargets: false,
         allow_multiple: true
+        priority: 8,
+        is_smart: false,
       )
     org.save!
-
 
     # Set up categories
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
