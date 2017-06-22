@@ -38,7 +38,6 @@ class Seeds
         has_manager: true,
         priority: 1,
         is_smart: false,
-        tags_sdgtargets: false
       )
     body.save!
 
@@ -64,7 +63,7 @@ class Seeds
         tags_sdgtargets: false,
         allow_multiple: false,
         is_smart: false,
-        priority: 3,
+        priority: 3
       )
     country.save!
 
@@ -74,10 +73,10 @@ class Seeds
         tags_recommendations: false,
         tags_measures: false,
         tags_users: false,
-        tags_sdgtargets: true
+        tags_sdgtargets: true,
         allow_multiple: false,
         priority: 4,
-        is_smart: false,
+        is_smart: false
       )
     sdg.save!
 
@@ -88,9 +87,9 @@ class Seeds
         tags_measures: true,
         tags_users: false,
         tags_sdgtargets: false,
-        allow_multiple: true
+        allow_multiple: true,
         priority: 5,
-        is_smart: false,
+        is_smart: false
       )
     issue.save!
 
@@ -127,7 +126,7 @@ class Seeds
         tags_measures: true,
         tags_users: true,
         tags_sdgtargets: false,
-        allow_multiple: true
+        allow_multiple: true,
         priority: 8,
         is_smart: false,
       )
