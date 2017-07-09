@@ -11,7 +11,7 @@ class Category < ApplicationRecord
   has_many :measures, through: :measure_categories
   has_many :indicators, through: :recommendations
   has_many :progress_reports, through: :indicators
-  has_many :due_dates, through: :indicators
+  has_many :due_dates,-> { uniq }, through: :indicators
 
   delegate :name, :email, to: :manager, prefix: true, allow_nil: true
 

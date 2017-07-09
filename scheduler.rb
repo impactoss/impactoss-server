@@ -11,10 +11,6 @@ module Clockwork
     SendOverdueEmailsJob.perform_now()
   end
 
-  every(1.week, 'Send Category Due Emails', at: 'Monday 08:00') do
-    SendCategoryDueEmailsJob.perform_now()
-  end
-
   every(1.day, 'Send Categorhy Overdue Emails', at: '08:00') do
     SendCategoryOverdueEmailsJob.perform_now()
   end
