@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620230559) do
+ActiveRecord::Schema.define(version: 20170719235935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -189,18 +189,20 @@ ActiveRecord::Schema.define(version: 20170620230559) do
   end
 
   create_table "taxonomies", force: :cascade do |t|
-    t.text     "title",                                null: false
+    t.text     "title",                                          null: false
     t.boolean  "tags_recommendations"
     t.boolean  "tags_measures"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
     t.boolean  "allow_multiple"
     t.boolean  "tags_users"
-    t.boolean  "has_manager",          default: false
+    t.boolean  "has_manager",                    default: false
     t.integer  "priority"
     t.boolean  "tags_sdgtargets"
     t.boolean  "is_smart"
-    t.integer  "grouping_default"
+    t.integer  "groups_measures_default"
+    t.integer  "groups_recommendations_default"
+    t.integer  "groups_sdgtargets_default"
   end
 
   create_table "user_categories", force: :cascade do |t|
