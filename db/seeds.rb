@@ -115,7 +115,7 @@ class Seeds
         tags_sdgtargets: false,
         is_smart: true,
         priority: 7,
-        allow_multiple: false
+        allow_multiple: true
       )
     smart.save!
 
