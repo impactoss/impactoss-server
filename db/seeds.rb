@@ -76,7 +76,8 @@ class Seeds
         tags_sdgtargets: true,
         allow_multiple: false,
         priority: 4,
-        is_smart: false
+        is_smart: false,
+        groups_sdgtargets_default: 1
       )
     sdg.save!
 
