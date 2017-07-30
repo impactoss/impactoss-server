@@ -447,6 +447,22 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:issue,
+        title:'Violence, abuse and neglect',
+        short_title:'Violence',
+        description:'',
+        url:''
+      )    
+    FactoryGirl.create(
+        :category,
+        taxonomy:issue,
+        title:'Poverty',
+        short_title:'Poverty',
+        description:'',
+        url:''
+      )        
+    FactoryGirl.create(
+        :category,
+        taxonomy:issue,
         title:'Democratic rights and freedoms',
         short_title:'Democracy',
         description:'',
