@@ -732,7 +732,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:smart,
-        title:'Targeted',
+        title:'Timebound',
         short_title:'T',
         description:'',
         url:''
