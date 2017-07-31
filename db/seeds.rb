@@ -704,7 +704,14 @@ class Seeds
         description:'',
         url:''
       )
-
+    FactoryGirl.create(
+        :category,
+        taxonomy:org,
+        title:'Housing New Zealand Corporation',
+        short_title:'Housing NZ',
+        description:'',
+        url:''
+      )
   # SMART
     FactoryGirl.create(
         :category,
