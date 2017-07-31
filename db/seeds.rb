@@ -447,6 +447,22 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:issue,
+        title:'Violence, abuse and neglect',
+        short_title:'Violence',
+        description:'',
+        url:''
+      )    
+    FactoryGirl.create(
+        :category,
+        taxonomy:issue,
+        title:'Poverty',
+        short_title:'Poverty',
+        description:'',
+        url:''
+      )        
+    FactoryGirl.create(
+        :category,
+        taxonomy:issue,
         title:'Democratic rights and freedoms',
         short_title:'Democracy',
         description:'',
@@ -675,20 +691,11 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:org,
-        title:'State Services Commission',
-        short_title:'SSC',
+        title:'Housing New Zealand Corporation',
+        short_title:'Housing NZ',
         description:'',
         url:''
       )
-    FactoryGirl.create(
-        :category,
-        taxonomy:org,
-        title:'State Services Commission',
-        short_title:'SSC',
-        description:'',
-        url:''
-      )
-
   # SMART
     FactoryGirl.create(
         :category,
@@ -725,7 +732,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:smart,
-        title:'Targeted',
+        title:'Timebound',
         short_title:'T',
         description:'',
         url:''
