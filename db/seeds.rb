@@ -691,22 +691,6 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:org,
-        title:'State Services Commission',
-        short_title:'SSC',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:org,
-        title:'State Services Commission',
-        short_title:'SSC',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:org,
         title:'Housing New Zealand Corporation',
         short_title:'Housing NZ',
         description:'',
