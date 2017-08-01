@@ -693,6 +693,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:smart,
+	reference:1,
         title:'Specific',
         short_title:'S',
         description:'',
@@ -701,6 +702,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:smart,
+	reference:2,
         title:'Measurable',
         short_title:'M',
         description:'',
@@ -709,6 +711,7 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:smart,
+	reference:3,
         title:'Assignable',
         short_title:'A',
         description:'',
@@ -718,6 +721,7 @@ class Seeds
         :category,
         taxonomy:smart,
         title:'Result-oriented',
+	reference:4,
         short_title:'R',
         description:'',
         url:''
@@ -726,6 +730,7 @@ class Seeds
         :category,
         taxonomy:smart,
         title:'Targeted',
+	reference:5,
         short_title:'T',
         description:'',
         url:''
