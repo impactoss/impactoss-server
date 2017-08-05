@@ -88,7 +88,7 @@ RSpec.describe RecommendationsController, type: :controller do
   describe 'Post create' do
     context 'when not signed in' do
       it 'not allow creating a recommendation' do
-        post :create, format: :json, params: { recommendation: { title: 'test', number: '1' } }
+        post :create, format: :json, params: { recommendation: { title: 'test', reference: '1' } }
         expect(response).to be_unauthorized
       end
     end
@@ -104,7 +104,7 @@ RSpec.describe RecommendationsController, type: :controller do
              params: {
                recommendation: {
                  title: 'test',
-                 number: '1'
+                 reference: '1'
                }
              }
       end

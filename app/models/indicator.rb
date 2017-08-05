@@ -9,7 +9,8 @@ class Indicator < ApplicationRecord
   after_create :build_due_dates
   after_update :regenerate_due_dates
 
-  has_many :measure_indicators, inverse_of: :indicator
+  has_many :measure_indicators, inverse_of: :indicator, dependent: :destroy
+  has_many :sdgtarget_indicators, inverse_of: :indicator, dependent: :destroy
   has_many :progress_reports
   has_many :due_dates
   has_many :measures, through: :measure_indicators, inverse_of: :indicators

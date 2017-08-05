@@ -1,3 +1,3 @@
 class RecommendationSerializer < ApplicationSerializer
-  attributes :title, :number, :accepted, :response, :draft, :number
+  attributes :title, :accepted, :response, :draft, :reference
 end

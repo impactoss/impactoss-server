@@ -52,6 +52,8 @@ GEM
     babel-transpiler (0.7.0)
       babel-source (>= 4.0, < 6)
       execjs (~> 2.0)
+    batch_api (0.3.0)
+      middleware
     bcrypt (3.1.11)
     better_errors (2.1.1)
       coderay (>= 1.0.0)
@@ -184,6 +186,7 @@ GEM
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
     method_source (0.8.2)
+    middleware (0.1.0)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
@@ -352,6 +355,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   awesome_print
+  batch_api
   bcrypt (~> 3.1.7)
   better_errors
   binding_of_caller
