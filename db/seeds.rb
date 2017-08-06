@@ -63,7 +63,8 @@ class Seeds
         allow_multiple: true,
         priority: 3,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_measures_default: 1
       )
     right.save!
 
@@ -88,7 +89,8 @@ class Seeds
         allow_multiple: true,
         priority: 5,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_measures_default: 2
       )
     cluster.save!
 
@@ -114,7 +116,8 @@ class Seeds
         tags_sdgtargets: true,
         allow_multiple: false,
         priority: 7,
-        is_smart: false
+        is_smart: false,
+        groups_sdgtargets_default: 1
       )
     sdg.save!
 
