@@ -30,7 +30,7 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1
   def update
     if params[:category][:updated_at] && DateTime.parse(params[:category][:updated_at]).to_i != @category.updated_at.to_i
-      return render json: 'record outdated', status: :unprocessable_entity
+      return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
     render json: @category if @category.update_attributes!(permitted_attributes(@category))
   end

@@ -31,7 +31,7 @@ class RecommendationsController < ApplicationController
   # PATCH/PUT /recommendations/1
   def update
     if params[:recommendation][:updated_at] && DateTime.parse(params[:recommendation][:updated_at]).to_i != @recommendation.updated_at.to_i
-      return render json: 'record outdated', status: :unprocessable_entity
+      return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
     render json: @recommendation if @recommendation.update_attributes!(permitted_attributes(@recommendation))
   end
