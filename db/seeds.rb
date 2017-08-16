@@ -672,22 +672,6 @@ class Seeds
         description:'',
         url:''
       )
-    FactoryGirl.create(
-        :category,
-        taxonomy:org,
-        title:'State Services Commission',
-        short_title:'SSC',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:org,
-        title:'State Services Commission',
-        short_title:'SSC',
-        description:'',
-        url:''
-      )
 
   # SMART
     FactoryGirl.create(
