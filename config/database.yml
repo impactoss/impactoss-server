@@ -4,7 +4,8 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: 5
+  pool: <%= ENV["DATABASE_POOL_SIZE"] || 10 %>
+  timeout: <%= ENV["DATABASE_TIMEOUT"] || 9000 %>
 
 development:
   <<: *default

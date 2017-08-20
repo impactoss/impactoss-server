@@ -63,7 +63,8 @@ class Seeds
         allow_multiple: true,
         priority: 3,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_measures_default: 1
       )
     right.save!
 
@@ -88,7 +89,8 @@ class Seeds
         allow_multiple: true,
         priority: 5,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_measures_default: 2
       )
     cluster.save!
 
@@ -114,7 +116,8 @@ class Seeds
         tags_sdgtargets: true,
         allow_multiple: false,
         priority: 7,
-        is_smart: false
+        is_smart: false,
+        groups_sdgtargets_default: 1
       )
     sdg.save!
 
@@ -215,7 +218,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Scope of international obligations',
-        short_title:'A1',
+        short_title:'Int. obligations',
+        reference:'A1',
         description:'',
         url:''
       )
@@ -223,7 +227,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Cooperation with human rights mechanisms and institutions',
-        short_title:'A2',
+        short_title:'Cooperation ',
+        reference:'A2',
         description:'',
         url:''
       )
@@ -231,7 +236,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Inter-State cooperation & development assistance',
-        short_title:'A3',
+        short_title:'Inter-State cooperation',
+        reference:'A3',
         description:'',
         url:''
       )
@@ -239,7 +245,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Legal, institutional and policy framework',
-        short_title:'A4',
+        short_title:'Framework',
+        reference:'A4',
         description:'',
         url:''
       )
@@ -247,7 +254,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Human rights education, trainings and awareness raising',
-        short_title:'A5',
+        short_title:'HR education',
+        reference:'A5',
         description:'',
         url:''
       )
@@ -255,7 +263,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Context, statistics, budget, civil society',
-        short_title:'A6',
+        short_title:'Context',
+        reference:'A6',
         description:'',
         url:''
       )
@@ -263,7 +272,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'International criminal and humanitarian law',
-        short_title:'B1',
+        short_title:'Int. law',
+        reference:'B1',
         description:'',
         url:''
       )
@@ -271,7 +281,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to self-determination',
-        short_title:'B2',
+        short_title:'Self-determination',
+        reference:'B2',
         description:'',
         url:''
       )
@@ -279,7 +290,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Equality and non-discrimination',
-        short_title:'B3',
+        short_title:'Equality',
+        reference:'B3',
         description:'',
         url:''
       )
@@ -287,7 +299,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to development',
-        short_title:'B4',
+        short_title:'Development',
+        reference:'B4',
         description:'',
         url:''
       )
@@ -295,7 +308,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to a remedy',
-        short_title:'B5',
+        short_title:'Remedy',
+        reference:'B5',
         description:'',
         url:''
       )
@@ -303,7 +317,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Business & Human Rights',
-        short_title:'B6',
+        short_title:'Business',
+        reference:'B6',
         description:'',
         url:''
       )
@@ -311,7 +326,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Human rights and environmental issues',
-        short_title:'B7',
+        short_title:'Environment',
+        reference:'B7',
         description:'',
         url:''
       )
@@ -319,7 +335,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Human rights & counter-terrorism',
-        short_title:'B8',
+        short_title:'Counter-terrorism',
+        reference:'B8',
         description:'',
         url:''
       )
@@ -327,7 +344,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Human rights & use of mercenaries',
-        short_title:'B9',
+        short_title:'Mercenaries',
+        reference:'B9',
         description:'',
         url:''
       )
@@ -335,7 +353,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Civil & political rights - general measures of implementation',
-        short_title:'D1',
+        short_title:'Civil & political',
+        reference:'D1',
         description:'',
         url:''
       )
@@ -343,7 +362,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to physical and moral integrity',
-        short_title:'D2',
+        short_title:'Integrity',
+        reference:'D2',
         description:'',
         url:''
       )
@@ -351,7 +371,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Liberty and security of the person',
-        short_title:'D3',
+        short_title:'Liberty',
+        reference:'D3',
         description:'',
         url:''
       )
@@ -359,7 +380,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Fundamental freedoms',
-        short_title:'D4',
+        short_title:'Freedoms',
+        reference:'D4',
         description:'',
         url:''
       )
@@ -367,7 +389,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Administration of justice',
-        short_title:'D5',
+        short_title:'Justice',
+        reference:'D5',
         description:'',
         url:''
       )
@@ -375,7 +398,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Rights related to name, identity, nationality',
-        short_title:'D6',
+        short_title:'Identity',
+        reference:'D6',
         description:'',
         url:''
       )
@@ -383,7 +407,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to participation in public affairs and right to vote',
-        short_title:'D7',
+        short_title:'Participation',
+        reference:'D7',
         description:'',
         url:''
       )
@@ -391,7 +416,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Rights related to marriage & family',
-        short_title:'D8',
+        short_title:'Family',
+        reference:'D8',
         description:'',
         url:''
       )
@@ -399,7 +425,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Economic, social & cultural rights - general measures of implementation',
-        short_title:'E1',
+        short_title:'Economic, social & cultural',
+        reference:'E1',
         description:'',
         url:''
       )
@@ -407,7 +434,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to an adequate standard of living',
-        short_title:'E2',
+        short_title:'Standard of living',
+        reference:'E2',
         description:'',
         url:''
       )
@@ -415,7 +443,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Labour rights',
-        short_title:'E3',
+        short_title:'Labour rights',
+        reference:'E3',
         description:'',
         url:''
       )
@@ -423,7 +452,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to health',
-        short_title:'E4',
+        short_title:'Health',
+        reference:'E4',
         description:'',
         url:''
       )
@@ -431,7 +461,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Right to education',
-        short_title:'E5',
+        short_title:'Education',
+        reference:'E5',
         description:'',
         url:''
       )
@@ -439,7 +470,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Rights to protection of property; financial credit',
-        short_title:'E6',
+        short_title:'Property',
+        reference:'E6',
         description:'',
         url:''
       )
@@ -447,7 +479,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Cultural rights',
-        short_title:'E7',
+        short_title:'Cultural rights',
+        reference:'E7',
         description:'',
         url:''
       )
@@ -455,7 +488,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Women',
-        short_title:'F1',
+        short_title:'Women',
+        reference:'F1',
         description:'',
         url:''
       )
@@ -463,7 +497,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Children',
-        short_title:'F3',
+        short_title:'Children',
+        reference:'F3',
         description:'',
         url:''
       )
@@ -471,7 +506,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Persons with disabilities',
-        short_title:'F4',
+        short_title:'Persons with disabilities',
+        reference:'F4',
         description:'',
         url:''
       )
@@ -479,7 +515,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Members of minorities',
-        short_title:'G1',
+        short_title:'Minorities',
+        reference:'G1',
         description:'',
         url:''
       )
@@ -487,7 +524,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Indigenous peoples',
-        short_title:'G3',
+        short_title:'Indigenous peoples',
+        reference:'G3',
         description:'',
         url:''
       )
@@ -495,7 +533,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Migrants',
-        short_title:'G4',
+        short_title:'Migrants',
+        reference:'G4',
         description:'',
         url:''
       )
@@ -503,7 +542,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Refugees & asylum seekers',
-        short_title:'G5',
+        short_title:'Refugees',
+        reference:'G5',
         description:'',
         url:''
       )
@@ -511,7 +551,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Internally displaced persons',
-        short_title:'G5',
+        short_title:'Internally displaced',
+        reference:'G5',
         description:'',
         url:''
       )
@@ -519,7 +560,8 @@ class Seeds
         :category,
         taxonomy:right,
         title:'Human rights defenders',
-        short_title:'H1',
+        short_title:'HR defenders',
+        reference:'H1',
         description:'',
         url:''
       )
