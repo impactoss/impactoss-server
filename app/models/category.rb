@@ -16,6 +16,8 @@ class Category < ApplicationRecord
 
   delegate :name, :email, to: :manager, prefix: true, allow_nil: true
 
+  default_scope { includes(:versions) }
+
   validates :title, presence: true
 
   def self.send_all_due_emails
