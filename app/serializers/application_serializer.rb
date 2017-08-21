@@ -1,6 +1,6 @@
 class ApplicationSerializer < ActiveModel::Serializer
   attributes :id, :created_at, :updated_at
-  attribute :last_modified_user_id, if: :current_user_has_permission?
+  attribute :last_modified_user_id #, if: :current_user_has_permission?
 
   def created_at
     object.created_at.in_time_zone.iso8601 if object.created_at
