@@ -20,7 +20,7 @@ class PagePolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:title, :content, :menu_title, :draft]
+    [:title, :content, :menu_title, :draft, :order]
   end
 
   class Scope < Scope

@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 ruby '2.3.3'
 
 gem 'active_model_serializers'
+gem 'batch_api'
 gem 'bcrypt', '~> 3.1.7'
 gem 'clockwork'
 gem 'devise'

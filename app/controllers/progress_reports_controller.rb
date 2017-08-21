@@ -31,7 +31,7 @@ class ProgressReportsController < ApplicationController
   # PATCH/PUT /progress_reports/1
   def update
     if params[:progress_report][:updated_at] && DateTime.parse(params[:progress_report][:updated_at]).to_i != @progress_report.updated_at.to_i
-      return render json: 'record outdated', status: :unprocessable_entity
+      return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
     render json: @progress_report if @progress_report.update_attributes!(permitted_attributes(@progress_report))
   end

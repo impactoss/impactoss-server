@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class RecommendationPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title, :number, :draft, recommendation_categories_attributes: [:category_id]]
+    [:title, :draft, :accepted, :response, :reference, recommendation_categories_attributes: [:category_id]]
   end
 
   class Scope < Scope
