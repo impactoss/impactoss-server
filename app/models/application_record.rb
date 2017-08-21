@@ -3,9 +3,10 @@ class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
   def last_modified_user_id
-    return nil unless respond_to? :versions
-    return nil unless versions.last
-    versions.last.whodunnit
+    return 1
+    # return nil unless respond_to? :versions
+    # return nil unless versions.last
+    # versions.last.whodunnit
   end
 
   def last_modified_user
