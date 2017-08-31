@@ -15,4 +15,6 @@ class Recommendation < ApplicationRecord
 
   validates :title, presence: true
   validates :reference, presence: true
+
+  default_scope { includes(:versions) }
 end
