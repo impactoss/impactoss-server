@@ -114,6 +114,7 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         tags_sdgtargets: true,
+        has_manager: true,
         allow_multiple: false,
         priority: 7,
         is_smart: false,
