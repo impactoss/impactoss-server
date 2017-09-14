@@ -121,9 +121,9 @@ RSpec.describe ProgressReportsController, type: :controller do
              }
       end
 
-      it 'will not allow a guest to create a progress_report' do
+      it 'will allow a guest to create a progress_report' do
         sign_in guest
-        expect(subject).to be_forbidden
+        expect(subject).to be_created
       end
 
       it 'will not allow a contributor to create a progress_report when they are not a manager for the indicator' do
