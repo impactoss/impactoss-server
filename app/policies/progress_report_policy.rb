@@ -7,7 +7,7 @@ class ProgressReportPolicy < ApplicationPolicy
   end
 
   def create?
-    super || (@user.role?('contributor') && @record.manager == @user)
+    @user # super || (@user.role?('contributor') && @record.manager == @user)
   end
 
   def update?
