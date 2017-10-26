@@ -21,6 +21,8 @@ class Indicator < ApplicationRecord
 
   accepts_nested_attributes_for :measure_indicators
 
+  default_scope { includes(:versions) }
+
   private
 
   def end_date_after_start_date

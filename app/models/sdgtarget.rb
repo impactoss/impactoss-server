@@ -8,4 +8,6 @@ class Sdgtarget < ApplicationRecord
 
   validates :reference, presence: true
   validates :title, presence: true
+
+  default_scope { includes(:versions) }
 end

@@ -17,4 +17,6 @@ class Measure < ApplicationRecord
   accepts_nested_attributes_for :measure_categories
 
   validates :title, presence: true
+
+  default_scope { includes(:versions) }
 end
