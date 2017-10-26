@@ -8,7 +8,7 @@ class DueDate < ApplicationRecord
   delegate :manager, to: :indicator, allow_nil: true
   delegate :email, to: :manager, prefix: true, allow_nil: true
   delegate :name, to: :manager, prefix: true, allow_nil: true
-  
+
   validates :due_date, presence: true
 
   scope :no_progress_reports, -> { left_outer_joins(:progress_reports).where( progress_reports: { id: nil } ) }
@@ -17,6 +17,8 @@ class DueDate < ApplicationRecord
   scope :future_with_no_progress_reports, -> { future.no_progress_reports }
   scope :are_due, -> { no_progress_reports.where('due_date >= ? AND due_date <= ?', Date.today, Date.today + DUE_NUMBER_OF_DAYS.days) }
   scope :are_overdue, -> { no_progress_reports.where('due_date < ?', Date.today) }
+
+  default_scope { includes(:versions) }
 
   DUE_NUMBER_OF_DAYS = 30.freeze
 

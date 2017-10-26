@@ -10,4 +10,6 @@ class ProgressReport < ApplicationRecord
 
   validates :title, presence: true
   validates :indicator_id, presence: true
+
+  default_scope { includes(:versions) }
 end
