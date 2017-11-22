@@ -89,8 +89,7 @@ class Seeds
         allow_multiple: true,
         priority: 5,
         is_smart: false,
-        tags_sdgtargets: false,
-        groups_measures_default: 2
+        tags_sdgtargets: false
       )
     cluster.save!
 
