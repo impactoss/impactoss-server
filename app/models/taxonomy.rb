@@ -8,4 +8,6 @@ class Taxonomy < ApplicationRecord
   validates :allow_multiple, inclusion: [true, false]
   validates :tags_recommendations, inclusion: [true, false]
   validates :tags_measures, inclusion: [true, false]
+
+  default_scope { includes(:versions) }
 end
