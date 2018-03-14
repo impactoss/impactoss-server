@@ -126,9 +126,10 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_created
       end
 
-      it 'will not allow a contributor to create a progress_report when they are not a manager for the indicator' do
+      # This was changed from forbidden in bb687a69339aaa3501f24140907e9a2135ffe4c5 per #154
+      it 'will allow a contributor to create a progress_report when they are not a manager for the indicator' do
         sign_in contributor
-        expect(without_contributor_manager).to be_forbidden
+        expect(without_contributor_manager).to be_created
       end
 
       it 'will allow a contributor to create a progress_report when they are the manager for the indicator' do
