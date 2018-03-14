@@ -1,4 +1,4 @@
-FROM ruby:2.3.1-slim
+FROM ruby:2.3.3-slim
 ENV PORT 3000
 EXPOSE $PORT
 

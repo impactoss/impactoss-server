@@ -6,12 +6,12 @@ class IndicatorsController < ApplicationController
     @indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @indicators
 
-    render json: @indicators
+    render json: serialize(@indicators)
   end
 
   # GET /indicators/1
   def show
-    render json: @indicator
+    render json: serialize(@indicator)
   end
 
   # POST /indicators
@@ -21,7 +21,8 @@ class IndicatorsController < ApplicationController
     authorize @indicator
 
     if @indicator.save
-      render json: @indicator, status: :created, location: @indicator
+      render json: serialize(@indicator),
+             status: :created, location: @indicator
     else
       render json: @indicator.errors, status: :unprocessable_entity
     end
@@ -32,7 +33,7 @@ class IndicatorsController < ApplicationController
     if params[:indicator][:updated_at] && DateTime.parse(params[:indicator][:updated_at]).to_i != @indicator.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @indicator if @indicator.update_attributes!(permitted_attributes(@indicator))
+    render json: serialize(@indicator) if @indicator.update_attributes!(permitted_attributes(@indicator))
   end
 
   # DELETE /indicators/1
@@ -52,5 +53,9 @@ class IndicatorsController < ApplicationController
   def set_and_authorize_indicator
     @indicator = policy_scope(base_object).find(params[:id])
     authorize @indicator
+  end
+
+  def serialize(target)
+    IndicatorSerializer.new(target).serialized_json
   end
 end

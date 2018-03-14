@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/Netflix/fast_jsonapi
+  revision: dfd215d3a1b0695143520f695891656ee4de18af
+  branch: dev
+  specs:
+    fast_jsonapi (1.0.17)
+      activesupport (>= 4.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -196,6 +204,7 @@ GEM
     nio4r (1.2.1)
     nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
+    oj (3.5.0)
     orm_adapter (0.5.0)
     overcommit (0.37.0)
       childprocess (~> 0.5.8)
@@ -371,6 +380,7 @@ DEPENDENCIES
   dotenv-rails
   factory_girl_rails
   faker
+  fast_jsonapi!
   fog-aws
   foundation-rails
   i18n-tasks (~> 0.9.6)
@@ -379,6 +389,7 @@ DEPENDENCIES
   launchy
   letter_opener_web
   listen
+  oj
   overcommit
   paper_trail
   pg (~> 0.18)
@@ -404,4 +415,4 @@ RUBY VERSION
    ruby 2.3.3p222
 
 BUNDLED WITH
-   1.14.3
+   1.16.1
