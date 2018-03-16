@@ -1,6 +1,4 @@
-class UserRole < ApplicationRecord
-  has_paper_trail
-
+class UserRole < VersionedRecord
   belongs_to :user
   belongs_to :role
 

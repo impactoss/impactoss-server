@@ -29,8 +29,9 @@ class UserRolesController < ApplicationController
 
   # PATCH/PUT /user_roles/1
   def update
-    render json: @user_role if @user_role
-                                            .update_attributes!(permitted_attributes(@user_role))
+    if @user_role.update_attributes!(permitted_attributes(@user_role))
+      render json: @user_role
+    end
   end
 
   # DELETE /user_roles/1

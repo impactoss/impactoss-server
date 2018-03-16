@@ -1,6 +1,4 @@
-class ProgressReport < ApplicationRecord
-  has_paper_trail
-
+class ProgressReport < VersionedRecord
   belongs_to :indicator
   belongs_to :due_date, required: false
   has_many :measures, through: :indicator
@@ -10,6 +8,4 @@ class ProgressReport < ApplicationRecord
 
   validates :title, presence: true
   validates :indicator_id, presence: true
-
-  default_scope { includes(:versions) }
 end

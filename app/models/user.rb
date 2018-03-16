@@ -6,6 +6,16 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
   has_paper_trail ignore: [:tokens, :updated_at]
 
+  def last_modified_user_id
+    return nil unless respond_to?(:versions) && versions.last
+    versions.last.whodunnit
+  end
+
+  def last_modified_user
+    return nil unless last_modified_user_id
+    User.find last_modified_user_id
+  end
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
