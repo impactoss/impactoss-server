@@ -31,7 +31,7 @@ class Seeds
     body = Taxonomy.new(
         title: 'Human rights mechanism',
         tags_recommendations: true,
-        groups_recommendations: 1,
+        groups_recommendations_default: 1,
         tags_measures: false,
         tags_users: false,
         allow_multiple: false,
@@ -46,7 +46,7 @@ class Seeds
     session = Taxonomy.new(
         title: 'Reporting cycle',
         tags_recommendations: true,
-        groups_recommendations: 2,
+        groups_recommendations_default: 2,
         tags_measures: false,
         tags_users: false,
         allow_multiple: false,
