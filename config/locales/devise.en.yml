@@ -1,6 +1,8 @@
 # Additional translations at https://github.com/plataformatec/devise/wiki/I18n
 
 en:
+  hello: "hello"
+  welcome: "welcome"
   devise:
     confirmations:
       confirmed: "Your email address has been successfully confirmed."
