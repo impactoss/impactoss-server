@@ -5,11 +5,4 @@
     <br />
     <small><%= t('sitewide_header.title.sub') %></small>
   </h1>
-  <% if user_signed_in? %>
-    <%= link_to t('menu.password'), edit_user_password_path %> |
-    <%= link_to t('menu.signout'), destroy_user_session_path, method: 'delete' %>
-    <% if current_user.role? "admin" %>
-      | <%= link_to t('menu.users'), users_path %>
-    <% end %>
-  <% end %>
 </div>
