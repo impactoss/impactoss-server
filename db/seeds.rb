@@ -56,7 +56,6 @@ class Seeds
       )
     session.save!
 
-    # Country specific taxonomy
     cluster = Taxonomy.new(
         title: 'Recommendation cluster',
         tags_recommendations: true,
