@@ -27,7 +27,7 @@ class Seeds
     Role.new(name: 'contributor', friendly_name: 'Contributor').save!
 
     # Set up taxonomies
-    # Global taxonomy
+    # id 1
     body = Taxonomy.new(
         title: 'Human rights mechanism',
         tags_recommendations: true,
@@ -42,7 +42,7 @@ class Seeds
       )
     body.save!
 
-    # Global taxonomy
+    # id 2
     session = Taxonomy.new(
         title: 'Reporting cycle',
         tags_recommendations: true,
@@ -55,7 +55,7 @@ class Seeds
         tags_sdgtargets: false,
       )
     session.save!
-
+    # id 3
     cluster = Taxonomy.new(
         title: 'Recommendation cluster',
         tags_recommendations: true,
@@ -68,8 +68,19 @@ class Seeds
         groups_measures_default: 1
       )
     cluster.save!
-
-
+    # id 4
+    agency = Taxonomy.new(
+        title: 'Implementing agency',
+        tags_recommendations: false,
+        tags_measures: true,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 10,
+        is_smart: false,
+        tags_sdgtargets: false,        
+      )
+    agency.save!
+    
     # Set up categories
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
     FactoryGirl.create(
