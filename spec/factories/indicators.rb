@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 FactoryGirl.define do
   factory :indicator do
-    title { Faker::Hipster.sentence }
+    title { Faker::Lorem.sentence }
     description { Faker::Hipster.sentence }
 
     trait :without_measure do
