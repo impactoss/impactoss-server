@@ -13,11 +13,11 @@ RSpec.describe DueDateMailer, type: :mailer do
     end
 
     it "mentions the managers name" do
-      expect(mail.body.encoded).to match(manager.name)
+      expect(mail.body).to match(manager.name)
     end
 
     it "mentions the indicator title" do
-      expect(mail.body.encoded).to match(due_date.indicator.title)
+      expect(mail.body).to match(due_date.indicator.title)
     end
   end
 
@@ -33,11 +33,11 @@ RSpec.describe DueDateMailer, type: :mailer do
     end
 
     it "mentions the managers name" do
-      expect(mail.body.encoded).to match(manager.name)
+      expect(mail.body).to match(manager.name)
     end
 
     it "mentions the indicator title" do
-      expect(mail.body.encoded).to match(due_date.indicator.title)
+      expect(mail.body).to match(due_date.indicator.title)
     end
   end
 
@@ -54,11 +54,11 @@ RSpec.describe DueDateMailer, type: :mailer do
     end
 
     it "mentions the managers name" do
-      expect(mail.body.encoded).to match(manager.name)
+      expect(mail.body).to match(manager.name)
     end
 
     it "mentions the indicator title" do
-      expect(mail.body.encoded).to match(due_date.indicator.title)
+      expect(mail.body).to match(due_date.indicator.title)
     end
   end
 
@@ -75,11 +75,11 @@ RSpec.describe DueDateMailer, type: :mailer do
     end
 
     it "mentions the managers name" do
-      expect(mail.body.encoded).to match(manager.name)
+      expect(mail.body).to match(manager.name)
     end
 
     it "mentions the indicator title" do
-      expect(mail.body.encoded).to match(due_date.indicator.title)
+      expect(mail.body).to match(due_date.indicator.title)
     end
   end
 end
