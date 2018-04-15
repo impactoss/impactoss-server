@@ -44,9 +44,11 @@ class IndicatorsController < ApplicationController
   private
 
   def base_object
-    return Measure.find(params[:measure_id]).indicators if params[:measure_id]
-
-    Indicator
+    if params[:measure_id]
+      Measure.find(params[:measure_id]).indicators
+    else
+      Indicator
+    end.with_versions
   end
 
   # Use callbacks to share common setup or constraints between actions.

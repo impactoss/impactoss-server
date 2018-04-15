@@ -44,11 +44,15 @@ class SdgtargetsController < ApplicationController
   private
 
   def base_object
-    return Category.find(params[:category_id]).sdgtargets if params[:category_id]
-    return Recommendation.find(params[:recommendation_id]).sdgtargets if params[:recommendation_id]
-    return Indicator.find(params[:indicator_id]).sdgtargets if params[:indicator_id]
-
-    Sdgtarget
+    if params[:category_id]
+      Category.find(params[:category_id]).measures
+    elsif params[:recommendation_id]
+      Recommendation.find(params[:recommendation_id]).measures
+    elsif params[:indicator_id]
+      Indicator.find(params[:indicator_id]).measures
+    else
+      Sdgtarget
+    end.with_versions
   end
 
   # Use callbacks to share common setup or constraints between actions.

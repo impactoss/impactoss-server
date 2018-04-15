@@ -44,10 +44,13 @@ class RecommendationsController < ApplicationController
   private
 
   def base_object
-    return Category.find(params[:category_id]).recommendations if params[:category_id]
-    return Measure.find(params[:measure_id]).recommendations if params[:measure_id]
-
-    Recommendation
+    if params[:category_id]
+      Category.find(params[:category_id]).recommendations
+    elsif params[:measure_id]
+      Measure.find(params[:measure_id]).recommendations
+    else
+      Recommendation
+    end.with_versions
   end
 
   # Use callbacks to share common setup or constraints between actions.
