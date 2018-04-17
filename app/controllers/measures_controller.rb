@@ -7,12 +7,12 @@ class MeasuresController < ApplicationController
     @measures = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @measures
 
-    render json: @measures
+    render json: serialize(@measures)
   end
 
   # GET /measures/1
   def show
-    render json: @measure
+    render json: serialize(@measure)
   end
 
   # POST /measures
@@ -22,7 +22,7 @@ class MeasuresController < ApplicationController
     authorize @measure
 
     if @measure.save
-      render json: @measure, status: :created, location: @measure
+      render json: serialize(@measure), status: :created, location: @measure
     else
       render json: @measure.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class MeasuresController < ApplicationController
     if params[:measure][:updated_at] && DateTime.parse(params[:measure][:updated_at]).to_i != @measure.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @measure if @measure.update_attributes!(permitted_attributes(@measure))
+    render json: serialize(@measure) if @measure.update_attributes!(permitted_attributes(@measure))
   end
 
   # DELETE /measures/1
@@ -59,5 +59,9 @@ class MeasuresController < ApplicationController
   def set_and_authorize_measure
     @measure = policy_scope(base_object).find(params[:id])
     authorize @measure
+  end
+
+  def serialize(target)
+    MeasureSerializer.new(target).serialized_json
   end
 end
