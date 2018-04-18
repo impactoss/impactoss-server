@@ -6,12 +6,12 @@ class PagesController < ApplicationController
     @pages = policy_scope(base_object).order(created_at: :desc)
     authorize @pages
 
-    render json: @pages
+    render json: serialize(@pages)
   end
 
   # GET /pages/1
   def show
-    render json: @page
+    render json: serialize(@page)
   end
 
   # POST /pages
@@ -21,7 +21,7 @@ class PagesController < ApplicationController
     authorize @page
 
     if @page.save
-      render json: @page, status: :created, location: @page
+      render json: serialize(@page), status: :created, location: @page
     else
       render json: @page.errors, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class PagesController < ApplicationController
     if params[:page][:updated_at] && DateTime.parse(params[:page][:updated_at]).to_i != @page.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @page if @page.update_attributes!(permitted_attributes(@page))
+    render json: serialize(@page) if @page.update_attributes!(permitted_attributes(@page))
   end
 
   # DELETE /pages/1
@@ -50,5 +50,9 @@ class PagesController < ApplicationController
 
   def base_object
     Page.with_versions
+  end
+
+  def serialize(target, serializer: PageSerializer)
+    super
   end
 end

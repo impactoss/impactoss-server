@@ -61,7 +61,7 @@ class MeasuresController < ApplicationController
     authorize @measure
   end
 
-  def serialize(target)
-    MeasureSerializer.new(target).serialized_json
+  def serialize(target, serializer: MeasureSerializer)
+    super
   end
 end

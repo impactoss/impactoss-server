@@ -6,12 +6,12 @@ class DueDatesController < ApplicationController
     @due_dates = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @due_dates
 
-    render json: @due_dates
+    render json: serialize(@due_dates)
   end
 
   # GET /due_dates/1
   def show
-    render json: @due_date
+    render json: serialize(@due_date)
   end
 
   # POST /due_dates
@@ -21,7 +21,7 @@ class DueDatesController < ApplicationController
     authorize @due_date
 
     if @due_date.save
-      render json: @due_date, status: :created, location: @due_date
+      render json: serialize(@due_date), status: :created, location: @due_date
     else
       render json: @due_date.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class DueDatesController < ApplicationController
 
   # PATCH/PUT /due_dates/1
   def update
-    render json: @due_date if @due_date.update_attributes!(permitted_attributes(@due_date))
+    render json: serialize(@due_date) if @due_date.update_attributes!(permitted_attributes(@due_date))
   end
 
   # DELETE /due_dates/1
@@ -47,5 +47,9 @@ class DueDatesController < ApplicationController
 
   def base_object
     DueDate.with_versions
+  end
+
+  def serialize(target, serializer: DueDateSerializer)
+    super
   end
 end

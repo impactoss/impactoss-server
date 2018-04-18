@@ -7,12 +7,12 @@ class RecommendationsController < ApplicationController
     @recommendations = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @recommendations
 
-    render json: @recommendations
+    render json: serialize(@recommendations)
   end
 
   # GET /recommendations/1
   def show
-    render json: @recommendation
+    render json: serialize(@recommendation)
   end
 
   # POST /recommendations
@@ -22,7 +22,7 @@ class RecommendationsController < ApplicationController
     authorize @recommendation
 
     if @recommendation.save
-      render json: @recommendation, status: :created, location: @recommendation
+      render json: serialize(@recommendation), status: :created, location: @recommendation
     else
       render json: @recommendation.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class RecommendationsController < ApplicationController
     if params[:recommendation][:updated_at] && DateTime.parse(params[:recommendation][:updated_at]).to_i != @recommendation.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @recommendation if @recommendation.update_attributes!(permitted_attributes(@recommendation))
+    render json: serialize(@recommendation) if @recommendation.update_attributes!(permitted_attributes(@recommendation))
   end
 
   # DELETE /recommendations/1
@@ -57,5 +57,9 @@ class RecommendationsController < ApplicationController
   def set_and_authorize_recommendation
     @recommendation = policy_scope(base_object).find(params[:id])
     authorize @recommendation
+  end
+
+  def serialize(target, serializer: RecommendationSerializer)
+    super
   end
 end

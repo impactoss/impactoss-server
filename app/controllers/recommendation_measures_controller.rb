@@ -6,12 +6,12 @@ class RecommendationMeasuresController < ApplicationController
     @recommendation_measures = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @recommendation_measures
 
-    render json: @recommendation_measures
+    render json: serialize(@recommendation_measures)
   end
 
   # GET /recommendation_measures/1
   def show
-    render json: @recommendation_measure
+    render json: serialize(@recommendation_measure)
   end
 
   # POST /recommendation_measures
@@ -21,7 +21,7 @@ class RecommendationMeasuresController < ApplicationController
     authorize @recommendation_measure
 
     if @recommendation_measure.save
-      render json: @recommendation_measure, status: :created, location: @recommendation_measure
+      render json: serialize(@recommendation_measure), status: :created, location: @recommendation_measure
     else
       render json: @recommendation_measure.errors, status: :unprocessable_entity
     end
@@ -29,8 +29,9 @@ class RecommendationMeasuresController < ApplicationController
 
   # PATCH/PUT /recommendation_measures/1
   def update
-    render json: @recommendation_measure if @recommendation_measure
-                                            .update_attributes!(permitted_attributes(@recommendation_measure))
+    if @recommendation_measure.update_attributes!(permitted_attributes(@recommendation_measure))
+      render json: serialize(@recommendation_measure)
+    end
   end
 
   # DELETE /recommendation_measures/1
@@ -48,5 +49,9 @@ class RecommendationMeasuresController < ApplicationController
 
   def base_object
     RecommendationMeasure
+  end
+
+  def serialize(target, serializer: RecommendationMeasureSerializer)
+    super
   end
 end

@@ -6,12 +6,12 @@ class SdgtargetRecommendationsController < ApplicationController
     @sdgtarget_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtarget_categories
 
-    render json: @sdgtarget_categories
+    render json: serialize(@sdgtarget_categories, serializer: SdgtargetCategorySerializer)
   end
 
   # GET /sdgtarget_categories/1
   def show
-    render json: @sdgtarget_recommendation
+    render json: serialize(@sdgtarget_recommendation)
   end
 
   # POST /sdgtarget_categories
@@ -47,5 +47,9 @@ class SdgtargetRecommendationsController < ApplicationController
 
   def base_object
     SdgtargetRecommendation
+  end
+
+  def serialize(target, serializer: SdgtargetRecommendationSerializer)
+    super
   end
 end

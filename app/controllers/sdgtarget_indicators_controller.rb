@@ -6,12 +6,12 @@ class SdgtargetIndicatorsController < ApplicationController
     @sdgtarget_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtarget_categories
 
-    render json: @sdgtarget_categories
+    render json: serialize(@sdgtarget_categories)
   end
 
   # GET /sdgtarget_categories/1
   def show
-    render json: @sdgtarget_indicator
+    render json: serialize(@sdgtarget_indicator)
   end
 
   # POST /sdgtarget_categories
@@ -21,7 +21,7 @@ class SdgtargetIndicatorsController < ApplicationController
     authorize @sdgtarget_indicator
 
     if @sdgtarget_indicator.save
-      render json: @sdgtarget_indicator, status: :created, location: @sdgtarget_indicator
+      render json: serialize(@sdgtarget_indicator), status: :created, location: @sdgtarget_indicator
     else
       render json: @sdgtarget_indicator.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class SdgtargetIndicatorsController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: @sdgtarget_indicator if @sdgtarget_indicator.update_attributes!(permitted_attributes(@sdgtarget_indicator))
+    render json: serialize(@sdgtarget_indicator) if @sdgtarget_indicator.update_attributes!(permitted_attributes(@sdgtarget_indicator))
   end
 
   # DELETE /sdgtarget_categories/1
@@ -47,5 +47,9 @@ class SdgtargetIndicatorsController < ApplicationController
 
   def base_object
     SdgtargetIndicator
+  end
+
+  def serialize(target, serializer: SdgtargetIndicatorSerializer)
+    super
   end
 end

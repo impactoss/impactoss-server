@@ -6,12 +6,12 @@ class CategoriesController < ApplicationController
     @categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @categories
 
-    render json: @categories
+    render json: serialize(@categories)
   end
 
   # GET /categories/1
   def show
-    render json: @category
+    render json: serialize(@category)
   end
 
   # POST /categories
@@ -21,7 +21,7 @@ class CategoriesController < ApplicationController
     authorize @category
 
     if @category.save
-      render json: @category, status: :created, location: @category
+      render json: serialize(@category), status: :created, location: @category
     else
       render json: @category.errors, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class CategoriesController < ApplicationController
     if params[:category][:updated_at] && DateTime.parse(params[:category][:updated_at]).to_i != @category.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @category if @category.update_attributes!(permitted_attributes(@category))
+    render json: serialize(@category) if @category.update_attributes!(permitted_attributes(@category))
   end
 
   # DELETE /categories/1
@@ -50,5 +50,9 @@ class CategoriesController < ApplicationController
 
   def base_object
     Category.with_versions
+  end
+
+  def serialize(target, serializer: CategorySerializer)
+    super
   end
 end

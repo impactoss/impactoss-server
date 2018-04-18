@@ -6,12 +6,12 @@ class MeasureCategoriesController < ApplicationController
     @measure_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @measure_categories
 
-    render json: @measure_categories
+    render json: serialize(@measure_categories)
   end
 
   # GET /measure_categories/1
   def show
-    render json: @measure_category
+    render json: serialize(@measure_category)
   end
 
   # POST /measure_categories
@@ -21,7 +21,7 @@ class MeasureCategoriesController < ApplicationController
     authorize @measure_category
 
     if @measure_category.save
-      render json: @measure_category, status: :created, location: @measure_category
+      render json: serialize(@measure_category), status: :created, location: @measure_category
     else
       render json: @measure_category.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class MeasureCategoriesController < ApplicationController
 
   # PATCH/PUT /measure_categories/1
   def update
-    render json: @measure_category if @measure_category.update_attributes!(permitted_attributes(@measure_category))
+    render json: serialize(@measure_category) if @measure_category.update_attributes!(permitted_attributes(@measure_category))
   end
 
   # DELETE /measure_categories/1
@@ -47,5 +47,9 @@ class MeasureCategoriesController < ApplicationController
 
   def base_object
     MeasureCategory
+  end
+
+  def serialize(target, serializer: MeasureCategorySerializer)
+    super
   end
 end

@@ -57,7 +57,7 @@ class IndicatorsController < ApplicationController
     authorize @indicator
   end
 
-  def serialize(target)
-    IndicatorSerializer.new(target).serialized_json
+  def serialize(target, serializer: IndicatorSerializer)
+    super
   end
 end

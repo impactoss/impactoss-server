@@ -6,12 +6,12 @@ class TaxonomiesController < ApplicationController
     @taxonomies = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @taxonomies
 
-    render json: @taxonomies
+    render json: serialize(@taxonomies)
   end
 
   # GET /taxonomies/1
   def show
-    render json: @taxonomy
+    render json: serialize(@taxonomy)
   end
 
   # POST /taxonomies
@@ -21,7 +21,7 @@ class TaxonomiesController < ApplicationController
     authorize @taxonomy
 
     if @taxonomy.save
-      render json: @taxonomy, status: :created, location: @taxonomy
+      render json: serialize(@taxonomy), status: :created, location: @taxonomy
     else
       render json: @taxonomy.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,9 @@ class TaxonomiesController < ApplicationController
 
   # PATCH/PUT /taxonomies/1
   def update
-    render json: @taxonomy if @taxonomy.update_attributes!(permitted_attributes(@taxonomy))
+    if @taxonomy.update_attributes!(permitted_attributes(@taxonomy))
+      render json: serialize(@taxonomy)
+    end
   end
 
   # DELETE /taxonomies/1
@@ -47,5 +49,9 @@ class TaxonomiesController < ApplicationController
 
   def base_object
     Taxonomy.with_versions
+  end
+
+  def serialize(target, serializer: TaxonomySerializer)
+    super
   end
 end

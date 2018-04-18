@@ -7,12 +7,12 @@ class SdgtargetsController < ApplicationController
     @sdgtargets = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtargets
 
-    render json: @sdgtargets
+    render json: serialize(@sdgtargets)
   end
 
   # GET /sdgtargets/1
   def show
-    render json: @sdgtarget
+    render json: serialize(@sdgtarget)
   end
 
   # POST /sdgtargets
@@ -22,7 +22,7 @@ class SdgtargetsController < ApplicationController
     authorize @sdgtarget
 
     if @sdgtarget.save
-      render json: @sdgtarget, status: :created, location: @sdgtarget
+      render json: serialize(@sdgtarget), status: :created, location: @sdgtarget
     else
       render json: @sdgtarget.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class SdgtargetsController < ApplicationController
     if params[:sdgtarget][:updated_at] && DateTime.parse(params[:sdgtarget][:updated_at]).to_i != @sdgtarget.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @sdgtarget if @sdgtarget.update_attributes!(permitted_attributes(@sdgtarget))
+    render json: serialize(@sdgtarget) if @sdgtarget.update_attributes!(permitted_attributes(@sdgtarget))
   end
 
   # DELETE /sdgtargets/1
@@ -53,6 +53,10 @@ class SdgtargetsController < ApplicationController
     else
       Sdgtarget
     end.with_versions
+  end
+
+  def serialize(target, serializer: SdgtargetSerializer)
+    super
   end
 
   # Use callbacks to share common setup or constraints between actions.
