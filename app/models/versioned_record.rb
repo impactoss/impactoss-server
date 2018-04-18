@@ -11,9 +11,13 @@ class VersionedRecord < ApplicationRecord
   end
 
   scope :with_versions, -> do
-    left_outer_joins(:versions).select(
-      "#{quoted_table_name}.*",
-      "#{::PaperTrail::Version.quoted_table_name}.whodunnit AS last_modified_user_id"
+    select(
+      "#{quoted_table_name}.*," \
+      "(SELECT whodunnit FROM #{::PaperTrail::Version.quoted_table_name} " \
+      "WHERE #{::PaperTrail::Version.quoted_table_name}.item_type = '#{self.base_class.name}' " \
+      "AND #{::PaperTrail::Version.quoted_table_name}.item_id = #{quoted_table_name}.id " \
+      "ORDER BY #{::PaperTrail::Version.quoted_table_name}.created_at DESC " \
+      "LIMIT 1) last_modified_user_id"
     )
   end
 end
