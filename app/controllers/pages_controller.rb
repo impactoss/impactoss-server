@@ -3,7 +3,7 @@ class PagesController < ApplicationController
 
   # GET /pages
   def index
-    @pages = policy_scope(Page).order(created_at: :desc)
+    @pages = policy_scope(base_object).order(created_at: :desc)
     authorize @pages
 
     render json: @pages
@@ -44,7 +44,11 @@ class PagesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_page
-    @page = policy_scope(Page).find(params[:id])
+    @page = policy_scope(base_object).find(params[:id])
     authorize @page
+  end
+
+  def base_object
+    Page.with_versions
   end
 end

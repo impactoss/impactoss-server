@@ -3,7 +3,7 @@ class RecommendationMeasuresController < ApplicationController
 
   # GET /recommendation_measures
   def index
-    @recommendation_measures = policy_scope(RecommendationMeasure).order(created_at: :desc).page(params[:page])
+    @recommendation_measures = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @recommendation_measures
 
     render json: @recommendation_measures
@@ -42,7 +42,11 @@ class RecommendationMeasuresController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_recommendation_measure
-    @recommendation_measure = policy_scope(RecommendationMeasure).find(params[:id])
+    @recommendation_measure = policy_scope(base_object).find(params[:id])
     authorize @recommendation_measure
+  end
+
+  def base_object
+    RecommendationMeasure
   end
 end

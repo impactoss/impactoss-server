@@ -3,7 +3,7 @@ class UserRolesController < ApplicationController
 
   # GET /user_roles
   def index
-    @user_roles = policy_scope(UserRole).order(created_at: :desc).page(params[:page])
+    @user_roles = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @user_roles
 
     render json: @user_roles
@@ -43,7 +43,11 @@ class UserRolesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_user_role
-    @user_role = policy_scope(UserRole).find(params[:id])
+    @user_role = policy_scope(base_object).find(params[:id])
     authorize @user_role
+  end
+
+  def base_object
+    UserRole
   end
 end

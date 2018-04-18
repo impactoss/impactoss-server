@@ -3,7 +3,7 @@ class TaxonomiesController < ApplicationController
 
   # GET /taxonomies
   def index
-    @taxonomies = policy_scope(Taxonomy).order(created_at: :desc).page(params[:page])
+    @taxonomies = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @taxonomies
 
     render json: @taxonomies
@@ -41,7 +41,11 @@ class TaxonomiesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_taxonomy
-    @taxonomy = policy_scope(Taxonomy).find(params[:id])
+    @taxonomy = policy_scope(base_object).find(params[:id])
     authorize @taxonomy
+  end
+
+  def base_object
+    Taxonomy.with_versions
   end
 end

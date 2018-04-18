@@ -3,7 +3,7 @@ class MeasureIndicatorsController < ApplicationController
 
   # GET /measure_indicators
   def index
-    @measure_indicators = policy_scope(MeasureIndicator).order(created_at: :desc).page(params[:page])
+    @measure_indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @measure_indicators
 
     render json: @measure_indicators
@@ -41,7 +41,11 @@ class MeasureIndicatorsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_measure_indicator
-    @measure_indicator = policy_scope(MeasureIndicator).find(params[:id])
+    @measure_indicator = policy_scope(base_object).find(params[:id])
     authorize @measure_indicator
+  end
+
+  def base_object
+    MeasureIndicator
   end
 end

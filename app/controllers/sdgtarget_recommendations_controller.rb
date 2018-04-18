@@ -3,7 +3,7 @@ class SdgtargetRecommendationsController < ApplicationController
 
   # GET /sdgtarget_categories
   def index
-    @sdgtarget_categories = policy_scope(SdgtargetRecommendation).order(created_at: :desc).page(params[:page])
+    @sdgtarget_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtarget_categories
 
     render json: @sdgtarget_categories
@@ -41,7 +41,11 @@ class SdgtargetRecommendationsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_sdgtarget_recommendation
-    @sdgtarget_recommendation = policy_scope(SdgtargetRecommendation).find(params[:id])
+    @sdgtarget_recommendation = policy_scope(base_object).find(params[:id])
     authorize @sdgtarget_recommendation
+  end
+
+  def base_object
+    SdgtargetRecommendation
   end
 end

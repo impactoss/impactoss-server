@@ -3,7 +3,7 @@ class CategoriesController < ApplicationController
 
   # GET /categories
   def index
-    @categories = policy_scope(Category).order(created_at: :desc).page(params[:page])
+    @categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @categories
 
     render json: @categories
@@ -44,7 +44,11 @@ class CategoriesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_category
-    @category = policy_scope(Category).find(params[:id])
+    @category = policy_scope(base_object).find(params[:id])
     authorize @category
+  end
+
+  def base_object
+    Category.with_versions
   end
 end

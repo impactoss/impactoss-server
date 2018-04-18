@@ -3,7 +3,7 @@ class DueDatesController < ApplicationController
 
   # GET /due_dates
   def index
-    @due_dates = policy_scope(DueDate).order(created_at: :desc).page(params[:page])
+    @due_dates = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @due_dates
 
     render json: @due_dates
@@ -41,7 +41,11 @@ class DueDatesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_due_date
-    @due_date = policy_scope(DueDate).find(params[:id])
+    @due_date = policy_scope(base_object).find(params[:id])
     authorize @due_date
+  end
+
+  def base_object
+    DueDate.with_versions
   end
 end

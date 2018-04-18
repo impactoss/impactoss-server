@@ -3,7 +3,7 @@ class RecommendationCategoriesController < ApplicationController
 
   # GET /recommendation_categories
   def index
-    @recommendation_categories = policy_scope(RecommendationCategory).order(created_at: :desc).page(params[:page])
+    @recommendation_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @recommendation_categories
 
     render json: @recommendation_categories
@@ -42,7 +42,11 @@ class RecommendationCategoriesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_recommendation_category
-    @recommendation_category = policy_scope(RecommendationCategory).find(params[:id])
+    @recommendation_category = policy_scope(base_object).find(params[:id])
     authorize @recommendation_category
+  end
+
+  def base_object
+    RecommendationCategory
   end
 end

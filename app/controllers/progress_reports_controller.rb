@@ -4,7 +4,7 @@ class ProgressReportsController < ApplicationController
 
   # GET /progress_reports
   def index
-    @progress_reports = policy_scope(ProgressReport).order(created_at: :desc).page(params[:page])
+    @progress_reports = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @progress_reports
 
     render json: @progress_reports
@@ -45,7 +45,11 @@ class ProgressReportsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_progress_report
-    @progress_report = policy_scope(ProgressReport).find(params[:id])
+    @progress_report = policy_scope(base_object).find(params[:id])
     authorize @progress_report
+  end
+
+  def base_object
+    ProgressReport.with_versions
   end
 end
