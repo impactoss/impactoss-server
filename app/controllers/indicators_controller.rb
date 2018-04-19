@@ -3,7 +3,7 @@ class IndicatorsController < ApplicationController
 
   # GET /indicators
   def index
-    @indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
+    @indicators = policy_scope(base_object).with_versions.order(created_at: :desc).page(params[:page])
     authorize @indicators
 
     render json: serialize(@indicators)
@@ -44,18 +44,20 @@ class IndicatorsController < ApplicationController
   private
 
   def base_object
-    return Measure.find(params[:measure_id]).indicators if params[:measure_id]
-
-    Indicator
+    if params[:measure_id]
+      Measure.find(params[:measure_id]).indicators
+    else
+      Indicator
+    end.with_versions
   end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_indicator
-    @indicator = policy_scope(base_object).find(params[:id])
+    @indicator = policy_scope(base_object).with_versions.find(params[:id])
     authorize @indicator
   end
 
-  def serialize(target)
-    IndicatorSerializer.new(target).serialized_json
+  def serialize(target, serializer: IndicatorSerializer)
+    super
   end
 end
