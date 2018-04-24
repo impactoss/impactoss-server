@@ -33,7 +33,10 @@ class IndicatorsController < ApplicationController
     if params[:indicator][:updated_at] && DateTime.parse(params[:indicator][:updated_at]).to_i != @indicator.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: serialize(@indicator) if @indicator.update_attributes!(permitted_attributes(@indicator))
+    if @indicator.update_attributes!(permitted_attributes(@indicator))
+      set_and_authorize_indicator
+      render json: serialize(@indicator)
+    end
   end
 
   # DELETE /indicators/1
@@ -44,9 +47,11 @@ class IndicatorsController < ApplicationController
   private
 
   def base_object
-    return Measure.find(params[:measure_id]).indicators if params[:measure_id]
-
-    Indicator
+    if params[:measure_id]
+      Measure.find(params[:measure_id]).indicators
+    else
+      Indicator
+    end.with_versions
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -55,7 +60,7 @@ class IndicatorsController < ApplicationController
     authorize @indicator
   end
 
-  def serialize(target)
-    IndicatorSerializer.new(target).serialized_json
+  def serialize(target, serializer: IndicatorSerializer)
+    super
   end
 end

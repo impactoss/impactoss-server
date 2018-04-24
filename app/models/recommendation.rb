@@ -1,7 +1,5 @@
 # frozen_string_literal: true
-class Recommendation < ApplicationRecord
-  has_paper_trail
-
+class Recommendation < VersionedRecord
   has_many :recommendation_measures, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_categories, inverse_of: :recommendation, dependent: :destroy
   has_many :sdgtarget_recommendations, inverse_of: :recommendation, dependent: :destroy
@@ -15,6 +13,4 @@ class Recommendation < ApplicationRecord
 
   validates :title, presence: true
   validates :reference, presence: true
-
-  default_scope { includes(:versions) }
 end
