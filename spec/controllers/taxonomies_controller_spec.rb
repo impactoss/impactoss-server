@@ -78,7 +78,7 @@ RSpec.describe TaxonomiesController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:taxonomy) { FactoryGirl.create(:taxonomy) }
     subject do
       put :update,
