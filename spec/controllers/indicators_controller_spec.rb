@@ -130,8 +130,8 @@ RSpec.describe IndicatorsController, type: :controller do
     end
   end
 
-  describe 'Put update' do
-    let(:indicator) { FactoryGirl.create(:indicator) }
+  describe 'PUT update' do
+    let!(:indicator) { FactoryGirl.create(:indicator) }
     subject do
       put :update,
           format: :json,
@@ -165,7 +165,7 @@ RSpec.describe IndicatorsController, type: :controller do
         expect(subject).to be_ok
       end
 
-      it 'will reject and update where the last_updated_at is older than updated_at in the database' do
+      it 'will reject an update where the last_updated_at is older than updated_at in the database' do
         sign_in user
         indicator_get = get :show, params: { id: indicator }, format: :json
         json = JSON.parse(indicator_get.body)
@@ -192,6 +192,14 @@ RSpec.describe IndicatorsController, type: :controller do
         sign_in user
         json = JSON.parse(subject.body)
         expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq user.id
+      end
+
+      it 'will return the latest last_modified_user_id', versioning: true do
+        expect(PaperTrail).to be_enabled
+        indicator.versions.first.update_column(:whodunnit, contributor.id)
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq(user.id)
       end
 
       it 'will return an error if params are incorrect' do

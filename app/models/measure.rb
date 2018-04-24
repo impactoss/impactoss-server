@@ -1,7 +1,5 @@
 # frozen_string_literal: true
-class Measure < ApplicationRecord
-  has_paper_trail
-
+class Measure < VersionedRecord
   has_many :recommendation_measures, inverse_of: :measure, dependent: :destroy
   has_many :sdgtarget_measures, inverse_of: :measure, dependent: :destroy
   has_many :measure_categories, inverse_of: :measure, dependent: :destroy
@@ -17,6 +15,4 @@ class Measure < ApplicationRecord
   accepts_nested_attributes_for :measure_categories
 
   validates :title, presence: true
-
-  default_scope { includes(:versions) }
 end

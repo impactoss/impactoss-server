@@ -8,12 +8,12 @@ class UsersController < ApplicationController
     @users = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @users
 
-    render json: @users
+    render json: serialize(@users)
   end
 
   # GET /users/1
   def show
-    render json: @user
+    render json: serialize(@user)
   end
 
   # POST /users
@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     authorize @user
 
     if @user.save
-      render json: @user, status: :created, location: @user
+      render json: serialize(@user), status: :created, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    render json: @user if @user.update_attributes!(permitted_attributes(@user))
+    render json: serialize(@user) if @user.update_attributes!(permitted_attributes(@user))
   end
 
   # DELETE /users/1
@@ -43,6 +43,10 @@ class UsersController < ApplicationController
 
   def base_object
     User
+  end
+
+  def serialize(target, serializer: UserSerializer)
+    super
   end
 
   # Use callbacks to share common setup or constraints between actions.

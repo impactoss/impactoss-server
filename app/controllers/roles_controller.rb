@@ -6,12 +6,12 @@ class RolesController < ApplicationController
     @roles = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @roles
 
-    render json: @roles
+    render json: serialize(@roles)
   end
 
   # GET /roles/1
   def show
-    render json: @role
+    render json: serialize(@role)
   end
 
   # POST /roles
@@ -21,7 +21,7 @@ class RolesController < ApplicationController
     authorize @role
 
     if @role.save
-      render json: @role, status: :created, location: @role
+      render json: serialize(@role), status: :created, location: @role
     else
       render json: @role.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class RolesController < ApplicationController
 
   # PATCH/PUT /roles/1
   def update
-    render json: @role if @role.update_attributes!(permitted_attributes(@role))
+    render json: serialize(@role) if @role.update_attributes!(permitted_attributes(@role))
   end
 
   # DELETE /roles/1
@@ -47,5 +47,9 @@ class RolesController < ApplicationController
   def set_and_authorize_role
     @role = policy_scope(base_object).find(params[:id])
     authorize @role
+  end
+
+  def serialize(target, serializer: RoleSerializer)
+    super
   end
 end
