@@ -110,7 +110,7 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:guest) { FactoryGirl.create(:user, :contributor) }
     let(:contributor) { FactoryGirl.create(:user, :contributor) }
     let(:manager) { FactoryGirl.create(:user, :contributor) }

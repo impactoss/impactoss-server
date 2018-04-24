@@ -103,7 +103,7 @@ RSpec.describe RolesController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:role) { FactoryGirl.create(:role) }
     subject do
       put :update,

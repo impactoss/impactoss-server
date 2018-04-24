@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 class ApplicationMailer < ActionMailer::Base
-  default from: 'donotreply@sadata.baran.co.nz'
+  default from: 'no-reply@mail.impactoss.org'
   layout 'mailer'
 end

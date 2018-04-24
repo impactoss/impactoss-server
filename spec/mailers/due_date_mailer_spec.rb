@@ -9,7 +9,7 @@ RSpec.describe DueDateMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.due.subject'))
       expect(mail.to).to eq([manager.email])
-      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
+      expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
@@ -29,7 +29,7 @@ RSpec.describe DueDateMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.overdue.subject'))
       expect(mail.to).to eq([manager.email])
-      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
+      expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
@@ -50,7 +50,7 @@ RSpec.describe DueDateMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t('due_date_mailer.category_due.subject'))
       expect(mail.to).to eq([manager.email])
-      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
+      expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
@@ -69,9 +69,9 @@ RSpec.describe DueDateMailer, type: :mailer do
     let(:mail) { DueDateMailer.category_overdue(due_date, category) }
 
     it "renders the headers" do
-      expect(mail.subject).to eq(I18n.t('due_date_mailer.category_due.subject'))
+      expect(mail.subject).to eq(I18n.t('due_date_mailer.category_overdue.subject'))
       expect(mail.to).to eq([manager.email])
-      expect(mail.from).to eq(["donotreply@sadata.baran.co.nz"])
+      expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do

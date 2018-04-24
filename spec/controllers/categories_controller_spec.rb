@@ -113,7 +113,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:category) { FactoryGirl.create(:category) }
     subject do
       put :update,
@@ -169,6 +169,14 @@ RSpec.describe CategoriesController, type: :controller do
         sign_in user
         json = JSON.parse(subject.body)
         expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq user.id
+      end
+
+      it 'will return the latest last_modified_user_id', versioning: true do
+        expect(PaperTrail).to be_enabled
+        category.versions.first.update_column(:whodunnit, guest.id)
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq(user.id)
       end
 
       it 'will return an error if params are incorrect' do

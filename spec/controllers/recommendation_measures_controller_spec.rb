@@ -67,7 +67,7 @@ RSpec.describe RecommendationMeasuresController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:recommendation_measure) { FactoryGirl.create(:recommendation_measure) }
     subject do
       put :update,
