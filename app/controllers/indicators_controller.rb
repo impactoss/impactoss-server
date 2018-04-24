@@ -3,7 +3,7 @@ class IndicatorsController < ApplicationController
 
   # GET /indicators
   def index
-    @indicators = policy_scope(base_object).with_versions.order(created_at: :desc).page(params[:page])
+    @indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @indicators
 
     render json: serialize(@indicators)
@@ -33,7 +33,10 @@ class IndicatorsController < ApplicationController
     if params[:indicator][:updated_at] && DateTime.parse(params[:indicator][:updated_at]).to_i != @indicator.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: serialize(@indicator) if @indicator.update_attributes!(permitted_attributes(@indicator))
+    if @indicator.update_attributes!(permitted_attributes(@indicator))
+      set_and_authorize_indicator
+      render json: serialize(@indicator)
+    end
   end
 
   # DELETE /indicators/1
@@ -53,7 +56,7 @@ class IndicatorsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_indicator
-    @indicator = policy_scope(base_object).with_versions.find(params[:id])
+    @indicator = policy_scope(base_object).find(params[:id])
     authorize @indicator
   end
 

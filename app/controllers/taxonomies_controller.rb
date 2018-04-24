@@ -30,6 +30,7 @@ class TaxonomiesController < ApplicationController
   # PATCH/PUT /taxonomies/1
   def update
     if @taxonomy.update_attributes!(permitted_attributes(@taxonomy))
+      set_and_authorize_taxonomy
       render json: serialize(@taxonomy)
     end
   end

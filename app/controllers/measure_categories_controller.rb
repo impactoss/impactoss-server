@@ -29,7 +29,10 @@ class MeasureCategoriesController < ApplicationController
 
   # PATCH/PUT /measure_categories/1
   def update
-    render json: serialize(@measure_category) if @measure_category.update_attributes!(permitted_attributes(@measure_category))
+    if @measure_category.update_attributes!(permitted_attributes(@measure_category))
+      set_and_authorize_measure_category
+      render json: serialize(@measure_category)
+    end
   end
 
   # DELETE /measure_categories/1
