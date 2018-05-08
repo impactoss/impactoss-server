@@ -3,15 +3,15 @@ class MeasureIndicatorsController < ApplicationController
 
   # GET /measure_indicators
   def index
-    @measure_indicators = policy_scope(MeasureIndicator).order(created_at: :desc).page(params[:page])
+    @measure_indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @measure_indicators
 
-    render json: @measure_indicators
+    render json: serialize(@measure_indicators)
   end
 
   # GET /measure_indicators/1
   def show
-    render json: @measure_indicator
+    render json: serialize(@measure_indicator)
   end
 
   # POST /measure_indicators
@@ -21,7 +21,7 @@ class MeasureIndicatorsController < ApplicationController
     authorize @measure_indicator
 
     if @measure_indicator.save
-      render json: @measure_indicator, status: :created, location: @measure_indicator
+      render json: serialize(@measure_indicator), status: :created, location: @measure_indicator
     else
       render json: @measure_indicator.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,10 @@ class MeasureIndicatorsController < ApplicationController
 
   # PATCH/PUT /measure_indicators/1
   def update
-    render json: @measure_indicator if @measure_indicator.update_attributes!(permitted_attributes(@measure_indicator))
+    if @measure_indicator.update_attributes!(permitted_attributes(@measure_indicator))
+      set_and_authorize_measure_indicator
+      render json: serialize(@measure_indicator)
+    end
   end
 
   # DELETE /measure_indicators/1
@@ -41,7 +44,15 @@ class MeasureIndicatorsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_measure_indicator
-    @measure_indicator = policy_scope(MeasureIndicator).find(params[:id])
+    @measure_indicator = policy_scope(base_object).find(params[:id])
     authorize @measure_indicator
+  end
+
+  def base_object
+    MeasureIndicator
+  end
+
+  def serialize(target, serializer: MeasureIndicatorSerializer)
+    super
   end
 end

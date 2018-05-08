@@ -1,6 +1,4 @@
-class Sdgtarget < ApplicationRecord
-  has_paper_trail
-
+class Sdgtarget < VersionedRecord
   has_many :sdgtarget_categories, inverse_of: :sdgtarget, dependent: :destroy
   has_many :sdgtarget_indicators, inverse_of: :sdgtarget, dependent: :destroy
   has_many :sdgtarget_recommendations, inverse_of: :sdgtarget, dependent: :destroy

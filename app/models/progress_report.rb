@@ -1,6 +1,4 @@
-class ProgressReport < ApplicationRecord
-  has_paper_trail
-
+class ProgressReport < VersionedRecord
   belongs_to :indicator
   belongs_to :due_date, required: false
   has_many :measures, through: :indicator

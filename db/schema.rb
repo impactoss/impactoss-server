@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170719235935) do
+ActiveRecord::Schema.define(version: 20180508014642) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,7 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.boolean  "repeat",           default: false
     t.date     "end_date"
     t.string   "reference"
+    t.index ["created_at"], name: "index_indicators_on_created_at", using: :btree
     t.index ["draft"], name: "index_indicators_on_draft", using: :btree
     t.index ["manager_id"], name: "index_indicators_on_manager_id", using: :btree
   end
@@ -127,13 +128,14 @@ ActiveRecord::Schema.define(version: 20170719235935) do
   end
 
   create_table "recommendations", force: :cascade do |t|
-    t.text     "title",                      null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.boolean  "draft",      default: false
+    t.text     "title",                       null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "draft",       default: false
     t.boolean  "accepted"
     t.text     "response"
-    t.text     "reference",                  null: false
+    t.text     "reference",                   null: false
+    t.text     "description"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
   end
 

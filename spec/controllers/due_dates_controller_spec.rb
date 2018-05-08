@@ -113,7 +113,7 @@ RSpec.describe DueDatesController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:due_date) { FactoryGirl.create(:due_date) }
     subject do
       put :update,

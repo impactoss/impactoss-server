@@ -1,6 +1,4 @@
-class Indicator < ApplicationRecord
-  has_paper_trail
-
+class Indicator < VersionedRecord
   validates :title, presence: true
   validates :end_date, presence: true, if: :repeat?
   validates :frequency_months, presence: true, if: :repeat?
