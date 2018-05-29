@@ -250,6 +250,7 @@ ActiveRecord::Schema.define(version: 20180528083426) do
     t.string   "provider",               default: "email", null: false
     t.string   "uid",                    default: "",      null: false
     t.json     "tokens"
+    t.integer  "last_modified_user_id"
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end

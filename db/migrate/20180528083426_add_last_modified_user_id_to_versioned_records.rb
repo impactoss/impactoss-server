@@ -31,6 +31,7 @@ class AddLastModifiedUserIdToVersionedRecords < ActiveRecord::Migration[5.0]
     Recommendation,
     Sdgtarget,
     Taxonomy,
+    User,
     UserRole
   ]
 end
