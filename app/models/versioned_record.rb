@@ -4,13 +4,9 @@ class VersionedRecord < ApplicationRecord
   self.abstract_class = true
 
   after_commit :cache_last_modified_user_id
+  belongs_to :last_modified_user, required: false
 
   has_paper_trail
-
-  def last_modified_user
-    return nil unless last_modified_user_id
-    @last_modified_user ||= User.find(last_modified_user_id)
-  end
 
   private
 
