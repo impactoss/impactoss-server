@@ -55,7 +55,7 @@ class SdgtargetsController < ApplicationController
       Indicator.find(params[:indicator_id]).measures
     else
       Sdgtarget
-    end.with_versions
+    end
   end
 
   def serialize(target, serializer: SdgtargetSerializer)

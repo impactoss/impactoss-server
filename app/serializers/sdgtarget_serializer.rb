@@ -1,5 +1,5 @@
 class SdgtargetSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :title, :description, :reference, :draft
 

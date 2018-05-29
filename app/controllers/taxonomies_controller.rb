@@ -49,7 +49,7 @@ class TaxonomiesController < ApplicationController
   end
 
   def base_object
-    Taxonomy.with_versions
+    Taxonomy
   end
 
   def serialize(target, serializer: TaxonomySerializer)

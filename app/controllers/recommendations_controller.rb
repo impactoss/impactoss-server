@@ -53,7 +53,7 @@ class RecommendationsController < ApplicationController
       Measure.find(params[:measure_id]).recommendations
     else
       Recommendation
-    end.with_versions
+    end
   end
 
   # Use callbacks to share common setup or constraints between actions.

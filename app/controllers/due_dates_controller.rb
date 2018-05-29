@@ -49,7 +49,7 @@ class DueDatesController < ApplicationController
   end
 
   def base_object
-    DueDate.with_versions
+    DueDate
   end
 
   def serialize(target, serializer: DueDateSerializer)
