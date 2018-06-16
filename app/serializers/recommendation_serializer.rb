@@ -1,5 +1,5 @@
 class RecommendationSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :title, :accepted, :response, :draft, :reference, :description
 
