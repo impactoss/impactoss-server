@@ -1,5 +1,5 @@
 class UserSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :email, :name
 

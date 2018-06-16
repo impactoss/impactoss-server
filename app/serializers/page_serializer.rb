@@ -1,5 +1,5 @@
 class PageSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :title, :content, :menu_title, :order, :draft
 

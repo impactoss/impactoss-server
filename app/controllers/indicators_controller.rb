@@ -51,7 +51,7 @@ class IndicatorsController < ApplicationController
       Measure.find(params[:measure_id]).indicators
     else
       Indicator
-    end.with_versions
+    end
   end
 
   # Use callbacks to share common setup or constraints between actions.
