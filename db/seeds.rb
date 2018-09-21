@@ -22,102 +22,102 @@ class Seeds
 
   def base_seeds!
     # Set up user roles
-    # Role.new(name: 'admin', friendly_name: 'Admin').save!
-    # Role.new(name: 'manager', friendly_name: 'Manager').save!
-    # Role.new(name: 'contributor', friendly_name: 'Contributor').save!
-    #
-    # # Set up taxonomies
-    # # id 1
-    # body = Taxonomy.new(
-    #     title: 'Human rights mechanism',
-    #     tags_recommendations: true,
-    #     tags_measures: false,
-    #     tags_users: false,
-    #     allow_multiple: false,
-    #     has_manager: true,
-    #     priority: 5,
-    #     is_smart: false,
-    #     tags_sdgtargets: false
-    #   )
-    # body.save!
-    #
-    # # id 2
-    # session = Taxonomy.new(
-    #     title: 'Reporting cycle',
-    #     tags_recommendations: true,
-    #     tags_measures: false,
-    #     tags_users: false,
-    #     allow_multiple: false,
-    #     priority: 6,
-    #     is_smart: false,
-    #     tags_sdgtargets: false,
-    #   )
-    # session.save!
-    # # id 3
-    # cluster = Taxonomy.new(
-    #     title: 'Recommendation cluster',
-    #     tags_recommendations: true,
-    #     tags_measures: true,
-    #     tags_users: false,
-    #     allow_multiple: true,
-    #     priority: 1,
-    #     is_smart: false,
-    #     tags_sdgtargets: false,
-    #     groups_measures_default: 1,
-    #     groups_recommendations_default: 1,
-    #   )
-    # cluster.save!
-    # # id 4
-    # agency = Taxonomy.new(
-    #     title: 'Implementing agency',
-    #     tags_recommendations: false,
-    #     tags_measures: true,
-    #     tags_users: false,
-    #     allow_multiple: true,
-    #     priority: 10,
-    #     is_smart: false,
-    #     tags_sdgtargets: false,
-    #   )
-    # agency.save!
-    #
-    # # id 5
-    # issue = Taxonomy.new(
-    #     title: 'Theme',
-    #     tags_recommendations: true,
-    #     tags_measures: false,
-    #     tags_users: false,
-    #     allow_multiple: true,
-    #     priority: 2,
-    #     is_smart: false,
-    #     tags_sdgtargets: false
-    #   )
-    # issue.save!
-    # # id 6
-    # right = Taxonomy.new(
-    #     title: 'Human rights',
-    #     tags_recommendations: true,
-    #     tags_measures: false,
-    #     tags_users: false,
-    #     allow_multiple: true,
-    #     priority: 3,
-    #     is_smart: false,
-    #     tags_sdgtargets: false
-    #   )
-    # right.save!
-    #
-    # # id 7
-    # persons = Taxonomy.new(
-    #     title: 'Affected persons',
-    #     tags_recommendations: true,
-    #     tags_measures: false,
-    #     tags_users: false,
-    #     allow_multiple: true,
-    #     priority: 4,
-    #     is_smart: false,
-    #     tags_sdgtargets: false
-    #   )
-    # persons.save!
-    #
+    Role.new(name: 'admin', friendly_name: 'Admin').save!
+    Role.new(name: 'manager', friendly_name: 'Manager').save!
+    Role.new(name: 'contributor', friendly_name: 'Contributor').save!
+
+    # Set up taxonomies
+    # id 1
+    body = Taxonomy.new(
+        title: 'Human rights mechanism',
+        tags_recommendations: true,
+        tags_measures: false,
+        tags_users: false,
+        allow_multiple: false,
+        has_manager: true,
+        priority: 1,
+        is_smart: false,
+        tags_sdgtargets: false
+      )
+    body.save!
+
+    # id 2
+    session = Taxonomy.new(
+        title: 'Reporting cycle',
+        tags_recommendations: true,
+        tags_measures: false,
+        tags_users: false,
+        allow_multiple: false,
+        priority: 2,
+        is_smart: false,
+        tags_sdgtargets: false,
+      )
+    session.save!
+    # id 3
+    cluster = Taxonomy.new(
+        title: 'Recommendation cluster',
+        tags_recommendations: true,
+        tags_measures: true,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 3,
+        is_smart: false,
+        tags_sdgtargets: false,
+        groups_measures_default: 1,
+        groups_recommendations_default: 1,
+      )
+    cluster.save!
+    # id 4
+    agency = Taxonomy.new(
+        title: 'Implementing agency',
+        tags_recommendations: false,
+        tags_measures: true,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 7,
+        is_smart: false,
+        tags_sdgtargets: false,
+      )
+    agency.save!
+
+    # id 5
+    issue = Taxonomy.new(
+        title: 'Theme',
+        tags_recommendations: true,
+        tags_measures: false,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 4,
+        is_smart: false,
+        tags_sdgtargets: false
+      )
+    issue.save!
+    # id 6
+    right = Taxonomy.new(
+        title: 'Human rights',
+        tags_recommendations: true,
+        tags_measures: false,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 5,
+        is_smart: false,
+        tags_sdgtargets: false
+      )
+    right.save!
+
+    # id 7
+    persons = Taxonomy.new(
+        title: 'Affected persons',
+        tags_recommendations: true,
+        tags_measures: false,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 6,
+        is_smart: false,
+        tags_sdgtargets: false
+      )
+    persons.save!
+    
 
     # id 8
     sdg = Taxonomy.new(
