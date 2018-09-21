@@ -1,5 +1,5 @@
 class IndicatorSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :title, :description, :reference, :draft, :manager_id, :frequency_months, :start_date, :repeat, :end_date
 
