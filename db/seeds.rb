@@ -35,7 +35,7 @@ class Seeds
         tags_users: false,
         allow_multiple: false,
         has_manager: true,
-        priority: 5,
+        priority: 1,
         is_smart: false,
         tags_sdgtargets: false
       )
@@ -48,7 +48,7 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         allow_multiple: false,
-        priority: 6,
+        priority: 2,
         is_smart: false,
         tags_sdgtargets: false,
       )
@@ -60,7 +60,7 @@ class Seeds
         tags_measures: true,
         tags_users: false,
         allow_multiple: true,
-        priority: 1,
+        priority: 3,
         is_smart: false,
         tags_sdgtargets: false,
         groups_measures_default: 1,
@@ -74,7 +74,7 @@ class Seeds
         tags_measures: true,
         tags_users: false,
         allow_multiple: true,
-        priority: 10,
+        priority: 7,
         is_smart: false,
         tags_sdgtargets: false,
       )
@@ -87,7 +87,7 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         allow_multiple: true,
-        priority: 2,
+        priority: 4,
         is_smart: false,
         tags_sdgtargets: false
       )
@@ -99,7 +99,7 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         allow_multiple: true,
-        priority: 3,
+        priority: 5,
         is_smart: false,
         tags_sdgtargets: false
       )
@@ -112,7 +112,7 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         allow_multiple: true,
-        priority: 4,
+        priority: 6,
         is_smart: false,
         tags_sdgtargets: false
       )
