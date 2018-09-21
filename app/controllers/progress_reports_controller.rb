@@ -53,7 +53,7 @@ class ProgressReportsController < ApplicationController
   end
 
   def base_object
-    ProgressReport.with_versions
+    ProgressReport
   end
 
   def serialize(target, serializer: ProgressReportSerializer)

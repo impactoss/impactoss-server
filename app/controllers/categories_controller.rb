@@ -52,7 +52,7 @@ class CategoriesController < ApplicationController
   end
 
   def base_object
-    Category.with_versions
+    Category
   end
 
   def serialize(target, serializer: CategorySerializer)

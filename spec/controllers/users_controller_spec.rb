@@ -183,6 +183,13 @@ RSpec.describe UsersController, type: :controller do
         expect(json['data']['attributes']['email']).to eq 'test@co.nz'
         expect(json['data']['attributes']['name']).to eq 'Sam'
       end
+
+      it 'will record what manager updated the user', versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in admin
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq admin.id
+      end
     end
   end
 

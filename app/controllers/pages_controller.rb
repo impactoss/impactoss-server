@@ -52,7 +52,7 @@ class PagesController < ApplicationController
   end
 
   def base_object
-    Page.with_versions
+    Page
   end
 
   def serialize(target, serializer: PageSerializer)
