@@ -38,7 +38,8 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
-  config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
+  # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
+  config.action_dispatch.x_sendfile_header = nil
 
   # Mount Action Cable outside main process or domain
   # config.action_cable.mount_path = nil
@@ -74,15 +75,15 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
     address:        ENV['MAILGUN_SMTP_SERVER'],
     user_name:      ENV['MAILGUN_SMTP_LOGIN'],
     password:       ENV['MAILGUN_SMTP_PASSWORD'],
-    domain:         'undp-sadata-staging.herokuapp.com',
+    domain:         'impactoss.org',
     authentication: :plain
   }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_url_options = {
-    host: ENV['ACTION_MAILER_HOST'] || 'undp-sadata-staging.herokuapp.com',
+    host: ENV['ACTION_MAILER_HOST'] || 'impactoss.org',
     protocol: ENV['ACTION_MAILER_PROTOCOL'] || 'https'
   }
-  config.action_mailer.asset_host = ENV['ACTION_MAILER_ASSET_HOST'] || 'https://undp-sadata-staging.herokuapp.com'
+  config.action_mailer.asset_host = ENV['ACTION_MAILER_ASSET_HOST'] || 'https://impactoss.org'
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

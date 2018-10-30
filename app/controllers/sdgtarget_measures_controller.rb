@@ -3,15 +3,15 @@ class SdgtargetMeasuresController < ApplicationController
 
   # GET /sdgtarget_categories
   def index
-    @sdgtarget_categories = policy_scope(SdgtargetMeasure).order(created_at: :desc).page(params[:page])
+    @sdgtarget_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtarget_categories
 
-    render json: @sdgtarget_categories
+    render json: serialize(@sdgtarget_categories)
   end
 
   # GET /sdgtarget_categories/1
   def show
-    render json: @sdgtarget_measure
+    render json: serialize(@sdgtarget_measure)
   end
 
   # POST /sdgtarget_categories
@@ -21,7 +21,7 @@ class SdgtargetMeasuresController < ApplicationController
     authorize @sdgtarget_measure
 
     if @sdgtarget_measure.save
-      render json: @sdgtarget_measure, status: :created, location: @sdgtarget_measure
+      render json: serialize(@sdgtarget_measure), status: :created, location: @sdgtarget_measure
     else
       render json: @sdgtarget_measure.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class SdgtargetMeasuresController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: @sdgtarget_measure if @sdgtarget_measure.update_attributes!(permitted_attributes(@sdgtarget_measure))
+    render json: serialize(@sdgtarget_measure) if @sdgtarget_measure.update_attributes!(permitted_attributes(@sdgtarget_measure))
   end
 
   # DELETE /sdgtarget_categories/1
@@ -41,7 +41,15 @@ class SdgtargetMeasuresController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_sdgtarget_measure
-    @sdgtarget_measure = policy_scope(SdgtargetMeasure).find(params[:id])
+    @sdgtarget_measure = policy_scope(base_object).find(params[:id])
     authorize @sdgtarget_measure
+  end
+
+  def base_object
+    SdgtargetMeasure
+  end
+
+  def serialize(target, serializer: SdgtargetMeasureSerializer)
+    super
   end
 end

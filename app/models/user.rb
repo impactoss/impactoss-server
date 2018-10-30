@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class User < ApplicationRecord
+class User < VersionedRecord
   # Include default devise modules.
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable

@@ -1,69 +1,18 @@
 ---
 en:
-  cancel: Cancel
-  confirmations:
-    new:
-      form:
-        heading: Resend confirmation instructions
-        submit: Resend instructions
-  fields:
-    description: Description
-    number: 'NO'
-    status: Status
-    title: Title
-  indicator: Indicators
-  indicators: Indicators
-  measure: Action
-  measures: Actions
-  menu:
-    password: Edit password
-    signout: Sign out
-    users: Users
-  new: New
-  notice:
-    indicator:
-      create:
-        success: Indicator created
-      delete:
-        fail: Fail
-        success: Unable to delete Indicator
-      update:
-        success: Indicator updated
-  passwords:
-    edit:
-      form:
-        heading: Change your password
-        submit: Change my password
-    new:
-      form:
-        heading: Forgot your password?
-        submit: Send me reset password instructions
-  recommendation: Recommendation
-  recommendations: Recommendations
-  registrations:
-    new:
-      form:
-        heading: Sign Up
-        submit: Complete Sign Up
-  save: Save
-  sessions:
-    new:
-      form:
-        heading: Log in with your email address
-        submit: Log in
   sitewide_header:
     logo:
-      alt: The Coat of Arms of Samoa
+      alt: IMPACT OSS logo
     title:
-      main: National Mechanism for Reporting and Follow-Up
-      sub: Samoa's National Plan of Action for Human Rights
+      main: IMPACT OSS
+      sub: Integrated Planning and Management of Actions
   due_date_mailer:
-      category_due:
-        subject: Indicator progress report due for your category
-      category_overdue:
-        subject: Indicator progress report due for your category
-      due:
-        subject: Indicator progress report is due
-      overdue:
-        subject: Indicator progress report is overdue
+    category_due:
+      subject: Indicator progress report due for your category
+    category_overdue:
+      subject: Indicator progress reports are overdue for your category
+    due:
+      subject: Indicator progress report is due
+    overdue:
+      subject: Indicator progress report is overdue
 

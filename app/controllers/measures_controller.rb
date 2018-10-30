@@ -7,12 +7,12 @@ class MeasuresController < ApplicationController
     @measures = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @measures
 
-    render json: @measures
+    render json: serialize(@measures)
   end
 
   # GET /measures/1
   def show
-    render json: @measure
+    render json: serialize(@measure)
   end
 
   # POST /measures
@@ -22,7 +22,7 @@ class MeasuresController < ApplicationController
     authorize @measure
 
     if @measure.save
-      render json: @measure, status: :created, location: @measure
+      render json: serialize(@measure), status: :created, location: @measure
     else
       render json: @measure.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,10 @@ class MeasuresController < ApplicationController
     if params[:measure][:updated_at] && DateTime.parse(params[:measure][:updated_at]).to_i != @measure.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @measure if @measure.update_attributes!(permitted_attributes(@measure))
+    if @measure.update_attributes!(permitted_attributes(@measure))
+      set_and_authorize_measure
+      render json: serialize(@measure)
+    end
   end
 
   # DELETE /measures/1
@@ -44,16 +47,24 @@ class MeasuresController < ApplicationController
   private
 
   def base_object
-    return Category.find(params[:category_id]).measures if params[:category_id]
-    return Recommendation.find(params[:recommendation_id]).measures if params[:recommendation_id]
-    return Indicator.find(params[:indicator_id]).measures if params[:indicator_id]
-
-    Measure
+    if params[:category_id]
+      Category.find(params[:category_id]).measures
+    elsif params[:recommendation_id]
+      Recommendation.find(params[:recommendation_id]).measures
+    elsif params[:indicator_id]
+      Indicator.find(params[:indicator_id]).measures
+    else
+      Measure
+    end
   end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_measure
     @measure = policy_scope(base_object).find(params[:id])
     authorize @measure
+  end
+
+  def serialize(target, serializer: MeasureSerializer)
+    super
   end
 end

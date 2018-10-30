@@ -24,6 +24,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def serialize(target, serializer:)
+    serializer.new(target).serialized_json
+  end
+
   def layout_by_resource
     devise_controller? ? 'authentication' : 'application'
   end

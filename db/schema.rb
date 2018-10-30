@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170719235935) do
+ActiveRecord::Schema.define(version: 20180528083426) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,12 +21,13 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.text     "description"
     t.string   "url"
     t.integer  "taxonomy_id"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.boolean  "draft",       default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "draft",                 default: false
     t.integer  "manager_id"
     t.string   "reference"
     t.boolean  "user_only"
+    t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
     t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
@@ -35,25 +36,28 @@ ActiveRecord::Schema.define(version: 20170719235935) do
   create_table "due_dates", force: :cascade do |t|
     t.integer  "indicator_id"
     t.date     "due_date"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.boolean  "draft",        default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "draft",                 default: false
+    t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_due_dates_on_draft", using: :btree
     t.index ["indicator_id"], name: "index_due_dates_on_indicator_id", using: :btree
   end
 
   create_table "indicators", force: :cascade do |t|
-    t.text     "title",                            null: false
+    t.text     "title",                                 null: false
     t.text     "description"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.boolean  "draft",            default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "draft",                 default: false
     t.integer  "manager_id"
     t.integer  "frequency_months"
     t.date     "start_date"
-    t.boolean  "repeat",           default: false
+    t.boolean  "repeat",                default: false
     t.date     "end_date"
     t.string   "reference"
+    t.integer  "last_modified_user_id"
+    t.index ["created_at"], name: "index_indicators_on_created_at", using: :btree
     t.index ["draft"], name: "index_indicators_on_draft", using: :btree
     t.index ["manager_id"], name: "index_indicators_on_manager_id", using: :btree
   end
@@ -73,15 +77,16 @@ ActiveRecord::Schema.define(version: 20170719235935) do
   end
 
   create_table "measures", force: :cascade do |t|
-    t.text     "title",                               null: false
+    t.text     "title",                                 null: false
     t.text     "description"
     t.text     "target_date"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.boolean  "draft",               default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "draft",                 default: false
     t.text     "outcome"
     t.text     "indicator_summary"
     t.text     "target_date_comment"
+    t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_measures_on_draft", using: :btree
   end
 
@@ -89,10 +94,11 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.string   "title"
     t.text     "content"
     t.string   "menu_title"
-    t.boolean  "draft",      default: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.boolean  "draft",                 default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.integer  "order"
+    t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_pages_on_draft", using: :btree
   end
 
@@ -104,8 +110,9 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.string   "document_url"
     t.boolean  "document_public"
     t.boolean  "draft"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.integer  "last_modified_user_id"
     t.index ["due_date_id"], name: "index_progress_reports_on_due_date_id", using: :btree
     t.index ["indicator_id"], name: "index_progress_reports_on_indicator_id", using: :btree
   end
@@ -127,13 +134,15 @@ ActiveRecord::Schema.define(version: 20170719235935) do
   end
 
   create_table "recommendations", force: :cascade do |t|
-    t.text     "title",                      null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.boolean  "draft",      default: false
+    t.text     "title",                                 null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "draft",                 default: false
     t.boolean  "accepted"
     t.text     "response"
-    t.text     "reference",                  null: false
+    t.text     "reference",                             null: false
+    t.text     "description"
+    t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
   end
 
@@ -182,9 +191,10 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.string   "reference"
     t.text     "title"
     t.text     "description"
-    t.boolean  "draft",       default: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.boolean  "draft",                 default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_sdgtargets_on_draft", using: :btree
   end
 
@@ -203,6 +213,7 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.integer  "groups_measures_default"
     t.integer  "groups_recommendations_default"
     t.integer  "groups_sdgtargets_default"
+    t.integer  "last_modified_user_id"
   end
 
   create_table "user_categories", force: :cascade do |t|
@@ -213,10 +224,11 @@ ActiveRecord::Schema.define(version: 20170719235935) do
   end
 
   create_table "user_roles", force: :cascade do |t|
-    t.integer  "user_id",    null: false
-    t.integer  "role_id",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "user_id",               null: false
+    t.integer  "role_id",               null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.integer  "last_modified_user_id"
     t.index ["role_id"], name: "index_user_roles_on_role_id", using: :btree
     t.index ["user_id"], name: "index_user_roles_on_user_id", using: :btree
   end
@@ -238,6 +250,7 @@ ActiveRecord::Schema.define(version: 20170719235935) do
     t.string   "provider",               default: "email", null: false
     t.string   "uid",                    default: "",      null: false
     t.json     "tokens"
+    t.integer  "last_modified_user_id"
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end

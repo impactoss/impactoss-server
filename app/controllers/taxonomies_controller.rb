@@ -3,15 +3,15 @@ class TaxonomiesController < ApplicationController
 
   # GET /taxonomies
   def index
-    @taxonomies = policy_scope(Taxonomy).order(created_at: :desc).page(params[:page])
+    @taxonomies = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @taxonomies
 
-    render json: @taxonomies
+    render json: serialize(@taxonomies)
   end
 
   # GET /taxonomies/1
   def show
-    render json: @taxonomy
+    render json: serialize(@taxonomy)
   end
 
   # POST /taxonomies
@@ -21,7 +21,7 @@ class TaxonomiesController < ApplicationController
     authorize @taxonomy
 
     if @taxonomy.save
-      render json: @taxonomy, status: :created, location: @taxonomy
+      render json: serialize(@taxonomy), status: :created, location: @taxonomy
     else
       render json: @taxonomy.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,10 @@ class TaxonomiesController < ApplicationController
 
   # PATCH/PUT /taxonomies/1
   def update
-    render json: @taxonomy if @taxonomy.update_attributes!(permitted_attributes(@taxonomy))
+    if @taxonomy.update_attributes!(permitted_attributes(@taxonomy))
+      set_and_authorize_taxonomy
+      render json: serialize(@taxonomy)
+    end
   end
 
   # DELETE /taxonomies/1
@@ -41,7 +44,15 @@ class TaxonomiesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_taxonomy
-    @taxonomy = policy_scope(Taxonomy).find(params[:id])
+    @taxonomy = policy_scope(base_object).find(params[:id])
     authorize @taxonomy
+  end
+
+  def base_object
+    Taxonomy
+  end
+
+  def serialize(target, serializer: TaxonomySerializer)
+    super
   end
 end

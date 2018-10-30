@@ -3,15 +3,15 @@ class CategoriesController < ApplicationController
 
   # GET /categories
   def index
-    @categories = policy_scope(Category).order(created_at: :desc).page(params[:page])
+    @categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @categories
 
-    render json: @categories
+    render json: serialize(@categories)
   end
 
   # GET /categories/1
   def show
-    render json: @category
+    render json: serialize(@category)
   end
 
   # POST /categories
@@ -21,7 +21,7 @@ class CategoriesController < ApplicationController
     authorize @category
 
     if @category.save
-      render json: @category, status: :created, location: @category
+      render json: serialize(@category), status: :created, location: @category
     else
       render json: @category.errors, status: :unprocessable_entity
     end
@@ -32,7 +32,10 @@ class CategoriesController < ApplicationController
     if params[:category][:updated_at] && DateTime.parse(params[:category][:updated_at]).to_i != @category.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @category if @category.update_attributes!(permitted_attributes(@category))
+    if @category.update_attributes!(permitted_attributes(@category))
+      set_and_authorize_category
+      render json: serialize(@category)
+    end
   end
 
   # DELETE /categories/1
@@ -44,7 +47,15 @@ class CategoriesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_category
-    @category = policy_scope(Category).find(params[:id])
+    @category = policy_scope(base_object).find(params[:id])
     authorize @category
+  end
+
+  def base_object
+    Category
+  end
+
+  def serialize(target, serializer: CategorySerializer)
+    super
   end
 end

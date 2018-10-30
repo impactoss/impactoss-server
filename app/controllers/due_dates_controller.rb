@@ -3,15 +3,15 @@ class DueDatesController < ApplicationController
 
   # GET /due_dates
   def index
-    @due_dates = policy_scope(DueDate).order(created_at: :desc).page(params[:page])
+    @due_dates = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @due_dates
 
-    render json: @due_dates
+    render json: serialize(@due_dates)
   end
 
   # GET /due_dates/1
   def show
-    render json: @due_date
+    render json: serialize(@due_date)
   end
 
   # POST /due_dates
@@ -21,7 +21,7 @@ class DueDatesController < ApplicationController
     authorize @due_date
 
     if @due_date.save
-      render json: @due_date, status: :created, location: @due_date
+      render json: serialize(@due_date), status: :created, location: @due_date
     else
       render json: @due_date.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,10 @@ class DueDatesController < ApplicationController
 
   # PATCH/PUT /due_dates/1
   def update
-    render json: @due_date if @due_date.update_attributes!(permitted_attributes(@due_date))
+    if @due_date.update_attributes!(permitted_attributes(@due_date))
+      set_and_authorize_due_date
+      render json: serialize(@due_date)
+    end
   end
 
   # DELETE /due_dates/1
@@ -41,7 +44,15 @@ class DueDatesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_due_date
-    @due_date = policy_scope(DueDate).find(params[:id])
+    @due_date = policy_scope(base_object).find(params[:id])
     authorize @due_date
+  end
+
+  def base_object
+    DueDate
+  end
+
+  def serialize(target, serializer: DueDateSerializer)
+    super
   end
 end

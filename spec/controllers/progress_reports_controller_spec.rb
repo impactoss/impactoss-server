@@ -126,9 +126,10 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_created
       end
 
-      it 'will not allow a contributor to create a progress_report when they are not a manager for the indicator' do
+      # This was changed from forbidden in bb687a69339aaa3501f24140907e9a2135ffe4c5 per #154
+      it 'will allow a contributor to create a progress_report when they are not a manager for the indicator' do
         sign_in contributor
-        expect(without_contributor_manager).to be_forbidden
+        expect(without_contributor_manager).to be_created
       end
 
       it 'will allow a contributor to create a progress_report when they are the manager for the indicator' do
@@ -156,7 +157,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
   end
 
-  describe 'Put update' do
+  describe 'PUT update' do
     let(:progress_report) { FactoryGirl.create(:progress_report) }
 
     subject(:without_contributor_manager) do
@@ -233,6 +234,14 @@ RSpec.describe ProgressReportsController, type: :controller do
         sign_in user
         json = JSON.parse(subject.body)
         expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq user.id
+      end
+
+      it 'will return the latest last_modified_user_id', versioning: true do
+        expect(PaperTrail).to be_enabled
+        progress_report.versions.first.update_column(:whodunnit, contributor.id)
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json['data']['attributes']['last_modified_user_id'].to_i).to eq(user.id)
       end
 
       it 'will return an error if params are incorrect' do

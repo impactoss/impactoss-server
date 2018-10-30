@@ -3,15 +3,15 @@ class SdgtargetIndicatorsController < ApplicationController
 
   # GET /sdgtarget_categories
   def index
-    @sdgtarget_categories = policy_scope(SdgtargetIndicator).order(created_at: :desc).page(params[:page])
+    @sdgtarget_categories = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtarget_categories
 
-    render json: @sdgtarget_categories
+    render json: serialize(@sdgtarget_categories)
   end
 
   # GET /sdgtarget_categories/1
   def show
-    render json: @sdgtarget_indicator
+    render json: serialize(@sdgtarget_indicator)
   end
 
   # POST /sdgtarget_categories
@@ -21,7 +21,7 @@ class SdgtargetIndicatorsController < ApplicationController
     authorize @sdgtarget_indicator
 
     if @sdgtarget_indicator.save
-      render json: @sdgtarget_indicator, status: :created, location: @sdgtarget_indicator
+      render json: serialize(@sdgtarget_indicator), status: :created, location: @sdgtarget_indicator
     else
       render json: @sdgtarget_indicator.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class SdgtargetIndicatorsController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: @sdgtarget_indicator if @sdgtarget_indicator.update_attributes!(permitted_attributes(@sdgtarget_indicator))
+    render json: serialize(@sdgtarget_indicator) if @sdgtarget_indicator.update_attributes!(permitted_attributes(@sdgtarget_indicator))
   end
 
   # DELETE /sdgtarget_categories/1
@@ -41,7 +41,15 @@ class SdgtargetIndicatorsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_sdgtarget_indicator
-    @sdgtarget_indicator = policy_scope(SdgtargetIndicator).find(params[:id])
+    @sdgtarget_indicator = policy_scope(base_object).find(params[:id])
     authorize @sdgtarget_indicator
+  end
+
+  def base_object
+    SdgtargetIndicator
+  end
+
+  def serialize(target, serializer: SdgtargetIndicatorSerializer)
+    super
   end
 end

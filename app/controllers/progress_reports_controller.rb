@@ -4,15 +4,15 @@ class ProgressReportsController < ApplicationController
 
   # GET /progress_reports
   def index
-    @progress_reports = policy_scope(ProgressReport).order(created_at: :desc).page(params[:page])
+    @progress_reports = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @progress_reports
 
-    render json: @progress_reports
+    render json: serialize(@progress_reports)
   end
 
   # GET /progress_reports/1
   def show
-    render json: @progress_report
+    render json: serialize(@progress_report)
   end
 
   # POST /progress_reports
@@ -22,7 +22,7 @@ class ProgressReportsController < ApplicationController
     authorize @progress_report
 
     if @progress_report.save
-      render json: @progress_report, status: :created, location: @progress_report
+      render json: serialize(@progress_report), status: :created, location: @progress_report
     else
       render json: @progress_report.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,10 @@ class ProgressReportsController < ApplicationController
     if params[:progress_report][:updated_at] && DateTime.parse(params[:progress_report][:updated_at]).to_i != @progress_report.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @progress_report if @progress_report.update_attributes!(permitted_attributes(@progress_report))
+    if @progress_report.update_attributes!(permitted_attributes(@progress_report))
+      set_and_authorize_progress_report
+      render json: serialize(@progress_report)
+    end
   end
 
   # DELETE /progress_reports/1
@@ -45,7 +48,15 @@ class ProgressReportsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_progress_report
-    @progress_report = policy_scope(ProgressReport).find(params[:id])
+    @progress_report = policy_scope(base_object).find(params[:id])
     authorize @progress_report
+  end
+
+  def base_object
+    ProgressReport
+  end
+
+  def serialize(target, serializer: ProgressReportSerializer)
+    super
   end
 end

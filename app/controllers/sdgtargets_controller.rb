@@ -7,12 +7,12 @@ class SdgtargetsController < ApplicationController
     @sdgtargets = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @sdgtargets
 
-    render json: @sdgtargets
+    render json: serialize(@sdgtargets)
   end
 
   # GET /sdgtargets/1
   def show
-    render json: @sdgtarget
+    render json: serialize(@sdgtarget)
   end
 
   # POST /sdgtargets
@@ -22,7 +22,7 @@ class SdgtargetsController < ApplicationController
     authorize @sdgtarget
 
     if @sdgtarget.save
-      render json: @sdgtarget, status: :created, location: @sdgtarget
+      render json: serialize(@sdgtarget), status: :created, location: @sdgtarget
     else
       render json: @sdgtarget.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,10 @@ class SdgtargetsController < ApplicationController
     if params[:sdgtarget][:updated_at] && DateTime.parse(params[:sdgtarget][:updated_at]).to_i != @sdgtarget.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    render json: @sdgtarget if @sdgtarget.update_attributes!(permitted_attributes(@sdgtarget))
+    if @sdgtarget.update_attributes!(permitted_attributes(@sdgtarget))
+      set_and_authorize_sdgtarget
+      render json: serialize(@sdgtarget)
+    end
   end
 
   # DELETE /sdgtargets/1
@@ -44,11 +47,19 @@ class SdgtargetsController < ApplicationController
   private
 
   def base_object
-    return Category.find(params[:category_id]).sdgtargets if params[:category_id]
-    return Recommendation.find(params[:recommendation_id]).sdgtargets if params[:recommendation_id]
-    return Indicator.find(params[:indicator_id]).sdgtargets if params[:indicator_id]
+    if params[:category_id]
+      Category.find(params[:category_id]).measures
+    elsif params[:recommendation_id]
+      Recommendation.find(params[:recommendation_id]).measures
+    elsif params[:indicator_id]
+      Indicator.find(params[:indicator_id]).measures
+    else
+      Sdgtarget
+    end
+  end
 
-    Sdgtarget
+  def serialize(target, serializer: SdgtargetSerializer)
+    super
   end
 
   # Use callbacks to share common setup or constraints between actions.
