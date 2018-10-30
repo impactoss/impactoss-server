@@ -210,6 +210,13 @@ RSpec.describe CategoriesController, type: :controller do
         sign_in user
         expect(subject).to be_no_content
       end
+
+      it 'response with success when versioned', versioning: true do
+        expect(PaperTrail).to be_enabled
+        category.update_attribute(:title, 'something else')
+        sign_in user
+        expect(subject.response_code).to eq(204)
+      end
     end
   end
 end
