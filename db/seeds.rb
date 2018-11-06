@@ -37,7 +37,8 @@ class Seeds
         has_manager: true,
         priority: 1,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_recommendations_default: 1,
       )
     body.save!
 
@@ -51,6 +52,7 @@ class Seeds
         priority: 2,
         is_smart: false,
         tags_sdgtargets: false,
+        groups_recommendations_default: 2,
       )
     session.save!
 
@@ -113,6 +115,7 @@ class Seeds
         tags_measures: false,
         tags_users: false,
         tags_sdgtargets: true,
+        has_manager: true,
         allow_multiple: false,
         priority: 7,
         is_smart: false,
