@@ -1,4 +1,4 @@
-### `sadata-server, impactoss-server`
+### impactoss-server
 - joshmcarthur
 - Br3nda
 - barancw
