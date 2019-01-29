@@ -7,7 +7,9 @@ This is the source code for the server-side application (the "API") of IMPACT OS
 * user authentication
 * automated email reminders
 
-It complements the IMPACT OSS client-side application that you can find here: https://github.com/impactoss/impactoss-client
+##### IMPACT OSS client application
+
+It complements the IMPACT OSS client-side application (the "UI") that you can find here: https://github.com/impactoss/impactoss-client
 
 The client is a React JavaScript application and is a single page application that is responsible for:
 * public User Interface (UI)
