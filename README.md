@@ -2,7 +2,9 @@
 
 # IMPACT OSS server application
 
-This is the source code for the server-side application (the "API") of IMPACT OSS. It is a Rails 5.0.1 application and is a thin server that is responsible for:
+This is the source code for the server-side application (the "API") of IMPACT OSS.
+
+It is a **Rails 5.0.1 application** and is a thin server that is responsible for:
 * database management and access via an API (Application Programming Interface)
 * user authentication
 * automated email reminders
