@@ -1,19 +1,9 @@
 .sitewide-header {
   background: #fff;
-  border-bottom: solid 1em $dark-gray;
-  @include grid-row(null, null, 100%);
+  box-shadow: 0 0 15 0 rgba(0,0,0,0.5);
   padding: $global-padding;
 
-
   &--logo {
-    @include grid-column(1);
     max-width: 100%;
-  }
-
-  &--title {
-    text-align: right;
-    font-size: 2em;
-    font-weight: 200;
-    @include grid-column(11);
   }
 }
