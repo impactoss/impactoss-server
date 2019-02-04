@@ -27,9 +27,9 @@ class Seeds
     Role.new(name: 'contributor', friendly_name: 'Contributor').save!
 
     # Set up taxonomies
-    # id 1
+    # Global taxonomy
     body = Taxonomy.new(
-        title: 'Human rights mechanism',
+        title: 'Human rights body',
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
@@ -37,13 +37,14 @@ class Seeds
         has_manager: true,
         priority: 1,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_recommendations_default: 1,
       )
     body.save!
 
-    # id 2
+    # Global taxonomy
     session = Taxonomy.new(
-        title: 'Reporting cycle',
+        title: 'Cycle',
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
@@ -51,38 +52,26 @@ class Seeds
         priority: 2,
         is_smart: false,
         tags_sdgtargets: false,
+        groups_recommendations_default: 2,
       )
     session.save!
-    # id 3
-    cluster = Taxonomy.new(
-        title: 'Recommendation cluster',
+
+    # Global taxonomy
+    right = Taxonomy.new(
+        title: 'Human rights issue',
         tags_recommendations: true,
-        tags_measures: true,
+        tags_measures: false,
         tags_users: false,
         allow_multiple: true,
         priority: 3,
         is_smart: false,
-        tags_sdgtargets: false,
-        groups_measures_default: 1,
-        groups_recommendations_default: 1,
+        tags_sdgtargets: false
       )
-    cluster.save!
-    # id 4
-    agency = Taxonomy.new(
-        title: 'Implementing agency',
-        tags_recommendations: false,
-        tags_measures: true,
-        tags_users: false,
-        allow_multiple: true,
-        priority: 7,
-        is_smart: false,
-        tags_sdgtargets: false,
-      )
-    agency.save!
+    right.save!
 
-    # id 5
-    issue = Taxonomy.new(
-        title: 'Theme',
+    # Global taxonomy
+    persons = Taxonomy.new(
+        title: 'Affected persons',
         tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
@@ -91,33 +80,48 @@ class Seeds
         is_smart: false,
         tags_sdgtargets: false
       )
-    issue.save!
-    # id 6
-    right = Taxonomy.new(
-        title: 'Human rights',
+    persons.save!
+    # Samoa specific taxonomy
+    cluster = Taxonomy.new(
+        title: 'Thematic cluster',
         tags_recommendations: true,
-        tags_measures: false,
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 5,
         is_smart: false,
-        tags_sdgtargets: false
+        tags_sdgtargets: false,
+        groups_measures_default: 1
       )
-    right.save!
+    cluster.save!
 
-    # id 7
-    persons = Taxonomy.new(
-        title: 'Affected persons',
-        tags_recommendations: true,
-        tags_measures: false,
-        tags_users: false,
+    # Samoa specific taxonomy
+    org = Taxonomy.new(
+        title: 'Organisation',
+        tags_recommendations: false,
+        tags_measures: true,
+        tags_users: true,
         allow_multiple: true,
         priority: 6,
         is_smart: false,
         tags_sdgtargets: false
       )
-    persons.save!
+    org.save!
 
+    # Global taxonomy
+    sdg = Taxonomy.new(
+        title: 'SDGs',
+        tags_recommendations: false,
+        tags_measures: false,
+        tags_users: false,
+        tags_sdgtargets: true,
+        has_manager: true,
+        allow_multiple: false,
+        priority: 7,
+        is_smart: false,
+        groups_sdgtargets_default: 1
+      )
+    sdg.save!
 
     # Set up categories
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
@@ -210,11 +214,11 @@ class Seeds
         url:''
       )
 
-      # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
+    # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
     # TODO level 2 and 3 human rights
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Scope of international obligations',
         short_title:'Int. obligations',
         reference:'A1',
@@ -223,7 +227,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Cooperation with human rights mechanisms and institutions',
         short_title:'Cooperation ',
         reference:'A2',
@@ -232,7 +236,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Inter-State cooperation & development assistance',
         short_title:'Inter-State cooperation',
         reference:'A3',
@@ -241,7 +245,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Legal, institutional and policy framework',
         short_title:'Framework',
         reference:'A4',
@@ -250,7 +254,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Human rights education, trainings and awareness raising',
         short_title:'HR education',
         reference:'A5',
@@ -259,7 +263,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Context, statistics, budget, civil society',
         short_title:'Context',
         reference:'A6',
@@ -268,7 +272,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'International criminal and humanitarian law',
         short_title:'Int. law',
         reference:'B1',
@@ -277,7 +281,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to self-determination',
         short_title:'Self-determination',
         reference:'B2',
@@ -286,7 +290,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Equality and non-discrimination',
         short_title:'Equality',
         reference:'B3',
@@ -295,7 +299,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to development',
         short_title:'Development',
         reference:'B4',
@@ -304,7 +308,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to a remedy',
         short_title:'Remedy',
         reference:'B5',
@@ -313,7 +317,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Business & Human Rights',
         short_title:'Business',
         reference:'B6',
@@ -322,7 +326,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Human rights and environmental issues',
         short_title:'Environment',
         reference:'B7',
@@ -331,7 +335,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Human rights & counter-terrorism',
         short_title:'Counter-terrorism',
         reference:'B8',
@@ -340,7 +344,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Human rights & use of mercenaries',
         short_title:'Mercenaries',
         reference:'B9',
@@ -349,7 +353,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Civil & political rights - general measures of implementation',
         short_title:'Civil & political',
         reference:'D1',
@@ -358,7 +362,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to physical and moral integrity',
         short_title:'Integrity',
         reference:'D2',
@@ -367,7 +371,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Liberty and security of the person',
         short_title:'Liberty',
         reference:'D3',
@@ -376,7 +380,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Fundamental freedoms',
         short_title:'Freedoms',
         reference:'D4',
@@ -385,7 +389,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Administration of justice',
         short_title:'Justice',
         reference:'D5',
@@ -394,7 +398,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Rights related to name, identity, nationality',
         short_title:'Identity',
         reference:'D6',
@@ -403,7 +407,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to participation in public affairs and right to vote',
         short_title:'Participation',
         reference:'D7',
@@ -412,7 +416,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Rights related to marriage & family',
         short_title:'Family',
         reference:'D8',
@@ -421,7 +425,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Economic, social & cultural rights - general measures of implementation',
         short_title:'Economic, social & cultural',
         reference:'E1',
@@ -430,7 +434,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to an adequate standard of living',
         short_title:'Standard of living',
         reference:'E2',
@@ -439,7 +443,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Labour rights',
         short_title:'Labour rights',
         reference:'E3',
@@ -448,7 +452,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to health',
         short_title:'Health',
         reference:'E4',
@@ -457,7 +461,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Right to education',
         short_title:'Education',
         reference:'E5',
@@ -466,7 +470,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Rights to protection of property; financial credit',
         short_title:'Property',
         reference:'E6',
@@ -475,7 +479,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Cultural rights',
         short_title:'Cultural rights',
         reference:'E7',
@@ -484,7 +488,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Women',
         short_title:'Women',
         reference:'F1',
@@ -493,7 +497,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Children',
         short_title:'Children',
         reference:'F3',
@@ -502,7 +506,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Persons with disabilities',
         short_title:'Persons with disabilities',
         reference:'F4',
@@ -511,7 +515,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Members of minorities',
         short_title:'Minorities',
         reference:'G1',
@@ -520,7 +524,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Indigenous peoples',
         short_title:'Indigenous peoples',
         reference:'G3',
@@ -529,7 +533,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Migrants',
         short_title:'Migrants',
         reference:'G4',
@@ -538,7 +542,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Refugees & asylum seekers',
         short_title:'Refugees',
         reference:'G5',
@@ -547,7 +551,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Internally displaced persons',
         short_title:'Internally displaced',
         reference:'G5',
@@ -556,7 +560,7 @@ class Seeds
       )
     FactoryGirl.create(
         :category,
-        taxonomy:issue,
+        taxonomy:right,
         title:'Human rights defenders',
         short_title:'HR defenders',
         reference:'H1',
@@ -565,576 +569,1971 @@ class Seeds
       )
 
 
-    # Affected Persons (http://uhri.ohchr.org/search/annotations)
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Children',
-        short_title:'Children',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Children in street situations',
-        short_title:'CSS',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Disappeared persons',
-        short_title:'Disappeared',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Educational staff',
-        short_title:'Edu',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'General',
-        short_title:'General',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Girls',
-        short_title:'Girls',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Human rights defenders',
-        short_title:'HRD',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Indigenous peoples',
-        short_title:'Indigenous',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Internally displaced persons',
-        short_title:'IDP',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Judges, lawyers and prosecutors',
-        short_title:'JLP',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Law enforcement / police officials',
-        short_title:'Law',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Lesbian, gay, bisexual and transgender and intersex persons (LGBTI)',
-        short_title:'LGBTI',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Media',
-        short_title:'Media',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Medical staff',
-        short_title:'Medical',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Mercenaries',
-        short_title:'Mercenaries',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Migrants',
-        short_title:'Migrants',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Military staff',
-        short_title:'Military',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Minorities / racial, ethnic, linguistic, religious or descent-based groups',
-        short_title:'Minorities',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Non-citizens',
-        short_title:'Non-citizens',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Older persons',
-        short_title:'Old',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Persons affected by armed conflict',
-        short_title:'Armed conflict',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Persons deprived of their liberty',
-        short_title:'Liberty',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Persons living in poverty',
-        short_title:'Poverty',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Persons living in rural areas',
-        short_title:'Rural',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Persons living with HIV/AIDS',
-        short_title:'HIV',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Persons with disabilities',
-        short_title:'Disabilities',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Prison officials',
-        short_title:'Prison officials',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Private security',
-        short_title:'Private security',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Public officials',
-        short_title:'Public officials',
-        description:'',
-        url:''
-      )
+      # Affected Persons (http://uhri.ohchr.org/search/annotations)
       FactoryGirl.create(
           :category,
           taxonomy:persons,
-          title:'Refugees & asylum seekers',
-          short_title:'Refugees',
+          title:'Children',
+          short_title:'Children',
           description:'',
           url:''
         )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Rural women',
-        short_title:'Rural women',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Social workers',
-        short_title:'Social workers',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Stateless persons',
-        short_title:'Stateless',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Vulnerable persons/groups',
-        short_title:'Vulnerable',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Women',
-        short_title:'Women',
-        description:'',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:persons,
-        title:'Youth',
-        short_title:'Youth',
-        description:'',
-        url:''
-      )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Children in street situations',
+          short_title:'CSS',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Disappeared persons',
+          short_title:'Disappeared',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Educational staff',
+          short_title:'Edu',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'General',
+          short_title:'General',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Girls',
+          short_title:'Girls',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Human rights defenders',
+          short_title:'HRD',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Indigenous peoples',
+          short_title:'Indigenous',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Internally displaced persons',
+          short_title:'IDP',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Judges, lawyers and prosecutors',
+          short_title:'JLP',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Law enforcement / police officials',
+          short_title:'Law',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Lesbian, gay, bisexual and transgender and intersex persons (LGBTI)',
+          short_title:'LGBTI',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Media',
+          short_title:'Media',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Medical staff',
+          short_title:'Medical',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Mercenaries',
+          short_title:'Mercenaries',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Migrants',
+          short_title:'Migrants',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Military staff',
+          short_title:'Military',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Minorities / racial, ethnic, linguistic, religious or descent-based groups',
+          short_title:'Minorities',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Non-citizens',
+          short_title:'Non-citizens',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Older persons',
+          short_title:'Old',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Persons affected by armed conflict',
+          short_title:'Armed conflict',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Persons deprived of their liberty',
+          short_title:'Liberty',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Persons living in poverty',
+          short_title:'Poverty',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Persons living in rural areas',
+          short_title:'Rural',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Persons living with HIV/AIDS',
+          short_title:'HIV',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Persons with disabilities',
+          short_title:'Disabilities',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Prison officials',
+          short_title:'Prison officials',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Private security',
+          short_title:'Private security',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Public officials',
+          short_title:'Public officials',
+          description:'',
+          url:''
+        )
+        FactoryGirl.create(
+            :category,
+            taxonomy:persons,
+            title:'Refugees & asylum seekers',
+            short_title:'Refugees',
+            description:'',
+            url:''
+          )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Rural women',
+          short_title:'Rural women',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Social workers',
+          short_title:'Social workers',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Stateless persons',
+          short_title:'Stateless',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Vulnerable persons/groups',
+          short_title:'Vulnerable',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Women',
+          short_title:'Women',
+          description:'',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:persons,
+          title:'Youth',
+          short_title:'Youth',
+          description:'',
+          url:''
+        )
+      # SDGs
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'End poverty in all its forms everywhere',
+          title:'No poverty',
+          reference: 1,
+          short_title:'SDG 1',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'End hunger, achieve food security and improved nutrition and promote sustainable agriculture',
+          title:'Zero hunger',
+          reference: 2,
+          short_title:'SDG 2',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Ensure healthy lives and promote well-being for all at all ages',
+          title:'Good Health and Well-being',
+          reference: 3,
+          short_title:'SDG 3',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all',
+          title:'Quality Education',
+          reference: 4,
+          short_title:'SDG 4',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Achieve gender equality and empower all women and girls',
+          title:'Gender Equality',
+          reference: 5,
+          short_title:'SDG 5',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Ensure availability and sustainable management of water and sanitation for all',
+          title:'Clean Water and Sanitation',
+          reference: 6,
+          short_title:'SDG 6',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Ensure access to affordable, reliable, sustainable and modern energy for all',
+          title:'Affordable and Clean Energy',
+          reference: 7,
+          short_title:'SDG 7',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all',
+          title:'Decent Work and Economic Growth',
+          reference: 8,
+          short_title:'SDG 8',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation',
+          title:'Industry, Innovation and Infrastructure',
+          reference: 9,
+          short_title:'SDG 9',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Reduce income inequality within and among countries',
+          title:'Reduced Inequalities',
+          reference: 10,
+          short_title:'SDG 10',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Make cities and human settlements inclusive, safe, resilient and sustainable',
+          title:'Sustainable Cities and Communities',
+          reference: 11,
+          short_title:'SDG 11',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Ensure sustainable consumption and production patterns',
+          title:'Responsible Consumption and Production',
+          reference: 12,
+          short_title:'SDG 12',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Take urgent action to combat climate change and its impacts by regulating emissions and promoting developments in renewable energy',
+          title:'Climate Action',
+          reference: 13,
+          short_title:'SDG 13',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Conserve and sustainably use the oceans, seas and marine resources for sustainable development',
+          title:'Life Below Water',
+          reference: 14,
+          short_title:'SDG 14',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss',
+          title:'Life on Land',
+          reference: 15,
+          short_title:'SDG 15',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels',
+          title:'Peace, Justice and Strong Institutions',
+          reference: 16,
+          short_title:'SDG 16',
+          url:''
+        )
+      FactoryGirl.create(
+          :category,
+          taxonomy:sdg,
+          description:'Strengthen the means of implementation and revitalize the global partnership for sustainable development',
+          title:'Partnerships for the Goals',
+          reference: 17,
+          short_title:'SDG 17',
+          url:''
+        )
 
-    // UDHR Human Rights
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        title:'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.',
-        short_title:'Article 1',
-        title:'Right to Equality',
-        reference:'1',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone is entitled to all the rights and freedoms set forth in this Declaration, without distinction of any kind, such as race, colour, sex, language, religion, political or other opinion, national or social origin, property, birth or other status. Furthermore, no distinction shall be made on the basis of the political, jurisdictional or international status of the country or territory to which a person belongs, whether it be independent, trust, non-self-governing or under any other limitation of sovereignty.',
-        short_title:'Article 2',
-        title:'Freedom from Discrimination',
-        reference:'2',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone has the right to life, liberty and security of person.',
-        short_title:'Article 3',
-        title:'Right to Life, Liberty, Personal Security',
-        reference:'3',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'No one shall be held in slavery or servitude; slavery and the slave trade shall be prohibited in all their forms.',
-        short_title:'Article 4',
-        title:'Freedom from Slavery',
-        reference:'4',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'No one shall be subjected to torture or to cruel, inhuman or degrading treatment or punishment.',
-        short_title:'Article 5',
-        title:'Freedom from Torture and Degrading Treatment',
-        reference:'5',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'No one shall be subjected to torture or to cruel, inhuman or degrading treatment or punishment.',
-        short_title:'Article 5',
-        title:'Right to Recognition as a Person before the Law',
-        reference:'5',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone has the right to recognition everywhere as a person before the law.',
-        short_title:'Article 6',
-        title:'Right to Equality before the Law',
-        reference:'6',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'All are equal before the law and are entitled without any discrimination to equal protection of the law. All are entitled to equal protection against any discrimination in violation of this Declaration and against any incitement to such discrimination.',
-        short_title:'Article 7',
-        title:'Right to Remedy by Competent Tribunal',
-        reference:'7',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone has the right to an effective remedy by the competent national tribunals for acts violating the fundamental rights granted him by the constitution or by law.',
-        short_title:'Article 8',
-        title:'',
-        reference:'8',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'No one shall be subjected to arbitrary arrest, detention or exile.',
-        short_title:'Article 9',
-        title:'Freedom from Arbitrary Arrest and Exile',
-        reference:'9',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone is entitled in full equality to a fair and public hearing by an independent and impartial tribunal, in the determination of his rights and obligations and of any criminal charge against him.',
-        short_title:'Article 10',
-        title:'Right to Fair Public Hearing',
-        reference:'10',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone charged with a penal offence has the right to be presumed innocent until proved guilty according to law in a public trial at which he has had all the guarantees necessary for his defence. (2) No one shall be held guilty of any penal offence on account of any act or omission which did not constitute a penal offence, under national or international law, at the time when it was committed. Nor shall a heavier penalty be imposed than the one that was applicable at the time the penal offence was committed.',
-        short_title:'Article 11',
-        title:'Right to be Considered Innocent until Proven Guilty',
-        reference:'11',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'No one shall be subjected to arbitrary interference with his privacy, family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has the right to the protection of the law against such interference or attacks.',
-        short_title:'Article 12',
-        title:'Freedom from Interference with Privacy, Family, Home and Correspondence',
-        reference:'12',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to freedom of movement and residence within the borders of each state. (2) Everyone has the right to leave any country, including his own, and to return to his country.',
-        short_title:'Article 13',
-        title:'Right to Free Movement in and out of the Country',
-        reference:'13',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to seek and to enjoy in other countries asylum from persecution. (2) This right may not be invoked in the case of prosecutions genuinely arising from non-political crimes or from acts contrary to the purposes and principles of the United Nations.',
-        short_title:'Article 14',
-        title:'Right to Asylum in other Countries from Persecution',
-        reference:'14',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to a nationality. (2) No one shall be arbitrarily deprived of his nationality nor denied the right to change his nationality.',
-        short_title:'Article 15',
-        title:'Right to a Nationality and the Freedom to Change It',
-        reference:'15',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Men and women of full age, without any limitation due to race, nationality or religion, have the right to marry and to found a family. They are entitled to equal rights as to marriage, during marriage and at its dissolution. (2) Marriage shall be entered into only with the free and full consent of the intending spouses. (3) The family is the natural and fundamental group unit of society and is entitled to protection by society and the State.',
-        short_title:'Article 16',
-        title:'Right to Asylum in other Countries from Persecution',
-        reference:'16',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to own property alone as well as in association with others. (2) No one shall be arbitrarily deprived of his property.',
-        short_title:'Article 17',
-        title:'Right to Own Property',
-        reference:'17',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone has the right to freedom of thought, conscience and religion; this right includes freedom to change his religion or belief, and freedom, either alone or in community with others and in public or private, to manifest his religion or belief in teaching, practice, worship and observance.',
-        short_title:'Article 18',
-        title:'Freedom of Belief and Religion',
-        reference:'18',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone has the right to freedom of opinion and expression; this right includes freedom to hold opinions without interference and to seek, receive and impart information and ideas through any media and regardless of frontiers.',
-        short_title:'Article 19',
-        title:'Freedom of Opinion and Information',
-        reference:'19',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to freedom of peaceful assembly and association. (2) No one may be compelled to belong to an association.',
-        short_title:'Article 20',
-        title:'Right of Peaceful Assembly and Association',
-        reference:'20',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to take part in the government of his country, directly or through freely chosen representatives. (2) Everyone has the right of equal access to public service in his country. (3) The will of the people shall be the basis of the authority of government; this will shall be expressed in periodic and genuine elections which shall be by universal and equal suffrage and shall be held by secret vote or by equivalent free voting procedures.',
-        short_title:'Article 21',
-        title:'Right to Participate in Government and in Free Elections',
-        reference:'21',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone, as a member of society, has the right to social security and is entitled to realization, through national effort and international co-operation and in accordance with the organization and resources of each State, of the economic, social and cultural rights indispensable for his dignity and the free development of his personality.',
-        short_title:'Article 22',
-        title:'Right to Social Security',
-        reference:'22',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to work, to free choice of employment, to just and favourable conditions of work and to protection against unemployment. (2) Everyone, without any discrimination, has the right to equal pay for equal work. (3) Everyone who works has the right to just and favourable remuneration ensuring for himself and his family an existence worthy of human dignity, and supplemented, if necessary, by other means of social protection. (4) Everyone has the right to form and to join trade unions for the protection of his interests.',
-        short_title:'Article 23',
-        title:'Right to Desirable Work and to Join Trade Unions',
-        reference:'23',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone has the right to rest and leisure, including reasonable limitation of working hours and periodic holidays with pay.',
-        short_title:'Article 24',
-        title:'Right to Rest and Leisure',
-        reference:'24',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to a standard of living adequate for the health and well-being of himself and of his family, including food, clothing, housing and medical care and necessary social services, and the right to security in the event of unemployment, sickness, disability, widowhood, old age or other lack of livelihood in circumstances beyond his control. (2) Motherhood and childhood are entitled to special care and assistance. All children, whether born in or out of wedlock, shall enjoy the same social protection.',
-        short_title:'Article 25',
-        title:'Right to Adequate Living Standard',
-        reference:'25',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right to education. Education shall be free, at least in the elementary and fundamental stages. Elementary education shall be compulsory. Technical and professional education shall be made generally available and higher education shall be equally accessible to all on the basis of merit. (2) Education shall be directed to the full development of the human personality and to the strengthening of respect for human rights and fundamental freedoms. It shall promote understanding, tolerance and friendship among all nations, racial or religious groups, and shall further the activities of the United Nations for the maintenance of peace. (3) Parents have a prior right to choose the kind of education that shall be given to their children.',
-        short_title:'Article 26',
-        title:'Right to Education',
-        reference:'26',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has the right freely to participate in the cultural life of the community, to enjoy the arts and to share in scientific advancement and its benefits. (2) Everyone has the right to the protection of the moral and material interests resulting from any scientific, literary or artistic production of which he is the author.',
-        short_title:'Article 27',
-        title:'Right to Participate in the Cultural Life of Community',
-        reference:'27',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Everyone is entitled to a social and international order in which the rights and freedoms set forth in this Declaration can be fully realized.',
-        short_title:'Article 28',
-        title:'Right to a Social Order that Articulates this Document',
-        reference:'28',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'(1) Everyone has duties to the community in which alone the free and full development of his personality is possible. (2) In the exercise of his rights and freedoms, everyone shall be subject only to such limitations as are determined by law solely for the purpose of securing due recognition and respect for the rights and freedoms of others and of meeting the just requirements of morality, public order and the general welfare in a democratic society. (3) These rights and freedoms may in no case be exercised contrary to the purposes and principles of the United Nations.',
-        short_title:'Article 29',
-        title:'Community Duties Essential to Free and Full Development',
-        reference:'29',
-        url:''
-      )
-    FactoryGirl.create(
-        :category,
-        taxonomy:right,
-        description:'Nothing in this Declaration may be interpreted as implying for any State, group or person any right to engage in any activity or to perform any act aimed at the destruction of any of the rights and freedoms set forth herein.',
-        short_title:'Article 30',
-        title:'Freedom from State or Personal Interference in the above Rights',
-        reference:'30',
-        url:''
-      )
+      # Countries
+      # FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Afghanistan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Albania',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Algeria',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Andorra',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Angola',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Argentina',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Armenia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Australia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Austria',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Azerbaijan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bahamas',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bahrain',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bangladesh',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Barbados',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Belarus',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Belgium',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Belize',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Benin',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bhutan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bolivia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bosnia and Herzegovina',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Botswana',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Brazil',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Brunei Darussalam',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Bulgaria',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Burkina Faso',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Burundi',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Cambodia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Cameroon',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Canada',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Cape Verde',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Central African Republic',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Chad',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Chile',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'China',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Colombia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Comoros',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Costa Rica',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Cote d\'Ivoire',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Croatia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Cuba',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Cyprus',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Czechia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'DPR Korea',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Democratic Republic of Congo',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Denmark',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Djibouti',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Dominica',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Dominican Republic',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Ecuador',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Egypt',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'El Salvador',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Equatorial Guinea',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Eritrea',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Estonia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Ethiopia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Fiji',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Finland',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'France',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Gabon',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Gambia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Georgia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Germany',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Ghana',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Greece',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Guatemala',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Guinea',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Guinea Bissau',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Guyana',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Haiti',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Holy See',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Honduras',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Hungary',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Iceland',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'India',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Indonesia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Iran',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Iraq',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Ireland',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Israel',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Italy',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Jamaica',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Japan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Jordan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Kazakhstan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Kenya',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Kiribati',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Kuwait',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Kyrgyzstan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Laos',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Latvia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Lebanon',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Lesotho',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Liberia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Libya',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Liechtenstein',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Lithuania',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Luxembourg',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Macedonia FYR',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Madagascar',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Malawi',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Malaysia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Maldives',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Mali',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Malta',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Marshall Islands',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Mauritania',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Mauritius',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Mexico',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Micronesia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Moldova',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Monaco',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Mongolia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Montenegro',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Morocco',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Mozambique',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Myanmar',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Namibia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Nepal',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Netherlands',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'New Zealand',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Nicaragua',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Niger',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Nigeria',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Norway',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Oman',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Pakistan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Palau',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Palestine',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Panama',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Paraguay',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Peru',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Philippines',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Poland',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Portugal',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Qatar',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Republic of Congo',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Republic of Korea',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Romania',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Russian Federation',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Rwanda',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Samoa',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'San Marino',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Sao Tome & Principe',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Saudi Arabia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Senegal',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Serbia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Seychelles',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Sierra Leone',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Singapore',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Slovakia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Slovenia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Solomon Islands',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Somalia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'South Africa',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'South Sudan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Spain',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Sri Lanka',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'St Kitts & Nevis',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'St Lucia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'St Vincent & the Grenadines',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Sudan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Swaziland',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Sweden',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Switzerland',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Syria',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Tajikistan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Tanzania',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Thailand',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Timor-Leste',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Togo',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Tonga',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Trinidad and Tobago',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Tunisia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Turkey',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Turkmenistan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Tuvalu',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Uganda',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Ukraine',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'United Arab Emirates',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'United Kingdom',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'United States',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Uruguay',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Uzbekistan',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Vanuatu',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Venezuela',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Viet Nam',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Yemen',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Zambia',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
+  		# FactoryGirl.create(
+    	# 		:category,
+    	# 		taxonomy:country,
+    	# 		title:'Zimbabwe',
+    	# 		short_title:'',
+    	# 		description:'',
+    	# 		url:''
+    	# 	)
 
   end
 

@@ -22,6 +22,7 @@
 
 # Never check passwords into source control!
 /.env
+/.envrc
 .rubocop-*
 
 # Ignore rubymine files

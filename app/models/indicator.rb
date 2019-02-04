@@ -31,9 +31,7 @@ class Indicator < VersionedRecord
     if repeat
       date_iterator = start_date
       while date_iterator <= end_date
-        if date_iterator >= Date.today
-          due_dates.find_or_create_by!(due_date: date_iterator)
-        end
+        due_dates.find_or_create_by!(due_date: date_iterator)
         date_iterator = date_iterator + frequency_months.months
       end
     else # No repeating
