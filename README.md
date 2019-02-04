@@ -1,23 +1,42 @@
-# Human-rights-national-reporting
+![IMPACT OSS](header.png?raw=true "IMPACT OSS")
 
-This is a Rails 5.0.1 app.
+# IMPACT OSS server application
 
-[ ![Codeship Status for barancw/undp-sadata](https://app.codeship.com/projects/cd931780-aeef-0134-5399-6ab5102948e8/status?branch=master)](https://app.codeship.com/projects/192762)
+This is the source code for the server-side application (the "API") of IMPACT OSS.
+
+It is a **Rails 5.0.1 application** and is a thin server that is responsible for:
+* database management and access via an API (Application Programming Interface)
+* user authentication
+* automated email reminders
+
+##### IMPACT OSS client application
+
+It complements the IMPACT OSS client-side application (the "UI") that you can find here: https://github.com/impactoss/impactoss-client
+
+The client is a React JavaScript application and is a single page application that is responsible for:
+* public User Interface (UI)
+* admin UI
+
+---
+
+## About IMPACT OSS
+
+IMPACT OSS is an Open Source Software (OSS) for Integrated Management and Planning of Actions (IMPACT), created to assist States with coordinating and monitoring implementation of human rights and the Sustainable Development Goals (SDGs).
+
+The IMPACT OSS project is maintained by the Impact Open Source Software Trust. To learn more about the project and the Trust see https://impactoss.org
+
+---
 
 ## Documentation
 
-This README describes the purpose of this repository and how to set up a development environment. Other sources of documentation are as follows:
+#### Configuration & Installation
 
-* UI and API designs are in `doc/`
-* Server setup instructions are in `PROVISIONING.md`
-* Staging and production deployment instructions are in `DEPLOYMENT.md`
+The IMPACT OSS installation guide provides detailed instructions on how to configure and install both server and client applications:
+https://install-guide.impactoss.org/
 
-## API documentation
+#### How to set up a development environment
 
-API documentation is available in the `doc/` folder in Swagger format. Documentation can either be viewed locally using [Swagger UI](https://github.com/swagger-api/swagger-ui), or via the [online editor tool](editor.swagger.io). Using the editor tools, API
-clients in several languages can be generated.
-
-## Prerequisites
+##### Prerequisites
 
 This project requires:
 
@@ -29,9 +48,10 @@ On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wi
 
 If you need help setting up a Ruby development environment, check out this [Rails OS X Setup Guide](https://mattbrictson.com/rails-osx-setup-guide).
 
-## Config
+##### Configuration
 
-### Set up secrets
+###### Set up secrets
+
 ```
 cp config/secrets-sample.yml config/secrets.yml
 ```
@@ -42,7 +62,7 @@ and edit. You can generate a new secret to use, like this:
 rake secret
 ```
 
-### Set up Devise
+###### Set up Devise
 
 ```
 cp config/initializers/devise-sample.rb config/initializers/devise.rb
@@ -56,9 +76,7 @@ config.secret_key = 'your-secret-goes-here'
 # rubocop:enable Metrics/LineLength
 ```
 
-
-
-## Code style
+#### Code style
 
 This project uses overcommit to enforce code style. To enable overcommit locally
 
@@ -80,10 +98,9 @@ To install the extra linters, run
 npm install -g jshint
 ```
 
-## Getting started
+#### Getting started
 
-
-#### With Docker
+##### With Docker
 
 Run `docker-compose up` to create and start a DB and app image, with the app listening on port 3000. You will also need to run `docker-compose run app rake db:setup` to create and seed a development database. The app has several configuration value that can be set that are listed in the `example.env` file. You can either copy this file to `.env` and provide your own configuration, or explicitly pass in your configuration to the `docker run` command.
 
@@ -95,7 +112,7 @@ And then run the resulting image:
 
 `docker run undp-human-rights-national-reporting -P -e PGHOST=YOUR_DB_HOST -e PGUSER=YOUR_PG_USER`
 
-#### Without Docker
+##### Without Docker
 
 Run the `bin/setup` script. This script will:
 
@@ -113,10 +130,13 @@ Run the `bin/setup` script. This script will:
 [poltergeist]:https://github.com/teampoltergeist/poltergeist
 [Homebrew]:http://brew.sh
 
+---
 
 ## Contributors
 
 See [CONTRIBUTORS.md](CONTRIBUTORS.md)
+
+---
 
 ## License
 
