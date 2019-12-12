@@ -8,4 +8,17 @@ class Taxonomy < VersionedRecord
   validates :allow_multiple, inclusion: [true, false]
   validates :tags_recommendations, inclusion: [true, false]
   validates :tags_measures, inclusion: [true, false]
+
+  validate :sub_relation
+ 
+  def sub_relation
+    if parent_id.present? 
+      parent_taxonomy = Taxonomy.find(parent_id)
+
+      if (!parent_taxonomy.parent_id.nil?) 
+        errors.add(:parent_id, "Parent taxonomy is already a sub-taxonomy.")
+      end
+    end
+  end
+
 end

@@ -11,7 +11,7 @@ FactoryGirl.define do
     end
   
     trait :sub_category do
-      title:'parent'
+      title:'sub'
     end
 
   end

@@ -29,6 +29,29 @@ RSpec.describe Category, type: :model do
 
     end
 
+    it "Should update parent_id with correct taxonomy relation" do
+      sub_category = FactoryGirl.create(:category, :sub_category)
+      sub_category.parent_id = 123
+      sub_category.save!
+    end
+
+    it "Should not update parent_id if parent is already a sub-category" do
+      category = FactoryGirl.create(:category)
+      parent_category = FactoryGirl.create(:category, :parent_category)
+      sub_category = FactoryGirl.create(:category, :sub_category)
+      taxonomy = FactoryGirl.create(:taxonomy, :sub_taxonomy)
+
+      parent_category.taxonomy_id = taxonomy.id
+      category.taxonomy_id = taxonomy.parent_id
+      category.save!
+
+      parent_category.parent_id = category.id
+      parent_category.save!
+
+      sub_category.parent_id = parent_category.id
+      expect{sub_category.save!}.to raise_exception(/Parent category is already a sub-category./)
+    end
+
     it "Should not update parent_id with incorrect taxonomy relation" do
       category = FactoryGirl.create(:category, :parent_category)
       sub_category = FactoryGirl.create(:category, :sub_category)

@@ -22,11 +22,17 @@ class Category < VersionedRecord
  
   def sub_relation
     if parent_id.present? 
- 
-      taxonomy_parent_id = Taxonomy.find(taxonomy_id).parent_id
-      parent_tax_id = Category.find(parent_id).taxonomy_id
+      parent_category = Category.find(parent_id)
 
-      if (parent_tax_id != taxonomy_parent_id)
+      if (!parent_category.parent_id.nil?) 
+        errors.add(:parent_id, "Parent category is already a sub-category.")
+        return
+      end
+ 
+      parent_taxonomy_id = Taxonomy.find(taxonomy_id).parent_id
+      parent_category_taxonomy_id = parent_category.taxonomy_id
+
+      if (parent_category_taxonomy_id != parent_taxonomy_id)
         errors.add(:parent_id, "Taxonomy does not have parent categorys taxonomy as parent.")
       end
     end
