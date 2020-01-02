@@ -4,6 +4,6 @@ class AddSubRelationsToCategoryAndTaxonomy < ActiveRecord::Migration[5.0]
     add_column :taxonomies, :has_date, :boolean
     
     add_column :categories, :parent_id, :integer
-    add_column :categories, :date, :datetime
+    add_column :categories, :date, :date
   end
 end
