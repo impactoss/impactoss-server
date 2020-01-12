@@ -12,9 +12,9 @@ class Category < VersionedRecord
   has_many :measures, through: :measure_categories
   has_many :indicators, through: :recommendations
   has_many :progress_reports, through: :indicators
-  has_many :due_dates,-> { uniq }, through: :indicators
+  has_many :due_dates,-> { distinct }, through: :indicators
 
-  has_many :children_due_dates, through: :categories, source: :due_dates
+  has_many :children_due_dates,-> { distinct }, through: :categories, source: :due_dates
   
   delegate :name, :email, to: :manager, prefix: true, allow_nil: true
 
