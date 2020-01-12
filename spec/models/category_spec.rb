@@ -12,6 +12,7 @@ RSpec.describe Category, type: :model do
   it { should have_many :indicators }
   it { should have_many :progress_reports }
   it { should have_many :due_dates }
+  it { should have_many :children_due_dates }
 
   context "Sub-relation validations" do
     it "Should update parent_id with correct taxonomy relation" do
@@ -27,12 +28,6 @@ RSpec.describe Category, type: :model do
       sub_category.parent_id = category.id
       sub_category.save!
 
-    end
-
-    it "Should update parent_id with correct taxonomy relation" do
-      sub_category = FactoryGirl.create(:category, :sub_category)
-      sub_category.parent_id = 123
-      sub_category.save!
     end
 
     it "Should not update parent_id if parent is already a sub-category" do
