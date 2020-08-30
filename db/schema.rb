@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 20200830194850) do
 
   create_table "bookmarks", force: :cascade do |t|
     t.integer  "user_id",    null: false
+    t.integer  "type",       null: false
     t.string   "title",      null: false
     t.json     "view",       null: false
     t.datetime "created_at", null: false
