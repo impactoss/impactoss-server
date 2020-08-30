@@ -16,12 +16,13 @@ ActiveRecord::Schema.define(version: 20200830194850) do
   enable_extension "plpgsql"
 
   create_table "bookmarks", force: :cascade do |t|
-    t.integer  "user_id",    null: false
-    t.integer  "type",       null: false
-    t.string   "title",      null: false
-    t.json     "view",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "user_id",               null: false
+    t.integer  "bookmark_type",         null: false
+    t.string   "title",                 null: false
+    t.json     "view",                  null: false
+    t.integer  "last_modified_user_id"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
     t.index ["user_id"], name: "index_bookmarks_on_user_id", using: :btree
   end
 

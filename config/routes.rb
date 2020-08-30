@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   resources :roles
   resources :pages
   resources :sdgtargets
+  resources :bookmarks
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
