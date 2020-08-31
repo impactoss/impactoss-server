@@ -1,9 +1,9 @@
 class BookmarksController < ApplicationController
   #before_action :authenticate_user!
 
-  before_action :set_and_authorize_bookmark, only: [:show]
+  before_action :set_and_authorize_bookmark, only: [:show, :update, :destroy]
 
-  # GET /bookmarks
+  # GET /bookmarks (Forbidden)
   def index
     policy_scope(base_object)
 
@@ -24,6 +24,7 @@ class BookmarksController < ApplicationController
   def create
     @bookmark = Bookmark.new
     @bookmark.assign_attributes(permitted_attributes(@bookmark))
+    @bookmark[:view] = params[:view].to_hash # set as json
     authorize @bookmark
 
     if @bookmark.save
@@ -33,12 +34,12 @@ class BookmarksController < ApplicationController
     end
   end
 
-  # PATCH/PUT /bookmarks/1
+  # PUT /bookmarks/[id]
   def update
     render json: serialize(@bookmark) if @bookmark.update_attributes!(permitted_attributes(@bookmark))
   end
 
-  # DELETE /bookmarks/1
+  # DELETE /bookmarks/[id]
   def destroy
     @bookmark.destroy
   end

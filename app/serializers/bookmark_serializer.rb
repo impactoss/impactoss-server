@@ -1,7 +1,7 @@
 class BookmarkSerializer
   include FastVersionedSerializer
 
-  attributes :title, :view
+  attributes :user_id, :bookmark_type, :title, :view
 
   set_type :bookmarks
 end
