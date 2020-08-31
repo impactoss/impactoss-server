@@ -1,19 +1,23 @@
 class BookmarksController < ApplicationController
   #before_action :authenticate_user!
 
-  before_action :set_and_authorize_user, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_bookmark, only: [:show]
 
   # GET /bookmarks
   def index
-    @bookmarks = policy_scope(base_object).order(created_at: :desc)
-    #authorize @users
+    policy_scope(base_object)
 
-    render json: serialize(@bookmarks)
+    render text: 'Forbidden', status: 403
   end
 
-  # GET /bookmarks/1
+  # GET /bookmarks/[user-id]
   def show
-    render json: serialize(@bookmark)
+    @bookmarks = policy_scope(base_object)
+      .where(user_id: params[:id])
+      .order(created_at: :desc)
+    authorize @bookmarks
+
+    render json: serialize(@bookmarks)
   end
 
   # POST /bookmarks
@@ -50,7 +54,7 @@ class BookmarksController < ApplicationController
   end
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_and_authorize_user
+  def set_and_authorize_bookmark
     @bookmark = policy_scope(base_object).find(params[:id])
     authorize @bookmark
   end
