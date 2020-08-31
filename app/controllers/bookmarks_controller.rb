@@ -1,5 +1,6 @@
 class BookmarksController < ApplicationController
   #before_action :authenticate_user!
+  # TODO: for postman, test the endpoints and find the sign out path
 
   before_action :set_and_authorize_bookmark, only: [:show, :update, :destroy]
 
@@ -21,6 +22,7 @@ class BookmarksController < ApplicationController
   end
 
   # POST /bookmarks
+  # TODO: user_id should be the one of the authorised user
   def create
     @bookmark = Bookmark.new
     @bookmark.assign_attributes(permitted_attributes(@bookmark))
@@ -35,6 +37,7 @@ class BookmarksController < ApplicationController
   end
 
   # PUT /bookmarks/[id]
+  # TODO: user_id should be the one of the authorised user
   def update
     render json: serialize(@bookmark) if @bookmark.update_attributes!(permitted_attributes(@bookmark))
   end
