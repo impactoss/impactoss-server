@@ -1,18 +1,24 @@
 class BookmarksController < ApplicationController
-  #before_action :authenticate_user!
-  # TODO: for postman, test the endpoints and find the sign out path
-
+  before_action :authenticate_user!
   before_action :set_and_authorize_bookmark, only: [:show, :update, :destroy]
+
+  def forbidden
+    render json: {error: 'Forbidden'}, status: 403
+  end
 
   # GET /bookmarks (Forbidden)
   def index
     policy_scope(base_object)
 
-    render text: 'Forbidden', status: 403
+    forbidden
   end
 
   # GET /bookmarks/[user-id]
   def show
+    if params[:id].to_i != current_user.id
+      return forbidden
+    end
+
     @bookmarks = policy_scope(base_object)
       .where(user_id: params[:id])
       .order(created_at: :desc)
@@ -22,11 +28,11 @@ class BookmarksController < ApplicationController
   end
 
   # POST /bookmarks
-  # TODO: user_id should be the one of the authorised user
   def create
     @bookmark = Bookmark.new
     @bookmark.assign_attributes(permitted_attributes(@bookmark))
     @bookmark[:view] = params[:view].to_hash # set as json
+    @bookmark[:user_id] = current_user.id
     authorize @bookmark
 
     if @bookmark.save
@@ -37,8 +43,8 @@ class BookmarksController < ApplicationController
   end
 
   # PUT /bookmarks/[id]
-  # TODO: user_id should be the one of the authorised user
   def update
+    @bookmark[:view] = params[:view].to_hash # set as json
     render json: serialize(@bookmark) if @bookmark.update_attributes!(permitted_attributes(@bookmark))
   end
 
@@ -60,6 +66,11 @@ class BookmarksController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_and_authorize_bookmark
     @bookmark = policy_scope(base_object).find(params[:id])
+
+    if @bookmark.user_id != current_user.id
+      return forbidden
+    end
+
     authorize @bookmark
   end
 end
