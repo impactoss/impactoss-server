@@ -1,6 +1,7 @@
 class BookmarksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_and_authorize_bookmark, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_bookmark, only: [:update, :destroy]
+  skip_after_action :verify_authorized, only: [:show]
 
   def forbidden
     render json: {error: 'Forbidden'}, status: 403
@@ -31,7 +32,8 @@ class BookmarksController < ApplicationController
   def create
     @bookmark = Bookmark.new
     @bookmark.assign_attributes(permitted_attributes(@bookmark))
-    @bookmark[:view] = params[:view].to_hash # set as json
+
+    @bookmark[:view] = params[:bookmark][:view]
     @bookmark[:user_id] = current_user.id
     authorize @bookmark
 
@@ -44,7 +46,7 @@ class BookmarksController < ApplicationController
 
   # PUT /bookmarks/[id]
   def update
-    @bookmark[:view] = params[:view].to_hash # set as json
+    @bookmark[:view] = params[:bookmark][:view]
     render json: serialize(@bookmark) if @bookmark.update_attributes!(permitted_attributes(@bookmark))
   end
 
