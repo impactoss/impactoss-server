@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe BookmarksController, type: :controller do
   describe 'Get index' do
+    let(:bookmark1) { FactoryGirl.create(:bookmark) }
+    let(:bookmark2) { FactoryGirl.create(:bookmark) }
+    let(:user) { FactoryGirl.create(:user, bookmarks: [bookmark1]) }
+
     subject { get :index, format: :json }
 
     context 'when not signed in' do
@@ -9,48 +13,36 @@ RSpec.describe BookmarksController, type: :controller do
     end
 
     context 'when signed in' do
-      let(:user) { FactoryGirl.create(:user) }
-
-      it 'is forbidden' do
+      it 'lists bookmars for signed in user' do
         sign_in user
 
-        expect(subject).to have_http_status(403)
+        expect(subject).to have_http_status(200)
+
+        response = JSON.parse(subject.body)
+        expect(response['data'].length).to eq(1)
+
+        bookmark = response['data'][0]['attributes']
+        expect(bookmark['user_id']).to eq(user.id)
       end
     end
   end
 
   describe 'Get show' do
-    let(:bookmark1) { FactoryGirl.create(:bookmark) }
-    let(:bookmark2) { FactoryGirl.create(:bookmark) }
-    let(:user) { FactoryGirl.create(:user, bookmarks: [bookmark1, bookmark2]) }
+    let(:bookmark) { FactoryGirl.create(:bookmark) }
+    let(:user) { FactoryGirl.create(:user, bookmarks: [bookmark]) }
 
-    subject { get :index, format: :json }
+    subject { get :show, params: {id: bookmark['id']}, format: :json }
 
     context 'when not signed in' do
       it { expect(subject).to be_unauthorized }
     end
 
     context 'when signed in' do
-      it 'is forbidden for non signed in user' do
+
+      it 'is forbidden' do
         sign_in user
 
-        subject = get :show, params: {id: user.id + 1}, format: :json
         expect(subject).to have_http_status(403)
-      end
-
-      it 'lists bookmars for signed in user' do
-        sign_in user
-
-        subject = get :show, params: {id: user.id}, format: :json
-        response = JSON.parse(subject.body)
-
-        expect(subject).to have_http_status(200)
-        expect(response['data'].length).to eq(2)
-
-        for i in 0..1
-          bookmark = response['data'][i]['attributes']
-          expect(bookmark['user_id']).to eq(user.id)
-        end
       end
     end
   end

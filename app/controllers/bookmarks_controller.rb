@@ -7,25 +7,21 @@ class BookmarksController < ApplicationController
     render json: {error: 'Forbidden'}, status: 403
   end
 
-  # GET /bookmarks (Forbidden)
+  # GET /bookmarks
   def index
-    policy_scope(base_object)
-
-    forbidden
-  end
-
-  # GET /bookmarks/[user-id]
-  def show
-    if params[:id].to_i != current_user.id
-      return forbidden
-    end
-
     @bookmarks = policy_scope(base_object)
-      .where(user_id: params[:id])
+      .where(user_id: current_user.id)
       .order(created_at: :desc)
     authorize @bookmarks
 
     render json: serialize(@bookmarks)
+  end
+
+  # GET /bookmarks/[id]
+  def show
+    policy_scope(base_object)
+
+    forbidden
   end
 
   # POST /bookmarks
