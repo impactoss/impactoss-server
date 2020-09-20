@@ -3,7 +3,6 @@ class CreateBookmarks < ActiveRecord::Migration[5.0]
     create_table :bookmarks do |t|
       t.belongs_to :user, index: true, null: false
 
-      t.integer :bookmark_type, null: false
       t.string :title, null: false
       t.json :view, null: false
 

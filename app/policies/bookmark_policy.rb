@@ -20,7 +20,7 @@ class BookmarkPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:user_id, :bookmark_type, :title, :view]
+    [:user_id, :title, :view]
   end
 
   class Scope < Scope
