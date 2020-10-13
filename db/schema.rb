@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200830194850) do
+ActiveRecord::Schema.define(version: 20201013103704) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,29 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.index ["indicator_id"], name: "index_due_dates_on_indicator_id", using: :btree
   end
 
+  create_table "frameworks", force: :cascade do |t|
+    t.text     "title",          null: false
+    t.string   "short_title"
+    t.text     "description"
+    t.boolean  "has_indicators"
+    t.boolean  "has_measures"
+    t.boolean  "has_response"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  create_table "frameworks_frameworks", force: :cascade do |t|
+    t.integer "framework_id"
+    t.integer "other_framework_id"
+  end
+
+  create_table "frameworks_taxonomies", id: false, force: :cascade do |t|
+    t.integer "framework_id", null: false
+    t.integer "taxonomy_id",  null: false
+    t.index ["framework_id"], name: "index_frameworks_taxonomies_on_framework_id", using: :btree
+    t.index ["taxonomy_id"], name: "index_frameworks_taxonomies_on_taxonomy_id", using: :btree
+  end
+
   create_table "indicators", force: :cascade do |t|
     t.text     "title",                                 null: false
     t.text     "description"
@@ -70,6 +93,13 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.index ["created_at"], name: "index_indicators_on_created_at", using: :btree
     t.index ["draft"], name: "index_indicators_on_draft", using: :btree
     t.index ["manager_id"], name: "index_indicators_on_manager_id", using: :btree
+  end
+
+  create_table "indicators_recommendations", id: false, force: :cascade do |t|
+    t.integer "indicator_id",      null: false
+    t.integer "recommendation_id", null: false
+    t.index ["indicator_id"], name: "index_indicators_recommendations_on_indicator_id", using: :btree
+    t.index ["recommendation_id"], name: "index_indicators_recommendations_on_recommendation_id", using: :btree
   end
 
   create_table "measure_categories", force: :cascade do |t|
@@ -153,7 +183,14 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.text     "reference",                             null: false
     t.text     "description"
     t.integer  "last_modified_user_id"
+    t.integer  "framework_id"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
+    t.index ["framework_id"], name: "index_recommendations_on_framework_id", using: :btree
+  end
+
+  create_table "recommendations_recommendations", force: :cascade do |t|
+    t.integer "recommendation_id"
+    t.integer "other_recommendation_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -222,8 +259,8 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.integer  "groups_recommendations_default"
     t.integer  "groups_sdgtargets_default"
     t.integer  "last_modified_user_id"
-    t.boolean  "tags_sdgtargets"
-    t.boolean  "tags_recommendations"
+    t.integer  "framework_id"
+    t.index ["framework_id"], name: "index_taxonomies_on_framework_id", using: :btree
   end
 
   create_table "user_categories", force: :cascade do |t|
@@ -275,4 +312,14 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
   end
 
+  add_foreign_key "frameworks_frameworks", "frameworks"
+  add_foreign_key "frameworks_frameworks", "frameworks", column: "other_framework_id"
+  add_foreign_key "frameworks_taxonomies", "frameworks"
+  add_foreign_key "frameworks_taxonomies", "taxonomies"
+  add_foreign_key "indicators_recommendations", "indicators"
+  add_foreign_key "indicators_recommendations", "recommendations"
+  add_foreign_key "recommendations", "frameworks"
+  add_foreign_key "recommendations_recommendations", "recommendations"
+  add_foreign_key "recommendations_recommendations", "recommendations", column: "other_recommendation_id"
+  add_foreign_key "taxonomies", "frameworks"
 end
