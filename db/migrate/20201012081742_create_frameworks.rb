@@ -8,6 +8,7 @@ class CreateFrameworks < ActiveRecord::Migration[5.0]
       t.boolean :has_measures
       t.boolean :has_response
 
+      t.integer :parent_id
       t.timestamps
     end
   end

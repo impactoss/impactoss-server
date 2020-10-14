@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201013103704) do
+ActiveRecord::Schema.define(version: 20201013101144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,13 +61,9 @@ ActiveRecord::Schema.define(version: 20201013103704) do
     t.boolean  "has_indicators"
     t.boolean  "has_measures"
     t.boolean  "has_response"
+    t.integer  "parent_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-  end
-
-  create_table "frameworks_frameworks", force: :cascade do |t|
-    t.integer "framework_id"
-    t.integer "other_framework_id"
   end
 
   create_table "frameworks_taxonomies", id: false, force: :cascade do |t|
@@ -183,14 +179,10 @@ ActiveRecord::Schema.define(version: 20201013103704) do
     t.text     "reference",                             null: false
     t.text     "description"
     t.integer  "last_modified_user_id"
+    t.integer  "parent_id"
     t.integer  "framework_id"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
     t.index ["framework_id"], name: "index_recommendations_on_framework_id", using: :btree
-  end
-
-  create_table "recommendations_recommendations", force: :cascade do |t|
-    t.integer "recommendation_id"
-    t.integer "other_recommendation_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -312,14 +304,10 @@ ActiveRecord::Schema.define(version: 20201013103704) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
   end
 
-  add_foreign_key "frameworks_frameworks", "frameworks"
-  add_foreign_key "frameworks_frameworks", "frameworks", column: "other_framework_id"
   add_foreign_key "frameworks_taxonomies", "frameworks"
   add_foreign_key "frameworks_taxonomies", "taxonomies"
   add_foreign_key "indicators_recommendations", "indicators"
   add_foreign_key "indicators_recommendations", "recommendations"
   add_foreign_key "recommendations", "frameworks"
-  add_foreign_key "recommendations_recommendations", "recommendations"
-  add_foreign_key "recommendations_recommendations", "recommendations", column: "other_recommendation_id"
   add_foreign_key "taxonomies", "frameworks"
 end
