@@ -3,7 +3,4 @@ class IndicatorRecommendation < ApplicationRecord
 
   belongs_to :indicator
   belongs_to :recommendation
-
-  #accepts_nested_attributes_for :indicator
-  #accepts_nested_attributes_for :recommendation
 end

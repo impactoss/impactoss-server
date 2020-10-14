@@ -14,6 +14,8 @@ class Recommendation < VersionedRecord
   has_many :children, class_name: 'Recommendation', foreign_key: :parent_id
   belongs_to :parent, class_name: 'Recommendation', optional: true
 
+  belongs_to :framework, optional: true
+
   accepts_nested_attributes_for :recommendation_categories
 
   validates :title, presence: true

@@ -251,8 +251,6 @@ ActiveRecord::Schema.define(version: 20201013101144) do
     t.integer  "groups_recommendations_default"
     t.integer  "groups_sdgtargets_default"
     t.integer  "last_modified_user_id"
-    t.integer  "framework_id"
-    t.index ["framework_id"], name: "index_taxonomies_on_framework_id", using: :btree
   end
 
   create_table "user_categories", force: :cascade do |t|
@@ -309,5 +307,4 @@ ActiveRecord::Schema.define(version: 20201013101144) do
   add_foreign_key "indicators_recommendations", "indicators"
   add_foreign_key "indicators_recommendations", "recommendations"
   add_foreign_key "recommendations", "frameworks"
-  add_foreign_key "taxonomies", "frameworks"
 end
