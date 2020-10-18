@@ -38,7 +38,11 @@ Rails.application.routes.draw do
   resources :roles
   resources :pages
   resources :sdgtargets
-  resources :frameworks
+
+  resources :frameworks do
+    resources :frameworks
+    resources :taxonomies
+  end
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
