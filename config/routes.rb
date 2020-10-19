@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   end
   resources :recommendations do
     resources :measures, only: [:index, :show]
+    resources :recommendations
   end
   resources :measures do
     resources :recommendations, only: [:index, :show]
@@ -30,6 +31,7 @@ Rails.application.routes.draw do
   resources :indicators do
     resources :measures, only: [:index, :show]
     resources :progress_reports, only: [:index, :show]
+    resources :recommendations
   end
   resources :progress_reports
   resources :due_dates
