@@ -4,7 +4,6 @@ class RecommendationsController < ApplicationController
 
   # GET /recommendations
   def index
-    puts params
     if(params[:recommendation_id])
       @recommendations = policy_scope(base_object)
         .find(params[:recommendation_id])
