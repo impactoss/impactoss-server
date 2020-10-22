@@ -26,17 +26,12 @@ class RecommendationsController < ApplicationController
   def create
     # POST /recommendations/[id]/recommendations
     if(params[:recommendation_id].presence && params[:other_recommendation_id].presence)
-      @recommendation = Recommendation.find(params[:recommendation_id])
-      other_recommendation = Recommendation.find(params[:other_recommendation_id])
-      authorize @recommendation
-      authorize other_recommendation
+      return associate_recommendation
+    end
 
-      @recommendation.recommendations << other_recommendation
-
-      return render json: {
-        recommendation_id: params[:recommendation_id].to_s,
-        other_recommendation_id: params[:other_recommendation_id].to_s
-        }, status: :created
+    # POST /indicators/[id]/recommendations
+    if(params[:indicator_id].presence && params[:recommendation_id].presence)
+      return associate_indicator
     end
 
     @recommendation = Recommendation.new
@@ -63,6 +58,20 @@ class RecommendationsController < ApplicationController
 
   # DELETE /recommendations/1
   def destroy
+    if(params[:recommendation_id].presence && params[:other_recommendation_id].presence)
+      @recommendation = Recommendation.find(params[:recommendation_id])
+      other_recommendation = Recommendation.find(params[:other_recommendation_id])
+
+      return @recommendation.recommendations.delete(other_recommendation)
+    end
+
+    if(params[:id].presence && params[:indicator_id].presence)
+      indicator = Indicator.find(params[:indicator_id])
+      recommendation = Recommendation.find(params[:id])
+
+      return indicator.direct_recommendations.delete(recommendation)
+    end
+
     @recommendation.destroy
   end
 
@@ -88,5 +97,37 @@ class RecommendationsController < ApplicationController
 
   def serialize(target, serializer: RecommendationSerializer)
     super
+  end
+
+  def associate_recommendation
+    @recommendation = Recommendation.find(params[:recommendation_id])
+    other_recommendation = Recommendation.find(params[:other_recommendation_id])
+    authorize @recommendation
+    authorize other_recommendation
+
+    if !@recommendation.recommendations.exists?(params[:other_recommendation_id])
+      @recommendation.recommendations << other_recommendation
+    end
+
+    render json: {
+      recommendation_id: params[:recommendation_id].to_s,
+      other_recommendation_id: params[:other_recommendation_id].to_s
+    }, status: :created
+  end
+
+  def associate_indicator
+    indicator = Indicator.find(params[:indicator_id])
+    recommendation = Recommendation.find(params[:recommendation_id])
+    authorize indicator
+    authorize recommendation
+
+    if !indicator.direct_recommendations.exists?(params[:recommendation_id])
+      indicator.direct_recommendations << recommendation
+    end
+
+    render json: {
+      indicator_id: params[:indicator_id].to_s,
+      recommendation_id: params[:recommendation_id].to_s
+    }, status: :created
   end
 end
