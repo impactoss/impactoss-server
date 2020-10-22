@@ -24,6 +24,21 @@ class RecommendationsController < ApplicationController
 
   # POST /recommendations
   def create
+    # POST /recommendations/[id]/recommendations
+    if(params[:recommendation_id].presence && params[:other_recommendation_id].presence)
+      @recommendation = Recommendation.find(params[:recommendation_id])
+      other_recommendation = Recommendation.find(params[:other_recommendation_id])
+      authorize @recommendation
+      authorize other_recommendation
+
+      @recommendation.recommendations << other_recommendation
+
+      return render json: {
+        recommendation_id: params[:recommendation_id].to_s,
+        other_recommendation_id: params[:other_recommendation_id].to_s
+        }, status: :created
+    end
+
     @recommendation = Recommendation.new
     @recommendation.assign_attributes(permitted_attributes(@recommendation))
     authorize @recommendation
