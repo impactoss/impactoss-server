@@ -25,9 +25,10 @@
 /.envrc
 .rubocop-*
 
-# Ignore rubymine files
+# Ignore IDE specific files
 /.idea
 /nbproject/
+/.vscode/*
 
 #MacOS
 .DS_Store

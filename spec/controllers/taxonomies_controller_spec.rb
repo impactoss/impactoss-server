@@ -54,7 +54,6 @@ RSpec.describe TaxonomiesController, type: :controller do
                  description: 'test',
                  target_date: 'today',
                  allow_multiple: false,
-                 tags_recommendations: true,
                  tags_measures: false,
                  taxonomy_id: taxonomy.id
                }
