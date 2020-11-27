@@ -4,17 +4,10 @@ class RecommendationsController < ApplicationController
 
   # GET /recommendations
   def index
-    if(params[:recommendation_id])
-      @recommendations = policy_scope(base_object)
-        .find(params[:recommendation_id])
-        .recommendations
-    else
-      @recommendations = policy_scope(base_object)
-    end
-
+    @recommendations = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @recommendations
 
-    render json: serialize(@recommendations.order(created_at: :desc).page(params[:page]))
+    render json: serialize(@recommendations)
   end
 
   # GET /recommendations/1
@@ -82,8 +75,6 @@ class RecommendationsController < ApplicationController
       Category.find(params[:category_id]).recommendations
     elsif params[:measure_id]
       Measure.find(params[:measure_id]).recommendations
-    elsif params[:indicator_id]
-      Indicator.find(params[:indicator_id]).direct_recommendations
     else
       Recommendation
     end

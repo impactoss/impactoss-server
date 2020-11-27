@@ -3,15 +3,15 @@ class FrameworksController < ApplicationController
 
   # GET /frameworks
   def index
+    @frameworks = policy_scope(base_object).page(params[:page])
+
     if(params[:framework_id])
       @frameworks = policy_scope(base_object)
         .find(params[:framework_id])
         .frameworks
-    else
-      @frameworks = policy_scope(base_object)
     end
 
-    render json: serialize(@frameworks.order(created_at: :desc).page(params[:page]))
+    render json: serialize(@frameworks)
   end
 
   # GET /frameworks/[id]
