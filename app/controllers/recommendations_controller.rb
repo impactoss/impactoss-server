@@ -17,16 +17,6 @@ class RecommendationsController < ApplicationController
 
   # POST /recommendations
   def create
-    # POST /recommendations/[id]/recommendations
-    if(params[:recommendation_id].presence && params[:other_recommendation_id].presence)
-      return associate_recommendation
-    end
-
-    # POST /indicators/[id]/recommendations
-    if(params[:indicator_id].presence && params[:recommendation_id].presence)
-      return associate_indicator
-    end
-
     @recommendation = Recommendation.new
     @recommendation.assign_attributes(permitted_attributes(@recommendation))
     authorize @recommendation
