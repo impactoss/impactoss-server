@@ -39,7 +39,7 @@ Rails.application.routes.draw do
   resources :pages
   resources :sdgtargets
 
-  resources :frameworks do
+  resources :frameworks, only: [:index, :show] do
     resources :frameworks
     resources :taxonomies
   end

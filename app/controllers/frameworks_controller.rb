@@ -1,5 +1,4 @@
 class FrameworksController < ApplicationController
-  # before_action :authenticate_user!
 
   # GET /frameworks
   def index

@@ -6,4 +6,6 @@ class Framework < ApplicationRecord
   has_many :taxonomies, through: :frameworks_taxonomies
 
   has_many :recommendations
+
+  validates :title, presence: true
 end
