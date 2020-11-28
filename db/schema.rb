@@ -10,20 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201015054235) do
+ActiveRecord::Schema.define(version: 20201128072303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "bookmarks", force: :cascade do |t|
-    t.integer  "user_id",               null: false
-    t.string   "title",                 null: false
-    t.json     "view",                  null: false
-    t.integer  "last_modified_user_id"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-    t.index ["user_id"], name: "index_bookmarks_on_user_id", using: :btree
-  end
 
   create_table "categories", force: :cascade do |t|
     t.text     "title"
@@ -66,8 +56,10 @@ ActiveRecord::Schema.define(version: 20201015054235) do
   end
 
   create_table "frameworks_frameworks", force: :cascade do |t|
-    t.integer "framework_id"
-    t.integer "other_framework_id"
+    t.integer  "framework_id"
+    t.integer  "other_framework_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
   end
 
   create_table "frameworks_taxonomies", id: false, force: :cascade do |t|
