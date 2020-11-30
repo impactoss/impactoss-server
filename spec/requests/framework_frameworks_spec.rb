@@ -13,7 +13,7 @@ RSpec.describe "framework to framework relationships", type: :request do
       expected_json = 
       { "data"=>
         { "id"=>framework_framework.id.to_s, 
-          "type"=>"framework_framework", 
+          "type"=>"framework_frameworks", 
           "attributes"=>
           { "created_at"=>framework_framework.created_at.in_time_zone.iso8601, 
              "updated_at"=>framework_framework.updated_at.in_time_zone.iso8601, 
@@ -46,7 +46,7 @@ RSpec.describe "framework to framework relationships", type: :request do
         { "data"=>
           [
             { "id"=>framework_framework_1.id.to_s, 
-              "type"=>"framework_framework", 
+              "type"=>"framework_frameworks", 
               "attributes"=>
               { "created_at"=>framework_framework_1.created_at.in_time_zone.iso8601, 
                 "updated_at"=>framework_framework_1.updated_at.in_time_zone.iso8601, 
@@ -55,7 +55,7 @@ RSpec.describe "framework to framework relationships", type: :request do
               }
             }, 
             { "id"=>framework_framework_2.id.to_s, 
-              "type"=>"framework_framework", 
+              "type"=>"framework_frameworks", 
               "attributes"=>
               { "created_at"=>framework_framework_2.created_at.in_time_zone.iso8601, 
                 "updated_at"=>framework_framework_2.updated_at.in_time_zone.iso8601, 
@@ -64,7 +64,7 @@ RSpec.describe "framework to framework relationships", type: :request do
               }
             }, 
             { "id"=>framework_framework_3.id.to_s, 
-              "type"=>"framework_framework", 
+              "type"=>"framework_frameworks", 
               "attributes"=>
               { "created_at"=>framework_framework_3.created_at.in_time_zone.iso8601, 
                 "updated_at"=>framework_framework_3.updated_at.in_time_zone.iso8601, 

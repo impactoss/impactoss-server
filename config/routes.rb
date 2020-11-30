@@ -39,10 +39,9 @@ Rails.application.routes.draw do
   resources :pages
   resources :sdgtargets
 
-  resources :frameworks, only: [:index, :show] do
-    resources :taxonomies
-  end
+  resources :frameworks, only: [:index, :show]
   resources :framework_frameworks, only: [:index, :show]
+  resources :framework_taxonomies, only: [:index, :show]
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 

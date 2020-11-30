@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201128072303) do
+ActiveRecord::Schema.define(version: 20201129074409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,9 +62,11 @@ ActiveRecord::Schema.define(version: 20201128072303) do
     t.datetime "updated_at",         null: false
   end
 
-  create_table "frameworks_taxonomies", id: false, force: :cascade do |t|
-    t.integer "framework_id", null: false
-    t.integer "taxonomy_id",  null: false
+  create_table "frameworks_taxonomies", force: :cascade do |t|
+    t.integer  "framework_id", null: false
+    t.integer  "taxonomy_id",  null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
     t.index ["framework_id"], name: "index_frameworks_taxonomies_on_framework_id", using: :btree
     t.index ["taxonomy_id"], name: "index_frameworks_taxonomies_on_taxonomy_id", using: :btree
   end

@@ -3,5 +3,5 @@ class FrameworkFrameworkSerializer
   
     attributes :framework_id, :other_framework_id
   
-    set_type :framework_framework
+    set_type :framework_frameworks
   end
