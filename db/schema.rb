@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201203084759) do
+ActiveRecord::Schema.define(version: 20201203095409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,6 +51,15 @@ ActiveRecord::Schema.define(version: 20201203084759) do
     t.datetime "updated_at",         null: false
   end
 
+  create_table "framework_taxonomies", force: :cascade do |t|
+    t.integer  "framework_id", null: false
+    t.integer  "taxonomy_id",  null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["framework_id"], name: "index_framework_taxonomies_on_framework_id", using: :btree
+    t.index ["taxonomy_id"], name: "index_framework_taxonomies_on_taxonomy_id", using: :btree
+  end
+
   create_table "frameworks", force: :cascade do |t|
     t.text     "title",          null: false
     t.string   "short_title"
@@ -60,15 +69,6 @@ ActiveRecord::Schema.define(version: 20201203084759) do
     t.boolean  "has_response"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-  end
-
-  create_table "frameworks_taxonomies", force: :cascade do |t|
-    t.integer  "framework_id", null: false
-    t.integer  "taxonomy_id",  null: false
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-    t.index ["framework_id"], name: "index_frameworks_taxonomies_on_framework_id", using: :btree
-    t.index ["taxonomy_id"], name: "index_frameworks_taxonomies_on_taxonomy_id", using: :btree
   end
 
   create_table "indicators", force: :cascade do |t|
@@ -307,8 +307,8 @@ ActiveRecord::Schema.define(version: 20201203084759) do
 
   add_foreign_key "framework_frameworks", "frameworks"
   add_foreign_key "framework_frameworks", "frameworks", column: "other_framework_id"
-  add_foreign_key "frameworks_taxonomies", "frameworks"
-  add_foreign_key "frameworks_taxonomies", "taxonomies"
+  add_foreign_key "framework_taxonomies", "frameworks"
+  add_foreign_key "framework_taxonomies", "taxonomies"
   add_foreign_key "indicators_recommendations", "indicators"
   add_foreign_key "indicators_recommendations", "recommendations"
   add_foreign_key "recommendations", "frameworks"
