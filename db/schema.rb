@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201129074409) do
+ActiveRecord::Schema.define(version: 20201203084759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,13 @@ ActiveRecord::Schema.define(version: 20201129074409) do
     t.index ["indicator_id"], name: "index_due_dates_on_indicator_id", using: :btree
   end
 
+  create_table "framework_frameworks", force: :cascade do |t|
+    t.integer  "framework_id"
+    t.integer  "other_framework_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
   create_table "frameworks", force: :cascade do |t|
     t.text     "title",          null: false
     t.string   "short_title"
@@ -53,13 +60,6 @@ ActiveRecord::Schema.define(version: 20201129074409) do
     t.boolean  "has_response"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-  end
-
-  create_table "frameworks_frameworks", force: :cascade do |t|
-    t.integer  "framework_id"
-    t.integer  "other_framework_id"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
   end
 
   create_table "frameworks_taxonomies", force: :cascade do |t|
@@ -305,8 +305,8 @@ ActiveRecord::Schema.define(version: 20201129074409) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
   end
 
-  add_foreign_key "frameworks_frameworks", "frameworks"
-  add_foreign_key "frameworks_frameworks", "frameworks", column: "other_framework_id"
+  add_foreign_key "framework_frameworks", "frameworks"
+  add_foreign_key "framework_frameworks", "frameworks", column: "other_framework_id"
   add_foreign_key "frameworks_taxonomies", "frameworks"
   add_foreign_key "frameworks_taxonomies", "taxonomies"
   add_foreign_key "indicators_recommendations", "indicators"
