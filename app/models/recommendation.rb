@@ -11,8 +11,8 @@ class Recommendation < VersionedRecord
   has_many :progress_reports, through: :indicators
   has_many :due_dates, through: :indicators
 
-  has_many :recommendations_recommendations, :foreign_key => 'recommendation_id', :class_name => 'RecommendationRecommendation'
-  has_many :recommendations, :through => :recommendations_recommendations, :source => :other_recommendation
+  has_many :recommendation_recommendations, :foreign_key => 'recommendation_id', :class_name => 'RecommendationRecommendation'
+  has_many :recommendations, :through => :recommendation_recommendations, :source => :other_recommendation
 
   belongs_to :framework, optional: true
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201203095409) do
+ActiveRecord::Schema.define(version: 20201203234432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,6 +167,13 @@ ActiveRecord::Schema.define(version: 20201203095409) do
     t.index ["recommendation_id"], name: "index_recommendation_measures_on_recommendation_id", using: :btree
   end
 
+  create_table "recommendation_recommendations", force: :cascade do |t|
+    t.integer  "recommendation_id"
+    t.integer  "other_recommendation_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
   create_table "recommendations", force: :cascade do |t|
     t.text     "title",                                 null: false
     t.datetime "created_at",                            null: false
@@ -181,11 +188,6 @@ ActiveRecord::Schema.define(version: 20201203095409) do
     t.integer  "framework_id"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
     t.index ["framework_id"], name: "index_recommendations_on_framework_id", using: :btree
-  end
-
-  create_table "recommendations_recommendations", force: :cascade do |t|
-    t.integer "recommendation_id"
-    t.integer "other_recommendation_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -311,7 +313,7 @@ ActiveRecord::Schema.define(version: 20201203095409) do
   add_foreign_key "framework_taxonomies", "taxonomies"
   add_foreign_key "indicators_recommendations", "indicators"
   add_foreign_key "indicators_recommendations", "recommendations"
+  add_foreign_key "recommendation_recommendations", "recommendations"
+  add_foreign_key "recommendation_recommendations", "recommendations", column: "other_recommendation_id"
   add_foreign_key "recommendations", "frameworks"
-  add_foreign_key "recommendations_recommendations", "recommendations"
-  add_foreign_key "recommendations_recommendations", "recommendations", column: "other_recommendation_id"
 end
