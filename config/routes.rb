@@ -44,6 +44,7 @@ Rails.application.routes.draw do
   resources :framework_taxonomies, only: [:index, :show]
 
   resources :recommendation_recommendations, except: [:update]
+  resources :recommendation_indicators, except: [:update]
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
