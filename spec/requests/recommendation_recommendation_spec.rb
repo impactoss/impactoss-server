@@ -4,7 +4,7 @@ require 'json'
 
 RSpec.describe "recommendation to recommendation relationships", type: :request do
 
-  describe "get one recommendation relationship" do
+  describe "get one recommendation to recommendation relationship" do
     let(:recommendation_recommendation) { FactoryGirl.create(:recommendation_recommendation) }
     it 'returns the recommendation releationship requested' do
 
@@ -30,7 +30,7 @@ RSpec.describe "recommendation to recommendation relationships", type: :request 
     end
   end
 
-  describe "get all the recommendation relationships" do 
+  describe "get all the recommendation to recommendation relationships" do 
     let(:recommendation_1) { FactoryGirl.create(:recommendation)}
     let(:recommendation_2) { FactoryGirl.create(:recommendation)}
     let(:recommendation_3) { FactoryGirl.create(:recommendation)}
@@ -80,9 +80,5 @@ RSpec.describe "recommendation to recommendation relationships", type: :request 
       expect(response.status).to eq(200)
       expect(json).to eq(expected_json)
     end
-  end
-
-  describe "create a recommendation to recommendation relationship" do
-
   end
 end
