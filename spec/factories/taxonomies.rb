@@ -3,5 +3,6 @@ FactoryGirl.define do
     title 'MyString'
     tags_measures false
     allow_multiple false
+    association :framework
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201205085813) do
+ActiveRecord::Schema.define(version: 20201209215446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -258,6 +258,8 @@ ActiveRecord::Schema.define(version: 20201205085813) do
     t.integer  "groups_recommendations_default"
     t.integer  "groups_sdgtargets_default"
     t.integer  "last_modified_user_id"
+    t.integer  "framework_id"
+    t.index ["framework_id"], name: "index_taxonomies_on_framework_id", using: :btree
   end
 
   create_table "user_categories", force: :cascade do |t|
@@ -318,4 +320,5 @@ ActiveRecord::Schema.define(version: 20201205085813) do
   add_foreign_key "recommendation_recommendations", "recommendations"
   add_foreign_key "recommendation_recommendations", "recommendations", column: "other_recommendation_id"
   add_foreign_key "recommendations", "frameworks"
+  add_foreign_key "taxonomies", "frameworks"
 end
