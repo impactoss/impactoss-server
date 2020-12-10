@@ -9,7 +9,7 @@ class Indicator < VersionedRecord
 
   has_many :measure_indicators, inverse_of: :indicator, dependent: :destroy
   has_many :sdgtarget_indicators, inverse_of: :indicator, dependent: :destroy
-  has_many :recommendation_indicators, :class_name => 'RecommendationIndicator', inverse_of: :indicator, dependent: :destroy
+  has_many :recommendation_indicators, inverse_of: :indicator, dependent: :destroy
   has_many :recommendations, through: :recommendation_indicators
   has_many :progress_reports
   has_many :due_dates
