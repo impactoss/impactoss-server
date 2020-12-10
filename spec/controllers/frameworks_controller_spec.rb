@@ -42,14 +42,14 @@ RSpec.describe FrameworksController, type: :controller do
   end
 
   describe 'show' do
-    let!(:framework) { FactoryGirl.create(:framework, short_title: "short title", description: "description", has_indicators: false, has_measures: false, has_response: false) }
+    let!(:framework) { FactoryGirl.create(:framework) }
     subject { get :show, params: { id: framework.id }, format: :json }
     
     context "when not signed in" do
       it 'returns the expected framework json' do
-        
+
         expected_json = { "data"=> 
-          {"id"=>"16", 
+          {"id"=>framework.id.to_s, 
             "type"=>"frameworks", 
             "attributes"=>
               { "created_at"=>framework.created_at.in_time_zone.iso8601, 
@@ -66,7 +66,6 @@ RSpec.describe FrameworksController, type: :controller do
         
         json = JSON.parse(subject.body)
 
-        expect(json['data']['id'].to_i).to eq(framework.id)
         expect(json).to eq(expected_json)
       end
     end

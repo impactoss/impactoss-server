@@ -1,13 +1,6 @@
 class FrameworkPolicy < ApplicationPolicy
-  def index?
-    true
-  end
-
+ 
   def create?
-    false
-  end
-
-  def edit?
     false
   end
 
