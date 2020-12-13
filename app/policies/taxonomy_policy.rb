@@ -9,7 +9,8 @@ class TaxonomyPolicy < ApplicationPolicy
      :is_smart,
      :groups_measures_default,
      :groups_recommendations_default,
-     :groups_sdgtargets_default]
+     :groups_sdgtargets_default,
+     :framework_id]
   end
 
   def create?
