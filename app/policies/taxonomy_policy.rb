@@ -10,6 +10,8 @@ class TaxonomyPolicy < ApplicationPolicy
      :groups_measures_default,
      :groups_recommendations_default,
      :groups_sdgtargets_default,
+     :parent_id,
+     :has_date,
      :framework_id]
   end
 

@@ -15,6 +15,16 @@ ActiveRecord::Schema.define(version: 20201213232312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "bookmarks", force: :cascade do |t|
+    t.integer  "user_id",               null: false
+    t.string   "title",                 null: false
+    t.json     "view",                  null: false
+    t.integer  "last_modified_user_id"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.index ["user_id"], name: "index_bookmarks_on_user_id", using: :btree
+  end
+
   create_table "categories", force: :cascade do |t|
     t.text     "title"
     t.string   "short_title"
@@ -28,6 +38,8 @@ ActiveRecord::Schema.define(version: 20201213232312) do
     t.string   "reference"
     t.boolean  "user_only"
     t.integer  "last_modified_user_id"
+    t.integer  "parent_id"
+    t.date     "date"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
     t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
@@ -257,6 +269,8 @@ ActiveRecord::Schema.define(version: 20201213232312) do
     t.integer  "groups_recommendations_default"
     t.integer  "groups_sdgtargets_default"
     t.integer  "last_modified_user_id"
+    t.integer  "parent_id"
+    t.boolean  "has_date"
     t.integer  "framework_id"
     t.index ["framework_id"], name: "index_taxonomies_on_framework_id", using: :btree
   end

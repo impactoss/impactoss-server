@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   resources :roles
   resources :pages
   resources :sdgtargets
+  resources :bookmarks
 
   resources :frameworks, only: [:index, :show]
   resources :framework_frameworks, only: [:index, :show]
