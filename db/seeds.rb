@@ -58,7 +58,11 @@ class Seeds
         is_smart: false,
         groups_recommendations_default: 1
       )
-
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:body,
+    )
     # Global taxonomy
     cycle = FactoryGirl.create(
         :taxonomy,
@@ -72,6 +76,11 @@ class Seeds
         parent_id: 1,
         has_date: true
       )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:cycle,
+    )
 
     # Global taxonomy
     right = FactoryGirl.create(
@@ -84,6 +93,11 @@ class Seeds
         priority: 3,
         is_smart: false
       )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:right,
+    )
 
     # Global taxonomy
     persons = FactoryGirl.create(
@@ -95,6 +109,11 @@ class Seeds
         priority: 4,
         is_smart: false
       )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:persons,
+    )
     # Country specific taxonomy
     cluster = FactoryGirl.create(
         :taxonomy,
@@ -106,6 +125,17 @@ class Seeds
         groups_measures_default: 1
       )
 
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:cluster,
+    )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:sdgfw,
+      taxonomy:cluster,
+    )
+
     # Samoa specific taxonomy
     org = FactoryGirl.create(
         :taxonomy,
@@ -115,6 +145,17 @@ class Seeds
         priority: 6,
         is_smart: false,
       )
+
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:org,
+    )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:sdgfw,
+      taxonomy:org,
+    )
 
     # Global taxonomy
     sdg = FactoryGirl.create(
@@ -127,6 +168,17 @@ class Seeds
         is_smart: false,
         groups_sdgtargets_default: 1
       )
+
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:sdg,
+    )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:sdgfw,
+      taxonomy:sdg,
+    )
 
     # Set up categories
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
