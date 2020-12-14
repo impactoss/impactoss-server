@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201209215446) do
+ActiveRecord::Schema.define(version: 20201213232312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -186,7 +186,6 @@ ActiveRecord::Schema.define(version: 20201209215446) do
     t.text     "reference",                             null: false
     t.text     "description"
     t.integer  "last_modified_user_id"
-    t.integer  "parent_id"
     t.integer  "framework_id"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
     t.index ["framework_id"], name: "index_recommendations_on_framework_id", using: :btree
