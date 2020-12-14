@@ -116,7 +116,7 @@ GEM
       thread_safe
     erubis (2.7.0)
     eventmachine (1.2.1)
-    excon (0.55.0)
+    excon (0.78.1)
     execjs (2.7.0)
     factory_girl (4.8.0)
       activesupport (>= 3.0.0)
