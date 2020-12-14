@@ -6,7 +6,8 @@ class RecommendationPolicy < ApplicationPolicy
      :accepted,
      :response,
      :reference,
-     :description, 
+     :description,
+     :framework_id,
      recommendation_categories_attributes: [:category_id]]
   end
 
