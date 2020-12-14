@@ -9,6 +9,8 @@ module FastApplicationSerializer
     end
 
     base.attribute :updated_at do |object|
+      # FIXME: this look like there's a bug... should be `if object.updated_at` ?
+            # I mean, there should always be both but still.
       object.updated_at.in_time_zone.iso8601 if object.created_at
     end
   end
