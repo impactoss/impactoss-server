@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.string   "reference"
     t.boolean  "user_only"
     t.integer  "last_modified_user_id"
+    t.integer  "parent_id"
+    t.date     "date"
     t.index ["draft"], name: "index_categories_on_draft", using: :btree
     t.index ["manager_id"], name: "index_categories_on_manager_id", using: :btree
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id", using: :btree
@@ -224,6 +226,8 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.integer  "groups_recommendations_default"
     t.integer  "groups_sdgtargets_default"
     t.integer  "last_modified_user_id"
+    t.integer  "parent_id"
+    t.boolean  "has_date"
   end
 
   create_table "user_categories", force: :cascade do |t|

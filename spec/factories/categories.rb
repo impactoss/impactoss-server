@@ -5,5 +5,14 @@ FactoryGirl.define do
     description { Faker::StarWars.quote }
     url { Faker::Internet.url }
     association :taxonomy
+
+    trait :parent_category do
+      title:'parent'
+    end
+  
+    trait :sub_category do
+      title:'sub'
+    end
+
   end
 end
