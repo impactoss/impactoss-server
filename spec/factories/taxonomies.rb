@@ -4,7 +4,7 @@ FactoryGirl.define do
     tags_measures false
     allow_multiple false
 
-    association :framework
+    association :framework, strategy: :null
 
     trait :parent_taxonomy do
       title:'parent'
