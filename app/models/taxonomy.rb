@@ -5,7 +5,7 @@ class Taxonomy < VersionedRecord
 
   has_many :framework_taxonomies, inverse_of: :taxonomy, dependent: :destroy
   has_many :frameworks, through: :framework_taxonomies
-  belongs_to :framework
+  belongs_to :framework, optional: true
 
   validates :title, presence: true
 
@@ -13,12 +13,12 @@ class Taxonomy < VersionedRecord
   validates :tags_measures, inclusion: [true, false]
 
   validate :sub_relation
- 
+
   def sub_relation
-    if parent_id.present? 
+    if parent_id.present?
       parent_taxonomy = Taxonomy.find(parent_id)
 
-      if (!parent_taxonomy.parent_id.nil?) 
+      if (!parent_taxonomy.parent_id.nil?)
         errors.add(:parent_id, "Parent taxonomy is already a sub-taxonomy.")
       end
     end
