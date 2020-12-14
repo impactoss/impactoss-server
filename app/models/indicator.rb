@@ -9,11 +9,16 @@ class Indicator < VersionedRecord
 
   has_many :measure_indicators, inverse_of: :indicator, dependent: :destroy
   has_many :sdgtarget_indicators, inverse_of: :indicator, dependent: :destroy
+  has_many :recommendation_indicators, inverse_of: :indicator, dependent: :destroy
+  has_many :recommendations, through: :recommendation_indicators
   has_many :progress_reports
   has_many :due_dates
   has_many :measures, through: :measure_indicators, inverse_of: :indicators
   has_many :categories, through: :measures
   has_many :recommendations, through: :measures
+
+  # not sure we need this?
+  # has_many :direct_recommendations, through: :indicators_recommendations, source: :recommendation
 
   belongs_to :manager, class_name: User, foreign_key: :manager_id, required: false
 

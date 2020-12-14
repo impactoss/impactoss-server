@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200830194850) do
+ActiveRecord::Schema.define(version: 20201213232312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,33 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.integer  "last_modified_user_id"
     t.index ["draft"], name: "index_due_dates_on_draft", using: :btree
     t.index ["indicator_id"], name: "index_due_dates_on_indicator_id", using: :btree
+  end
+
+  create_table "framework_frameworks", force: :cascade do |t|
+    t.integer  "framework_id"
+    t.integer  "other_framework_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  create_table "framework_taxonomies", force: :cascade do |t|
+    t.integer  "framework_id", null: false
+    t.integer  "taxonomy_id",  null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["framework_id"], name: "index_framework_taxonomies_on_framework_id", using: :btree
+    t.index ["taxonomy_id"], name: "index_framework_taxonomies_on_taxonomy_id", using: :btree
+  end
+
+  create_table "frameworks", force: :cascade do |t|
+    t.text     "title",          null: false
+    t.string   "short_title"
+    t.text     "description"
+    t.boolean  "has_indicators"
+    t.boolean  "has_measures"
+    t.boolean  "has_response"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "indicators", force: :cascade do |t|
@@ -136,6 +163,15 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.datetime "updated_at",        null: false
   end
 
+  create_table "recommendation_indicators", force: :cascade do |t|
+    t.integer  "recommendation_id"
+    t.integer  "indicator_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["indicator_id"], name: "index_recommendation_indicators_on_indicator_id", using: :btree
+    t.index ["recommendation_id"], name: "index_recommendation_indicators_on_recommendation_id", using: :btree
+  end
+
   create_table "recommendation_measures", force: :cascade do |t|
     t.integer  "recommendation_id"
     t.integer  "measure_id"
@@ -143,6 +179,13 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.datetime "updated_at",        null: false
     t.index ["measure_id"], name: "index_recommendation_measures_on_measure_id", using: :btree
     t.index ["recommendation_id"], name: "index_recommendation_measures_on_recommendation_id", using: :btree
+  end
+
+  create_table "recommendation_recommendations", force: :cascade do |t|
+    t.integer  "recommendation_id"
+    t.integer  "other_recommendation_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "recommendations", force: :cascade do |t|
@@ -155,7 +198,9 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.text     "reference",                             null: false
     t.text     "description"
     t.integer  "last_modified_user_id"
+    t.integer  "framework_id"
     t.index ["draft"], name: "index_recommendations_on_draft", using: :btree
+    t.index ["framework_id"], name: "index_recommendations_on_framework_id", using: :btree
   end
 
   create_table "roles", force: :cascade do |t|
@@ -212,7 +257,6 @@ ActiveRecord::Schema.define(version: 20200830194850) do
 
   create_table "taxonomies", force: :cascade do |t|
     t.text     "title",                                          null: false
-    t.boolean  "tags_recommendations"
     t.boolean  "tags_measures"
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
@@ -220,7 +264,6 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.boolean  "tags_users"
     t.boolean  "has_manager",                    default: false
     t.integer  "priority"
-    t.boolean  "tags_sdgtargets"
     t.boolean  "is_smart"
     t.integer  "groups_measures_default"
     t.integer  "groups_recommendations_default"
@@ -228,6 +271,8 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.integer  "last_modified_user_id"
     t.integer  "parent_id"
     t.boolean  "has_date"
+    t.integer  "framework_id"
+    t.index ["framework_id"], name: "index_taxonomies_on_framework_id", using: :btree
   end
 
   create_table "user_categories", force: :cascade do |t|
@@ -279,4 +324,14 @@ ActiveRecord::Schema.define(version: 20200830194850) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
   end
 
+  add_foreign_key "framework_frameworks", "frameworks"
+  add_foreign_key "framework_frameworks", "frameworks", column: "other_framework_id"
+  add_foreign_key "framework_taxonomies", "frameworks"
+  add_foreign_key "framework_taxonomies", "taxonomies"
+  add_foreign_key "recommendation_indicators", "indicators"
+  add_foreign_key "recommendation_indicators", "recommendations"
+  add_foreign_key "recommendation_recommendations", "recommendations"
+  add_foreign_key "recommendation_recommendations", "recommendations", column: "other_recommendation_id"
+  add_foreign_key "recommendations", "frameworks"
+  add_foreign_key "taxonomies", "frameworks"
 end
