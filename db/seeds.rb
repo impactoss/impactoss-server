@@ -78,7 +78,6 @@ class Seeds
         :taxonomy,
         framework:hr,
         title: 'Human rights issue',
-        tags_recommendations: true,
         tags_measures: false,
         tags_users: false,
         allow_multiple: true,
