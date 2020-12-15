@@ -87,7 +87,7 @@ class Seeds
         :taxonomy,
         framework:hr,
         title: 'Human rights issue',
-        tags_measures: false,
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 3,
@@ -104,6 +104,7 @@ class Seeds
         :taxonomy,
         framework:hr,
         title: 'Affected persons',
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 4,
@@ -118,6 +119,7 @@ class Seeds
     cluster = FactoryGirl.create(
         :taxonomy,
         title: 'Thematic cluster',
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 5,
@@ -140,6 +142,7 @@ class Seeds
     org = FactoryGirl.create(
         :taxonomy,
         title: 'Organisation',
+        tags_measures: true,
         tags_users: true,
         allow_multiple: true,
         priority: 6,
