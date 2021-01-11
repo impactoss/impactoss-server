@@ -133,7 +133,7 @@ class Seeds
         tags_measures: true,
         tags_users: false,
         allow_multiple: true,
-        priority: 5,
+        priority: 50,
         is_smart: false,
         groups_measures_default: 1
       )
