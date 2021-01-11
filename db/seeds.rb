@@ -26,102 +26,162 @@ class Seeds
     Role.new(name: 'manager', friendly_name: 'Manager').save!
     Role.new(name: 'contributor', friendly_name: 'Contributor').save!
 
+    # set up frameworks
+    hr = Framework.new(
+        title: 'International Human Rights Obligations',
+        short_title: 'HR',
+        has_indicators: false,
+        has_measures: true,
+        has_response: true,
+      )
+    hr.save!
+
+    sdgfw = Framework.new(
+        title: 'Sustainable Debelopment Goals',
+        short_title: 'SDGs',
+        has_indicators: true,
+        has_measures: true,
+        has_response: false,
+      )
+    sdgfw.save!
+
     # Set up taxonomies
     # Global taxonomy
-    body = Taxonomy.new(
+    body = FactoryGirl.create(
+        :taxonomy,
+        framework:hr,
         title: 'Human rights body',
-        tags_recommendations: true,
-        tags_measures: false,
         tags_users: false,
         allow_multiple: false,
         has_manager: true,
         priority: 1,
         is_smart: false,
-        tags_sdgtargets: false,
-        groups_recommendations_default: 1,
+        groups_recommendations_default: 1
       )
-    body.save!
-
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:body,
+    )
     # Global taxonomy
-    session = Taxonomy.new(
+    cycle = FactoryGirl.create(
+        :taxonomy,
+        framework:hr,
         title: 'Cycle',
-        tags_recommendations: true,
-        tags_measures: false,
         tags_users: false,
         allow_multiple: false,
         priority: 2,
         is_smart: false,
-        tags_sdgtargets: false,
         groups_recommendations_default: 2,
+        parent_id: 1,
+        has_date: true
       )
-    session.save!
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:cycle,
+    )
 
     # Global taxonomy
-    right = Taxonomy.new(
+    right = FactoryGirl.create(
+        :taxonomy,
+        framework:hr,
         title: 'Human rights issue',
-        tags_recommendations: true,
-        tags_measures: false,
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 3,
-        is_smart: false,
-        tags_sdgtargets: false
+        is_smart: false
       )
-    right.save!
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:right,
+    )
 
     # Global taxonomy
-    persons = Taxonomy.new(
+    persons = FactoryGirl.create(
+        :taxonomy,
+        framework:hr,
         title: 'Affected persons',
-        tags_recommendations: true,
-        tags_measures: false,
+        tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 4,
-        is_smart: false,
-        tags_sdgtargets: false
+        is_smart: false
       )
-    persons.save!
-    # Samoa specific taxonomy
-    cluster = Taxonomy.new(
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:persons,
+    )
+    # Country specific taxonomy
+    cluster = FactoryGirl.create(
+        :taxonomy,
         title: 'Thematic cluster',
-        tags_recommendations: true,
         tags_measures: true,
         tags_users: false,
         allow_multiple: true,
         priority: 5,
         is_smart: false,
-        tags_sdgtargets: false,
         groups_measures_default: 1
       )
-    cluster.save!
+
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:cluster,
+    )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:sdgfw,
+      taxonomy:cluster,
+    )
 
     # Samoa specific taxonomy
-    org = Taxonomy.new(
+    org = FactoryGirl.create(
+        :taxonomy,
         title: 'Organisation',
-        tags_recommendations: false,
         tags_measures: true,
         tags_users: true,
         allow_multiple: true,
         priority: 6,
         is_smart: false,
-        tags_sdgtargets: false
       )
-    org.save!
+
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:org,
+    )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:sdgfw,
+      taxonomy:org,
+    )
 
     # Global taxonomy
-    sdg = Taxonomy.new(
+    sdg = FactoryGirl.create(
+        :taxonomy,
+        framework:sdgfw,
         title: 'SDGs',
-        tags_recommendations: false,
-        tags_measures: false,
-        tags_users: false,
-        tags_sdgtargets: true,
         has_manager: true,
         allow_multiple: false,
         priority: 7,
         is_smart: false,
         groups_sdgtargets_default: 1
       )
-    sdg.save!
+
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:hr,
+      taxonomy:sdg,
+    )
+    FactoryGirl.create(
+      :framework_taxonomy,
+      framework:sdgfw,
+      taxonomy:sdg,
+    )
 
     # Set up categories
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx

@@ -38,6 +38,14 @@ Rails.application.routes.draw do
   resources :roles
   resources :pages
   resources :sdgtargets
+  resources :bookmarks
+
+  resources :frameworks, only: [:index, :show]
+  resources :framework_frameworks, only: [:index, :show]
+  resources :framework_taxonomies, only: [:index, :show]
+
+  resources :recommendation_recommendations, except: [:update]
+  resources :recommendation_indicators, except: [:update]
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 

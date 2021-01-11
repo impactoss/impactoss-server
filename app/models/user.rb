@@ -17,6 +17,7 @@ class User < VersionedRecord
   has_many :managed_indicators, foreign_key: :manager_id, class_name: Indicator
   has_many :user_categories
   has_many :categories, through: :user_categories
+  has_many :bookmarks
 
   validates :email, presence: true
   validates :name, presence: true
