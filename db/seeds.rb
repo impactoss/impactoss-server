@@ -234,116 +234,173 @@ class Seeds
         :category,
         taxonomy_id:9,
         title:'Economic',
-        reference: '1'
+        reference: '1',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:9,
         title:'Social',
-        reference: '2'
+        reference: '2',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:9,
         title:'Infrastructure',
-        reference: '3'
+        reference: '3',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:9,
         title:'Environment',
-        reference: '4'
+        reference: '4',
+        short_title:'',
+        description:'',
+        url:''
       )
     # sds key outcomes
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Macroeconomic Resilience Increased and Sustained',
-        reference: '1'
+        reference: '1',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Agriculture and Fisheries Productivity Increased',
-        reference: '2'
+        reference: '2',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Export Products Increased',
-        reference: '3'
+        reference: '3',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Tourism Development and Performance Improved',
-        reference: '4'
+        reference: '4',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Participation of Private Sector in Development Enhanced',
-        reference: '5'
+        reference: '5',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'A Healthy Samoa and Well-being Promoted',
-        reference: '6'
+        reference: '6',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Quality Education and Training Improved',
-        reference: '7'
+        reference: '7',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Social Institutions Strengthened - Community Development Enhanced',
-        reference: '8a'
+        reference: '8a',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Social Institutions Strengthened - Community Safety Improved',
-        reference: '8b'
+        reference: '8b',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Access to Clean Water and Sanitation Sustained',
-        reference: '9'
+        reference: '9',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Transport Systems and Networks Improved',
-        reference: '10'
+        reference: '10',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Improved and Affordable Country Wide ICT Connectivity',
-        reference: '11'
+        reference: '11',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Quality Energy Supply',
-        reference: '12'
+        reference: '12',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Environmental Resilience Improved',
-        reference: '13'
+        reference: '13',
+        short_title:'',
+        description:'',
+        url:''
       )
     FactoryGirl.create(
         :category,
         taxonomy_id:10,
         title:'Climate and Disaster Resilience',
-        reference: '14'
+        reference: '14',
+        short_title:'',
+        description:'',
+        url:''
       )
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
     # FactoryGirl.create(
