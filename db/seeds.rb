@@ -22,214 +22,329 @@ class Seeds
 
   def base_seeds!
     # Set up user roles
-    Role.new(name: 'admin', friendly_name: 'Admin').save!
-    Role.new(name: 'manager', friendly_name: 'Manager').save!
-    Role.new(name: 'contributor', friendly_name: 'Contributor').save!
-
-    # set up frameworks
-    hr = Framework.new(
-        title: 'International Human Rights Obligations',
-        short_title: 'HR',
-        has_indicators: false,
-        has_measures: true,
-        has_response: true,
-      )
-    hr.save!
-
-    sdgfw = Framework.new(
-        title: 'Sustainable Debelopment Goals',
-        short_title: 'SDGs',
-        has_indicators: true,
-        has_measures: true,
-        has_response: false,
-      )
-    sdgfw.save!
-    //
-    sdsfw = Framework.new(
-        title: 'Strategy for the Development of Samoa',
-        short_title: 'SDS',
-        has_indicators: true,
-        has_measures: true,
-        has_response: false,
-      )
-    sdsfw.save!
-
-    # Set up taxonomies
-    # 1. Global taxonomy
-    body = FactoryGirl.create(
-        :taxonomy,
-        framework:hr,
-        title: 'Human rights body',
-        tags_measures: false,
-        tags_users: false,
-        allow_multiple: false,
-        has_manager: true,
-        priority: 1,
-        is_smart: false,
-        groups_recommendations_default: 1
-      )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:hr,
-      taxonomy:body,
-    )
-    # 2. Global taxonomy
-    cycle = FactoryGirl.create(
-        :taxonomy,
-        framework:hr,
-        title: 'Cycle',
-        tags_measures: false,
-        tags_users: false,
-        allow_multiple: false,
-        priority: 2,
-        is_smart: false,
-        groups_recommendations_default: 2,
-        parent_id: 1,
-        has_date: true
-      )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:hr,
-      taxonomy:cycle,
-    )
-
-    # 3. Global taxonomy
-    right = FactoryGirl.create(
-        :taxonomy,
-        framework:hr,
-        title: 'Human rights issue',
-        tags_measures: true,
-        tags_users: false,
-        allow_multiple: true,
-        priority: 3,
-        is_smart: false
-      )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:hr,
-      taxonomy:right,
-    )
-
-    # 4. Global taxonomy
-    persons = FactoryGirl.create(
-        :taxonomy,
-        framework:hr,
-        title: 'Affected persons',
-        tags_measures: true,
-        tags_users: false,
-        allow_multiple: true,
-        priority: 4,
-        is_smart: false
-      )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:hr,
-      taxonomy:persons,
-    )
-    # 5. Country specific taxonomy
-    cluster = FactoryGirl.create(
-        :taxonomy,
-        title: 'Thematic cluster',
-        tags_measures: true,
-        tags_users: false,
-        allow_multiple: true,
-        priority: 50,
-        is_smart: false,
-        groups_measures_default: 1
-      )
-
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:hr,
-      taxonomy:cluster,
-    )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:sdgfw,
-      taxonomy:cluster,
-    )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:sdsfw,
-      taxonomy:cluster,
-    )
-
-    # 6. Samoa specific taxonomy
-    org = FactoryGirl.create(
-        :taxonomy,
-        title: 'Organisation',
-        tags_measures: true,
-        tags_users: true,
-        allow_multiple: true,
-        priority: 6,
-        is_smart: false,
-      )
-
-    # 7. Global taxonomy
-    sdg = FactoryGirl.create(
-        :taxonomy,
-        framework:sdgfw,
-        title: 'SDGs',
-        has_manager: true,
-        allow_multiple: false,
-        priority: 7,
-        is_smart: false,
-      )
-
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:hr,
-      taxonomy:sdg,
-    )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:sdgfw,
-      taxonomy:sdg,
-    )
-
-    # 8. Progress
-    progress = FactoryGirl.create(
-        :taxonomy,
-        title: 'Progress status',
-        tags_measures: true,
-        allow_multiple: false,
-        priority: 8,
-        is_smart: false,
-      )
-    # 9. SDS priority area
-    priorityArea = FactoryGirl.create(
-        :taxonomy,
-        framework:sdsfw,
-        title: 'Priority area',
-        tags_measures: false,
-        allow_multiple: false,
-        priority: 9,
-        is_smart: false,
-      )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:sdsfw,
-      taxonomy:priorityArea,
-    )
-
-    # 10. SDS priority area
-    outcome = FactoryGirl.create(
-        :taxonomy,
-        framework:sdsfw,
-        title: 'Key outcome',
-        tags_measures: false,
-        allow_multiple: false,
-        priority: 9,
-        is_smart: false,
-        parent_id: 9
-      )
-    FactoryGirl.create(
-      :framework_taxonomy,
-      framework:sdsfw,
-      taxonomy:outcome,
-    )
-
+    # Role.new(name: 'admin', friendly_name: 'Admin').save!
+    # Role.new(name: 'manager', friendly_name: 'Manager').save!
+    # Role.new(name: 'contributor', friendly_name: 'Contributor').save!
+    #
+    # # set up frameworks
+    # hr = Framework.new(
+    #     title: 'International Human Rights Obligations',
+    #     short_title: 'HR',
+    #     has_indicators: false,
+    #     has_measures: true,
+    #     has_response: true,
+    #   )
+    # hr.save!
+    #
+    # sdgfw = Framework.new(
+    #     title: 'Sustainable Debelopment Goals',
+    #     short_title: 'SDGs',
+    #     has_indicators: true,
+    #     has_measures: true,
+    #     has_response: false,
+    #   )
+    # sdgfw.save!
+    # //
+    # sdsfw = Framework.new(
+    #     title: 'Strategy for the Development of Samoa',
+    #     short_title: 'SDS',
+    #     has_indicators: true,
+    #     has_measures: true,
+    #     has_response: false,
+    #   )
+    # sdsfw.save!
+    #
+    # # Set up taxonomies
+    # # 1. Global taxonomy
+    # body = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:hr,
+    #     title: 'Human rights body',
+    #     tags_measures: false,
+    #     tags_users: false,
+    #     allow_multiple: false,
+    #     has_manager: true,
+    #     priority: 1,
+    #     is_smart: false,
+    #     groups_recommendations_default: 1
+    #   )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:hr,
+    #   taxonomy:body,
+    # )
+    # # 2. Global taxonomy
+    # cycle = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:hr,
+    #     title: 'Cycle',
+    #     tags_measures: false,
+    #     tags_users: false,
+    #     allow_multiple: false,
+    #     priority: 2,
+    #     is_smart: false,
+    #     groups_recommendations_default: 2,
+    #     parent_id: 1,
+    #     has_date: true
+    #   )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:hr,
+    #   taxonomy:cycle,
+    # )
+    #
+    # # 3. Global taxonomy
+    # right = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:hr,
+    #     title: 'Human rights issue',
+    #     tags_measures: true,
+    #     tags_users: false,
+    #     allow_multiple: true,
+    #     priority: 3,
+    #     is_smart: false
+    #   )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:hr,
+    #   taxonomy:right,
+    # )
+    #
+    # # 4. Global taxonomy
+    # persons = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:hr,
+    #     title: 'Affected persons',
+    #     tags_measures: true,
+    #     tags_users: false,
+    #     allow_multiple: true,
+    #     priority: 4,
+    #     is_smart: false
+    #   )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:hr,
+    #   taxonomy:persons,
+    # )
+    # # 5. Country specific taxonomy
+    # cluster = FactoryGirl.create(
+    #     :taxonomy,
+    #     title: 'Thematic cluster',
+    #     tags_measures: true,
+    #     tags_users: false,
+    #     allow_multiple: true,
+    #     priority: 50,
+    #     is_smart: false,
+    #     groups_measures_default: 1
+    #   )
+    #
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:hr,
+    #   taxonomy:cluster,
+    # )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:sdgfw,
+    #   taxonomy:cluster,
+    # )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:sdsfw,
+    #   taxonomy:cluster,
+    # )
+    #
+    # # 6. Samoa specific taxonomy
+    # org = FactoryGirl.create(
+    #     :taxonomy,
+    #     title: 'Organisation',
+    #     tags_measures: true,
+    #     tags_users: true,
+    #     allow_multiple: true,
+    #     priority: 6,
+    #     is_smart: false,
+    #   )
+    #
+    # # 7. Global taxonomy
+    # sdg = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:sdgfw,
+    #     title: 'SDGs',
+    #     has_manager: true,
+    #     allow_multiple: false,
+    #     priority: 7,
+    #     is_smart: false,
+    #   )
+    #
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:hr,
+    #   taxonomy:sdg,
+    # )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:sdgfw,
+    #   taxonomy:sdg,
+    # )
+    #
+    # # 8. Progress
+    # progress = FactoryGirl.create(
+    #     :taxonomy,
+    #     title: 'Progress status',
+    #     tags_measures: true,
+    #     allow_multiple: false,
+    #     priority: 8,
+    #     is_smart: false,
+    #   )
+    # # 9. SDS priority area
+    # priorityArea = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:sdsfw,
+    #     title: 'Priority area',
+    #     tags_measures: false,
+    #     allow_multiple: false,
+    #     priority: 9,
+    #     is_smart: false,
+    #   )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:sdsfw,
+    #   taxonomy:priorityArea,
+    # )
+    #
+    # # 10. SDS key outcome
+    # outcome = FactoryGirl.create(
+    #     :taxonomy,
+    #     framework:sdsfw,
+    #     title: 'Key outcome',
+    #     tags_measures: false,
+    #     allow_multiple: false,
+    #     priority: 9,
+    #     is_smart: false,
+    #     parent_id: 9
+    #   )
+    # FactoryGirl.create(
+    #   :framework_taxonomy,
+    #   framework:sdsfw,
+    #   taxonomy:outcome,
+    # )
     # Set up categories
+    # sds priority areas
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:9,
+        title:'Economic',
+        reference: '1'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:9,
+        title:'Social',
+        reference: '2'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:9,
+        title:'Infrastructure',
+        reference: '3'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:9,
+        title:'Environment',
+        reference: '4'
+      )
+    # sds key outcomes
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Macroeconomic Resilience Increased and Sustained',
+        reference: '1'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Agriculture and Fisheries Productivity Increased',
+        reference: '2'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Export Products Increased',
+        reference: '3'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Tourism Development and Performance Improved',
+        reference: '4'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Participation of Private Sector in Development Enhanced',
+        reference: '5'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'A Healthy Samoa and Well-being Promoted',
+        reference: '6'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Quality Education and Training Improved',
+        reference: '7'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Social Institutions Strengthened - Community Development Enhanced',
+        reference: '8a'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Social Institutions Strengthened - Community Safety Improved',
+        reference: '8b'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Access to Clean Water and Sanitation Sustained',
+        reference: '9'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Transport Systems and Networks Improved',
+        reference: '10'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Improved and Affordable Country Wide ICT Connectivity',
+        reference: '11'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Quality Energy Supply',
+        reference: '12'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Environmental Resilience Improved',
+        reference: '13'
+      )
+    FactoryGirl.create(
+        :category,
+        taxonomy_id:10,
+        title:'Climate and Disaster Resilience',
+        reference: '14'
+      )
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
     # FactoryGirl.create(
     #     :category,
