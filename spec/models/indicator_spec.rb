@@ -7,7 +7,7 @@ RSpec.describe Indicator, type: :model do
   it { is_expected.to have_many :due_dates }
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :recommendations }
-  it { is_expected.to belong_to :manager }
+  it { is_expected.to belong_to(:manager).optional }
 
   context "due_date field validations" do
     let!(:indicator_with_repeat) { FactoryGirl.create(:indicator, :with_repeat) }
