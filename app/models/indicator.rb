@@ -20,7 +20,7 @@ class Indicator < VersionedRecord
   # not sure we need this?
   # has_many :direct_recommendations, through: :indicators_recommendations, source: :recommendation
 
-  belongs_to :manager, class_name: User, foreign_key: :manager_id, required: false
+  belongs_to :manager, class_name: 'User', foreign_key: :manager_id, required: false
 
   accepts_nested_attributes_for :measure_indicators
 
@@ -47,8 +47,9 @@ class Indicator < VersionedRecord
   end
 
   def regenerate_due_dates
-    return unless start_date_changed? || end_date_changed? || frequency_months_changed? || repeat_changed?
+    return unless saved_change_to_start_date? || saved_change_to_end_date? || saved_change_to_frequency_months? || saved_change_to_repeat?
     due_dates.future_with_no_progress_reports.destroy_all
     build_due_dates
+    return true
   end
 end

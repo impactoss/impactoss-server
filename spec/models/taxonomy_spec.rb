@@ -6,10 +6,10 @@ RSpec.describe Taxonomy, type: :model do
   it { is_expected.to validate_inclusion_of(:tags_measures).in_array([true, false]) }
 
   it { is_expected.to have_many(:categories) }
-  it { is_expected.to belong_to(:framework) }
+  it { is_expected.to belong_to(:framework).optional }
   it { is_expected.to have_many(:frameworks) }
   it { is_expected.to have_many(:framework_taxonomies) }
-  it { is_expected.to belong_to :taxonomy }
+  it { is_expected.to belong_to(:taxonomy).optional }
   it { is_expected.to have_many :taxonomies }
 
   it { is_expected.to have_many(:categories) }
