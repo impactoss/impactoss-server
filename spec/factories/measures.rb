@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :measure do
-    title { Faker::Cat.registry }
+    title { Faker::Creature::Cat.registry }
     description { Faker::Beer.name }
     target_date { Faker::Date.forward(450) }
 

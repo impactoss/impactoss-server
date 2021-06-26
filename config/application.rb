@@ -38,5 +38,9 @@ module HumanRightsNationalReporting
       # default middleware stack run for each individual operation
       batch_config.operation_middleware = Proc.new { }
     end
+
+    config.active_record.belongs_to_required_by_default = true
+
+    config.load_defaults = true
   end
 end

@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :framework do
-    title { Faker::Cat.registry }
+    title { Faker::Creature::Cat.registry }
   end
 end
