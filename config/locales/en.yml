@@ -4,7 +4,7 @@ en:
     logo:
       alt: IMPACT OSS logo
     title:
-      main: IMPACT OSS
+      main: IMPACT OSS demo site API
       sub: Integrated Planning and Management of Actions
   due_date_mailer:
     category_due:
@@ -15,4 +15,3 @@ en:
       subject: Indicator progress report is due
     overdue:
       subject: Indicator progress report is overdue
-

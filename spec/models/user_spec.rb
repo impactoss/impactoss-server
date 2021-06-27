@@ -3,12 +3,12 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   subject { FactoryGirl.create(:user) }
-  it { should validate_presence_of :name }
-  it { should validate_presence_of :email }
-  it { should have_many :roles }
-  it { should have_many :managed_categories }
-  it { should have_many :categories }
-  it { should have_many :managed_indicators }
+  it { is_expected.to validate_presence_of :name }
+  it { is_expected.to validate_presence_of :email }
+  it { is_expected.to have_many :roles }
+  it { is_expected.to have_many :managed_categories }
+  it { is_expected.to have_many :categories }
+  it { is_expected.to have_many :managed_indicators }
 
   it 'is valid' do
     expect(subject).to be_valid
@@ -23,7 +23,7 @@ RSpec.describe User, type: :model do
     expect(subject).not_to be_valid
   end
 
-  it 'should accept a role' do
+  it 'is_expected.to accept a role' do
     expect(subject.role?('the_role')).to be false
 
     subject.roles << Role.new(name: 'the_role', friendly_name: 'bla')

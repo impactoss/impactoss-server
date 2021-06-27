@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe ProgressReport, type: :model do
-  it { should belong_to :indicator }
-  it { should belong_to :due_date }
-  it { should validate_presence_of :title }
-  it { should have_many :measures }
-  it { should have_many :recommendations }
-  it { should have_many :categories }
-  it { should have_one :manager }
-  it { should validate_presence_of(:indicator_id) }
+  it { is_expected.to belong_to :indicator }
+  it { is_expected.to belong_to(:due_date).optional }
+  it { is_expected.to validate_presence_of :title }
+  it { is_expected.to have_many :measures }
+  it { is_expected.to have_many :recommendations }
+  it { is_expected.to have_many :categories }
+  it { is_expected.to have_one :manager }
+  it { is_expected.to validate_presence_of(:indicator_id) }
 end
