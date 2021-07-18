@@ -460,7 +460,7 @@ class Seeds
     		title:"UPR 1st cycle",
     		short_title:"UPR 1",
     		description:"Recommendations following Samoa's First Universal Periodic Review in 2011",
-    		url:"https://documents-dds-ny.un.org/doc/UNDOC/GEN/G11/146/32/PDF/G1114632.pdf?OpenElement"
+    		url:"https://documents-dds-ny.un.org/doc/UNDOC/GEN/G11/146/32/PDF/G1114632.pdf?OpenElement",
     		draft:true,
     		user_only:false,
     		parent:hr1
