@@ -275,105 +275,105 @@ class Seeds
         taxonomy:outcome,
         title:'Macroeconomic Resilience Increased and Sustained',
         reference: '1',
-        category:sds1
+        category:sds1 # parent/parent_id
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Agriculture and Fisheries Productivity Increased',
         reference: '2',
-        parent:sds1
+        category:sds1
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Export Products Increased',
         reference: '3',
-        parent:sds1
+        category:sds1
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Tourism Development and Performance Improved',
         reference: '4',
-        parent:sds1
+        category:sds1
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Participation of Private Sector in Development Enhanced',
         reference: '5',
-        parent:sds1
+        category:sds1
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'A Healthy Samoa and Well-being Promoted',
         reference: '6',
-        parent:sds2
+        category:sds2
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Quality Education and Training Improved',
         reference: '7',
-        parent:sds2
+        category:sds2
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Social Institutions Strengthened - Community Development Enhanced',
         reference: '8a',
-        parent:sds2
+        category:sds2
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Social Institutions Strengthened - Community Safety Improved',
         reference: '8b',
-        parent:sds2
+        category:sds2
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Access to Clean Water and Sanitation Sustained',
         reference: '9',
-        parent:sds3
+        category:sds3
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Transport Systems and Networks Improved',
         reference: '10',
-        parent:sds3
+        category:sds3
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Improved and Affordable Country Wide ICT Connectivity',
         reference: '11',
-        parent:sds3
+        category:sds3
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Quality Energy Supply',
         reference: '12',
-        parent:sds3
+        category:sds3
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Environmental Resilience Improved',
         reference: '13',
-        parent:sds4
+        category:sds4
       )
     FactoryGirl.create(
         :category,
         taxonomy:outcome,
         title:'Climate and Disaster Resilience',
         reference: '14',
-        parent:sds4
+        category:sds4
       )
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
     hr1 = FactoryGirl.create(
@@ -463,7 +463,7 @@ class Seeds
     		url:'https://documents-dds-ny.un.org/doc/UNDOC/GEN/G11/146/32/PDF/G1114632.pdf?OpenElement',
     		draft:true,
     		user_only:false,
-    		parent:hr1
+    		category:hr1
       )
 
     FactoryGirl.create(
@@ -473,7 +473,7 @@ class Seeds
     		short_title:'UPR 2',
     		draft:false,
     		user_only:false,
-    		parent:hr1
+    		category:hr1
       )
 
     FactoryGirl.create(
@@ -483,7 +483,7 @@ class Seeds
     		short_title:'UPR 3',
     		draft:true,
     		user_only:false,
-    		parent:hr1
+    		category:hr1
       )
 
     FactoryGirl.create(
@@ -493,7 +493,7 @@ class Seeds
     		short_title:'ICCPR Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr2
+    		category:hr2
       )
 
     FactoryGirl.create(
@@ -503,7 +503,7 @@ class Seeds
     		short_title:'ICESCR Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr3
+    		category:hr3
       )
 
     FactoryGirl.create(
@@ -513,7 +513,7 @@ class Seeds
     		short_title:'CEDAW Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr4
+    		category:hr4
       )
 
     FactoryGirl.create(
@@ -523,7 +523,7 @@ class Seeds
     		short_title:'CEDAW-GR',
     		draft:true,
     		user_only:false,
-    		parent:hr4
+    		category:hr4
       )
 
     FactoryGirl.create(
@@ -534,7 +534,7 @@ class Seeds
     		description:'Combined initial, second and third report on CEDAW',
     		draft:true,
     		user_only:false,
-    		parent:hr4
+    		category:hr4
       )
 
     FactoryGirl.create(
@@ -544,7 +544,7 @@ class Seeds
     		short_title:'CEDAW 4-5',
     		draft:true,
     		user_only:false,
-    		parent:hr4
+    		category:hr4
       )
 
     FactoryGirl.create(
@@ -554,7 +554,7 @@ class Seeds
     		short_title:'6th Cycle',
     		draft:false,
     		user_only:false,
-    		parent:hr4
+    		category:hr4
       )
 
     FactoryGirl.create(
@@ -564,7 +564,7 @@ class Seeds
     		short_title:'CAT Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr5
+    		category:hr5
       )
 
     FactoryGirl.create(
@@ -574,7 +574,7 @@ class Seeds
     		short_title:'CRC Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr6
+    		category:hr6
       )
 
     FactoryGirl.create(
@@ -583,7 +583,7 @@ class Seeds
     		title:'CRC cycle 2-4',
     		short_title:'CRC 2-4',
     		draft:false,
-    		parent:hr6
+    		category:hr6
       )
 
     FactoryGirl.create(
@@ -593,7 +593,7 @@ class Seeds
     		short_title:'CRPD Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr7
+    		category:hr7
       )
 
     FactoryGirl.create(
@@ -603,7 +603,7 @@ class Seeds
     		short_title:'CPPED Articles',
     		draft:false,
     		user_only:false,
-    		parent:hr8
+    		category:hr8
       )
 
     FactoryGirl.create(
@@ -613,7 +613,7 @@ class Seeds
     		short_title:'WGDAW all',
     		draft:false,
     		user_only:false,
-    		parent:hr9
+    		category:hr9
       )
 
     FactoryGirl.create(
@@ -623,7 +623,7 @@ class Seeds
     		short_title:'NHRI 2015-2019',
     		draft:false,
     		user_only:false,
-    		parent:hr10
+    		category:hr10
       )
 
     FactoryGirl.create(
@@ -633,7 +633,7 @@ class Seeds
     		short_title:'SLRC 2016',
     		draft:false,
     		user_only:false,
-    		parent:hr11
+    		category:hr11
       )
     # # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
     # # TODO level 2 and 3 human rights
