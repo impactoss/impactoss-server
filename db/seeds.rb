@@ -275,7 +275,7 @@ class Seeds
         taxonomy:outcome,
         title:'Macroeconomic Resilience Increased and Sustained',
         reference: '1',
-        parent:sds1
+        category:sds1
       )
     FactoryGirl.create(
         :category,
