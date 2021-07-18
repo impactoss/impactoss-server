@@ -204,7 +204,7 @@ class Seeds
     FactoryGirl.create(
       :framework_taxonomy,
       framework:hr,
-      taxonomy:outcome,
+      taxonomy:priorityArea,
     )
 
     # 10. SDS key outcome
