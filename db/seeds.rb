@@ -457,10 +457,10 @@ class Seeds
     FactoryGirl.create(
         :category,
     		taxonomy:cycle,
-    		title:"UPR 1st cycle",
-    		short_title:"UPR 1",
+    		title:'UPR 1st cycle',
+    		short_title:'UPR 1',
     		description:"Recommendations following Samoa's First Universal Periodic Review in 2011",
-    		url:"https://documents-dds-ny.un.org/doc/UNDOC/GEN/G11/146/32/PDF/G1114632.pdf?OpenElement",
+    		url:'https://documents-dds-ny.un.org/doc/UNDOC/GEN/G11/146/32/PDF/G1114632.pdf?OpenElement',
     		draft:true,
     		user_only:false,
     		parent:hr1
@@ -469,8 +469,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"UPR 2nd cycle",
-    		short_title:"UPR 2",
+    		title:'UPR 2nd cycle',
+    		short_title:'UPR 2',
     		draft:false,
     		user_only:false,
     		parent:hr1
@@ -479,8 +479,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"UPR 3rd cycle",
-    		short_title:"UPR 3",
+    		title:'UPR 3rd cycle',
+    		short_title:'UPR 3',
     		draft:true,
     		user_only:false,
     		parent:hr1
@@ -489,8 +489,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"ICCPR Articles",
-    		short_title:"ICCPR Articles",
+    		title:'ICCPR Articles',
+    		short_title:'ICCPR Articles',
     		draft:false,
     		user_only:false,
     		parent:hr2
@@ -499,8 +499,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"ICESCR Articles",
-    		short_title:"ICESCR Articles",
+    		title:'ICESCR Articles',
+    		short_title:'ICESCR Articles',
     		draft:false,
     		user_only:false,
     		parent:hr3
@@ -509,8 +509,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CEDAW Articles",
-    		short_title:"CEDAW Articles",
+    		title:'CEDAW Articles',
+    		short_title:'CEDAW Articles',
     		draft:false,
     		user_only:false,
     		parent:hr4
@@ -519,8 +519,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CEDAW General Recommendations",
-    		short_title:"CEDAW-GR",
+    		title:'CEDAW General Recommendations',
+    		short_title:'CEDAW-GR',
     		draft:true,
     		user_only:false,
     		parent:hr4
@@ -529,9 +529,9 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CEDAW 1-3 Periodic Report",
-    		short_title:"CEDAW 1-3",
-    		description:"Combined initial, second and third report on CEDAW",
+    		title:'CEDAW 1-3 Periodic Report',
+    		short_title:'CEDAW 1-3',
+    		description:'Combined initial, second and third report on CEDAW',
     		draft:true,
     		user_only:false,
     		parent:hr4
@@ -540,8 +540,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CEDAW 4-5 Periodic Report",
-    		short_title:"CEDAW 4-5",
+    		title:'CEDAW 4-5 Periodic Report',
+    		short_title:'CEDAW 4-5',
     		draft:true,
     		user_only:false,
     		parent:hr4
@@ -550,8 +550,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CEDAW 6th Periodic Report",
-    		short_title:"6th Cycle",
+    		title:'CEDAW 6th Periodic Report',
+    		short_title:'6th Cycle',
     		draft:false,
     		user_only:false,
     		parent:hr4
@@ -560,8 +560,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CAT Articles",
-    		short_title:"CAT Articles",
+    		title:'CAT Articles',
+    		short_title:'CAT Articles',
     		draft:false,
     		user_only:false,
     		parent:hr5
@@ -570,8 +570,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CRC Articles",
-    		short_title:"CRC Articles",
+    		title:'CRC Articles',
+    		short_title:'CRC Articles',
     		draft:false,
     		user_only:false,
     		parent:hr6
@@ -580,8 +580,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CRC cycle 2-4",
-    		short_title:"CRC 2-4",
+    		title:'CRC cycle 2-4',
+    		short_title:'CRC 2-4',
     		draft:false,
     		parent:hr6
       )
@@ -589,8 +589,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CRPD Articles",
-    		short_title:"CRPD Articles",
+    		title:'CRPD Articles',
+    		short_title:'CRPD Articles',
     		draft:false,
     		user_only:false,
     		parent:hr7
@@ -599,8 +599,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"CPPED Articles",
-    		short_title:"CPPED Articles",
+    		title:'CPPED Articles',
+    		short_title:'CPPED Articles',
     		draft:false,
     		user_only:false,
     		parent:hr8
@@ -609,8 +609,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"WGDAW all",
-    		short_title:"WGDAW all",
+    		title:'WGDAW all',
+    		short_title:'WGDAW all',
     		draft:false,
     		user_only:false,
     		parent:hr9
@@ -619,8 +619,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"NHRI 2015-2019",
-    		short_title:"NHRI 2015-2019",
+    		title:'NHRI 2015-2019',
+    		short_title:'NHRI 2015-2019',
     		draft:false,
     		user_only:false,
     		parent:hr10
@@ -629,8 +629,8 @@ class Seeds
     FactoryGirl.create(
         :category,
         taxonomy:cycle,
-    		title:"SLRC 2016",
-    		short_title:"SLRC 2016",
+    		title:'SLRC 2016',
+    		short_title:'SLRC 2016',
     		draft:false,
     		user_only:false,
     		parent:hr11
