@@ -4,7 +4,7 @@
 
 This is the source code for the server-side application (the "API") of IMPACT OSS.
 
-It is a **Rails 5.0.1 application** and is a thin server that is responsible for:
+It is a **Rails 6.0 application** and is a thin server that is responsible for:
 * database management and access via an API (Application Programming Interface)
 * user authentication
 * automated email reminders
@@ -40,11 +40,11 @@ https://install-guide.impactoss.org/
 
 This project requires:
 
-* Ruby 2.3.3, preferably managed using [rbenv][]
-* PhantomJS (in order to use the [poltergeist][] gem)
+* Ruby 2.6.6, preferably managed using [rbenv](https://github.com/rbenv/rbenv)
+* PhantomJS (in order to use the [poltergeist](https://rubygems.org/gems/poltergeist) gem)
 * PostgreSQL must be installed and accepting connections
 
-On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
+On a Mac, you can obtain all of the above packages using [Homebrew](https://brew.sh/). If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
 
 If you need help setting up a Ruby development environment, check out this [Rails OS X Setup Guide](https://mattbrictson.com/rails-osx-setup-guide).
 
