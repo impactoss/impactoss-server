@@ -187,7 +187,7 @@ RSpec.describe UsersController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in admin
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq admin.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
     end
   end

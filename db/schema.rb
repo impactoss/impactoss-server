@@ -19,7 +19,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "user_id", null: false
     t.string "title", null: false
     t.json "view", null: false
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "manager_id"
     t.string "reference"
     t.boolean "user_only"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.integer "parent_id"
     t.date "date"
     t.index ["draft"], name: "index_categories_on_draft"
@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "draft", default: false
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.index ["draft"], name: "index_due_dates_on_draft"
     t.index ["indicator_id"], name: "index_due_dates_on_indicator_id"
   end
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.boolean "repeat", default: false
     t.date "end_date"
     t.string "reference"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
     t.index ["created_at"], name: "index_indicators_on_created_at"
@@ -108,6 +108,8 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "updated_by_id"
+    t.index ["updated_by_id"], name: "index_measure_categories_on_updated_by_id"
   end
 
   create_table "measure_indicators", id: :serial, force: :cascade do |t|
@@ -127,7 +129,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.text "outcome"
     t.text "indicator_summary"
     t.text "target_date_comment"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.string "reference"
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
@@ -142,7 +144,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "order"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.index ["draft"], name: "index_pages_on_draft"
   end
 
@@ -156,7 +158,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.boolean "draft"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.index ["due_date_id"], name: "index_progress_reports_on_due_date_id"
     t.index ["indicator_id"], name: "index_progress_reports_on_indicator_id"
   end
@@ -202,7 +204,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.text "response"
     t.text "reference", null: false
     t.text "description"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.integer "framework_id"
     t.index ["draft"], name: "index_recommendations_on_draft"
     t.index ["framework_id"], name: "index_recommendations_on_framework_id"
@@ -256,7 +258,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.boolean "draft", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.index ["draft"], name: "index_sdgtargets_on_draft"
   end
 
@@ -273,7 +275,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "groups_measures_default"
     t.integer "groups_recommendations_default"
     t.integer "groups_sdgtargets_default"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.integer "parent_id"
     t.boolean "has_date"
     t.integer "framework_id"
@@ -292,7 +294,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "role_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.index ["role_id"], name: "index_user_roles_on_role_id"
     t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
@@ -314,7 +316,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.string "provider", default: "email", null: false
     t.string "uid", default: "", null: false
     t.json "tokens"
-    t.integer "last_modified_user_id"
+    t.integer "updated_by_id"
     t.boolean "allow_password_change", default: true
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
@@ -337,6 +339,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
   add_foreign_key "framework_taxonomies", "frameworks"
   add_foreign_key "framework_taxonomies", "taxonomies"
   add_foreign_key "indicators", "users", column: "relationship_updated_by_id"
+  add_foreign_key "measure_categories", "users", column: "updated_by_id"
   add_foreign_key "measures", "users", column: "relationship_updated_by_id"
   add_foreign_key "recommendation_indicators", "indicators"
   add_foreign_key "recommendation_indicators", "recommendations"

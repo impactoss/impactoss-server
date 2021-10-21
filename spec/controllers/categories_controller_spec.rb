@@ -102,7 +102,7 @@ RSpec.describe CategoriesController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq user.id
       end
 
       it "will return an error if params are incorrect" do
@@ -168,15 +168,15 @@ RSpec.describe CategoriesController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq user.id
       end
 
-      it "will return the latest last_modified_user_id", versioning: true do
+      it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         category.versions.first.update_column(:whodunnit, guest.id)
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq(user.id)
+        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq(user.id)
       end
 
       it "will return an error if params are incorrect" do
