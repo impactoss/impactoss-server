@@ -1,4 +1,4 @@
-class RecommendationCategory < ApplicationRecord
+class RecommendationCategory < VersionedRecord
   belongs_to :recommendation
   belongs_to :category
   accepts_nested_attributes_for :recommendation

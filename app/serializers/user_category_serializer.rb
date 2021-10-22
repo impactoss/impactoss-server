@@ -1,5 +1,5 @@
 class UserCategorySerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :user_id, :category_id
 

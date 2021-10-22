@@ -19,7 +19,7 @@ RSpec.describe RecommendationCategoriesController, type: :controller do
 
       it "shows the recommendation_category" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(recommendation_category.id)
+        expect(json.dig("data", "id").to_i).to eq(recommendation_category.id)
       end
     end
   end
@@ -27,7 +27,9 @@ RSpec.describe RecommendationCategoriesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a recommendation_category" do
-        post :create, format: :json, params: {recommendation_category: {recommendation_id: 1, category_id: 1}}
+        post :create, format: :json, params: {
+          recommendation_category: {recommendation_id: 1, category_id: 1}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -65,9 +67,18 @@ RSpec.describe RecommendationCategoriesController, type: :controller do
         expect(subject).to be_created
       end
 
+      it "will record what manager created the recommendation_category", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+      end
+
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {recommendation_category: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          recommendation_category: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end

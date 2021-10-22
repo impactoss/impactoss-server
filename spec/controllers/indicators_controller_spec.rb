@@ -48,7 +48,9 @@ RSpec.describe IndicatorsController, type: :controller do
 
       it "filters from measures" do
         indicator_different_measure.measures << measure
-        subject = get :index, params: {measure_id: measure.id}, format: :json
+        subject = get :index, params: {
+          measure_id: measure.id
+        }, format: :json
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(1)
         expect(json["data"][0]["id"]).to eq(indicator_different_measure.id.to_s)
@@ -66,7 +68,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
       it "shows the indicator" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(indicator.id)
+        expect(json.dig("data", "id").to_i).to eq(indicator.id)
       end
 
       it "will not show draft indicator" do
@@ -79,7 +81,9 @@ RSpec.describe IndicatorsController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a indicator" do
-        post :create, format: :json, params: {indicator: {title: "test", description: "test", target_date: "today"}}
+        post :create, format: :json, params: {
+          indicator: {title: "test", description: "test", target_date: "today"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -120,7 +124,7 @@ RSpec.describe IndicatorsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
       end
 
       it "will return an error if params are incorrect" do
@@ -170,7 +174,7 @@ RSpec.describe IndicatorsController, type: :controller do
         sign_in user
         indicator_get = get :show, params: {id: indicator}, format: :json
         json = JSON.parse(indicator_get.body)
-        current_update_at = json["data"]["attributes"]["updated_at"]
+        current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
@@ -192,7 +196,7 @@ RSpec.describe IndicatorsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
       end
 
       it "will return the latest updated_by", versioning: true do
@@ -200,7 +204,7 @@ RSpec.describe IndicatorsController, type: :controller do
         indicator.versions.first.update_column(:whodunnit, contributor.id)
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
       end
 
       it "will return an error if params are incorrect" do

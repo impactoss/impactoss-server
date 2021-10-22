@@ -1,4 +1,4 @@
-class RecommendationIndicator < ApplicationRecord
+class RecommendationIndicator < VersionedRecord
   belongs_to :recommendation
   belongs_to :indicator
 

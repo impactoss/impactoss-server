@@ -31,7 +31,11 @@ RSpec.describe BookmarksController, type: :controller do
     let(:bookmark) { FactoryBot.create(:bookmark) }
     let(:user) { FactoryBot.create(:user, bookmarks: [bookmark]) }
 
-    subject { get :show, params: {id: bookmark["id"]}, format: :json }
+    subject {
+      get :show, params: {
+        id: bookmark["id"]
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_unauthorized }
@@ -55,6 +59,7 @@ RSpec.describe BookmarksController, type: :controller do
 
     subject {
       post :create, format: :json, params: {
+
         bookmark: {bookmark_type: 1, title: "test 1", view: {lorem: "ipsum"}}
       }
     }
@@ -94,6 +99,7 @@ RSpec.describe BookmarksController, type: :controller do
 
     subject {
       put :update, format: :json, params: {
+
         id: bookmark1.id, bookmark: {title: new_title, view: new_view}
       }
     }
@@ -119,6 +125,7 @@ RSpec.describe BookmarksController, type: :controller do
         sign_in user
 
         subject = put :update, format: :json, params: {
+
           id: bookmark2.id, bookmark: {title: new_title, view: new_view}
         }
 
@@ -132,7 +139,11 @@ RSpec.describe BookmarksController, type: :controller do
     let(:bookmark2) { FactoryBot.create(:bookmark) }
     let(:user) { FactoryBot.create(:user, bookmarks: [bookmark1]) }
 
-    subject { delete :destroy, format: :json, params: {id: bookmark1.id} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: bookmark1.id
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a bookmark" do
@@ -150,7 +161,9 @@ RSpec.describe BookmarksController, type: :controller do
       it "not allow deleting a bookmark that does not belong to the user" do
         sign_in user
 
-        subject = delete :destroy, format: :json, params: {id: bookmark2.id}
+        subject = delete :destroy, format: :json, params: {
+          id: bookmark2.id
+        }
 
         expect(subject).to have_http_status(403)
       end

@@ -12,14 +12,18 @@ RSpec.describe SdgtargetCategoriesController, type: :controller do
 
   describe "Get show" do
     let(:sdgtarget_category) { FactoryBot.create(:sdgtarget_category) }
-    subject { get :show, params: {id: sdgtarget_category}, format: :json }
+    subject {
+      get :show, params: {
+        id: sdgtarget_category
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the sdgtarget_category" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(sdgtarget_category.id)
+        expect(json.dig("data", "id").to_i).to eq(sdgtarget_category.id)
       end
     end
   end
@@ -27,7 +31,9 @@ RSpec.describe SdgtargetCategoriesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a sdgtarget_category" do
-        post :create, format: :json, params: {sdgtarget_category: {sdgtarget_id: 1, category_id: 1}}
+        post :create, format: :json, params: {
+          sdgtarget_category: {sdgtarget_id: 1, category_id: 1}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -67,7 +73,9 @@ RSpec.describe SdgtargetCategoriesController, type: :controller do
 
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {sdgtarget_category: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          sdgtarget_category: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -75,7 +83,11 @@ RSpec.describe SdgtargetCategoriesController, type: :controller do
 
   describe "Delete destroy" do
     let(:sdgtarget_category) { FactoryBot.create(:sdgtarget_category) }
-    subject { delete :destroy, format: :json, params: {id: sdgtarget_category} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: sdgtarget_category
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a sdgtarget_category" do

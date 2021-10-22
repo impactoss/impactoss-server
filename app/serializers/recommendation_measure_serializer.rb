@@ -1,5 +1,5 @@
 class RecommendationMeasureSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :recommendation_id, :measure_id
 

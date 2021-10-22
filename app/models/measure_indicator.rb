@@ -1,4 +1,4 @@
-class MeasureIndicator < ApplicationRecord
+class MeasureIndicator < VersionedRecord
   belongs_to :measure
   belongs_to :indicator
   accepts_nested_attributes_for :measure

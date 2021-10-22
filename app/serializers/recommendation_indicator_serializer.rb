@@ -1,5 +1,5 @@
 class RecommendationIndicatorSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :recommendation_id, :indicator_id
 

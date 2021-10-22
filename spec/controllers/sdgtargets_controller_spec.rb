@@ -46,18 +46,24 @@ RSpec.describe SdgtargetsController, type: :controller do
   describe "Get show" do
     let(:sdgtarget) { FactoryBot.create(:sdgtarget) }
     let(:draft_sdgtarget) { FactoryBot.create(:sdgtarget, draft: true) }
-    subject { get :show, params: {id: sdgtarget}, format: :json }
+    subject {
+      get :show, params: {
+        id: sdgtarget
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the sdgtarget" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(sdgtarget.id)
+        expect(json.dig("data", "id").to_i).to eq(sdgtarget.id)
       end
 
       it "will not show draft sdgtarget" do
-        get :show, params: {id: draft_sdgtarget}, format: :json
+        get :show, params: {
+          id: draft_sdgtarget
+        }, format: :json
         expect(response).to be_not_found
       end
     end
@@ -66,7 +72,9 @@ RSpec.describe SdgtargetsController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a sdgtarget" do
-        post :create, format: :json, params: {sdgtarget: {title: "test", description: "test", reference: "ref"}}
+        post :create, format: :json, params: {
+          sdgtarget: {title: "test", description: "test", reference: "ref"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -92,6 +100,7 @@ RSpec.describe SdgtargetsController, type: :controller do
         # post :create,
         #      format: :json,
         #      params: {
+
         #        sdgtarget: {
         #          title: 'test',
         #          description: 'test',
@@ -120,12 +129,14 @@ RSpec.describe SdgtargetsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {sdgtarget: {description: "desc only"}}
+        post :create, format: :json, params: {
+          sdgtarget: {description: "desc only"}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -136,8 +147,10 @@ RSpec.describe SdgtargetsController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: sdgtarget,
-                 sdgtarget: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: sdgtarget,
+          sdgtarget: {title: "test update", description: "test update", target_date: "today update"}
+        }
     end
 
     context "when not signed in" do
@@ -168,22 +181,28 @@ RSpec.describe SdgtargetsController, type: :controller do
 
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
         sign_in user
-        sdgtarget_get = get :show, params: {id: sdgtarget}, format: :json
+        sdgtarget_get = get :show, params: {
+          id: sdgtarget
+        }, format: :json
         json = JSON.parse(sdgtarget_get.body)
-        current_update_at = json["data"]["attributes"]["updated_at"]
+        current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {id: sdgtarget,
-                     sdgtarget: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: sdgtarget,
+              sdgtarget: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to be_ok
         end
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
-            params: {id: sdgtarget,
-                     sdgtarget: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: sdgtarget,
+              sdgtarget: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to_not be_ok
         end
       end
@@ -192,7 +211,7 @@ RSpec.describe SdgtargetsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
       end
 
       it "will return the latest updated_by", versioning: true do
@@ -200,12 +219,14 @@ RSpec.describe SdgtargetsController, type: :controller do
         sdgtarget.versions.first.update_column(:whodunnit, contributor.id)
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["updated_by_id"].to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        put :update, format: :json, params: {id: sdgtarget, sdgtarget: {title: ""}}
+        put :update, format: :json, params: {
+          id: sdgtarget, sdgtarget: {title: ""}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -213,7 +234,11 @@ RSpec.describe SdgtargetsController, type: :controller do
 
   describe "Delete destroy" do
     let(:sdgtarget) { FactoryBot.create(:sdgtarget) }
-    subject { delete :destroy, format: :json, params: {id: sdgtarget} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: sdgtarget
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a sdgtarget" do
