@@ -1,5 +1,5 @@
 class UserRoleSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :user_id, :role_id
 

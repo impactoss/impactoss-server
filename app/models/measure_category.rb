@@ -1,4 +1,4 @@
-class MeasureCategory < ApplicationRecord
+class MeasureCategory < VersionedRecord
   belongs_to :measure
   belongs_to :category
   accepts_nested_attributes_for :measure

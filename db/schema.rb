@@ -130,9 +130,9 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.text "indicator_summary"
     t.text "target_date_comment"
     t.integer "updated_by_id"
-    t.string "reference"
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
+    t.string "reference"
     t.index ["draft"], name: "index_measures_on_draft"
   end
 
@@ -324,7 +324,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "versions", id: :serial, force: :cascade do |t|
+  create_table "versions", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.string "event", null: false

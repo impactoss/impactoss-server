@@ -254,6 +254,21 @@ RSpec.describe UserRolesController, type: :controller do
         post :create, format: :json, params: {user_role: {description: "desc only", taxonomy_id: 999}}
         expect(response).to have_http_status(422)
       end
+
+      it "will record what admin created the user role", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in admin
+        subject = post :create,
+          format: :json,
+          params: {
+            user_role: {
+              user_id: manager.id,
+              role_id: admin_role.id
+            }
+          }
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
+      end
     end
   end
 
