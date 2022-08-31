@@ -96,6 +96,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.date "end_date"
     t.string "reference"
     t.integer "last_modified_user_id"
+    t.datetime "relationship_updated_at", precision: 6
     t.index ["created_at"], name: "index_indicators_on_created_at"
     t.index ["draft"], name: "index_indicators_on_draft"
     t.index ["manager_id"], name: "index_indicators_on_manager_id"
@@ -127,6 +128,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.text "target_date_comment"
     t.integer "last_modified_user_id"
     t.string "reference"
+    t.datetime "relationship_updated_at", precision: 6
     t.index ["draft"], name: "index_measures_on_draft"
   end
 
@@ -312,6 +314,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.json "tokens"
     t.integer "last_modified_user_id"
     t.boolean "allow_password_change", default: true
+    t.datetime "relationship_updated_at", precision: 6
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
