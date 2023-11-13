@@ -890,7 +890,7 @@ class Seeds
   		)
   		country.categories.create!(
   				short_title: "CIV",
-  				title: "Côte d"Ivoire",
+  				title: "Côte d'Ivoire",
   		)
   		country.categories.create!(
   				short_title: "HRV",
@@ -910,7 +910,7 @@ class Seeds
   		)
   		country.categories.create!(
   				short_title: "PRK",
-  				title: "Democratic People"s Republic of Korea",
+  				title: "Democratic People's Republic of Korea",
   		)
   		country.categories.create!(
   				short_title: "COD",
@@ -1102,7 +1102,7 @@ class Seeds
   		)
   		country.categories.create!(
   				short_title: "LAO",
-  				title: "Lao People"s Democratic Republic",
+  				title: "Lao People's Democratic Republic",
   		)
   		country.categories.create!(
   				short_title: "LVA",
