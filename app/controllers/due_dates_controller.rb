@@ -29,7 +29,7 @@ class DueDatesController < ApplicationController
 
   # PATCH/PUT /due_dates/1
   def update
-    if @due_date.update_attributes!(permitted_attributes(@due_date))
+    if @due_date.update!(permitted_attributes(@due_date))
       set_and_authorize_due_date
       render json: serialize(@due_date)
     end

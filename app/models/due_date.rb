@@ -9,14 +9,14 @@ class DueDate < VersionedRecord
 
   validates :due_date, presence: true
 
-  scope :no_progress_reports, -> { left_outer_joins(:progress_reports).where( progress_reports: { id: nil } ) }
-  scope :has_progress_reports, -> { left_outer_joins(:progress_reports).where.not( progress_reports: { id: nil } ) }
-  scope :future, -> { where('due_date > ?', Date.today) }
+  scope :no_progress_reports, -> { left_outer_joins(:progress_reports).where(progress_reports: {id: nil}) }
+  scope :has_progress_reports, -> { left_outer_joins(:progress_reports).where.not(progress_reports: {id: nil}) }
+  scope :future, -> { where("due_date > ?", Date.today) }
   scope :future_with_no_progress_reports, -> { future.no_progress_reports }
-  scope :are_due, -> { no_progress_reports.where('due_date >= ? AND due_date <= ?', Date.today, Date.today + DUE_NUMBER_OF_DAYS.days) }
-  scope :are_overdue, -> { no_progress_reports.where('due_date < ?', Date.today) }
+  scope :are_due, -> { no_progress_reports.where("due_date >= ? AND due_date <= ?", Date.today, Date.today + DUE_NUMBER_OF_DAYS.days) }
+  scope :are_overdue, -> { no_progress_reports.where("due_date < ?", Date.today) }
 
-  DUE_NUMBER_OF_DAYS = 30.freeze
+  DUE_NUMBER_OF_DAYS = 30
 
   def self.send_due_emails
     DueDate.are_due.each do |due_date|

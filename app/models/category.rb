@@ -1,8 +1,8 @@
 class Category < VersionedRecord
   belongs_to :taxonomy
-  belongs_to :category, class_name: 'Category', foreign_key: :parent_id, optional: true
-  belongs_to :manager, class_name: 'User', foreign_key: :manager_id, optional: true, inverse_of: :categories
-  has_many :categories, foreign_key: :parent_id, class_name: 'Category'
+  belongs_to :category, class_name: "Category", foreign_key: :parent_id, optional: true
+  belongs_to :manager, class_name: "User", foreign_key: :manager_id, optional: true, inverse_of: :categories
+  has_many :categories, foreign_key: :parent_id, class_name: "Category"
   has_many :recommendation_categories, inverse_of: :category, dependent: :destroy
   has_many :user_categories, inverse_of: :category, dependent: :destroy
   has_many :measure_categories, inverse_of: :category, dependent: :destroy
@@ -12,29 +12,29 @@ class Category < VersionedRecord
   has_many :measures, through: :measure_categories
   has_many :indicators, through: :recommendations
   has_many :progress_reports, through: :indicators
-  has_many :due_dates,-> { distinct }, through: :indicators
+  has_many :due_dates, -> { distinct }, through: :indicators
 
-  has_many :children_due_dates,-> { distinct }, through: :categories, source: :due_dates
-  
+  has_many :children_due_dates, -> { distinct }, through: :categories, source: :due_dates
+
   delegate :name, :email, to: :manager, prefix: true, allow_nil: true
 
   validates :title, presence: true
 
   validate :sub_relation
- 
+
   def sub_relation
-    if parent_id.present? 
+    if parent_id.present?
       parent_category = Category.find(parent_id)
 
-      if (!parent_category.parent_id.nil?) 
+      if !parent_category.parent_id.nil?
         errors.add(:parent_id, "Parent category is already a sub-category.")
         return
       end
- 
+
       parent_taxonomy_id = Taxonomy.find(taxonomy_id).parent_id
       parent_category_taxonomy_id = parent_category.taxonomy_id
 
-      if (parent_category_taxonomy_id != parent_taxonomy_id)
+      if parent_category_taxonomy_id != parent_taxonomy_id
         errors.add(:parent_id, "Taxonomy does not have parent categorys taxonomy as parent.")
       end
     end

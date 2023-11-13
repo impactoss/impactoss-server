@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class SdgtargetsController < ApplicationController
   before_action :set_and_authorize_sdgtarget, only: [:show, :update, :destroy]
 
@@ -33,7 +34,7 @@ class SdgtargetsController < ApplicationController
     if params[:sdgtarget][:updated_at] && DateTime.parse(params[:sdgtarget][:updated_at]).to_i != @sdgtarget.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    if @sdgtarget.update_attributes!(permitted_attributes(@sdgtarget))
+    if @sdgtarget.update!(permitted_attributes(@sdgtarget))
       set_and_authorize_sdgtarget
       render json: serialize(@sdgtarget)
     end

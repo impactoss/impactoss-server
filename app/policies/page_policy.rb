@@ -4,7 +4,7 @@ class PagePolicy < ApplicationPolicy
   end
 
   def create?
-    @user.role?('admin')
+    @user.role?("admin")
   end
 
   def edit?
@@ -12,11 +12,11 @@ class PagePolicy < ApplicationPolicy
   end
 
   def update?
-    @user.role?('admin')
+    @user.role?("admin")
   end
 
   def destroy?
-    @user.role?('admin')
+    @user.role?("admin")
   end
 
   def permitted_attributes
@@ -25,7 +25,7 @@ class PagePolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
+      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
       scope.where(draft: false)
     end
   end

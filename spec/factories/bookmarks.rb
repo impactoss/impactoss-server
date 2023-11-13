@@ -1,8 +1,8 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :bookmark do
     association :user
 
-    title Faker::Lorem.sentence
-    view {{lorem: Faker::Lorem.sentence}}
+    title { Faker::Lorem.sentence }
+    view { {lorem: Faker::Lorem.sentence} }
   end
 end

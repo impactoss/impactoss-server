@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :category do
     title { Faker::Ancient.hero }
     short_title { Faker::Ancient.primordial }
@@ -7,12 +7,11 @@ FactoryGirl.define do
     association :taxonomy
 
     trait :parent_category do
-      title:'parent'
-    end
-  
-    trait :sub_category do
-      title:'sub'
+      title { "parent" }
     end
 
+    trait :sub_category do
+      title { "sub" }
+    end
   end
 end

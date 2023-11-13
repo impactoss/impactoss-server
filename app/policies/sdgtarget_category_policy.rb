@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 class SdgtargetCategoryPolicy < ApplicationPolicy
   def permitted_attributes
     [:sdgtarget_id,
-     :category_id]
+      :category_id]
   end
 
   def update?

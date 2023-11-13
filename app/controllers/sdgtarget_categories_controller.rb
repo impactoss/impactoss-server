@@ -29,7 +29,7 @@ class SdgtargetCategoriesController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: serialize(@sdgtarget_category) if @sdgtarget_category.update_attributes!(permitted_attributes(@sdgtarget_category))
+    render json: serialize(@sdgtarget_category) if @sdgtarget_category.update!(permitted_attributes(@sdgtarget_category))
   end
 
   # DELETE /sdgtarget_categories/1

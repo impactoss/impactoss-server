@@ -1,5 +1,4 @@
 class FrameworkPolicy < ApplicationPolicy
- 
   def create?
     false
   end

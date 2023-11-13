@@ -41,5 +41,4 @@ class RecommendationRecommendationsController < ApplicationController
   def serialize(target, serializer: RecommendationRecommendationSerializer)
     super
   end
-
 end

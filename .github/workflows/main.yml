@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      PGHOST: localhost
+      PGPASSWORD: runner
+      PGUSER: runner
+      RAILS_ENV: test
+
+    name: rspec
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: "Set up PostgreSQL using VM's server"
+        run: |
+          sudo apt-get update
+          sudo apt-get install libpq-dev -y
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "CREATE USER runner WITH SUPERUSER PASSWORD 'runner'"
+
+      - run: bin/rails db:setup
+      - run: bin/rspec

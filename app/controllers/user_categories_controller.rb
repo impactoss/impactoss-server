@@ -29,7 +29,7 @@ class UserCategoriesController < ApplicationController
 
   # PATCH/PUT /user_categories/1
   def update
-    if @user_category.update_attributes!(permitted_attributes(@user_category))
+    if @user_category.update!(permitted_attributes(@user_category))
       render json: serialize(@user_category)
     end
   end

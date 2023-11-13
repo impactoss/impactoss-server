@@ -20,7 +20,7 @@ class Indicator < VersionedRecord
   # not sure we need this?
   # has_many :direct_recommendations, through: :indicators_recommendations, source: :recommendation
 
-  belongs_to :manager, class_name: 'User', foreign_key: :manager_id, required: false
+  belongs_to :manager, class_name: "User", foreign_key: :manager_id, required: false
 
   accepts_nested_attributes_for :measure_indicators
 
@@ -37,12 +37,10 @@ class Indicator < VersionedRecord
       date_iterator = start_date
       while date_iterator <= end_date
         due_dates.find_or_create_by!(due_date: date_iterator)
-        date_iterator = date_iterator + frequency_months.months
+        date_iterator += frequency_months.months
       end
-    else # No repeating
-      if start_date
-        due_dates.find_or_create_by!(due_date: start_date)
-      end
+    elsif start_date # No repeating
+      due_dates.find_or_create_by!(due_date: start_date)
     end
   end
 
@@ -50,6 +48,6 @@ class Indicator < VersionedRecord
     return unless saved_change_to_start_date? || saved_change_to_end_date? || saved_change_to_frequency_months? || saved_change_to_repeat?
     due_dates.future_with_no_progress_reports.destroy_all
     build_due_dates
-    return true
+    true
   end
 end

@@ -32,7 +32,7 @@ class PagesController < ApplicationController
     if params[:page][:updated_at] && DateTime.parse(params[:page][:updated_at]).to_i != @page.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    if @page.update_attributes!(permitted_attributes(@page))
+    if @page.update!(permitted_attributes(@page))
       set_and_authorize_page
       render json: serialize(@page)
     end

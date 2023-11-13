@@ -4,7 +4,7 @@ class BookmarksController < ApplicationController
   skip_after_action :verify_authorized, only: [:show]
 
   def forbidden
-    render json: {error: 'Forbidden'}, status: 403
+    render json: {error: "Forbidden"}, status: 403
   end
 
   # GET /bookmarks
@@ -43,7 +43,7 @@ class BookmarksController < ApplicationController
   # PUT /bookmarks/[id]
   def update
     @bookmark[:view] = params[:bookmark][:view]
-    render json: serialize(@bookmark) if @bookmark.update_attributes!(permitted_attributes(@bookmark))
+    render json: serialize(@bookmark) if @bookmark.update!(permitted_attributes(@bookmark))
   end
 
   # DELETE /bookmarks/[id]

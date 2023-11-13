@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 class SdgtargetRecommendationPolicy < ApplicationPolicy
   def permitted_attributes
     [:sdgtarget_id,
-     :recommendation_id]
+      :recommendation_id]
   end
 
   def update?

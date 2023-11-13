@@ -21,5 +21,4 @@ class FrameworkFrameworksController < ApplicationController
   def serialize(target, serializer: FrameworkFrameworkSerializer)
     super
   end
-
 end

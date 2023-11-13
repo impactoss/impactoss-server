@@ -1,17 +1,17 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :taxonomy do
-    title 'MyString'
-    tags_measures false
-    allow_multiple false
+    title { "MyString" }
+    tags_measures { false }
+    allow_multiple { false }
 
     association :framework, strategy: :null
 
     trait :parent_taxonomy do
-      title:'parent'
+      title { "parent" }
     end
 
     trait :sub_taxonomy do
-      title:'parent'
+      title { "parent" }
       association :taxonomy, :parent_taxonomy
     end
   end

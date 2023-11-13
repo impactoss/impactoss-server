@@ -1,10 +1,11 @@
 # frozen_string_literal: true
-require 'rails_helper'
+
+require "rails_helper"
 
 RSpec.describe Recommendation, type: :model do
   it { is_expected.to validate_presence_of :title }
   it { is_expected.to validate_presence_of :reference }
-  
+
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :measures }
   it { is_expected.to have_many :indicators }
@@ -19,5 +20,5 @@ RSpec.describe Recommendation, type: :model do
 
   it { is_expected.to belong_to(:framework).optional }
 
-  it { is_expected.to accept_nested_attributes_for :recommendation_categories}
+  it { is_expected.to accept_nested_attributes_for :recommendation_categories }
 end

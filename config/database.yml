@@ -5,18 +5,24 @@ default: &default
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV["DATABASE_POOL_SIZE"] || 10 %>
+  <% if ENV["PGUSER"] %>
+  username: <%= ENV["PGUSER"] %>
+  <% end %>
+  <% if ENV["PGUSER"] %>
+  password: <%= ENV["PGPASSWORD"] %>
+  <% end %>
   timeout: <%= ENV["DATABASE_TIMEOUT"] || 9000 %>
 
 development:
   <<: *default
-  database: human_rights_national_reporting_development
+  database: marine_defrag_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: human_rights_national_reporting_test
+  database: marine_defrag_test
 
 staging:
   <<: *default

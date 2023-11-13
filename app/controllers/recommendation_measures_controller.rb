@@ -29,7 +29,7 @@ class RecommendationMeasuresController < ApplicationController
 
   # PATCH/PUT /recommendation_measures/1
   def update
-    if @recommendation_measure.update_attributes!(permitted_attributes(@recommendation_measure))
+    if @recommendation_measure.update!(permitted_attributes(@recommendation_measure))
       render json: serialize(@recommendation_measure)
     end
   end

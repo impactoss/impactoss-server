@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-FactoryGirl.define do
+
+FactoryBot.define do
   factory :recommendation do
     title { Faker::Superhero.name }
-    reference "1"
+    reference { "1" }
 
     trait :without_category do
       categories { [] }

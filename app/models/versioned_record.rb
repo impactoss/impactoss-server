@@ -1,4 +1,4 @@
-require_relative 'application_record'
+require_relative "application_record"
 
 class VersionedRecord < ApplicationRecord
   self.abstract_class = true

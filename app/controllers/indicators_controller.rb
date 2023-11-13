@@ -22,7 +22,7 @@ class IndicatorsController < ApplicationController
 
     if @indicator.save
       render json: serialize(@indicator),
-             status: :created, location: @indicator
+        status: :created, location: @indicator
     else
       render json: @indicator.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class IndicatorsController < ApplicationController
     if params[:indicator][:updated_at] && DateTime.parse(params[:indicator][:updated_at]).to_i != @indicator.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    if @indicator.update_attributes!(permitted_attributes(@indicator))
+    if @indicator.update!(permitted_attributes(@indicator))
       set_and_authorize_indicator
       render json: serialize(@indicator)
     end

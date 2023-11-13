@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -12,12 +13,12 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   config.eager_load = true
 
   # Full error reports are disabled and caching is turned on.
-  config.consider_all_requests_local       = false
+  config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
-  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Compress JavaScripts and CSS.
   # config.assets.js_compressor = :uglifier
@@ -69,21 +70,26 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # config.action_mailer.raise_delivery_errors = false
 
   # Production MailGun SMTP config
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    port:           ENV['MAILGUN_SMTP_PORT'],
-    address:        ENV['MAILGUN_SMTP_SERVER'],
-    user_name:      ENV['MAILGUN_SMTP_LOGIN'],
-    password:       ENV['MAILGUN_SMTP_PASSWORD'],
-    domain:         'impactoss.org',
-    authentication: :plain
-  }
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_url_options = {
-    host: ENV['ACTION_MAILER_HOST'] || 'impactoss.org',
-    protocol: ENV['ACTION_MAILER_PROTOCOL'] || 'https'
-  }
-  config.action_mailer.asset_host = ENV['ACTION_MAILER_ASSET_HOST'] || 'https://impactoss.org'
+  if ENV.fetch("EMAIL_ENABLED", false)
+    config.action_mailer.perform_deliveries = false
+    config.action_mailer.raise_delivery_errors = false
+  else
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      port: ENV["MAILGUN_SMTP_PORT"],
+      address: ENV["MAILGUN_SMTP_SERVER"],
+      user_name: ENV["MAILGUN_SMTP_LOGIN"],
+      password: ENV["MAILGUN_SMTP_PASSWORD"],
+      domain: "impactoss.org",
+      authentication: :plain
+    }
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.default_url_options = {
+      host: ENV["ACTION_MAILER_HOST"] || "impactoss.org",
+      protocol: ENV["ACTION_MAILER_PROTOCOL"] || "https"
+    }
+    config.action_mailer.asset_host = ENV["ACTION_MAILER_ASSET_HOST"] || "https://impactoss.org"
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -99,8 +105,8 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
-  if ENV['RAILS_LOG_TO_STDOUT'].present?
-    logger           = ActiveSupport::Logger.new(STDOUT)
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    logger = ActiveSupport::Logger.new($stdout)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
   end

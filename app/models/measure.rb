@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class Measure < VersionedRecord
   has_many :recommendation_measures, inverse_of: :measure, dependent: :destroy
   has_many :sdgtarget_measures, inverse_of: :measure, dependent: :destroy

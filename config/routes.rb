@@ -1,12 +1,12 @@
 # frozen_string_literal: true
+
 Rails.application.routes.draw do
-  mount_devise_token_auth_for 'User', at: 'auth'
+  mount_devise_token_auth_for "User", at: "auth"
 
   resources :taxonomies do
     resources :categories
   end
-  get 'static_pages/home'
-  get 's3/sign'
+  get "static_pages/home"
 
   resources :measure_categories
   resources :sdgtarget_categories
@@ -47,7 +47,7 @@ Rails.application.routes.draw do
   resources :recommendation_recommendations, except: [:update]
   resources :recommendation_indicators, except: [:update]
 
-  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
-  root to: 'static_pages#home'
+  root to: "static_pages#home"
 end

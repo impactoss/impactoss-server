@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class RecommendationsController < ApplicationController
   before_action :set_and_authorize_recommendation, only: [:show, :update, :destroy]
 
@@ -33,7 +34,7 @@ class RecommendationsController < ApplicationController
     if params[:recommendation][:updated_at] && DateTime.parse(params[:recommendation][:updated_at]).to_i != @recommendation.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    if @recommendation.update_attributes!(permitted_attributes(@recommendation))
+    if @recommendation.update!(permitted_attributes(@recommendation))
       set_and_authorize_recommendation
       render json: serialize(@recommendation)
     end

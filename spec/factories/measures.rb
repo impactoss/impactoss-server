@@ -1,8 +1,8 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :measure do
     title { Faker::Creature::Cat.registry }
     description { Faker::Beer.name }
-    target_date { Faker::Date.forward(450) }
+    target_date { Faker::Date.forward(days: 450) }
 
     trait :without_recommendation do
       recommendations { [] }

@@ -1,22 +1,13 @@
 ![IMPACT OSS](header.png?raw=true "IMPACT OSS")
 
-# IMPACT OSS server application
+# Marine:DeFRAG server application based on IMPACT OSS
 
-This is the source code for the server-side application (the "API") of IMPACT OSS.
+This is the source code for the server-side application (the "API") of Marine:DeFRAG.
 
 It is a **Rails 5.0.1 application** and is a thin server that is responsible for:
 * database management and access via an API (Application Programming Interface)
 * user authentication
 * automated email reminders
-
-##### IMPACT OSS client application
-
-It complements the IMPACT OSS client-side application (the "UI") that you can find here: https://github.com/impactoss/impactoss-client
-
-The client is a React JavaScript application and is a single page application that is responsible for:
-* public User Interface (UI)
-* admin UI
-
 ---
 
 ## About IMPACT OSS
@@ -27,12 +18,7 @@ The IMPACT OSS project is maintained by the Impact Open Source Software Trust. T
 
 ---
 
-## Documentation
-
-#### Configuration & Installation
-
-The IMPACT OSS installation guide provides detailed instructions on how to configure and install both server and client applications:
-https://install-guide.impactoss.org/
+## OUTDATED: Documentation
 
 #### How to set up a development environment
 

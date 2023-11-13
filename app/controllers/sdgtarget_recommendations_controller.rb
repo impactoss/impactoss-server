@@ -29,7 +29,7 @@ class SdgtargetRecommendationsController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: @sdgtarget_recommendation if @sdgtarget_recommendation.update_attributes!(permitted_attributes(@sdgtarget_recommendation))
+    render json: @sdgtarget_recommendation if @sdgtarget_recommendation.update!(permitted_attributes(@sdgtarget_recommendation))
   end
 
   # DELETE /sdgtarget_categories/1
