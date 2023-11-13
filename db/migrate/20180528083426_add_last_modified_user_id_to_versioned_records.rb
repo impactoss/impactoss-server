@@ -29,7 +29,6 @@ class AddLastModifiedUserIdToVersionedRecords < ActiveRecord::Migration[5.0]
     Page,
     ProgressReport,
     Recommendation,
-    Sdgtarget,
     Taxonomy,
     User,
     UserRole
