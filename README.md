@@ -4,7 +4,7 @@
 
 This is the source code for the server-side application (the "API") of IMPACT OSS
 
-It is a **Rails 6.1.4 application** and is a thin server that is responsible for:
+It is a **Rails 6.1.7 application** and is a thin server that is responsible for:
 * database management and access via an API (Application Programming Interface)
 * user authentication
 * automated email reminders
@@ -26,7 +26,7 @@ The IMPACT OSS project is maintained by the Impact Open Source Software Trust. T
 
 This project requires:
 
-* Ruby 3.0.2, preferably managed using [rbenv][]
+* Ruby 3.1.2, preferably managed using [rbenv][]
 * PhantomJS (in order to use the [poltergeist][] gem)
 * PostgreSQL must be installed and accepting connections
 
