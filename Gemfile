@@ -20,7 +20,7 @@ gem "pg", "~> 1.2"
 gem "pundit"
 gem "rack-cors", require: "rack/cors"
 gem "rails", "~> 6.0"
-gem "sass-rails", "~> 5.0"
+gem "sass-rails", "~> 6.0"
 gem "secure_headers", ">= 3.0"
 
 group :production, :staging do
@@ -39,7 +39,7 @@ group :development do
   gem "spring"
   gem "standard"
   gem "thin", require: false
-  gem "web-console", "~> 2.0"
+  gem "web-console", "~> 4.1"
 end
 
 group :development, :test do
@@ -47,6 +47,8 @@ group :development, :test do
   gem "brakeman"
   gem "byebug"
   gem "dotenv-rails"
+  gem "factory_bot_rails", "~> 6.0"
+  gem "faker"
   gem "i18n-tasks", "~> 0.9.6"
   gem "rspec-rails"
 end
@@ -55,8 +57,6 @@ group :test do
   gem "capybara"
   gem "connection_pool"
   gem "database_cleaner"
-  gem "factory_bot_rails", "~> 6.0"
-  gem "faker"
   gem "launchy"
   gem "poltergeist"
   gem "pry-rails"
