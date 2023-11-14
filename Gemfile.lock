@@ -385,7 +385,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers
   awesome_print
   batch_api
   bcrypt (~> 3.1.7)
@@ -417,7 +416,6 @@ DEPENDENCIES
   overcommit
   paper_trail
   pg (~> 1.2)
-  poltergeist
   pry-rails
   puma (~> 5.5)
   pundit
