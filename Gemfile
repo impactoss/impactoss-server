@@ -3,7 +3,6 @@
 source "https://rubygems.org"
 ruby File.read(File.expand_path(".ruby-version", __dir__)).strip
 
-gem "active_model_serializers"
 gem "batch_api"
 gem "bcrypt", "~> 3.1.7"
 gem "clockwork"
@@ -14,7 +13,6 @@ gem "jquery-rails"
 gem "jsonapi-serializer"
 gem "kaminari"
 gem "net-smtp"
-gem "oj"
 gem "paper_trail"
 gem "pg", "~> 1.2"
 gem "pundit"
@@ -24,8 +22,6 @@ gem "sass-rails", "~> 6.0"
 gem "secure_headers", ">= 3.0"
 
 group :production, :staging do
-  gem "unicorn"
-  gem "unicorn-worker-killer"
   gem "net-pop"
   gem "net-imap"
 end
@@ -60,7 +56,6 @@ group :test do
   gem "connection_pool"
   gem "database_cleaner"
   gem "launchy"
-  gem "poltergeist"
   gem "pry-rails"
   gem "shoulda-matchers"
   gem "timecop"
