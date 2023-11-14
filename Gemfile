@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
-ruby File.read(File.expand_path(".ruby-version", __dir__)).strip
+ruby file: ".ruby-version"
 
+gem "active_model_serializers"
 gem "batch_api"
 gem "bcrypt", "~> 3.1.7"
 gem "clockwork"
@@ -25,6 +26,8 @@ gem "secure_headers", ">= 3.0"
 group :production, :staging do
   gem "unicorn"
   gem "unicorn-worker-killer"
+  gem "net-pop"
+  gem "net-imap"
 end
 
 group :development do
