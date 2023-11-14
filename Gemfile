@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
-ruby file: ".ruby-version"
+ruby File.read(File.expand_path(".ruby-version", __dir__)).strip
 
 gem "active_model_serializers"
 gem "batch_api"
