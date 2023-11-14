@@ -81,7 +81,7 @@ class Seeds
       )
     FrameworkTaxonomy.create!(
       framework: hr,
-      taxonomy: persons,
+      taxonomy: country,
     )
 
     # Global taxonomy
