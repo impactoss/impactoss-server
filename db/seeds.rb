@@ -152,14 +152,27 @@ class Seeds
         allow_multiple: true,
         priority: 6,
       )
+    # Country specific taxonomy
+    progress = Taxonomy.create!(
+        title: "Progress status",
+        is_smart: false,
+        tags_measures: true,
+        tags_users: false,
+        allow_multiple: false,
+        priority: 6,
+      )
 
-	# Set up categories
-	# SMART categories
-	smart.categories.create!(title: "Specific")
-	smart.categories.create!(title: "Measurable")
-	smart.categories.create!(title: "Assignable")
-	smart.categories.create!(title: "Result-oriented")
-	smart.categories.create!(title: "Timebound")
+    	# Set up categories
+    	# SMART categories
+    	smart.categories.create!(title: "Specific")
+    	smart.categories.create!(title: "Measurable")
+    	smart.categories.create!(title: "Assignable")
+    	smart.categories.create!(title: "Result-oriented")
+    	smart.categories.create!(title: "Timebound")
+
+    	progress.categories.create!(title: "In preparation")
+    	progress.categories.create!(title: "In progress")
+    	progress.categories.create!(title: "Completed")
 
       # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
       body.categories.create!(
