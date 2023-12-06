@@ -36,7 +36,7 @@ class Seeds
       )
 
     # Set up taxonomies
-    # Global taxonomy
+    # 1. Global taxonomy
     body = Taxonomy.create!(
         framework:hr,
         title: "Human rights body",
@@ -52,7 +52,7 @@ class Seeds
       framework:hr,
       taxonomy:body,
     )
-    # Global taxonomy
+    # 2. Global taxonomy
     cycle = Taxonomy.create!(
         framework:hr,
         title: "Cycle",
@@ -69,14 +69,14 @@ class Seeds
       framework: hr,
       taxonomy: cycle,
     )
-    # Global taxonomy
+    # 3. Global taxonomy
     country = Taxonomy.create!(
         framework: hr,
         title: "Recommending state",
         tags_measures: false,
         tags_users: false,
         allow_multiple: false,
-        priority: 4,
+        priority: 2,
         is_smart: false
       )
     FrameworkTaxonomy.create!(
@@ -84,7 +84,7 @@ class Seeds
       taxonomy: country,
     )
 
-    # Global taxonomy
+    # 4. Global taxonomy
     issue = Taxonomy.create!(
         framework: hr,
         title: "Human rights issue",
@@ -99,7 +99,7 @@ class Seeds
       taxonomy: issue,
     )
 
-    # Global taxonomy
+    # 5. Global taxonomy
     persons = Taxonomy.create!(
         framework:hr,
         title: "Affected persons",
@@ -113,7 +113,7 @@ class Seeds
       framework: hr,
       taxonomy: persons,
     )
-    # Country specific taxonomy
+    # 6. Country specific taxonomy
     cluster = Taxonomy.create!(
         title: "Thematic cluster",
         framework: hr,
@@ -129,7 +129,7 @@ class Seeds
       taxonomy: cluster,
     )
 
-    # Country specific taxonomy
+    # 7. Country specific taxonomy
     org = Taxonomy.create!(
         title: "Organisation",
         tags_measures: true,
@@ -143,23 +143,23 @@ class Seeds
       framework: hr,
       taxonomy: org,
     )
-    # Country specific taxonomy
+    # 8. Country specific taxonomy
     smart = Taxonomy.create!(
         title: "SMART criteria",
         is_smart: true,
         tags_measures: true,
         tags_users: false,
         allow_multiple: true,
-        priority: 6,
+        priority: 8,
       )
-    # Country specific taxonomy
+    # 9. Country specific taxonomy
     progress = Taxonomy.create!(
         title: "Progress status",
         is_smart: false,
         tags_measures: true,
         tags_users: false,
         allow_multiple: false,
-        priority: 6,
+        priority: 7,
       )
 
     	# Set up categories
