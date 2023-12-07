@@ -1,4 +1,9 @@
-Sadata Progress Report Due
+Progress Report Overdue for <%= @indicator.title %>
 
 Hi <%= @manager_name %>,
-You have a progress report due for <%= @indicator.title %> on <%= @due_date.due_date %>
+
+A progress report is due on <%= @due_date %> for an indicator you were assigned to.
+
+Visit the indicator page to submit your progress report: <%= @client_url %>/indicators/<%= @indicator.id %>
+
+Thank you!
