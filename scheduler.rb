@@ -3,7 +3,7 @@ require File.expand_path('../config/environment', __FILE__)
 require 'clockwork'
 
 module Clockwork
-  every(1.week, 'Send Due Emails', at: 'Monday 08:00') do
+  every(1.day, 'Send Due Emails', at: '08:00') do
     SendDueEmailsJob.perform_now()
   end
 
