@@ -8,10 +8,10 @@ en:
       sub: Integrated Planning and Management of Actions
   due_date_mailer:
     category_due:
-      subject: Indicator progress report due for your category
+      subject: Progress report is due for your human rights body
     category_overdue:
-      subject: Indicator progress reports are overdue for your category
+      subject: Progress report is overdue for your human rights body
     due:
-      subject: Indicator progress report is due
+      subject: Progress report is due
     overdue:
-      subject: Indicator progress report is overdue
+      subject: Progress report is overdue
