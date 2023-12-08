@@ -9,7 +9,7 @@ gem "clockwork"
 gem "devise"
 gem "devise_token_auth"
 gem "foundation-rails"
-gem 'fog-aws'
+gem "fog-aws"
 gem "jquery-rails"
 gem "jsonapi-serializer"
 gem "kaminari"

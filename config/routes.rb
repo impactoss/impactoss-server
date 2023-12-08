@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     resources :categories
   end
   get "static_pages/home"
-  get 's3/sign'
+  get "s3/sign"
 
   resources :measure_categories
   resources :sdgtarget_categories
