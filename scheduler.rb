@@ -4,7 +4,7 @@ require "clockwork"
 
 module Clockwork
   every(1.day, "Send Due Emails", at: "08:00") do
-    SendDueEmailsJob.perform_now()
+    SendDueEmailsJob.perform_now
   end
 
   every(1.day, "Send Overdue Emails", at: "08:00") do
