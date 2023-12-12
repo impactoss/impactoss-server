@@ -69,17 +69,14 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Production MailGun SMTP config
+  # Production SMTP config
   if ENV.fetch("EMAIL_ENABLED", false)
-    config.action_mailer.perform_deliveries = false
-    config.action_mailer.raise_delivery_errors = false
-  else
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      port: ENV["MAILGUN_SMTP_PORT"],
-      address: ENV["MAILGUN_SMTP_SERVER"],
-      user_name: ENV["MAILGUN_SMTP_LOGIN"],
-      password: ENV["MAILGUN_SMTP_PASSWORD"],
+      port: ENV["SMTP_PORT"],
+      address: ENV["SMTP_SERVER"],
+      user_name: ENV["SMTP_LOGIN"],
+      password: ENV["SMTP_PASSWORD"],
       domain: "impactoss.org",
       authentication: :plain
     }
@@ -89,6 +86,9 @@ Rails.application.configure do
       protocol: ENV["ACTION_MAILER_PROTOCOL"] || "https"
     }
     config.action_mailer.asset_host = ENV["ACTION_MAILER_ASSET_HOST"] || "https://impactoss.org"
+  else
+    config.action_mailer.perform_deliveries = false
+    config.action_mailer.raise_delivery_errors = false
   end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
