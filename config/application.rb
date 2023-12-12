@@ -43,5 +43,8 @@ module HumanRightsNationalReporting
     config.active_record.belongs_to_required_by_default = true
 
     config.load_defaults = true
+
+    config.i18n.locale = ENV.fetch("LOCALE", "en-NZ")
+    config.i18n.fallbacks = true
   end
 end
