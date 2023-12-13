@@ -7,6 +7,7 @@ class MeasurePolicy < ApplicationPolicy
       :draft,
       :indicator_summary,
       :outcome,
+      :reference,
       :target_date_comment,
       :target_date,
       :title,
