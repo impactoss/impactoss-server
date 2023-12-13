@@ -7,7 +7,7 @@ class DueDateMailer < ApplicationMailer
   def due(due_date)
     return unless due_date.manager_email
     @indicator = due_date.indicator
-    @due_date = due_date.due_date
+    @due_date = I18n.l(due_date.due_date)
     @manager_name = due_date.manager_name
     @client_url = ENV["CLIENT_URL"] || "https://undefined.client.url"
 
@@ -18,7 +18,7 @@ class DueDateMailer < ApplicationMailer
     return unless category.manager_email
     @indicator = due_date.indicator
     @category = category
-    @due_date = due_date.due_date
+    @due_date = I18n.l(due_date.due_date)
     @client_url = ENV["CLIENT_URL"] || "https://undefined.client.url"
 
     mail to: category.manager_email, subject: I18n.t("due_date_mailer.category_due.subject")
@@ -32,7 +32,7 @@ class DueDateMailer < ApplicationMailer
   def overdue(due_date)
     return unless due_date.manager_email
     @indicator = due_date.indicator
-    @due_date = due_date.due_date
+    @due_date = I18n.l(due_date.due_date)
     @manager_name = due_date.manager_name
     @client_url = ENV["CLIENT_URL"] || "https://undefined.client.url"
 
@@ -43,7 +43,7 @@ class DueDateMailer < ApplicationMailer
     return unless category.manager_email
     @indicator = due_date.indicator
     @category = category
-    @due_date = due_date.due_date
+    @due_date = I18n.l(due_date.due_date)
     @client_url = ENV["CLIENT_URL"] || "https://undefined.client.url"
 
     mail to: category.manager_email, subject: I18n.t("due_date_mailer.category_overdue.subject")
