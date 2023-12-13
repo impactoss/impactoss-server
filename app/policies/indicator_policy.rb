@@ -2,17 +2,21 @@
 
 class IndicatorPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title,
+    [
       :description,
       :draft,
-      :manager_id,
-      :frequency_months,
-      :start_date,
-      :repeat,
       :end_date,
+      :frequency_months,
+      :manager_id,
       :reference,
-      measure_indicators_attributes: [:measure_id,
-        measure_attributes: [:id, :title, :description, :target_date, :draft]]]
+      :repeat,
+      :start_date,
+      :title,
+      measure_indicators_attributes: [
+        :measure_id,
+        measure_attributes: [:id, :title, :description, :target_date, :draft]
+      ]
+    ]
   end
 
   class Scope < Scope
