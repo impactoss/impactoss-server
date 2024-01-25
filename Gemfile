@@ -3,6 +3,7 @@
 source "https://rubygems.org"
 ruby File.read(File.expand_path(".ruby-version", __dir__)).strip
 
+gem "omniauth-azure-activedirectory-v2", "~> 2.1.0"
 gem "batch_api"
 gem "bcrypt", "~> 3.1.7"
 gem "clockwork"
