@@ -247,12 +247,6 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  config.omniauth :azure_activedirectory_v2, {
-    client_id: ENV["AZURE_CLIENT_ID"],
-    client_secret: ENV["AZURE_CLIENT_SECRET"],
-    provider_ignores_state: ENV.fetch("AZURE_PROVIDER_IGNORES_STATE", "false") == "true",
-    tenant_id: ENV["AZURE_TENANT_ID"]
-  }
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
