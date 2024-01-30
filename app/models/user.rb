@@ -20,6 +20,8 @@ class User < VersionedRecord
   has_many :categories, through: :user_categories
   has_many :bookmarks
 
+  belongs_to :relationship_updated_by, class_name: "User", required: false
+
   validates :email, presence: true
   validates :name, presence: true
 

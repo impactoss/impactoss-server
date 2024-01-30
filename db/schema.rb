@@ -97,6 +97,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.string "reference"
     t.integer "last_modified_user_id"
     t.datetime "relationship_updated_at", precision: 6
+    t.bigint "relationship_updated_by_id"
     t.index ["created_at"], name: "index_indicators_on_created_at"
     t.index ["draft"], name: "index_indicators_on_draft"
     t.index ["manager_id"], name: "index_indicators_on_manager_id"
@@ -129,6 +130,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "last_modified_user_id"
     t.string "reference"
     t.datetime "relationship_updated_at", precision: 6
+    t.bigint "relationship_updated_by_id"
     t.index ["draft"], name: "index_measures_on_draft"
   end
 
@@ -315,6 +317,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "last_modified_user_id"
     t.boolean "allow_password_change", default: true
     t.datetime "relationship_updated_at", precision: 6
+    t.bigint "relationship_updated_by_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -333,10 +336,13 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
   add_foreign_key "framework_frameworks", "frameworks", column: "other_framework_id"
   add_foreign_key "framework_taxonomies", "frameworks"
   add_foreign_key "framework_taxonomies", "taxonomies"
+  add_foreign_key "indicators", "users", column: "relationship_updated_by_id"
+  add_foreign_key "measures", "users", column: "relationship_updated_by_id"
   add_foreign_key "recommendation_indicators", "indicators"
   add_foreign_key "recommendation_indicators", "recommendations"
   add_foreign_key "recommendation_recommendations", "recommendations"
   add_foreign_key "recommendation_recommendations", "recommendations", column: "other_recommendation_id"
   add_foreign_key "recommendations", "frameworks"
   add_foreign_key "taxonomies", "frameworks"
+  add_foreign_key "users", "users", column: "relationship_updated_by_id"
 end
