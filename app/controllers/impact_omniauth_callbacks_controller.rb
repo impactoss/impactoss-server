@@ -8,7 +8,9 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
   def get_resource_from_auth_hash
     super
 
-    @resource.roles = Role.where(name: azure_role_names) || []
+    @resource.roles = Role.where(name: azure_role_names) || [] if @resource
+
+    @resource
   end
 
   private
