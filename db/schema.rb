@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_12_214117) do
+ActiveRecord::Schema.define(version: 2024_02_10_041747) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -233,6 +233,8 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
     t.integer "updated_by_id"
     t.integer "framework_id"
     t.integer "created_by_id"
+    t.bigint "relationship_updated_by_id"
+    t.datetime "relationship_updated_at", precision: 6
     t.index ["draft"], name: "index_recommendations_on_draft"
     t.index ["framework_id"], name: "index_recommendations_on_framework_id"
   end
@@ -390,6 +392,7 @@ ActiveRecord::Schema.define(version: 2023_12_12_214117) do
   add_foreign_key "recommendation_recommendations", "recommendations", column: "other_recommendation_id"
   add_foreign_key "recommendation_recommendations", "users", column: "updated_by_id"
   add_foreign_key "recommendations", "frameworks"
+  add_foreign_key "recommendations", "users", column: "relationship_updated_by_id"
   add_foreign_key "taxonomies", "frameworks"
   add_foreign_key "user_categories", "users", column: "updated_by_id"
   add_foreign_key "users", "users", column: "relationship_updated_by_id"
