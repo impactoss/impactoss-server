@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
-ruby File.read(File.expand_path(".ruby-version", __dir__)).strip
+ruby file: ".ruby-version"
 
 gem "batch_api"
 gem "bcrypt", "~> 3.1.7"
 gem "clockwork"
 gem "devise"
-gem "devise_token_auth"
+gem "devise_token_auth", "~> 1.2"
+gem "omniauth-azure-activedirectory-v2", "~> 2.1.0"
 gem "foundation-rails"
 gem "fog-aws"
 gem "jquery-rails"
