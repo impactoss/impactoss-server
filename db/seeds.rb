@@ -15,7 +15,7 @@ class Seeds
   private
 
   def run_env_seeds!
-    send("#{Rails.env}_seeds!")
+    send(:"#{Rails.env}_seeds!")
   rescue NameError
     log "Seeds for #{Rails.env} not defined, skipping.", level: :warn
   end
@@ -1529,7 +1529,7 @@ class Seeds
   end
 
   def development_seeds!
-    return unless User.count.zero?
+    nil unless User.count.zero?
   end
 
   def log(msg, level: :info)
