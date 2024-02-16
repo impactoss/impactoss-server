@@ -164,11 +164,11 @@ class Seeds
 
     # Set up categories
     # SMART categories
-    smart.categories.create!(title: "Specific")
-    smart.categories.create!(title: "Measurable")
-    smart.categories.create!(title: "Assignable")
-    smart.categories.create!(title: "Result-oriented")
-    smart.categories.create!(title: "Timebound")
+    smart.categories.create!(title: "Specific", short_title: "S")
+    smart.categories.create!(title: "Measurable", short_title: "M")
+    smart.categories.create!(title: "Assignable", short_title: "A")
+    smart.categories.create!(title: "Result-oriented", short_title: "R")
+    smart.categories.create!(title: "Timebound", short_title: "T")
 
     progress.categories.create!(title: "In preparation")
     progress.categories.create!(title: "In progress")
