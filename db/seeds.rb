@@ -239,64 +239,64 @@ class Seeds
 
     # Thematic Clusters
     cluster.categories.create!(
-    	title: "CAT Ratification",
-    	short_title: "CAT"
+      title: "CAT Ratification",
+      short_title: "CAT"
     )
     cluster.categories.create!(
-    	title: "Climate change",
-    	short_title: "Climate"
+      title: "Climate change",
+      short_title: "Climate"
     )
     cluster.categories.create!(
-    	title: "Combat sexual exploitation and abuse",
-    	short_title: "Abuse"
+      title: "Combat sexual exploitation and abuse",
+      short_title: "Abuse"
     )
     cluster.categories.create!(
-    	title: "Combat violence against children",
-    	short_title: "Children"
+      title: "Combat violence against children",
+      short_title: "Children"
     )
     cluster.categories.create!(
-    	title: "Combat violence against women",
-    	short_title: "Women"
+      title: "Combat violence against women",
+      short_title: "Women"
     )
     cluster.categories.create!(
-    	title: "Countering violent extremism/terrorism",
-    	short_title: "Extremism/terrorism"
+      title: "Countering violent extremism/terrorism",
+      short_title: "Extremism/terrorism"
     )
     cluster.categories.create!(
-    	title: "Education",
-    	short_title: "Education"
+      title: "Education",
+      short_title: "Education"
     )
     cluster.categories.create!(
-    	title: "Equality and non-discrimination in the criminal justice system",
-    	short_title: "Equality"
+      title: "Equality and non-discrimination in the criminal justice system",
+      short_title: "Equality"
     )
     cluster.categories.create!(
-    	title: "Families and young persons",
-    	short_title: "Families"
+      title: "Families and young persons",
+      short_title: "Families"
     )
     cluster.categories.create!(
-    	title: "Gender equality",
-    	short_title: "Gender"
+      title: "Gender equality",
+      short_title: "Gender"
     )
     cluster.categories.create!(
-    	title: "Poverty",
-    	short_title: "Poverty"
+      title: "Poverty",
+      short_title: "Poverty"
     )
     cluster.categories.create!(
-    	title: "Reduce child poverty",
-    	short_title: "Child poverty"
+      title: "Reduce child poverty",
+      short_title: "Child poverty"
     )
     cluster.categories.create!(
-    	title: "Sea level rise",
-    	short_title: "Sea level rise"
+      title: "Sea level rise",
+      short_title: "Sea level rise"
     )
     cluster.categories.create!(
-    	title: "Strengthen institutional capacity to serve the public interest with competence and justice",
-    	short_title: "Inst. capacity"
+      title: "Strengthen institutional capacity to serve the public interest with competence and justice",
+      short_title: "Inst. capacity"
     )
     cluster.categories.create!(
-    	title: "Violence, abuse and neglect",
-    	short_title: "Violence"
+      title: "Violence, abuse and neglect",
+      short_title: "Violence"
     )
 
     # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
