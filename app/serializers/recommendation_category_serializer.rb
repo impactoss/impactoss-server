@@ -1,5 +1,5 @@
 class RecommendationCategorySerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :recommendation_id, :category_id
 

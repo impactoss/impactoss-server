@@ -17,6 +17,8 @@ class Recommendation < VersionedRecord
 
   belongs_to :framework, optional: true
 
+  belongs_to :relationship_updated_by, class_name: "User", required: false
+
   accepts_nested_attributes_for :recommendation_categories
 
   validates :title, presence: true

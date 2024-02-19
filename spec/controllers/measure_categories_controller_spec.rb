@@ -19,7 +19,7 @@ RSpec.describe MeasureCategoriesController, type: :controller do
 
       it "shows the measure_category" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(measure_category.id)
+        expect(json.dig("data", "id").to_i).to eq(measure_category.id)
       end
     end
   end
@@ -27,7 +27,9 @@ RSpec.describe MeasureCategoriesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a measure_category" do
-        post :create, format: :json, params: {measure_category: {measure_id: 1, category_id: 1}}
+        post :create, format: :json, params: {
+          measure_category: {measure_id: 1, category_id: 1}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -43,6 +45,7 @@ RSpec.describe MeasureCategoriesController, type: :controller do
         post :create,
           format: :json,
           params: {
+
             measure_category: {
               measure_id: measure.id,
               category_id: category.id
@@ -67,8 +70,17 @@ RSpec.describe MeasureCategoriesController, type: :controller do
 
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {measure_category: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          measure_category: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
+      end
+
+      it "will record what manager created the measure category", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
       end
     end
   end
