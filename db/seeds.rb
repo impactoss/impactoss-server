@@ -164,577 +164,483 @@ class Seeds
 
     # Set up categories
     # SMART categories
-    smart.categories.create!(title: "Specific", short_title: "S")
-    smart.categories.create!(title: "Measurable", short_title: "M")
-    smart.categories.create!(title: "Assignable", short_title: "A")
-    smart.categories.create!(title: "Result-oriented", short_title: "R")
-    smart.categories.create!(title: "Timebound", short_title: "T")
+    smart.categories.create!(title: "Specific", short_title: "S", reference: "1")
+    smart.categories.create!(title: "Measurable", short_title: "M", reference: "2")
+    smart.categories.create!(title: "Assignable", short_title: "A", reference: "3")
+    smart.categories.create!(title: "Result-oriented", short_title: "R", reference: "4")
+    smart.categories.create!(title: "Timebound", short_title: "T", reference: "5")
 
-    progress.categories.create!(title: "In preparation")
-    progress.categories.create!(title: "In progress")
-    progress.categories.create!(title: "Completed")
+    progress.categories.create!(title: "In preparation", reference: "1")
+    progress.categories.create!(title: "In progress", reference: "2")
+    progress.categories.create!(title: "Completed", reference: "3")
 
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
     body.categories.create!(
       title: "Universal Periodic Review",
-      short_title: "UPR",
-      description: "",
-      url: ""
+      short_title: "UPR"
     )
     body.categories.create!(
-      title: "Human Rights Committee",
-      short_title: "CCPR",
-      description: "",
-      url: ""
+      title: "International Covenant on Civil and Political Rights",
+      short_title: "ICCPR"
     )
     body.categories.create!(
-      title: "Committee on Economic, Social and Cultural Rights",
-      short_title: "CESCR",
-      description: "",
-      url: ""
+      title: "International Covenant on Economic Social and Cultural Rights",
+      short_title: "ICESCR"
     )
     body.categories.create!(
-      title: "Committee on the Elimination of Racial Discrimination",
-      short_title: "CERD",
-      description: "",
-      url: ""
+      title: "Convention Against Torture and Other Cruel, Inhuman or Degrading Treatment or Punishment",
+      short_title: "CAT"
     )
     body.categories.create!(
-      title: "Committee on the Elimination of Discrimination against Women",
-      short_title: "CEDAW",
-      description: "",
-      url: ""
+      title: "Convention for the Elimination of All Forms of Racial Discrimination",
+      short_title: "CERD"
     )
     body.categories.create!(
-      title: "Committee against Torture",
-      short_title: "CAT",
-      description: "",
-      url: ""
+      title: "Convention for the Elimination of All Forms of Discrimination Against Women",
+      short_title: "CEDAW"
     )
     body.categories.create!(
-      title: "Subcommittee on Prevention of Torture",
-      short_title: "SPT",
-      description: "",
-      url: ""
+      title: "Convention on the Rights of the Child",
+      short_title: "CRC"
     )
     body.categories.create!(
-      title: "Committee on the Rights of the Child",
-      short_title: "CRC",
-      description: "",
-      url: ""
+      title: "Convention on the Rights of Persons with Disabilities",
+      short_title: "CRPD"
     )
-    body.categories.create!(
-      title: "Committee on Migrant Workers",
-      short_title: "CMW",
-      description: "",
-      url: ""
+    # Human Rights Issues
+    org.categories.create!(
+      title: "Ministry of Justice",
+      short_title: "MOJ"
     )
-    body.categories.create!(
-      title: "Committee on the Rights of Persons with Disabilities",
-      short_title: "CRPD",
-      description: "",
-      url: ""
+    org.categories.create!(
+      title: "Ministry of Foreign Affairs and Trade",
+      short_title: "MFAT"
     )
-    body.categories.create!(
-      title: "Committee on Enforced Disappearances",
-      short_title: "CED",
-      description: "",
-      url: ""
+    org.categories.create!(
+      title: "Ministry for Women",
+      short_title: "MfW"
+    )
+    org.categories.create!(
+      title: "Ministry of Social Development",
+      short_title: "MSD"
+    )
+    org.categories.create!(
+      title: "Te Whaikaha Ministry of Disabled People",
+      short_title: "Whaikaha"
+    )
+    org.categories.create!(
+      title: "Te Puni Kokiri Ministry of Maori Development",
+      short_title: "TPK"
+    )
+    org.categories.create!(
+      title: "Statistics New Zealand",
+      short_title: "Stats NZ"
+    )
+
+    # Thematic Clusters
+    cluster.categories.create!(
+      title: "CAT Ratification",
+      short_title: "CAT"
+    )
+    cluster.categories.create!(
+      title: "Climate change",
+      short_title: "Climate"
+    )
+    cluster.categories.create!(
+      title: "Combat sexual exploitation and abuse",
+      short_title: "Abuse"
+    )
+    cluster.categories.create!(
+      title: "Combat violence against children",
+      short_title: "Children"
+    )
+    cluster.categories.create!(
+      title: "Combat violence against women",
+      short_title: "Women"
+    )
+    cluster.categories.create!(
+      title: "Countering violent extremism/terrorism",
+      short_title: "Extremism/terrorism"
+    )
+    cluster.categories.create!(
+      title: "Education",
+      short_title: "Education"
+    )
+    cluster.categories.create!(
+      title: "Equality and non-discrimination in the criminal justice system",
+      short_title: "Equality"
+    )
+    cluster.categories.create!(
+      title: "Families and young persons",
+      short_title: "Families"
+    )
+    cluster.categories.create!(
+      title: "Gender equality",
+      short_title: "Gender"
+    )
+    cluster.categories.create!(
+      title: "Poverty",
+      short_title: "Poverty"
+    )
+    cluster.categories.create!(
+      title: "Reduce child poverty",
+      short_title: "Child poverty"
+    )
+    cluster.categories.create!(
+      title: "Sea level rise",
+      short_title: "Sea level rise"
+    )
+    cluster.categories.create!(
+      title: "Strengthen institutional capacity to serve the public interest with competence and justice",
+      short_title: "Inst. capacity"
+    )
+    cluster.categories.create!(
+      title: "Violence, abuse and neglect",
+      short_title: "Violence"
     )
 
     # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
     # TODO level 2 and 3 human rights
     issue.categories.create!(
       title: "Scope of international obligations",
-      short_title: "Int. obligations",
-      reference: "A1",
-      description: "",
-      url: ""
+      short_title: "Intl. obligations",
+      reference: "A1"
     )
     issue.categories.create!(
       title: "Cooperation with human rights mechanisms and institutions",
       short_title: "Cooperation ",
-      reference: "A2",
-      description: "",
-      url: ""
+      reference: "A2"
     )
     issue.categories.create!(
-      title: "Inter-State cooperation & development assistance",
+      title: "Inter-State cooperation and development assistance",
       short_title: "Inter-State cooperation",
-      reference: "A3",
-      description: "",
-      url: ""
+      reference: "A3"
     )
     issue.categories.create!(
       title: "Legal, institutional and policy framework",
       short_title: "Framework",
-      reference: "A4",
-      description: "",
-      url: ""
+      reference: "A4"
     )
     issue.categories.create!(
       title: "Human rights education, trainings and awareness raising",
       short_title: "HR education",
-      reference: "A5",
-      description: "",
-      url: ""
+      reference: "A5"
     )
     issue.categories.create!(
       title: "Context, statistics, budget, civil society",
       short_title: "Context",
-      reference: "A6",
-      description: "",
-      url: ""
+      reference: "A6"
     )
     issue.categories.create!(
       title: "International criminal and humanitarian law",
-      short_title: "Int. law",
-      reference: "B1",
-      description: "",
-      url: ""
+      short_title: "Intl. law",
+      reference: "B1"
     )
     issue.categories.create!(
       title: "Right to self-determination",
       short_title: "Self-determination",
-      reference: "B2",
-      description: "",
-      url: ""
+      reference: "B2"
     )
     issue.categories.create!(
       title: "Equality and non-discrimination",
       short_title: "Equality",
-      reference: "B3",
-      description: "",
-      url: ""
+      reference: "B3"
     )
     issue.categories.create!(
       title: "Right to development",
       short_title: "Development",
-      reference: "B4",
-      description: "",
-      url: ""
+      reference: "B4"
     )
     issue.categories.create!(
       title: "Right to a remedy",
       short_title: "Remedy",
-      reference: "B5",
-      description: "",
-      url: ""
+      reference: "B5"
     )
     issue.categories.create!(
-      title: "Business & Human Rights",
+      title: "Business and human rights",
       short_title: "Business",
-      reference: "B6",
-      description: "",
-      url: ""
+      reference: "B6"
     )
     issue.categories.create!(
       title: "Human rights and environmental issues",
       short_title: "Environment",
-      reference: "B7",
-      description: "",
-      url: ""
+      reference: "B7"
     )
     issue.categories.create!(
-      title: "Human rights & counter-terrorism",
+      title: "Human rights and counter-terrorism",
       short_title: "Counter-terrorism",
-      reference: "B8",
-      description: "",
-      url: ""
+      reference: "B8"
     )
     issue.categories.create!(
-      title: "Human rights & use of mercenaries",
+      title: "Human rights and use of mercenaries",
       short_title: "Mercenaries",
-      reference: "B9",
-      description: "",
-      url: ""
+      reference: "B9"
     )
     issue.categories.create!(
-      title: "Civil & political rights - general measures of implementation",
+      title: "Civil and political rights - general measures of implementation",
       short_title: "Civil & political",
-      reference: "D1",
-      description: "",
-      url: ""
+      reference: "D1"
     )
     issue.categories.create!(
       title: "Right to physical and moral integrity",
       short_title: "Integrity",
-      reference: "D2",
-      description: "",
-      url: ""
+      reference: "D2"
     )
     issue.categories.create!(
       title: "Liberty and security of the person",
       short_title: "Liberty",
-      reference: "D3",
-      description: "",
-      url: ""
+      reference: "D3"
     )
     issue.categories.create!(
       title: "Fundamental freedoms",
       short_title: "Freedoms",
-      reference: "D4",
-      description: "",
-      url: ""
+      reference: "D4"
     )
     issue.categories.create!(
       title: "Administration of justice",
       short_title: "Justice",
-      reference: "D5",
-      description: "",
-      url: ""
+      reference: "D5"
     )
     issue.categories.create!(
       title: "Rights related to name, identity, nationality",
       short_title: "Identity",
-      reference: "D6",
-      description: "",
-      url: ""
+      reference: "D6"
     )
     issue.categories.create!(
       title: "Right to participation in public affairs and right to vote",
       short_title: "Participation",
-      reference: "D7",
-      description: "",
-      url: ""
+      reference: "D7"
     )
     issue.categories.create!(
-      title: "Rights related to marriage & family",
+      title: "Rights related to marriage and family",
       short_title: "Family",
-      reference: "D8",
-      description: "",
-      url: ""
+      reference: "D8"
     )
     issue.categories.create!(
-      title: "Economic, social & cultural rights - general measures of implementation",
+      title: "Economic, social and cultural rights - general measures of implementation",
       short_title: "Economic, social & cultural",
-      reference: "E1",
-      description: "",
-      url: ""
+      reference: "E1"
     )
     issue.categories.create!(
       title: "Right to an adequate standard of living",
       short_title: "Standard of living",
-      reference: "E2",
-      description: "",
-      url: ""
+      reference: "E2"
     )
     issue.categories.create!(
       title: "Labour rights",
       short_title: "Labour rights",
-      reference: "E3",
-      description: "",
-      url: ""
+      reference: "E3"
     )
     issue.categories.create!(
       title: "Right to health",
       short_title: "Health",
-      reference: "E4",
-      description: "",
-      url: ""
+      reference: "E4"
     )
     issue.categories.create!(
       title: "Right to education",
       short_title: "Education",
-      reference: "E5",
-      description: "",
-      url: ""
+      reference: "E5"
     )
     issue.categories.create!(
-      title: "Rights to protection of property; financial credit",
+      title: "Rights to protection of property, financial credit",
       short_title: "Property",
-      reference: "E6",
-      description: "",
-      url: ""
+      reference: "E6"
     )
     issue.categories.create!(
       title: "Cultural rights",
       short_title: "Cultural rights",
-      reference: "E7",
-      description: "",
-      url: ""
+      reference: "E7"
     )
     issue.categories.create!(
       title: "Women",
       short_title: "Women",
-      reference: "F1",
-      description: "",
-      url: ""
+      reference: "F1"
     )
     issue.categories.create!(
       title: "Children",
       short_title: "Children",
-      reference: "F3",
-      description: "",
-      url: ""
+      reference: "F3"
     )
     issue.categories.create!(
       title: "Persons with disabilities",
-      short_title: "Persons with disabilities",
-      reference: "F4",
-      description: "",
-      url: ""
+      short_title: "Disabilities",
+      reference: "F4"
     )
     issue.categories.create!(
       title: "Members of minorities",
       short_title: "Minorities",
-      reference: "G1",
-      description: "",
-      url: ""
+      reference: "G1"
     )
     issue.categories.create!(
       title: "Indigenous peoples",
-      short_title: "Indigenous peoples",
-      reference: "G3",
-      description: "",
-      url: ""
+      short_title: "Indigenous",
+      reference: "G3"
     )
     issue.categories.create!(
       title: "Migrants",
       short_title: "Migrants",
-      reference: "G4",
-      description: "",
-      url: ""
+      reference: "G4"
     )
     issue.categories.create!(
-      title: "Refugees & asylum seekers",
+      title: "Refugees and asylum seekers",
       short_title: "Refugees",
-      reference: "G5",
-      description: "",
-      url: ""
+      reference: "G5"
     )
     issue.categories.create!(
       title: "Internally displaced persons",
-      short_title: "Internally displaced",
-      reference: "G5",
-      description: "",
-      url: ""
+      short_title: "Displaced",
+      reference: "G5"
     )
     issue.categories.create!(
       title: "Human rights defenders",
-      short_title: "HR defenders",
-      reference: "H1",
-      description: "",
-      url: ""
+      short_title: "HRD",
+      reference: "H1"
     )
 
     # Affected Persons (http://uhri.ohchr.org/search/annotations)
     persons.categories.create!(
       title: "Children",
-      short_title: "Children",
-      description: "",
-      url: ""
+      short_title: "Children"
     )
     persons.categories.create!(
       title: "Children in street situations",
-      short_title: "CSS",
-      description: "",
-      url: ""
+      short_title: "CSS"
     )
     persons.categories.create!(
       title: "Disappeared persons",
-      short_title: "Disappeared",
-      description: "",
-      url: ""
+      short_title: "Disappeared"
     )
     persons.categories.create!(
       title: "Educational staff",
-      short_title: "Edu",
-      description: "",
-      url: ""
+      short_title: "Edu"
     )
     persons.categories.create!(
       title: "General",
-      short_title: "General",
-      description: "",
-      url: ""
+      short_title: "General"
     )
     persons.categories.create!(
       title: "Girls",
-      short_title: "Girls",
-      description: "",
-      url: ""
+      short_title: "Girls"
     )
     persons.categories.create!(
       title: "Human rights defenders",
-      short_title: "HRD",
-      description: "",
-      url: ""
+      short_title: "HRD"
     )
     persons.categories.create!(
       title: "Indigenous peoples",
-      short_title: "Indigenous",
-      description: "",
-      url: ""
+      short_title: "Indigenous"
     )
     persons.categories.create!(
       title: "Internally displaced persons",
-      short_title: "IDP",
-      description: "",
-      url: ""
+      short_title: "IDP"
     )
     persons.categories.create!(
       title: "Judges, lawyers and prosecutors",
-      short_title: "JLP",
-      description: "",
-      url: ""
+      short_title: "JLP"
     )
     persons.categories.create!(
-      title: "Law enforcement / police officials",
-      short_title: "Law",
-      description: "",
-      url: ""
+      title: "Law enforcement/police officials",
+      short_title: "Law"
     )
     persons.categories.create!(
-      title: "Lesbian, gay, bisexual and transgender and intersex persons (LGBTI)",
-      short_title: "LGBTI",
-      description: "",
-      url: ""
+      title: "Lesbian, gay, bisexual and transgender and intersex persons",
+      short_title: "LGBTI"
     )
     persons.categories.create!(
       title: "Media",
-      short_title: "Media",
-      description: "",
-      url: ""
+      short_title: "Media"
     )
     persons.categories.create!(
       title: "Medical staff",
-      short_title: "Medical",
-      description: "",
-      url: ""
+      short_title: "Medical"
     )
     persons.categories.create!(
       title: "Mercenaries",
-      short_title: "Mercenaries",
-      description: "",
-      url: ""
+      short_title: "Mercenaries"
     )
     persons.categories.create!(
       title: "Migrants",
-      short_title: "Migrants",
-      description: "",
-      url: ""
+      short_title: "Migrants"
     )
     persons.categories.create!(
       title: "Military staff",
-      short_title: "Military",
-      description: "",
-      url: ""
+      short_title: "Military"
     )
     persons.categories.create!(
       title: "Minorities / racial, ethnic, linguistic, religious or descent-based groups",
-      short_title: "Minorities",
-      description: "",
-      url: ""
+      short_title: "Minorities"
     )
     persons.categories.create!(
       title: "Non-citizens",
-      short_title: "Non-citizens",
-      description: "",
-      url: ""
+      short_title: "Non-citizens"
     )
     persons.categories.create!(
       title: "Older persons",
-      short_title: "Old",
-      description: "",
-      url: ""
+      short_title: "Older persons"
     )
     persons.categories.create!(
       title: "Persons affected by armed conflict",
-      short_title: "Armed conflict",
-      description: "",
-      url: ""
+      short_title: "Armed conflict"
     )
     persons.categories.create!(
       title: "Persons deprived of their liberty",
-      short_title: "Liberty",
-      description: "",
-      url: ""
+      short_title: "Liberty"
     )
     persons.categories.create!(
       title: "Persons living in poverty",
-      short_title: "Poverty",
-      description: "",
-      url: ""
+      short_title: "Poverty"
     )
     persons.categories.create!(
       title: "Persons living in rural areas",
-      short_title: "Rural",
-      description: "",
-      url: ""
+      short_title: "Rural"
     )
     persons.categories.create!(
       title: "Persons living with HIV/AIDS",
-      short_title: "HIV",
-      description: "",
-      url: ""
+      short_title: "HIV/AIDS"
     )
     persons.categories.create!(
       title: "Persons with disabilities",
-      short_title: "Disabilities",
-      description: "",
-      url: ""
+      short_title: "Disabilities"
     )
     persons.categories.create!(
       title: "Prison officials",
-      short_title: "Prison officials",
-      description: "",
-      url: ""
+      short_title: "Prison officials"
     )
     persons.categories.create!(
       title: "Private security",
-      short_title: "Private security",
-      description: "",
-      url: ""
+      short_title: "Private security"
     )
     persons.categories.create!(
       title: "Public officials",
-      short_title: "Public officials",
-      description: "",
-      url: ""
+      short_title: "Public officials"
     )
-    Category.create!(
-      taxonomy: persons,
+    persons.categories.create!(
       title: "Refugees & asylum seekers",
-      short_title: "Refugees",
-      description: "",
-      url: ""
+      short_title: "Refugees"
     )
     persons.categories.create!(
       title: "Rural women",
-      short_title: "Rural women",
-      description: "",
-      url: ""
+      short_title: "Rural women"
     )
     persons.categories.create!(
       title: "Social workers",
-      short_title: "Social workers",
-      description: "",
-      url: ""
+      short_title: "Social workers"
     )
     persons.categories.create!(
       title: "Stateless persons",
-      short_title: "Stateless",
-      description: "",
-      url: ""
+      short_title: "Stateless"
     )
     persons.categories.create!(
       title: "Vulnerable persons/groups",
-      short_title: "Vulnerable",
-      description: "",
-      url: ""
+      short_title: "Vulnerable"
     )
     persons.categories.create!(
       title: "Women",
-      short_title: "Women",
-      description: "",
-      url: ""
+      short_title: "Women"
     )
     persons.categories.create!(
       title: "Youth",
-      short_title: "Youth",
-      description: "",
-      url: ""
+      short_title: "Youth"
     )
 
     # Countries
@@ -820,7 +726,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "BOL",
-      title: "Bolivia"
+      title: "Bolivia (Plurinational State of)"
     )
     country.categories.create!(
       short_title: "BIH",
@@ -836,7 +742,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "BRN",
-      title: "Brunei"
+      title: "Brunei Darussalam"
     )
     country.categories.create!(
       short_title: "BGR",
@@ -1064,7 +970,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "IRN",
-      title: "Iran"
+      title: "Iran (Islamic Republic of)"
     )
     country.categories.create!(
       short_title: "IRQ",
@@ -1192,7 +1098,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "FSM",
-      title: "Micronesia"
+      title: "Micronesia (Federated States of)"
     )
     country.categories.create!(
       short_title: "MCO",
@@ -1460,7 +1366,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "TUR",
-      title: "Turkey"
+      title: "Türkiye"
     )
     country.categories.create!(
       short_title: "TKM",
@@ -1484,7 +1390,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "GBR",
-      title: "United Kingdom"
+      title: "United Kingdom of Great Britain and Northern Ireland"
     )
     country.categories.create!(
       short_title: "TZA",
@@ -1508,7 +1414,7 @@ class Seeds
     )
     country.categories.create!(
       short_title: "VEN",
-      title: "Venezuela"
+      title: "Venezuela (Bolivarian Republic of)"
     )
     country.categories.create!(
       short_title: "VNM",
