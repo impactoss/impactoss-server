@@ -11,8 +11,9 @@ class Category < VersionedRecord
   has_many :users, through: :user_categories
   has_many :measures, through: :measure_categories
   has_many :indicators, through: :recommendations
-  has_many :progress_reports, through: :indicators
-  has_many :due_dates, -> { distinct }, through: :indicators
+  has_many :indicators_via_measures, through: :recommendations
+  has_many :progress_reports, through: :indicators_via_measures
+  has_many :due_dates, -> { distinct }, through: :indicators_via_measures
 
   has_many :children_due_dates, -> { distinct }, through: :categories, source: :due_dates
 
