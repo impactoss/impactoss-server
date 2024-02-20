@@ -26,6 +26,10 @@ class Seeds
     Role.new(name: "manager", friendly_name: "Manager").save!
     Role.new(name: "contributor", friendly_name: "Contributor").save!
 
+    Page.new(title: "Copyright", menu_title: "Copyright").save!
+    Page.new(title: "Disclaimer", menu_title: "Disclaimer").save!
+    Page.new(title: "Privacy", menu_title: "Privacy").save!
+
     # set up frameworks
     hr = Framework.create!(
       title: "International Human Rights Obligations",
