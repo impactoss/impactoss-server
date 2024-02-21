@@ -27,7 +27,7 @@ RSpec.describe UsersController, type: :controller do
         expect(json["data"][0]["id"]).to eq(guest.id.to_s)
       end
 
-      it "shows all users for contributors" do
+      it "shows only themselves for contributors" do
         contributor
         contributor2
         manager
@@ -37,7 +37,8 @@ RSpec.describe UsersController, type: :controller do
         guest
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(7)
+        expect(json["data"].length).to eq(1)
+        expect(json["data"][0]["id"]).to eq(contributor.id.to_s)
       end
 
       it "shows all users for managers" do

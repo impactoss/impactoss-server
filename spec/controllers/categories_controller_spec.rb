@@ -78,6 +78,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context "when signed in" do
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:taxonomy) { FactoryBot.create(:taxonomy) }
@@ -104,6 +105,11 @@ RSpec.describe CategoriesController, type: :controller do
       it "will allow a manager to create a category" do
         sign_in user
         expect(subject).to be_created
+      end
+
+      it "will not allow a contributor to create a category" do
+        sign_in contributor
+        expect(subject).to be_forbidden
       end
 
       it "will record what manager created the category", versioning: true do
@@ -141,6 +147,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
 
@@ -153,6 +160,12 @@ RSpec.describe CategoriesController, type: :controller do
         sign_in user
         expect(subject).to be_ok
       end
+
+      it "will not allow a contributor to update a category" do
+        sign_in contributor
+        expect(subject).to be_forbidden
+      end
+
 
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
         sign_in user

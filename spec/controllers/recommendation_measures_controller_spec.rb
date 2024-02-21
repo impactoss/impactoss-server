@@ -37,8 +37,8 @@ RSpec.describe RecommendationMeasuresController, type: :controller do
         expect(response).to be_unauthorized
       end
     end
-
     context "when signed in" do
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:recommendation) { FactoryBot.create(:recommendation) }
@@ -63,6 +63,11 @@ RSpec.describe RecommendationMeasuresController, type: :controller do
       it "will allow a manager to create a recommendation_measure" do
         sign_in user
         expect(subject).to be_created
+      end
+
+      it "will not allow a contributor to create a recommendation_measure" do
+        sign_in contributor
+        expect(subject).to be_forbidden
       end
 
       it "will record what manager created the recommendation_measure", versioning: true do
