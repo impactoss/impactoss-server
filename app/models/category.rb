@@ -22,6 +22,13 @@ class Category < VersionedRecord
   validates :title, presence: true
 
   validate :sub_relation
+  validate :only_manager_and_admin_users_can_be_assigned, if: :manager_id_changed?
+
+  def only_manager_and_admin_users_can_be_assigned
+    return if manager_id.nil? || manager.role?("admin") || manager.role?("manager")
+
+    errors.add(:manager_id, "must be a manager or an admin")
+  end
 
   def sub_relation
     if parent_id.present?

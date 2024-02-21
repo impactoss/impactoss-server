@@ -151,6 +151,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
 
       it "will not allow a guest to update a category" do
         sign_in guest
@@ -169,7 +170,7 @@ RSpec.describe CategoriesController, type: :controller do
             format: :json,
             params: {
               id: category,
-              category: {manager_id: 999}
+              category: {manager_id: manager.id}
             }
         }.not_to change { category.reload.manager_id }
 
@@ -183,9 +184,9 @@ RSpec.describe CategoriesController, type: :controller do
             format: :json,
             params: {
               id: category,
-              category: {manager_id: 999}
+              category: {manager_id: manager.id}
             }
-        }.to change { category.reload.manager_id }.to(999)
+        }.to change { category.reload.manager_id }.to(manager.id)
 
         expect(response).to be_ok
       end
