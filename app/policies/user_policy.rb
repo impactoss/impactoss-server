@@ -12,15 +12,11 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    return true if @record.id == @user.id
-    return true if @user.role?("admin")
-
-    @user.role?("manager") && !(@record.role?("admin") || @record.role?("manager"))
+    false
   end
 
   def destroy?
-    return true if @user.role?("admin")
-    @record == @user
+    false
   end
 
   def permitted_attributes

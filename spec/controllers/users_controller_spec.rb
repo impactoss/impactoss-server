@@ -154,31 +154,21 @@ RSpec.describe UsersController, type: :controller do
         sign_in guest
         expect(subject).to be_not_found
       end
-      it "will allow a user to update themselves" do
+
+      it "will not allow a user to update themselves" do
         sign_in contributor
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
+        expect(subject).to be_forbidden
       end
-      it "will allow a an manager to update themself, contributors, and guests" do
+
+      it "will not allow a an manager to update themself, contributors, and guests" do
         sign_in manager
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
+        expect(subject).to be_forbidden
         subject2 = put :update,
           format: :json,
           params: {
             id: guest.id, user: {email: "test@co.guest.nz", password: "testtest", name: "Sam"}
           }
-        expect(subject2).to be_ok
-        json = JSON.parse(subject2.body)
-        expect(json.dig("data", "id").to_i).to eq(guest.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.guest.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
+        expect(subject2).to be_forbidden
       end
       it "will not allow a an manager to another manager or admin" do
         sign_in manager
@@ -195,20 +185,9 @@ RSpec.describe UsersController, type: :controller do
           }
         expect(subject2).to be_forbidden
       end
-      it "will allow a an admin to update any user" do
+      it "will not allow an admin to update any user" do
         sign_in admin
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
-      end
-
-      it "will record what manager updated the user", versioning: true do
-        expect(PaperTrail).to be_enabled
-        sign_in admin
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
+        expect(subject).to be_forbidden
       end
     end
   end
@@ -245,20 +224,20 @@ RSpec.describe UsersController, type: :controller do
         expect(subject).to be_not_found
       end
 
-      it "will allow a user to delete themselves" do
+      it "will not allow a user to delete themselves" do
         sign_in contributor
         subject = delete :destroy, format: :json, params: {
           id: contributor.id
         }
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
 
-      it "will allow an admin to delete another user" do
+      it "will not allow an admin to delete another user" do
         sign_in admin
         subject = delete :destroy, format: :json, params: {
           id: manager.id
         }
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
     end
   end
