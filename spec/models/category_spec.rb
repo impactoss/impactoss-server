@@ -50,7 +50,7 @@ RSpec.describe Category, type: :model do
       category = FactoryBot.create(:category, :parent_category)
       sub_category = FactoryBot.create(:category, :sub_category)
       sub_category.parent_id = category.id
-      expect { sub_category.save! }.to raise_exception(/Validation failed: Parent Taxonomy does not have parent categorys taxonomy as parent./)
+      expect { sub_category.save! }.to raise_exception(/Validation failed: Parent Taxonomy does not have parent category's taxonomy as parent./)
     end
   end
 end

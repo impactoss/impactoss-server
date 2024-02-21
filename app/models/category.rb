@@ -36,7 +36,7 @@ class Category < VersionedRecord
       parent_category_taxonomy_id = parent_category.taxonomy_id
 
       if parent_category_taxonomy_id != parent_taxonomy_id
-        errors.add(:parent_id, "Taxonomy does not have parent categorys taxonomy as parent.")
+        errors.add(:parent_id, "Taxonomy does not have parent category's taxonomy as parent.")
       end
     end
   end
