@@ -147,6 +147,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
@@ -159,6 +160,34 @@ RSpec.describe CategoriesController, type: :controller do
       it "will allow a manager to update a category" do
         sign_in user
         expect(subject).to be_ok
+      end
+
+      it "will not allow a manager to update manager_id" do
+        sign_in user
+        expect {
+          put :update,
+            format: :json,
+            params: {
+              id: category,
+              category: {manager_id: 999}
+            }
+        }.not_to change { category.reload.manager_id }
+
+        expect(response).to be_ok
+      end
+
+      it "will allow an admin to update manager_id" do
+        sign_in admin
+        expect {
+          put :update,
+            format: :json,
+            params: {
+              id: category,
+              category: {manager_id: 999}
+            }
+        }.to change { category.reload.manager_id }.to(999)
+
+        expect(response).to be_ok
       end
 
       it "will not allow a contributor to update a category" do
