@@ -166,7 +166,6 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
         sign_in user
         category_get = get :show, params: {

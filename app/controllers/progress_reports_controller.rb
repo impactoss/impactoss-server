@@ -34,6 +34,7 @@ class ProgressReportsController < ApplicationController
     if params[:progress_report][:updated_at] && DateTime.parse(params[:progress_report][:updated_at]).to_i != @progress_report.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
+
     if @progress_report.update!(permitted_attributes(@progress_report))
       set_and_authorize_progress_report
       render json: serialize(@progress_report)
