@@ -220,9 +220,9 @@ RSpec.describe PagesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow an admin to delete a page" do
+      it "will not allow an admin to delete a page" do
         sign_in admin
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
     end
   end

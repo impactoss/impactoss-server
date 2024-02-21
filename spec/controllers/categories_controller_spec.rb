@@ -264,6 +264,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
 
@@ -272,16 +273,19 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to delete a category" do
-        sign_in user
-        expect(subject).to be_no_content
+      it "will not allow a contributor to delete a category" do
+        sign_in contributor
+        expect(subject).to be_forbidden
       end
 
-      it "response with success when versioned", versioning: true do
-        expect(PaperTrail).to be_enabled
-        category.update_attribute(:title, "something else")
+      it "will not allow a manager to delete a category" do
         sign_in user
-        expect(subject.response_code).to eq(204)
+        expect(subject).to be_forbidden
+      end
+
+      it "will not allow an admin to delete a category" do
+        sign_in user
+        expect(subject).to be_forbidden
       end
     end
   end

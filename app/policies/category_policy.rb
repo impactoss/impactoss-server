@@ -18,6 +18,10 @@ class CategoryPolicy < ApplicationPolicy
     ].compact
   end
 
+  def destroy?
+    false
+  end
+
   class Scope < Scope
     def resolve
       return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
