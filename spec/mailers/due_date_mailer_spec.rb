@@ -1,3 +1,4 @@
+require "cgi"
 require "rails_helper"
 
 RSpec.describe DueDateMailer, type: :mailer do
@@ -17,7 +18,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
@@ -44,7 +45,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
@@ -72,7 +73,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
@@ -100,7 +101,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
