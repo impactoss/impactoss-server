@@ -9,7 +9,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     context "when signed in" do
-      let(:guest) { FactoryBot.create(:user, name: "User, Test") }
+      let(:guest) { FactoryBot.create(:user) }
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:manager2) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
@@ -25,14 +25,6 @@ RSpec.describe UsersController, type: :controller do
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(1)
         expect(json["data"][0]["id"]).to eq(guest.id.to_s)
-      end
-
-      it "shows the guest their name, in first_name last_name format" do
-        sign_in guest
-        json = JSON.parse(subject.body)
-        expect(guest[:name]).to eq("User, Test")
-        expect(guest.name).to eq("Test User")
-        expect(json["data"][0]["attributes"]["name"]).to eq(guest.name)
       end
 
       it "shows all users for contributors" do

@@ -31,20 +31,4 @@ RSpec.describe User, type: :model do
 
     expect(subject.role?("the_role")).to be true
   end
-
-  context "when the name has a comma" do
-    subject { FactoryBot.create(:user, name: "User, Testing Person") }
-
-    it "shows the name in first_name last_name format" do
-      expect(subject.name).to eq("Testing Person User")
-    end
-  end
-
-  context "when the name has no comma" do
-    subject { FactoryBot.create(:user, name: "User Testing Person") }
-
-    it "shows the name in the original format" do
-      expect(subject.name).to eq("User Testing Person")
-    end
-  end
 end

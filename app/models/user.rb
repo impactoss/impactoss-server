@@ -22,10 +22,6 @@ class User < VersionedRecord
   validates :email, presence: true
   validates :name, presence: true
 
-  def name
-    super.to_s.split(", ").reverse.join(" ")
-  end
-
   def role?(role)
     roles.where(name: role).any?
   end
