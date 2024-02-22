@@ -23,6 +23,10 @@ class UserPolicy < ApplicationPolicy
     [:email, :password, :password_confirmation, :name]
   end
 
+  def show_email?
+    @user.role?("admin") || @record == @user
+  end
+
   class Scope < Scope
     def resolve
       return scope.all if @user.role?("admin") || @user.role?("manager")

@@ -1,7 +1,8 @@
 class UserSerializer
   include FastVersionedSerializer
 
-  attributes :email,
+  attributes :domain,
+    :email,
     :name,
     :relationship_updated_at,
     :relationship_updated_by_id
