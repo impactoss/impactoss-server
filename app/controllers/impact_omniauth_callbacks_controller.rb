@@ -8,7 +8,11 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
   def get_resource_from_auth_hash
     super
 
-    @resource.roles = Role.where(name: azure_role_names) || [] if @resource
+    if @resource
+      @resource.name = auth_hash_name
+      @resource.roles = Role.where(name: azure_role_names) || []
+      @resource.save!
+    end
 
     @resource
   end
@@ -17,6 +21,13 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
 
   def auth_hash_groups
     auth_hash.dig("extra", "raw_info", "groups") || []
+  end
+
+  def auth_hash_name
+    [
+      auth_hash.dig("info", "first_name"),
+      auth_hash.dig("info", "last_name")
+    ].reject(&:blank?).join(" ") || auth_hash.dig("info", "name")
   end
 
   def azure_groups
