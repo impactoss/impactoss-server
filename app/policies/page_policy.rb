@@ -16,7 +16,7 @@ class PagePolicy < ApplicationPolicy
   end
 
   def destroy?
-    @user.role?("admin")
+    false
   end
 
   def permitted_attributes

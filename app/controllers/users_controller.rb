@@ -46,7 +46,17 @@ class UsersController < ApplicationController
   end
 
   def serialize(target, serializer: UserSerializer)
-    super
+    return super if policy(target).show_email?
+
+    JSON.parse(super).tap do |json|
+      if Array === json["data"]
+        json["data"].each do |data|
+          data["attributes"].delete("email")
+        end
+      else
+        json["data"]["attributes"].delete("email")
+      end
+    end
   end
 
   # Use callbacks to share common setup or constraints between actions.

@@ -226,6 +226,7 @@ RSpec.describe IndicatorsController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
@@ -240,9 +241,14 @@ RSpec.describe IndicatorsController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to delete a indicator" do
+      it "will not allow a manager to delete a indicator" do
         sign_in user
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
+      end
+
+      it "will not allow an admin to delete a indicator" do
+        sign_in admin
+        expect(subject).to be_forbidden
       end
     end
   end

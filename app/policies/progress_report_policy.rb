@@ -8,11 +8,17 @@ class ProgressReportPolicy < ApplicationPolicy
   end
 
   def create?
-    @user # super || (@user.role?('contributor') && @record.manager == @user)
+    return true if @user.role?("admin") || @user.role?("manager")
+
+    @user.role?("contributor") && @record.draft? && @record.manager == @user
+  end
+
+  def destroy?
+    false
   end
 
   def update?
-    super || (@user.role?("contributor") && @record.manager == @user)
+    super || (@user.role?("contributor") && @record.draft? && !@record.draft_changed? && @record.manager == @user)
   end
 
   class Scope < Scope

@@ -131,20 +131,43 @@ RSpec.describe ProgressReportsController, type: :controller do
           }
       end
 
-      it "will allow a guest to create a progress_report" do
+      subject(:draft_with_contributor_manager) do
+        post :create,
+          format: :json,
+          params: {
+            progress_report: {
+              indicator_id: contributor_indicator.id,
+              due_date_id: due_date.id,
+              title: "test title",
+              description: "test desc",
+              document_url: "test_url",
+              document_public: true,
+              draft: true
+            }
+          }
+      end
+
+      it "will not allow a guest to create a progress_report" do
         sign_in guest
-        expect(subject).to be_created
+        expect(subject).to be_forbidden
       end
 
       # This was changed from forbidden in bb687a69339aaa3501f24140907e9a2135ffe4c5 per #154
-      it "will allow a contributor to create a progress_report when they are not a manager for the indicator" do
+      it "will not allow a contributor to create a progress_report when they are not a manager for the indicator" do
         sign_in contributor
-        expect(without_contributor_manager).to be_created
+        expect(without_contributor_manager).to be_forbidden
       end
 
-      it "will allow a contributor to create a progress_report when they are the manager for the indicator" do
-        sign_in contributor
-        expect(with_contributor_manager).to be_created
+      context "will not allow a contributor to create a progress_report when they are the manager for the indicator" do
+        it "when it isn't draft" do
+          sign_in contributor
+          expect(with_contributor_manager).to be_forbidden
+        end
+
+        it "unless it is draft" do
+          sign_in contributor
+          expect(draft_with_contributor_manager).to be_created
+        end
       end
 
       it "will allow a manager to create a progress_report" do
@@ -192,7 +215,26 @@ RSpec.describe ProgressReportsController, type: :controller do
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
+      let(:draft_progress_report_with_contributor) { FactoryBot.create(:progress_report, draft: true, indicator: contributor_indicator) }
       let(:progress_report_with_contributor) { FactoryBot.create(:progress_report, indicator: contributor_indicator) }
+
+      subject(:draft_with_contributor_manager) do
+        put :update,
+          format: :json,
+          params: {
+            id: draft_progress_report_with_contributor,
+            progress_report: {title: "test update", description: "test update"}
+          }
+      end
+
+      subject(:draft_with_contributor_manager_updated_to_published) do
+        put :update,
+          format: :json,
+          params: {
+            id: draft_progress_report_with_contributor,
+            progress_report: {draft: false, title: "test update", description: "test update"}
+          }
+      end
 
       subject(:with_contributor_manager) do
         put :update,
@@ -205,7 +247,8 @@ RSpec.describe ProgressReportsController, type: :controller do
 
       it "will not allow a guest to update a progress_report" do
         sign_in guest
-        expect(subject).to be_forbidden
+        expect(with_contributor_manager).to be_forbidden
+        expect(without_contributor_manager).to be_forbidden
       end
 
       it "will not allow a contributor to update a progress_report when they are not a manager for the indicator" do
@@ -213,14 +256,37 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(without_contributor_manager).to be_forbidden
       end
 
-      it "will allow a contributor to update a progress_report when they are the manager for the indicator" do
+      it "will not allow a contributor to update a progress_report when they are the manager for the indicator" do
         sign_in contributor
-        expect(with_contributor_manager).to be_ok
+        expect(with_contributor_manager).to be_forbidden
+      end
+
+      it "will allow a contributor to update a draft progress_report when they are the manager for the indicator" do
+        sign_in contributor
+        expect(draft_with_contributor_manager).to be_ok
+      end
+
+      it "will not a contributor to update a draft progress_report to published when they are the manager for the indicator" do
+        sign_in contributor
+        expect(draft_with_contributor_manager_updated_to_published).to be_forbidden
       end
 
       it "will allow a manager to update a progress_report" do
         sign_in user
         expect(subject).to be_ok
+      end
+
+      it "will not allow the indicator_id to be updated" do
+        sign_in user
+        put :update,
+          format: :json,
+          params: {
+            id: progress_report_with_contributor,
+            progress_report: {indicator_id: FactoryBot.create(:indicator).id, title: "test update", description: "test update"}
+          }
+
+        expect(response).to_not be_ok
+        expect(JSON.parse(response.body).dig("error", "indicator_id")).to include("cannot be changed after the report has been created")
       end
 
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
@@ -291,6 +357,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
@@ -305,9 +372,14 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to delete a progress_report" do
+      it "will not allow a manager to delete a progress_report" do
         sign_in user
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
+      end
+
+      it "will not allow an admin to delete a progress_report" do
+        sign_in admin
+        expect(subject).to be_forbidden
       end
     end
   end

@@ -8,4 +8,12 @@ class ProgressReport < VersionedRecord
 
   validates :title, presence: true
   validates :indicator_id, presence: true
+
+  validate :indicator_id_must_not_change, if: [:persisted?, :indicator_id_changed?]
+
+  private
+
+  def indicator_id_must_not_change
+    errors.add(:indicator_id, "cannot be changed after the report has been created")
+  end
 end

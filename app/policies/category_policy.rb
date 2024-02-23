@@ -2,7 +2,24 @@
 
 class CategoryPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title, :parent_id, :short_title, :description, :url, :draft, :taxonomy_id, :manager_id, :order, :reference, :date, :user_only]
+    [
+      :date,
+      :description,
+      :draft,
+      (:manager_id unless @record.persisted? && !@user.role?("admin")),
+      :order,
+      :parent_id,
+      :reference,
+      :short_title,
+      :taxonomy_id,
+      :title,
+      :url,
+      :user_only
+    ].compact
+  end
+
+  def destroy?
+    false
   end
 
   class Scope < Scope

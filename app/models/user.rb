@@ -25,4 +25,8 @@ class User < VersionedRecord
   def role?(role)
     roles.where(name: role).any?
   end
+
+  def domain
+    email.to_s.split("@").last
+  end
 end

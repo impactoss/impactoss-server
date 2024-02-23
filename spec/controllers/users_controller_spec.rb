@@ -27,7 +27,7 @@ RSpec.describe UsersController, type: :controller do
         expect(json["data"][0]["id"]).to eq(guest.id.to_s)
       end
 
-      it "shows all users for contributors" do
+      it "shows only themselves for contributors" do
         contributor
         contributor2
         manager
@@ -37,7 +37,8 @@ RSpec.describe UsersController, type: :controller do
         guest
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(7)
+        expect(json["data"].length).to eq(1)
+        expect(json["data"][0]["id"]).to eq(contributor.id.to_s)
       end
 
       it "shows all users for managers" do
@@ -109,7 +110,21 @@ RSpec.describe UsersController, type: :controller do
         }, format: :json
         json = JSON.parse(subject_manager.body)
         expect(json.dig("data", "id").to_i).to eq(manager.id)
+        expect(json.dig("data", "attributes", "email")).to eq(manager.email)
+        expect(json.dig("data", "attributes", "domain")).to eq(manager.domain)
       end
+
+      it "only shows email domain for manager" do
+        sign_in manager
+        subject_contributor = get :show, params: {
+          id: contributor.id
+        }, format: :json
+        json = JSON.parse(subject_contributor.body)
+        expect(json.dig("data", "id").to_i).to eq(contributor.id)
+        expect(json.dig("data", "attributes", "domain")).to eq(contributor.domain)
+        expect(json.dig("data", "attributes", "email")).to be_nil
+      end
+
       it "shows user for admin" do
         sign_in admin
         subject_manager = get :show, params: {
@@ -117,6 +132,19 @@ RSpec.describe UsersController, type: :controller do
         }, format: :json
         json = JSON.parse(subject_manager.body)
         expect(json.dig("data", "id").to_i).to eq(admin.id)
+        expect(json.dig("data", "attributes", "email")).to eq(admin.email)
+        expect(json.dig("data", "attributes", "domain")).to eq(admin.domain)
+      end
+
+      it "shows full other user for admin" do
+        sign_in admin
+        subject_contributor = get :show, params: {
+          id: contributor.id
+        }, format: :json
+        json = JSON.parse(subject_contributor.body)
+        expect(json.dig("data", "id").to_i).to eq(contributor.id)
+        expect(json.dig("data", "attributes", "email")).to eq(contributor.email)
+        expect(json.dig("data", "attributes", "domain")).to eq(contributor.domain)
       end
     end
   end
@@ -153,31 +181,21 @@ RSpec.describe UsersController, type: :controller do
         sign_in guest
         expect(subject).to be_not_found
       end
-      it "will allow a user to update themselves" do
+
+      it "will not allow a user to update themselves" do
         sign_in contributor
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
+        expect(subject).to be_forbidden
       end
-      it "will allow a an manager to update themself, contributors, and guests" do
+
+      it "will not allow a an manager to update themself, contributors, and guests" do
         sign_in manager
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
+        expect(subject).to be_forbidden
         subject2 = put :update,
           format: :json,
           params: {
             id: guest.id, user: {email: "test@co.guest.nz", password: "testtest", name: "Sam"}
           }
-        expect(subject2).to be_ok
-        json = JSON.parse(subject2.body)
-        expect(json.dig("data", "id").to_i).to eq(guest.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.guest.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
+        expect(subject2).to be_forbidden
       end
       it "will not allow a an manager to another manager or admin" do
         sign_in manager
@@ -194,20 +212,9 @@ RSpec.describe UsersController, type: :controller do
           }
         expect(subject2).to be_forbidden
       end
-      it "will allow a an admin to update any user" do
+      it "will not allow an admin to update any user" do
         sign_in admin
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq "test@co.nz"
-        expect(json.dig("data", "attributes", "name")).to eq "Sam"
-      end
-
-      it "will record what manager updated the user", versioning: true do
-        expect(PaperTrail).to be_enabled
-        sign_in admin
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
+        expect(subject).to be_forbidden
       end
     end
   end
@@ -244,20 +251,20 @@ RSpec.describe UsersController, type: :controller do
         expect(subject).to be_not_found
       end
 
-      it "will allow a user to delete themselves" do
+      it "will not allow a user to delete themselves" do
         sign_in contributor
         subject = delete :destroy, format: :json, params: {
           id: contributor.id
         }
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
 
-      it "will allow an admin to delete another user" do
+      it "will not allow an admin to delete another user" do
         sign_in admin
         subject = delete :destroy, format: :json, params: {
           id: manager.id
         }
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
     end
   end
