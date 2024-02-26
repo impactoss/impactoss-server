@@ -3,7 +3,7 @@ class S3Controller < ApplicationController
 
   def sign
     options = {path_style: true}
-    headers = {"Content-Type" => params[:contentType], "x-amz-acl" => "public-read"}
+    headers = {"Content-Type" => params[:contentType], "Access-Control-Allow-Origin" => "https://sadata-staging.web.app", "Vary" => "Origin", "x-amz-acl" => "public-read"}
 
     url = FogStorage.put_object_url(ENV['S3_BUCKET_NAME'], "user_uploads/#{params[:objectName]}", 15.minutes.from_now.to_time.to_i, headers, options)
 
