@@ -26,7 +26,7 @@ module HumanRightsNationalReporting
         resource 's3/sign', headers: :any, methods: :any, expose: ['access-token', 'expiry', 'token-type', 'uid', 'client'], credentials: true
       end
       allow do
-        origins '*',
+        origins '*'
         resource '*', headers: :any, methods: :any, expose: ['access-token', 'expiry', 'token-type', 'uid', 'client']
       end
     end
