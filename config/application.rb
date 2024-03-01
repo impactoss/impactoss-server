@@ -22,11 +22,7 @@ module HumanRightsNationalReporting
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'localhost:3000',
-                  'https://sadata-staging.web.app',
-                  'https://sadata.ws',
-                  'https://sadata-production.web.app',
-                  'https://sadata-production.firebaseapp.com'
+        origins ENV['ALLOWED_ORIGIN_S3']
         resource '/s3/*',
                   headers: :any,
                   methods: :any,
