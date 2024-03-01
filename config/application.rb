@@ -22,7 +22,7 @@ module HumanRightsNationalReporting
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins ENV['ALLOWED_ORIGIN_S3']
+        origins ENV['ALLOWED_ORIGIN_S3'].split(',').map { |origin| origin.strip }
         resource '/s3/*',
                   headers: :any,
                   methods: :any,
