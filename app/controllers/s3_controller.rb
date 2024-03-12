@@ -10,7 +10,7 @@ class S3Controller < ApplicationController
     path = protocol_path.last
     path_query = path.split('?')
     query = path_query[1]
-    url2 = "#{ENV["CLIENT_URL"]}/#{ENV["S3_ASSET_FOLDER"]}/#{params[:objectName]}?#{query}"
-    render json: {signedUrl: url, signedUrl2: url2}
+    urlAlt = "#{ENV["CLIENT_URL"]}/#{ENV["S3_ASSET_FOLDER"]}/#{params[:objectName]}?#{query}"
+    render json: {signedUrl: urlAlt}
   end
 end
