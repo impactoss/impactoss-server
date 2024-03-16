@@ -98,12 +98,23 @@ RSpec.describe UsersController, type: :controller do
         sign_in guest
         expect(subject).to be_not_found
       end
-      it "shows user for contributor" do
+      it "shows user, including email and domain, for contributor" do
         sign_in contributor
         json = JSON.parse(subject.body)
         expect(json.dig("data", "id").to_i).to eq(contributor.id)
+        expect(json.dig("data", "attributes", "email")).to eq(contributor.email)
+        expect(json.dig("data", "attributes", "domain")).to eq(contributor.domain)
       end
-      it "shows user for manager" do
+
+      it "won't show other user for contributor" do
+        sign_in contributor
+        subject_manager = get :show, params: {
+          id: manager.id
+        }, format: :json
+        expect(subject_manager).to be_not_found
+      end
+
+      it "shows user, including email and domain, for manager" do
         sign_in manager
         subject_manager = get :show, params: {
           id: manager.id
@@ -114,7 +125,7 @@ RSpec.describe UsersController, type: :controller do
         expect(json.dig("data", "attributes", "domain")).to eq(manager.domain)
       end
 
-      it "only shows email domain for manager" do
+      it "only shows contributor's email domain for manager" do
         sign_in manager
         subject_contributor = get :show, params: {
           id: contributor.id
@@ -125,7 +136,29 @@ RSpec.describe UsersController, type: :controller do
         expect(json.dig("data", "attributes", "email")).to be_nil
       end
 
-      it "shows user for admin" do
+      it "only shows admin's email domain for manager" do
+        sign_in manager
+        subject_admin = get :show, params: {
+          id: admin.id
+        }, format: :json
+        json = JSON.parse(subject_admin.body)
+        expect(json.dig("data", "id").to_i).to eq(admin.id)
+        expect(json.dig("data", "attributes", "domain")).to eq(admin.domain)
+        expect(json.dig("data", "attributes", "email")).to be_nil
+      end
+
+      it "shows email for manager when viewing themselves" do
+        sign_in manager
+        subject_manager = get :show, params: {
+          id: manager.id
+        }, format: :json
+        json = JSON.parse(subject_manager.body)
+        expect(json.dig("data", "id").to_i).to eq(manager.id)
+        expect(json.dig("data", "attributes", "domain")).to eq(manager.domain)
+        expect(json.dig("data", "attributes", "email")).to eq(manager.email)
+      end
+
+      it "shows user, including email and domain, for admin when viewing themselves" do
         sign_in admin
         subject_manager = get :show, params: {
           id: admin.id
@@ -136,7 +169,7 @@ RSpec.describe UsersController, type: :controller do
         expect(json.dig("data", "attributes", "domain")).to eq(admin.domain)
       end
 
-      it "shows full other user for admin" do
+      it "shows contributor user, including email and domain, for admin" do
         sign_in admin
         subject_contributor = get :show, params: {
           id: contributor.id
