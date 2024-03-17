@@ -43,9 +43,11 @@ RSpec.describe Indicator, type: :model do
 end
 context "a due_date has a progress_report" do
   let(:indicator) {
-    indicator = FactoryBot.create(:indicator, :with_12_due_dates)
-    warn "created first 12"
-    indicator
+    Timecop.travel(2019, 1, 1) do
+      indicator = FactoryBot.create(:indicator, :with_12_due_dates)
+      warn "created first 12"
+      indicator
+    end
   }
   let!(:progress_report) { FactoryBot.create(:progress_report, indicator: indicator, title: "test", due_date: indicator.due_dates.last) }
 
