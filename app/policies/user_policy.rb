@@ -24,7 +24,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def show_email?
-    @user.role?("admin") || @record == @user
+    @user.role?("admin") || @record.id == @user.id
   end
 
   class Scope < Scope
