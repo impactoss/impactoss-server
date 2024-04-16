@@ -1,5 +1,5 @@
 class MeasureCategorySerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :measure_id, :category_id
 

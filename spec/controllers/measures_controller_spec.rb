@@ -52,7 +52,9 @@ RSpec.describe MeasuresController, type: :controller do
 
       it "filters from category" do
         measure_different_category.categories << category
-        subject = get :index, params: {category_id: category.id}, format: :json
+        subject = get :index, params: {
+          category_id: category.id
+        }, format: :json
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(1)
         expect(json["data"][0]["id"]).to eq(measure_different_category.id.to_s)
@@ -60,7 +62,9 @@ RSpec.describe MeasuresController, type: :controller do
 
       it "filters from recommendation" do
         measure_different_recommendation.recommendations << recommendation
-        subject = get :index, params: {recommendation_id: recommendation.id}, format: :json
+        subject = get :index, params: {
+          recommendation_id: recommendation.id
+        }, format: :json
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(1)
         expect(json["data"][0]["id"]).to eq(measure_different_recommendation.id.to_s)
@@ -68,7 +72,9 @@ RSpec.describe MeasuresController, type: :controller do
 
       it "filters from indicator" do
         measure_different_indicator.indicators << indicator
-        subject = get :index, params: {indicator_id: indicator.id}, format: :json
+        subject = get :index, params: {
+          indicator_id: indicator.id
+        }, format: :json
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(1)
         expect(json["data"][0]["id"]).to eq(measure_different_indicator.id.to_s)
@@ -86,7 +92,7 @@ RSpec.describe MeasuresController, type: :controller do
 
       it "shows the measure" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(measure.id)
+        expect(json.dig("data", "id").to_i).to eq(measure.id)
       end
 
       it "will not show draft measure" do
@@ -99,7 +105,9 @@ RSpec.describe MeasuresController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a measure" do
-        post :create, format: :json, params: {measure: {title: "test", description: "test", target_date: "today"}}
+        post :create, format: :json, params: {
+          measure: {title: "test", description: "test", target_date: "today"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -125,6 +133,7 @@ RSpec.describe MeasuresController, type: :controller do
         # post :create,
         #      format: :json,
         #      params: {
+
         #        measure: {
         #          title: 'test',
         #          description: 'test',
@@ -153,12 +162,14 @@ RSpec.describe MeasuresController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {measure: {description: "desc only"}}
+        post :create, format: :json, params: {
+          measure: {description: "desc only"}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -203,7 +214,7 @@ RSpec.describe MeasuresController, type: :controller do
         sign_in user
         measure_get = get :show, params: {id: measure}, format: :json
         json = JSON.parse(measure_get.body)
-        current_update_at = json["data"]["attributes"]["updated_at"]
+        current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
@@ -225,15 +236,15 @@ RSpec.describe MeasuresController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
       end
 
-      it "will return the latest last_modified_user_id", versioning: true do
+      it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         measure.versions.first.update_column(:whodunnit, contributor.id)
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
       end
 
       it "will return an error if params are incorrect" do
@@ -255,6 +266,7 @@ RSpec.describe MeasuresController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
@@ -269,9 +281,14 @@ RSpec.describe MeasuresController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to delete a measure" do
+      it "will not allow a manager to delete a measure" do
         sign_in user
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
+      end
+
+      it "will not allow an admin to delete a measure" do
+        sign_in admin
+        expect(subject).to be_forbidden
       end
     end
   end

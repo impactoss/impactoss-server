@@ -12,14 +12,18 @@ RSpec.describe UserCategoriesController, type: :controller do
 
   describe "Get show" do
     let(:user_category) { FactoryBot.create(:user_category) }
-    subject { get :show, params: {id: user_category}, format: :json }
+    subject {
+      get :show, params: {
+        id: user_category
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the user_category" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(user_category.id)
+        expect(json.dig("data", "id").to_i).to eq(user_category.id)
       end
     end
   end
@@ -27,7 +31,9 @@ RSpec.describe UserCategoriesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a user_category" do
-        post :create, format: :json, params: {user_category: {user_id: 1, category_id: 1}}
+        post :create, format: :json, params: {
+          user_category: {user_id: 1, category_id: 1}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -65,9 +71,18 @@ RSpec.describe UserCategoriesController, type: :controller do
         expect(subject).to be_created
       end
 
+      it "will record what manager created the user_category", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in manager
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
+      end
+
       it "will return an error if params are incorrect" do
         sign_in manager
-        post :create, format: :json, params: {user_category: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          user_category: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -75,7 +90,11 @@ RSpec.describe UserCategoriesController, type: :controller do
 
   describe "Delete destroy" do
     let(:user_category) { FactoryBot.create(:user_category) }
-    subject { delete :destroy, format: :json, params: {id: user_category} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: user_category
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a user_category" do

@@ -46,18 +46,24 @@ RSpec.describe ProgressReportsController, type: :controller do
   describe "Get show" do
     let(:progress_report) { FactoryBot.create(:progress_report) }
     let(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true) }
-    subject { get :show, params: {id: progress_report}, format: :json }
+    subject {
+      get :show, params: {
+        id: progress_report
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the progress_report" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(progress_report.id)
+        expect(json.dig("data", "id").to_i).to eq(progress_report.id)
       end
 
       it "will not show draft progress_report" do
-        get :show, params: {id: draft_progress_report}, format: :json
+        get :show, params: {
+          id: draft_progress_report
+        }, format: :json
         expect(response).to be_not_found
       end
     end
@@ -66,9 +72,11 @@ RSpec.describe ProgressReportsController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a progress_report" do
-        post :create, format: :json, params: {progress_report: {title: "test",
-                                                                description: "test",
-                                                                target_date: "today"}}
+        post :create, format: :json, params: {
+          progress_report: {title: "test",
+                            description: "test",
+                            target_date: "today"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -98,6 +106,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         # post :create,
         #      format: :json,
         #      params: {
+
         #        measure: {
         #          title: 'test',
         #          description: 'test',
@@ -122,20 +131,43 @@ RSpec.describe ProgressReportsController, type: :controller do
           }
       end
 
-      it "will allow a guest to create a progress_report" do
+      subject(:draft_with_contributor_manager) do
+        post :create,
+          format: :json,
+          params: {
+            progress_report: {
+              indicator_id: contributor_indicator.id,
+              due_date_id: due_date.id,
+              title: "test title",
+              description: "test desc",
+              document_url: "test_url",
+              document_public: true,
+              draft: true
+            }
+          }
+      end
+
+      it "will not allow a guest to create a progress_report" do
         sign_in guest
-        expect(subject).to be_created
+        expect(subject).to be_forbidden
       end
 
       # This was changed from forbidden in bb687a69339aaa3501f24140907e9a2135ffe4c5 per #154
-      it "will allow a contributor to create a progress_report when they are not a manager for the indicator" do
+      it "will not allow a contributor to create a progress_report when they are not a manager for the indicator" do
         sign_in contributor
-        expect(without_contributor_manager).to be_created
+        expect(without_contributor_manager).to be_forbidden
       end
 
-      it "will allow a contributor to create a progress_report when they are the manager for the indicator" do
-        sign_in contributor
-        expect(with_contributor_manager).to be_created
+      context "will not allow a contributor to create a progress_report when they are the manager for the indicator" do
+        it "when it isn't draft" do
+          sign_in contributor
+          expect(with_contributor_manager).to be_forbidden
+        end
+
+        it "unless it is draft" do
+          sign_in contributor
+          expect(draft_with_contributor_manager).to be_created
+        end
       end
 
       it "will allow a manager to create a progress_report" do
@@ -147,12 +179,14 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {progress_report: {description: "desc only"}}
+        post :create, format: :json, params: {
+          progress_report: {description: "desc only"}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -164,8 +198,10 @@ RSpec.describe ProgressReportsController, type: :controller do
     subject(:without_contributor_manager) do
       put :update,
         format: :json,
-        params: {id: progress_report,
-                 progress_report: {title: "test update", description: "test update"}}
+        params: {
+          id: progress_report,
+          progress_report: {title: "test update", description: "test update"}
+        }
     end
 
     context "when not signed in" do
@@ -179,18 +215,40 @@ RSpec.describe ProgressReportsController, type: :controller do
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
+      let(:draft_progress_report_with_contributor) { FactoryBot.create(:progress_report, draft: true, indicator: contributor_indicator) }
       let(:progress_report_with_contributor) { FactoryBot.create(:progress_report, indicator: contributor_indicator) }
+
+      subject(:draft_with_contributor_manager) do
+        put :update,
+          format: :json,
+          params: {
+            id: draft_progress_report_with_contributor,
+            progress_report: {title: "test update", description: "test update"}
+          }
+      end
+
+      subject(:draft_with_contributor_manager_updated_to_published) do
+        put :update,
+          format: :json,
+          params: {
+            id: draft_progress_report_with_contributor,
+            progress_report: {draft: false, title: "test update", description: "test update"}
+          }
+      end
 
       subject(:with_contributor_manager) do
         put :update,
           format: :json,
-          params: {id: progress_report_with_contributor,
-                   progress_report: {title: "test update", description: "test update"}}
+          params: {
+            id: progress_report_with_contributor,
+            progress_report: {title: "test update", description: "test update"}
+          }
       end
 
       it "will not allow a guest to update a progress_report" do
         sign_in guest
-        expect(subject).to be_forbidden
+        expect(with_contributor_manager).to be_forbidden
+        expect(without_contributor_manager).to be_forbidden
       end
 
       it "will not allow a contributor to update a progress_report when they are not a manager for the indicator" do
@@ -198,9 +256,19 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(without_contributor_manager).to be_forbidden
       end
 
-      it "will allow a contributor to update a progress_report when they are the manager for the indicator" do
+      it "will not allow a contributor to update a progress_report when they are the manager for the indicator" do
         sign_in contributor
-        expect(with_contributor_manager).to be_ok
+        expect(with_contributor_manager).to be_forbidden
+      end
+
+      it "will allow a contributor to update a draft progress_report when they are the manager for the indicator" do
+        sign_in contributor
+        expect(draft_with_contributor_manager).to be_ok
+      end
+
+      it "will not a contributor to update a draft progress_report to published when they are the manager for the indicator" do
+        sign_in contributor
+        expect(draft_with_contributor_manager_updated_to_published).to be_forbidden
       end
 
       it "will allow a manager to update a progress_report" do
@@ -208,24 +276,43 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_ok
       end
 
+      it "will not allow the indicator_id to be updated" do
+        sign_in user
+        put :update,
+          format: :json,
+          params: {
+            id: progress_report_with_contributor,
+            progress_report: {indicator_id: FactoryBot.create(:indicator).id, title: "test update", description: "test update"}
+          }
+
+        expect(response).to_not be_ok
+        expect(JSON.parse(response.body).dig("error", "indicator_id")).to include("cannot be changed after the report has been created")
+      end
+
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
         sign_in user
-        progress_report_get = get :show, params: {id: progress_report_with_contributor}, format: :json
+        progress_report_get = get :show, params: {
+          id: progress_report_with_contributor
+        }, format: :json
         json = JSON.parse(progress_report_get.body)
-        current_update_at = json["data"]["attributes"]["updated_at"]
+        current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {id: progress_report_with_contributor,
-                     progress_report: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: progress_report_with_contributor,
+              progress_report: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to be_ok
         end
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
-            params: {id: progress_report_with_contributor,
-                     progress_report: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: progress_report_with_contributor,
+              progress_report: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to_not be_ok
         end
       end
@@ -234,20 +321,22 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
       end
 
-      it "will return the latest last_modified_user_id", versioning: true do
+      it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         progress_report.versions.first.update_column(:whodunnit, contributor.id)
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        put :update, format: :json, params: {id: progress_report, progress_report: {title: ""}}
+        put :update, format: :json, params: {
+          id: progress_report, progress_report: {title: ""}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -255,7 +344,11 @@ RSpec.describe ProgressReportsController, type: :controller do
 
   describe "Delete destroy" do
     let(:progress_report) { FactoryBot.create(:progress_report) }
-    subject { delete :destroy, format: :json, params: {id: progress_report} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: progress_report
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a progress_report" do
@@ -264,6 +357,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
@@ -278,9 +372,14 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to delete a progress_report" do
+      it "will not allow a manager to delete a progress_report" do
         sign_in user
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
+      end
+
+      it "will not allow an admin to delete a progress_report" do
+        sign_in admin
+        expect(subject).to be_forbidden
       end
     end
   end

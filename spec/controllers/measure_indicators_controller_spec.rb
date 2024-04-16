@@ -12,14 +12,18 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
 
   describe "Get show" do
     let(:measure_indicator) { FactoryBot.create(:measure_indicator) }
-    subject { get :show, params: {id: measure_indicator}, format: :json }
+    subject {
+      get :show, params: {
+        id: measure_indicator
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the measure_indicator" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(measure_indicator.id)
+        expect(json.dig("data", "id").to_i).to eq(measure_indicator.id)
       end
     end
   end
@@ -27,7 +31,9 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a measure_indicator" do
-        post :create, format: :json, params: {measure_indicator: {measure_id: 1, indicator_id: 1}}
+        post :create, format: :json, params: {
+          measure_indicator: {measure_id: 1, indicator_id: 1}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -65,9 +71,18 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
         expect(subject).to be_created
       end
 
+      it "will record what manager created the measure_indicator", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in user
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+      end
+
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {measure_indicator: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          measure_indicator: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -75,7 +90,11 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
 
   describe "Delete destroy" do
     let(:measure_indicator) { FactoryBot.create(:measure_indicator) }
-    subject { delete :destroy, format: :json, params: {id: measure_indicator} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: measure_indicator
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a measure_indicator" do

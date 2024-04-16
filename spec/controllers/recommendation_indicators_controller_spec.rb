@@ -19,7 +19,7 @@ RSpec.describe RecommendationIndicatorsController, type: :controller do
 
       it "returns the recommendation_indicator" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(recommendation_indicator.id)
+        expect(json.dig("data", "id").to_i).to eq(recommendation_indicator.id)
       end
     end
   end
@@ -66,9 +66,23 @@ RSpec.describe RecommendationIndicatorsController, type: :controller do
         expect(subject).to be_created
       end
 
+      it "will record what manager created the recommendation_indicator", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in manager
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
+      end
+
       it "will allow an admin to create a recommendation_indicator" do
         sign_in admin
         expect(subject).to be_created
+      end
+
+      it "will record what admin created the recommendation_indicator", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in admin
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
       it "will return an error if params are incorrect" do

@@ -51,7 +51,7 @@ RSpec.describe PagesController, type: :controller do
 
       it "shows the page" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(page.id)
+        expect(json.dig("data", "id").to_i).to eq(page.id)
       end
 
       it "will not show draft page" do
@@ -64,7 +64,9 @@ RSpec.describe PagesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a page" do
-        post :create, format: :json, params: {page: {title: "test", description: "test", target_date: "today"}}
+        post :create, format: :json, params: {
+          page: {title: "test", description: "test", target_date: "today"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -106,12 +108,14 @@ RSpec.describe PagesController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in admin
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq admin.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
       it "will return an error if params are incorrect" do
         sign_in admin
-        post :create, format: :json, params: {page: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          page: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -156,7 +160,7 @@ RSpec.describe PagesController, type: :controller do
         sign_in admin
         page_get = get :show, params: {id: page}, format: :json
         json = JSON.parse(page_get.body)
-        current_update_at = json["data"]["attributes"]["updated_at"]
+        current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
@@ -178,15 +182,15 @@ RSpec.describe PagesController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in admin
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq admin.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
 
-      it "will return the latest last_modified_user_id", versioning: true do
+      it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         page.versions.first.update_column(:whodunnit, user.id)
         sign_in admin
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq(admin.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
       end
     end
   end
@@ -216,9 +220,9 @@ RSpec.describe PagesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow an admin to delete a page" do
+      it "will not allow an admin to delete a page" do
         sign_in admin
-        expect(subject).to be_no_content
+        expect(subject).to be_forbidden
       end
     end
   end

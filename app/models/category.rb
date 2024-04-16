@@ -11,8 +11,9 @@ class Category < VersionedRecord
   has_many :users, through: :user_categories
   has_many :measures, through: :measure_categories
   has_many :indicators, through: :recommendations
-  has_many :progress_reports, through: :indicators
-  has_many :due_dates, -> { distinct }, through: :indicators
+  has_many :indicators_via_measures, through: :recommendations
+  has_many :progress_reports, through: :indicators_via_measures
+  has_many :due_dates, -> { distinct }, through: :indicators_via_measures
 
   has_many :children_due_dates, -> { distinct }, through: :categories, source: :due_dates
 
@@ -21,6 +22,13 @@ class Category < VersionedRecord
   validates :title, presence: true
 
   validate :sub_relation
+  validate :only_manager_and_admin_users_can_be_assigned, if: :manager_id_changed?
+
+  def only_manager_and_admin_users_can_be_assigned
+    return if manager_id.nil? || manager.role?("admin") || manager.role?("manager")
+
+    errors.add(:manager_id, "must be a manager or an admin")
+  end
 
   def sub_relation
     if parent_id.present?
@@ -35,7 +43,7 @@ class Category < VersionedRecord
       parent_category_taxonomy_id = parent_category.taxonomy_id
 
       if parent_category_taxonomy_id != parent_taxonomy_id
-        errors.add(:parent_id, "Taxonomy does not have parent categorys taxonomy as parent.")
+        errors.add(:parent_id, "Taxonomy does not have parent category's taxonomy as parent.")
       end
     end
   end

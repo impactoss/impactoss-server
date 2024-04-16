@@ -18,14 +18,18 @@ RSpec.describe TaxonomiesController, type: :controller do
 
   describe "Get show" do
     let(:taxonomy) { FactoryBot.create(:taxonomy) }
-    subject { get :show, params: {id: taxonomy}, format: :json }
+    subject {
+      get :show, params: {
+        id: taxonomy
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the taxonomy" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(taxonomy.id)
+        expect(json.dig("data", "id").to_i).to eq(taxonomy.id)
       end
     end
   end
@@ -33,7 +37,9 @@ RSpec.describe TaxonomiesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a taxonomy" do
-        post :create, format: :json, params: {taxonomy: {title: "test", description: "test", target_date: "today"}}
+        post :create, format: :json, params: {
+          taxonomy: {title: "test", description: "test", target_date: "today"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -82,8 +88,10 @@ RSpec.describe TaxonomiesController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: taxonomy,
-                 taxonomy: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: taxonomy,
+          taxonomy: {title: "test update", description: "test update", target_date: "today update"}
+        }
     end
 
     context "when not signed in" do
@@ -116,7 +124,11 @@ RSpec.describe TaxonomiesController, type: :controller do
 
   describe "Delete destroy" do
     let(:taxonomy) { FactoryBot.create(:taxonomy) }
-    subject { delete :destroy, format: :json, params: {id: taxonomy} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: taxonomy
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a taxonomy" do

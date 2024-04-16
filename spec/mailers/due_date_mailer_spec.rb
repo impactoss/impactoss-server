@@ -1,3 +1,4 @@
+require "cgi"
 require "rails_helper"
 
 RSpec.describe DueDateMailer, type: :mailer do
@@ -17,7 +18,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
@@ -44,7 +45,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
@@ -59,7 +60,7 @@ RSpec.describe DueDateMailer, type: :mailer do
   end
 
   describe "category due" do
-    let(:manager) { FactoryBot.create(:user) }
+    let(:manager) { FactoryBot.create(:user, :manager) }
     let(:due_date) { FactoryBot.create(:due_date, due_date: future_date) }
     let(:category) { FactoryBot.create(:category, manager: manager) }
     let(:mail) { DueDateMailer.category_due(due_date, category) }
@@ -72,7 +73,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do
@@ -87,7 +88,7 @@ RSpec.describe DueDateMailer, type: :mailer do
   end
 
   describe "category over due" do
-    let(:manager) { FactoryBot.create(:user) }
+    let(:manager) { FactoryBot.create(:user, :manager) }
     let(:due_date) { FactoryBot.create(:due_date, due_date: overdue_date) }
     let(:category) { FactoryBot.create(:category, manager: manager) }
     let(:mail) { DueDateMailer.category_overdue(due_date, category) }
@@ -100,7 +101,7 @@ RSpec.describe DueDateMailer, type: :mailer do
 
     it "mentions the managers name" do
       expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(manager.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
     end
 
     it "mentions the indicator title" do

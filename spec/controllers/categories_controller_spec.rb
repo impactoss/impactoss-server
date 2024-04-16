@@ -44,18 +44,24 @@ RSpec.describe CategoriesController, type: :controller do
   describe "Get show" do
     let(:category) { FactoryBot.create(:category) }
     let(:draft_category) { FactoryBot.create(:category, draft: true) }
-    subject { get :show, params: {id: category}, format: :json }
+    subject {
+      get :show, params: {
+        id: category
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the category" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(category.id)
+        expect(json.dig("data", "id").to_i).to eq(category.id)
       end
 
       it "will not show draft category" do
-        get :show, params: {id: draft_category}, format: :json
+        get :show, params: {
+          id: draft_category
+        }, format: :json
         expect(response).to be_not_found
       end
     end
@@ -64,12 +70,15 @@ RSpec.describe CategoriesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a category" do
-        post :create, format: :json, params: {category: {title: "test", description: "test", target_date: "today"}}
+        post :create, format: :json, params: {
+          category: {title: "test", description: "test", target_date: "today"}
+        }
         expect(response).to be_unauthorized
       end
     end
 
     context "when signed in" do
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:taxonomy) { FactoryBot.create(:taxonomy) }
@@ -98,16 +107,23 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_created
       end
 
+      it "will not allow a contributor to create a category" do
+        sign_in contributor
+        expect(subject).to be_forbidden
+      end
+
       it "will record what manager created the category", versioning: true do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        post :create, format: :json, params: {category: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          category: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -118,8 +134,10 @@ RSpec.describe CategoriesController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: category,
-                 category: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: category,
+          category: {title: "test update", description: "test update", target_date: "today update"}
+        }
     end
 
     context "when not signed in" do
@@ -129,8 +147,11 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:admin) { FactoryBot.create(:user, :admin) }
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
 
       it "will not allow a guest to update a category" do
         sign_in guest
@@ -142,24 +163,63 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_ok
       end
 
+      it "will not allow a manager to update manager_id" do
+        sign_in user
+        expect {
+          put :update,
+            format: :json,
+            params: {
+              id: category,
+              category: {manager_id: manager.id}
+            }
+        }.not_to change { category.reload.manager_id }
+
+        expect(response).to be_ok
+      end
+
+      it "will allow an admin to update manager_id" do
+        sign_in admin
+        expect {
+          put :update,
+            format: :json,
+            params: {
+              id: category,
+              category: {manager_id: manager.id}
+            }
+        }.to change { category.reload.manager_id }.to(manager.id)
+
+        expect(response).to be_ok
+      end
+
+      it "will not allow a contributor to update a category" do
+        sign_in contributor
+        expect(subject).to be_forbidden
+      end
+
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
         sign_in user
-        category_get = get :show, params: {id: category}, format: :json
+        category_get = get :show, params: {
+          id: category
+        }, format: :json
         json = JSON.parse(category_get.body)
-        current_update_at = json["data"]["attributes"]["updated_at"]
+        current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {id: category,
-                     category: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: category,
+              category: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to be_ok
         end
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
-            params: {id: category,
-                     category: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: category,
+              category: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to_not be_ok
         end
       end
@@ -168,20 +228,22 @@ RSpec.describe CategoriesController, type: :controller do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
       end
 
-      it "will return the latest last_modified_user_id", versioning: true do
+      it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         category.versions.first.update_column(:whodunnit, guest.id)
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"]["attributes"]["last_modified_user_id"].to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
       end
 
       it "will return an error if params are incorrect" do
         sign_in user
-        put :update, format: :json, params: {id: category, category: {taxonomy_id: 999}}
+        put :update, format: :json, params: {
+          id: category, category: {taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -189,7 +251,11 @@ RSpec.describe CategoriesController, type: :controller do
 
   describe "Delete destroy" do
     let(:category) { FactoryBot.create(:category) }
-    subject { delete :destroy, format: :json, params: {id: category} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: category
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a category" do
@@ -198,6 +264,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context "when user signed in" do
+      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
 
@@ -206,16 +273,19 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to delete a category" do
-        sign_in user
-        expect(subject).to be_no_content
+      it "will not allow a contributor to delete a category" do
+        sign_in contributor
+        expect(subject).to be_forbidden
       end
 
-      it "response with success when versioned", versioning: true do
-        expect(PaperTrail).to be_enabled
-        category.update_attribute(:title, "something else")
+      it "will not allow a manager to delete a category" do
         sign_in user
-        expect(subject.response_code).to eq(204)
+        expect(subject).to be_forbidden
+      end
+
+      it "will not allow an admin to delete a category" do
+        sign_in user
+        expect(subject).to be_forbidden
       end
     end
   end

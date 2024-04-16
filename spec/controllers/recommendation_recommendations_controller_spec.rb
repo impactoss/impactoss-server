@@ -12,14 +12,18 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
 
   describe "show" do
     let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject { get :show, params: {id: recommendation_recommendation}, format: :json }
+    subject {
+      get :show, params: {
+        id: recommendation_recommendation
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the recommendation_recommendation" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(recommendation_recommendation.id)
+        expect(json.dig("data", "id").to_i).to eq(recommendation_recommendation.id)
       end
     end
   end
@@ -27,7 +31,9 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
   describe "create" do
     context "when not signed in" do
       it "doesnt allow creating a recommendation_recommendation" do
-        post :create, format: :json, params: {recommendation_recommendation: {recommendation_id: 1, other_recommendation_id: 2}}
+        post :create, format: :json, params: {
+          recommendation_recommendation: {recommendation_id: 1, other_recommendation_id: 2}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -66,14 +72,30 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
         expect(subject).to be_created
       end
 
+      it "will record what manager created the recommendation_recommendation", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in manager
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
+      end
+
       it "will allow an admin to create a recommendation_recommendation" do
         sign_in admin
         expect(subject).to be_created
       end
 
+      it "will record what admin created the recommendation_recommendation", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in admin
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
+      end
+
       it "will return an error if params are incorrect" do
         sign_in manager
-        post :create, format: :json, params: {recommendation_recommendation: {description: "desc"}}
+        post :create, format: :json, params: {
+          recommendation_recommendation: {description: "desc"}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -81,7 +103,11 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
 
   describe "Delete destroy" do
     let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject { delete :destroy, format: :json, params: {id: recommendation_recommendation} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: recommendation_recommendation
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a recommendation_recommendation" do

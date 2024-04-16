@@ -9,6 +9,7 @@ class Recommendation < VersionedRecord
   has_many :measures, through: :recommendation_measures
   has_many :categories, through: :recommendation_categories
   has_many :indicators, through: :recommendation_indicators
+  has_many :indicators_via_measures, through: :measures, source: :indicators
   has_many :progress_reports, through: :indicators
   has_many :due_dates, through: :indicators
 
@@ -16,6 +17,8 @@ class Recommendation < VersionedRecord
   has_many :recommendations, through: :recommendation_recommendations, source: :other_recommendation
 
   belongs_to :framework, optional: true
+
+  belongs_to :relationship_updated_by, class_name: "User", required: false
 
   accepts_nested_attributes_for :recommendation_categories
 

@@ -21,6 +21,7 @@ class Indicator < VersionedRecord
   # has_many :direct_recommendations, through: :indicators_recommendations, source: :recommendation
 
   belongs_to :manager, class_name: "User", foreign_key: :manager_id, required: false
+  belongs_to :relationship_updated_by, class_name: "User", required: false
 
   accepts_nested_attributes_for :measure_indicators
 
