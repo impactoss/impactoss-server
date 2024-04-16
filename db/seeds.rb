@@ -117,23 +117,8 @@ class Seeds
       framework: hr,
       taxonomy: persons
     )
-    # 6. Country specific taxonomy
-    cluster = Taxonomy.create!(
-      title: "Thematic cluster",
-      framework: hr,
-      tags_measures: true,
-      tags_users: false,
-      allow_multiple: true,
-      priority: 5,
-      is_smart: false,
-      groups_measures_default: 1
-    )
-    FrameworkTaxonomy.create!(
-      framework: hr,
-      taxonomy: cluster
-    )
 
-    # 7. Country specific taxonomy
+    # 6. Country specific taxonomy
     org = Taxonomy.create!(
       title: "Organisation",
       tags_measures: true,
@@ -147,7 +132,7 @@ class Seeds
       framework: hr,
       taxonomy: org
     )
-    # 8. Country specific taxonomy
+    # 7. Country specific taxonomy
     smart = Taxonomy.create!(
       title: "SMART criteria",
       is_smart: true,
@@ -156,7 +141,7 @@ class Seeds
       allow_multiple: true,
       priority: 8
     )
-    # 9. Country specific taxonomy
+    # 8. Country specific taxonomy
     progress = Taxonomy.create!(
       title: "Progress status",
       is_smart: false,
@@ -239,68 +224,6 @@ class Seeds
     org.categories.create!(
       title: "Statistics New Zealand",
       short_title: "Stats NZ"
-    )
-
-    # Thematic Clusters
-    cluster.categories.create!(
-      title: "CAT Ratification",
-      short_title: "CAT"
-    )
-    cluster.categories.create!(
-      title: "Climate change",
-      short_title: "Climate"
-    )
-    cluster.categories.create!(
-      title: "Combat sexual exploitation and abuse",
-      short_title: "Abuse"
-    )
-    cluster.categories.create!(
-      title: "Combat violence against children",
-      short_title: "Children"
-    )
-    cluster.categories.create!(
-      title: "Combat violence against women",
-      short_title: "Women"
-    )
-    cluster.categories.create!(
-      title: "Countering violent extremism/terrorism",
-      short_title: "Extremism/terrorism"
-    )
-    cluster.categories.create!(
-      title: "Education",
-      short_title: "Education"
-    )
-    cluster.categories.create!(
-      title: "Equality and non-discrimination in the criminal justice system",
-      short_title: "Equality"
-    )
-    cluster.categories.create!(
-      title: "Families and young persons",
-      short_title: "Families"
-    )
-    cluster.categories.create!(
-      title: "Gender equality",
-      short_title: "Gender"
-    )
-    cluster.categories.create!(
-      title: "Poverty",
-      short_title: "Poverty"
-    )
-    cluster.categories.create!(
-      title: "Reduce child poverty",
-      short_title: "Child poverty"
-    )
-    cluster.categories.create!(
-      title: "Sea level rise",
-      short_title: "Sea level rise"
-    )
-    cluster.categories.create!(
-      title: "Strengthen institutional capacity to serve the public interest with competence and justice",
-      short_title: "Inst. capacity"
-    )
-    cluster.categories.create!(
-      title: "Violence, abuse and neglect",
-      short_title: "Violence"
     )
 
     # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
