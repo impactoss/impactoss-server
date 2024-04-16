@@ -113,23 +113,8 @@ class Seeds
       framework: hr,
       taxonomy: persons
     )
-    # 6. Country specific taxonomy
-    cluster = Taxonomy.create!(
-      title: "Thematic cluster",
-      framework: hr,
-      tags_measures: true,
-      tags_users: false,
-      allow_multiple: true,
-      priority: 5,
-      is_smart: false,
-      groups_measures_default: 1
-    )
-    FrameworkTaxonomy.create!(
-      framework: hr,
-      taxonomy: cluster
-    )
 
-    # 7. Country specific taxonomy
+    # 6. Country specific taxonomy
     org = Taxonomy.create!(
       title: "Organisation",
       tags_measures: true,
@@ -143,7 +128,7 @@ class Seeds
       framework: hr,
       taxonomy: org
     )
-    # 8. Country specific taxonomy
+    # 7. Country specific taxonomy
     smart = Taxonomy.create!(
       title: "SMART criteria",
       is_smart: true,
@@ -152,7 +137,7 @@ class Seeds
       allow_multiple: true,
       priority: 8
     )
-    # 9. Country specific taxonomy
+    # 8. Country specific taxonomy
     progress = Taxonomy.create!(
       title: "Progress status",
       is_smart: false,
