@@ -39,7 +39,6 @@ group :development do
   gem "simplecov", require: false
   gem "spring"
   gem "standard"
-  gem "thin", require: false
   gem "web-console", "~> 4.1"
 end
 
