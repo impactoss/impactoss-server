@@ -22,13 +22,15 @@ module HumanRightsNationalReporting
     config.active_record.default_timezone = :local
 
     config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins ENV["ALLOWED_ORIGIN_S3"].split(",").map(&:strip)
-        resource "/s3/*",
-          headers: :any,
-          methods: :any,
-          expose: ["access-token", "expiry", "token-type", "uid", "client"],
-          credentials: true
+      if ENV["ALLOWED_ORIGIN_S3"]
+        allow do
+          origins ENV["ALLOWED_ORIGIN_S3"].split(",").map(&:strip)
+          resource "/s3/*",
+            headers: :any,
+            methods: :any,
+            expose: ["access-token", "expiry", "token-type", "uid", "client"],
+            credentials: true
+        end
       end
 
       allow do
