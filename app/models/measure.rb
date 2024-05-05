@@ -20,4 +20,5 @@ class Measure < VersionedRecord
   accepts_nested_attributes_for :measure_categories
 
   validates :title, presence: true
+  validates :reference, uniqueness: true
 end
