@@ -2,6 +2,8 @@ class S3Controller < ApplicationController
   after_action :verify_authorized, except: :sign
 
   def sign
+    render json: {error: "Not configured"} and return unless defined?(::FogStorage)
+
     options = {path_style: true}
     headers = {"Content-Type" => params[:contentType], "x-amz-acl" => "public-read"}
 
