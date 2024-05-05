@@ -6,6 +6,13 @@ RSpec.describe Recommendation, type: :model do
   it { is_expected.to validate_presence_of :title }
   it { is_expected.to validate_presence_of :reference }
 
+  it "validates uniqueness of reference" do
+    FactoryBot.create(:recommendation, reference: "123")
+
+    expect(FactoryBot.build(:recommendation, reference: "123")).to be_invalid
+    expect(FactoryBot.build(:recommendation, reference: "456")).to be_valid
+  end
+
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :measures }
   it { is_expected.to have_many :indicators }

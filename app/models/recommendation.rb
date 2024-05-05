@@ -23,5 +23,5 @@ class Recommendation < VersionedRecord
   accepts_nested_attributes_for :recommendation_categories
 
   validates :title, presence: true
-  validates :reference, presence: true
+  validates :reference, presence: true, uniqueness: true
 end
