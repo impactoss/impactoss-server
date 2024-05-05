@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :indicator do
     title { Faker::Lorem.sentence }
     description { Faker::Hipster.sentence }
+    sequence(:reference) { Faker::Creature::Dog.breed + _1.to_s }
 
     trait :without_measure do
       measures { [] }
