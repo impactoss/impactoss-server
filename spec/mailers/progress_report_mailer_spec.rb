@@ -3,10 +3,20 @@ require "rails_helper"
 
 RSpec.describe ProgressReportMailer, type: :mailer do
   describe "updated" do
-    let(:manager) { FactoryBot.create(:user) }
-    let(:indicator) { FactoryBot.create(:indicator, manager:) }
-    let(:progress_report) { FactoryBot.create(:progress_report, indicator:) }
-    let(:mail) { described_class.updated(progress_report) }
+    let(:category) { FactoryBot.create(:category, manager:) }
+    let(:measure) { FactoryBot.create(:measure) }
+    let(:recommendation) { FactoryBot.create(:recommendation) }
+    let(:guest) { FactoryBot.create(:user) }
+    let(:manager) { FactoryBot.create(:user, :manager) }
+    let(:contributor) { FactoryBot.create(:user, :contributor) }
+    let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
+    let(:progress_report_with_contributor) { FactoryBot.create(:progress_report, indicator: contributor_indicator) }
+    let(:mail) { described_class.updated(progress_report_with_contributor, category) }
+
+    before do
+      measure.indicators << contributor_indicator
+      recommendation.measures << measure
+    end
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t("progress_report_mailer.updated.subject"))
@@ -20,8 +30,8 @@ RSpec.describe ProgressReportMailer, type: :mailer do
     end
 
     it "mentions the indicator title" do
-      expect(mail.text_part.body).to match(due_date.indicator.title)
-      expect(mail.html_part.body).to match(due_date.indicator.title)
+      expect(mail.text_part.body).to match(contributor_indicator.title)
+      expect(mail.html_part.body).to match(contributor_indicator.title)
     end
   end
 end

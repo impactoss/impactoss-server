@@ -4,13 +4,14 @@ class ProgressReportMailer < ApplicationMailer
   #
   #   en.progress_report_mailer.updated.subject
   #
-  def updated(progress_report)
-    return if progress_report.manager_email.blank?
+  def updated(progress_report, category)
+    return if category.manager_email.blank?
 
+    @category = category
     @indicator = progress_report.indicator
-    @manager_name = progress_report.manager_name
+    @manager_name = @category.manager_name
     @client_url = ENV.fetch("CLIENT_URL", "https://undefined.client.url")
 
-    mail to: progress_report.manager_email, subject: I18n.t("progress_report_mailer.updated.subject")
+    mail to: @category.manager_email, subject: I18n.t("progress_report_mailer.updated.subject")
   end
 end
