@@ -80,7 +80,8 @@ RSpec.describe CategoriesController, type: :controller do
     context "when signed in" do
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
+      let(:user) { FactoryBot.create(:user, :admin) }
       let(:taxonomy) { FactoryBot.create(:taxonomy) }
 
       subject do
@@ -102,9 +103,9 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to create a category" do
-        sign_in user
-        expect(subject).to be_created
+      it "will not allow a manager to create a category" do
+        sign_in manager
+        expect(subject).to be_forbidden
       end
 
       it "will not allow a contributor to create a category" do
@@ -112,7 +113,7 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will record what manager created the category", versioning: true do
+      it "will record what user created the category", versioning: true do
         expect(PaperTrail).to be_enabled
         sign_in user
         json = JSON.parse(subject.body)
@@ -150,7 +151,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:admin) { FactoryBot.create(:user, :admin) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:user) { FactoryBot.create(:user, :admin) }
       let(:manager) { FactoryBot.create(:user, :manager) }
 
       it "will not allow a guest to update a category" do
@@ -158,13 +159,13 @@ RSpec.describe CategoriesController, type: :controller do
         expect(subject).to be_forbidden
       end
 
-      it "will allow a manager to update a category" do
-        sign_in user
-        expect(subject).to be_ok
+      it "will not allow a manager to update a category" do
+        sign_in manager
+        expect(subject).to be_forbidden
       end
 
       it "will not allow a manager to update manager_id" do
-        sign_in user
+        sign_in manager
         expect {
           put :update,
             format: :json,
@@ -174,7 +175,7 @@ RSpec.describe CategoriesController, type: :controller do
             }
         }.not_to change { category.reload.manager_id }
 
-        expect(response).to be_ok
+        expect(response).to be_forbidden
       end
 
       it "will allow an admin to update manager_id" do
