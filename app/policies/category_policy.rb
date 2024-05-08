@@ -22,6 +22,14 @@ class CategoryPolicy < ApplicationPolicy
     false
   end
 
+  def create?
+    @user.role?("admin")
+  end
+
+  def update?
+    @user.role?("admin")
+  end
+
   class Scope < Scope
     def resolve
       return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
