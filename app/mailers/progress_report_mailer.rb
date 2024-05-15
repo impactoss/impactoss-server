@@ -8,6 +8,7 @@ class ProgressReportMailer < ApplicationMailer
     return if category.manager_email.blank?
 
     @category = category
+    @progress_report = progress_report
     @indicator = progress_report.indicator
     @manager_name = @category.manager_name
     @client_url = ENV.fetch("CLIENT_URL", "https://undefined.client.url")
