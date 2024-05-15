@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_02_10_041747) do
+ActiveRecord::Schema.define(version: 2024_05_05_021300) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 2024_02_10_041747) do
     t.index ["created_at"], name: "index_indicators_on_created_at"
     t.index ["draft"], name: "index_indicators_on_draft"
     t.index ["manager_id"], name: "index_indicators_on_manager_id"
+    t.index ["reference"], name: "index_indicators_on_reference", unique: true
   end
 
   create_table "measure_categories", id: :serial, force: :cascade do |t|
@@ -146,6 +147,7 @@ ActiveRecord::Schema.define(version: 2024_02_10_041747) do
     t.bigint "relationship_updated_by_id"
     t.string "reference"
     t.index ["draft"], name: "index_measures_on_draft"
+    t.index ["reference"], name: "index_measures_on_reference", unique: true
   end
 
   create_table "pages", id: :serial, force: :cascade do |t|
@@ -237,6 +239,7 @@ ActiveRecord::Schema.define(version: 2024_02_10_041747) do
     t.datetime "relationship_updated_at", precision: 6
     t.index ["draft"], name: "index_recommendations_on_draft"
     t.index ["framework_id"], name: "index_recommendations_on_framework_id"
+    t.index ["reference"], name: "index_recommendations_on_reference", unique: true
   end
 
   create_table "roles", id: :serial, force: :cascade do |t|

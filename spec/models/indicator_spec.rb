@@ -2,6 +2,14 @@ require "rails_helper"
 
 RSpec.describe Indicator, type: :model do
   it { is_expected.to validate_presence_of :title }
+
+  it "validates uniqueness of reference" do
+    FactoryBot.create(:indicator, reference: "123")
+
+    expect(FactoryBot.build(:indicator, reference: "123")).to be_invalid
+    expect(FactoryBot.build(:indicator, reference: "456")).to be_valid
+  end
+
   it { is_expected.to have_many :measures }
   it { is_expected.to have_many :progress_reports }
   it { is_expected.to have_many :due_dates }
