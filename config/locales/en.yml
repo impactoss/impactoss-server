@@ -17,4 +17,4 @@ en:
       subject: Progress report is overdue
   progress_report_mailer:
     updated:
-      subject: Progress report has been updated
+      subject: A progress report has been added or updated

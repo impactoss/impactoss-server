@@ -1,15 +1,15 @@
-<h3>Progress report updated for <%= @indicator.title %></h3>
+<h3>Progress report added or updated for <%= @indicator.title %></h3>
 
 <p>
   Hi <%= @manager_name %>,
 </p>
 
 <p>
-  A progress report was updated for a Human Rights Body (<a href="<%= @client_url %>/categories/<%= @category.id %>"><%= @category.title %></a>) you were assigned to.
+  A progress report was added or updated for a Human Rights Body (<a href="<%= @client_url %>/categories/<%= @category.id %>"><%= @category.title %></a>) you were assigned to.
 </p>
 
 <p>
-  Visit the <a href="<%= @client_url %>/progress_reports/<%= @progress_report.id %>">progress report</a> page.
+You can review and publish the progress report here: <a href="<%= @client_url %>/reports/<%= @progress_report.id %>"><%= @progress_report.title %></a>.
 </p>
 
 <p>
