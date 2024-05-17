@@ -11,6 +11,20 @@ class ProgressReport < VersionedRecord
 
   validate :indicator_id_must_not_change, if: [:persisted?, :indicator_id_changed?]
 
+  def self.send_all_updated_emails
+    where(updated_at: 24.hours.ago..)
+      .each(&:send_updated_emails)
+  end
+
+  def send_updated_emails
+    categories
+      .flat_map(&:self_and_ancestors)
+      .reject { _1.updated_by_id == _1.manager_id }
+      .each do |category|
+        ProgressReportMailer.updated(self, category).deliver_now
+      end
+  end
+
   private
 
   def indicator_id_must_not_change
