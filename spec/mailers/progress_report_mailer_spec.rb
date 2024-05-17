@@ -35,8 +35,8 @@ RSpec.describe ProgressReportMailer, type: :mailer do
     end
 
     it "links to the progress report" do
-      expect(mail.text_part.body).to match("/progress_reports/#{progress_report_with_contributor.id}")
-      expect(mail.html_part.body).to match("/progress_reports/#{progress_report_with_contributor.id}")
+      expect(mail.text_part.body).to match("/reports/#{progress_report_with_contributor.id}")
+      expect(mail.html_part.body).to match("/reports/#{progress_report_with_contributor.id}")
     end
   end
 end
