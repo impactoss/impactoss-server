@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_05_021300) do
+ActiveRecord::Schema.define(version: 2024_06_11_115935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.integer "parent_id"
     t.date "date"
     t.integer "created_by_id"
+    t.boolean "is_archived", default: false
     t.index ["draft"], name: "index_categories_on_draft"
     t.index ["manager_id"], name: "index_categories_on_manager_id"
     t.index ["taxonomy_id"], name: "index_categories_on_taxonomy_id"
@@ -105,6 +106,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.integer "created_by_id"
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
+    t.boolean "is_archived", default: false
     t.index ["created_at"], name: "index_indicators_on_created_at"
     t.index ["draft"], name: "index_indicators_on_draft"
     t.index ["manager_id"], name: "index_indicators_on_manager_id"
@@ -146,6 +148,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
     t.string "reference"
+    t.boolean "is_archived", default: false
     t.index ["draft"], name: "index_measures_on_draft"
     t.index ["reference"], name: "index_measures_on_reference", unique: true
   end
@@ -160,6 +163,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.integer "order"
     t.integer "updated_by_id"
     t.integer "created_by_id"
+    t.boolean "is_archived", default: false
     t.index ["draft"], name: "index_pages_on_draft"
   end
 
@@ -175,6 +179,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.datetime "updated_at", null: false
     t.integer "updated_by_id"
     t.integer "created_by_id"
+    t.boolean "is_archived", default: false
     t.index ["due_date_id"], name: "index_progress_reports_on_due_date_id"
     t.index ["indicator_id"], name: "index_progress_reports_on_indicator_id"
   end
@@ -237,6 +242,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.integer "created_by_id"
     t.bigint "relationship_updated_by_id"
     t.datetime "relationship_updated_at", precision: 6
+    t.boolean "is_archived", default: false
     t.index ["draft"], name: "index_recommendations_on_draft"
     t.index ["framework_id"], name: "index_recommendations_on_framework_id"
     t.index ["reference"], name: "index_recommendations_on_reference", unique: true
