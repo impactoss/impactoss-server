@@ -120,7 +120,7 @@ class Seeds
 
     # 6. Country specific taxonomy
     org = Taxonomy.create!(
-      title: "Organisation",
+      title: "Government agencies",
       tags_measures: true,
       tags_users: true,
       allow_multiple: true,
@@ -165,7 +165,7 @@ class Seeds
 
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
     body.categories.create!(
-      title: "Universal Periodic Review",
+      title: "Human rights council (UPR)",
       short_title: "UPR"
     )
     body.categories.create!(
@@ -177,23 +177,23 @@ class Seeds
       short_title: "ICESCR"
     )
     body.categories.create!(
-      title: "Convention Against Torture and Other Cruel, Inhuman or Degrading Treatment or Punishment",
+      title: "Committee Against Torture and Other Cruel, Inhuman or Degrading Treatment or Punishment",
       short_title: "CAT"
     )
     body.categories.create!(
-      title: "Convention for the Elimination of All Forms of Racial Discrimination",
+      title: "Committee for the Elimination of All Forms of Racial Discrimination",
       short_title: "CERD"
     )
     body.categories.create!(
-      title: "Convention for the Elimination of All Forms of Discrimination Against Women",
+      title: "Committee for the Elimination of All Forms of Discrimination Against Women",
       short_title: "CEDAW"
     )
     body.categories.create!(
-      title: "Convention on the Rights of the Child",
+      title: "Committee on the Rights of the Child",
       short_title: "CRC"
     )
     body.categories.create!(
-      title: "Convention on the Rights of Persons with Disabilities",
+      title: "Committee on the Rights of Persons with Disabilities",
       short_title: "CRPD"
     )
     # Human Rights Issues
@@ -214,7 +214,7 @@ class Seeds
       short_title: "MSD"
     )
     org.categories.create!(
-      title: "Te Whaikaha Ministry of Disabled People",
+      title: "Whaikaha: Ministry of Disabled People",
       short_title: "Whaikaha"
     )
     org.categories.create!(
