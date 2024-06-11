@@ -48,6 +48,12 @@ class Category < VersionedRecord
     end
   end
 
+  def self_and_ancestors
+    return [self] if parent_id.nil?
+
+    [self, *category.self_and_ancestors]
+  end
+
   def self.send_all_due_emails
     Category.all.each(&:send_due_emails)
   end
