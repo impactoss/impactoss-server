@@ -29,6 +29,7 @@ class Seeds
     Page.new(title: "Copyright", menu_title: "Copyright").save!
     Page.new(title: "Disclaimer", menu_title: "Disclaimer").save!
     Page.new(title: "Privacy", menu_title: "Privacy").save!
+    Page.new(title: "About the Human Rights Monitor", menu_title: "About").save!
 
     # set up frameworks
     hr = Framework.create!(
