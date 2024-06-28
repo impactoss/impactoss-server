@@ -14,7 +14,8 @@ class CategoryPolicy < ApplicationPolicy
       :taxonomy_id,
       :title,
       :url,
-      :user_only
+      :user_only,
+      (:is_archive if @user.role?("admin"))
     ].compact
   end
 

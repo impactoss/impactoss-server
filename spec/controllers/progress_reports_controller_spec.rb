@@ -4,6 +4,8 @@ require "rails_helper"
 require "json"
 
 RSpec.describe ProgressReportsController, type: :controller do
+  let(:admin) { FactoryBot.create(:user, :admin) }
+
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:progress_report) { FactoryBot.create(:progress_report) }
@@ -84,24 +86,23 @@ RSpec.describe ProgressReportsController, type: :controller do
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:due_date) { FactoryBot.create(:due_date) }
       let(:indicator) { FactoryBot.create(:indicator) }
       let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
+      let(:progress_report) {
+        {
+          indicator_id: indicator.id,
+          due_date_id: due_date.id,
+          title: "test title",
+          description: "test desc",
+          document_url: "test_url",
+          document_public: true
+        }
+      }
 
       subject(:without_contributor_manager) do
-        post :create,
-          format: :json,
-          params: {
-            progress_report: {
-              indicator_id: indicator.id,
-              due_date_id: due_date.id,
-              title: "test title",
-              description: "test desc",
-              document_url: "test_url",
-              document_public: true
-            }
-          }
+        post :create, format: :json, params: {progress_report:}
         # This is an example creating a new recommendation record in the post
         # post :create,
         #      format: :json,
@@ -117,33 +118,17 @@ RSpec.describe ProgressReportsController, type: :controller do
       end
 
       subject(:with_contributor_manager) do
-        post :create,
-          format: :json,
-          params: {
-            progress_report: {
-              indicator_id: contributor_indicator.id,
-              due_date_id: due_date.id,
-              title: "test title",
-              description: "test desc",
-              document_url: "test_url",
-              document_public: true
-            }
-          }
+        post :create, format: :json, params: {progress_report:}
       end
 
       subject(:draft_with_contributor_manager) do
         post :create,
           format: :json,
           params: {
-            progress_report: {
+            progress_report: progress_report.merge(
               indicator_id: contributor_indicator.id,
-              due_date_id: due_date.id,
-              title: "test title",
-              description: "test desc",
-              document_url: "test_url",
-              document_public: true,
               draft: true
-            }
+            )
           }
       end
 
@@ -171,19 +156,39 @@ RSpec.describe ProgressReportsController, type: :controller do
       end
 
       it "will allow a manager to create a progress_report" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_created
+      end
+
+      context "is_archive" do
+        subject {
+          post :create, format: :json, params: {
+            progress_report: progress_report.merge(is_archive: true)
+          }
+        }
+
+        it "can't be set by manager" do
+          sign_in manager
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        end
+
+        it "can be set by admin" do
+          sign_in admin
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        end
       end
 
       it "will record what manager created the progress_report", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         post :create, format: :json, params: {
           progress_report: {description: "desc only"}
         }
@@ -212,7 +217,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
       let(:draft_progress_report_with_contributor) { FactoryBot.create(:progress_report, draft: true, indicator: contributor_indicator) }
@@ -272,12 +277,12 @@ RSpec.describe ProgressReportsController, type: :controller do
       end
 
       it "will allow a manager to update a progress_report" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_ok
       end
 
       it "will not allow the indicator_id to be updated" do
-        sign_in user
+        sign_in manager
         put :update,
           format: :json,
           params: {
@@ -290,7 +295,7 @@ RSpec.describe ProgressReportsController, type: :controller do
       end
 
       it "will reject and update where the last_updated_at is older than updated_at in the database" do
-        sign_in user
+        sign_in manager
         progress_report_get = get :show, params: {
           id: progress_report_with_contributor
         }, format: :json
@@ -319,21 +324,21 @@ RSpec.describe ProgressReportsController, type: :controller do
 
       it "will record what manager updated the progress_report", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq manager.id
       end
 
       it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         progress_report.versions.first.update_column(:whodunnit, contributor.id)
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(manager.id)
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         put :update, format: :json, params: {
           id: progress_report, progress_report: {title: ""}
         }
@@ -359,7 +364,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     context "when user signed in" do
       let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "will not allow a guest to delete a progress_report" do
@@ -373,7 +378,7 @@ RSpec.describe ProgressReportsController, type: :controller do
       end
 
       it "will not allow a manager to delete a progress_report" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_forbidden
       end
 

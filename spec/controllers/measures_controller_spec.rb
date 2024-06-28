@@ -4,6 +4,8 @@ require "rails_helper"
 require "json"
 
 RSpec.describe MeasuresController, type: :controller do
+  let(:admin) { FactoryBot.create(:user, :admin) }
+
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:measure) { FactoryBot.create(:measure) }
@@ -114,21 +116,22 @@ RSpec.describe MeasuresController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:recommendation) { FactoryBot.create(:recommendation) }
       let(:category) { FactoryBot.create(:category) }
 
-      subject do
-        post :create,
-          format: :json,
-          params: {
-            measure: {
-              title: "test",
-              description: "test",
-              target_date: "today"
-            }
+      let(:params) {
+        {
+          measure: {
+            title: "test",
+            description: "test",
+            target_date: "today"
           }
+        }
+      }
+      subject do
+        post :create, format: :json, params:
         # This is an example creating a new recommendation record in the post
         # post :create,
         #      format: :json,
@@ -154,19 +157,44 @@ RSpec.describe MeasuresController, type: :controller do
       end
 
       it "will allow a manager to create a measure" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_created
+      end
+
+      context "is_archive" do
+        let(:params) {
+          {
+            measure: {
+              title: "test",
+              description: "test",
+              target_date: "today",
+              is_archive: true
+            }
+          }
+        }
+
+        it "can't be set by manager" do
+          sign_in manager
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        end
+
+        it "can be set by admin" do
+          sign_in admin
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        end
       end
 
       it "will record what manager created the measure", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         post :create, format: :json, params: {
           measure: {description: "desc only"}
         }
@@ -266,7 +294,6 @@ RSpec.describe MeasuresController, type: :controller do
     end
 
     context "when user signed in" do
-      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }

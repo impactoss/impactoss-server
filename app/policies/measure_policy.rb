@@ -11,6 +11,7 @@ class MeasurePolicy < ApplicationPolicy
       :target_date_comment,
       :target_date,
       :title,
+      (:is_archive if @user.role?("admin")),
       recommendation_measures_attributes: [
         :recommendation_id,
         recommendation_attributes: [:id, :title, :number, :draft]
@@ -28,7 +29,7 @@ class MeasurePolicy < ApplicationPolicy
           :url
         ]
       ]
-    ]
+    ].compact
   end
 
   def destroy?

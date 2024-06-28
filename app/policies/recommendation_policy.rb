@@ -2,14 +2,17 @@
 
 class RecommendationPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title,
+    [
+      :title,
       :draft,
       :accepted,
       :response,
       :reference,
       :description,
       :framework_id,
-      recommendation_categories_attributes: [:category_id]]
+      (:is_archive if @user.role?("admin")),
+      recommendation_categories_attributes: [:category_id]
+    ].compact
   end
 
   def destroy?

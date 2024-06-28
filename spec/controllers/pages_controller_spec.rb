@@ -18,7 +18,7 @@ RSpec.describe PagesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will not see draft pages" do
@@ -34,7 +34,7 @@ RSpec.describe PagesController, type: :controller do
       end
 
       it "manager will see draft pages" do
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(2)
       end
@@ -72,22 +72,19 @@ RSpec.describe PagesController, type: :controller do
     end
 
     context "when signed in" do
-      let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
       let(:admin) { FactoryBot.create(:user, :admin) }
+      let(:guest) { FactoryBot.create(:user) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:taxonomy) { FactoryBot.create(:taxonomy) }
+      let(:page) {
+        {
+          title: "test",
+          content: "bla",
+          menu_title: "test"
+        }
+      }
 
-      subject do
-        post :create,
-          format: :json,
-          params: {
-            page: {
-              title: "test",
-              content: "bla",
-              menu_title: "test"
-            }
-          }
-      end
+      subject { post :create, format: :json, params: {page:} }
 
       it "will not allow a guest to create a page" do
         sign_in guest
@@ -95,16 +92,30 @@ RSpec.describe PagesController, type: :controller do
       end
 
       it "will not allow a manager to create a page" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_forbidden
       end
 
-      it "will not allow an admin to create a page" do
+      it "will allow an admin to create a page" do
         sign_in admin
         expect(subject).to be_created
       end
 
-      it "will record what manager created the page", versioning: true do
+      context "is_archive" do
+        subject {
+          post :create, format: :json, params: {
+            page: page.merge(is_archive: true)
+          }
+        }
+
+        it "can be set by admin" do
+          sign_in admin
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        end
+      end
+
+      it "will record what user created the page", versioning: true do
         expect(PaperTrail).to be_enabled
         sign_in admin
         json = JSON.parse(subject.body)
@@ -126,8 +137,10 @@ RSpec.describe PagesController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: page,
-                 page: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: page,
+          page: {title: "test update", description: "test update", target_date: "today update"}
+        }
     end
 
     context "when not signed in" do
@@ -138,7 +151,7 @@ RSpec.describe PagesController, type: :controller do
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:admin) { FactoryBot.create(:user, :admin) }
 
       it "will not allow a guest to update a page" do
@@ -147,7 +160,7 @@ RSpec.describe PagesController, type: :controller do
       end
 
       it "will not allow a manager to update a page" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_forbidden
       end
 
@@ -165,15 +178,19 @@ RSpec.describe PagesController, type: :controller do
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {id: page,
-                     page: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: page,
+              page: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to be_ok
         end
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
-            params: {id: page,
-                     page: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: page,
+              page: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to_not be_ok
         end
       end
@@ -187,7 +204,7 @@ RSpec.describe PagesController, type: :controller do
 
       it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
-        page.versions.first.update_column(:whodunnit, user.id)
+        page.versions.first.update_column(:whodunnit, manager.id)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
@@ -207,7 +224,7 @@ RSpec.describe PagesController, type: :controller do
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:admin) { FactoryBot.create(:user, :admin) }
 
       it "will not allow a guest to delete a page" do
@@ -216,7 +233,7 @@ RSpec.describe PagesController, type: :controller do
       end
 
       it "will not allow a manager to delete a page" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_forbidden
       end
 
