@@ -52,7 +52,11 @@ class PagesController < ApplicationController
   end
 
   def base_object
-    Page
+    records = Page
+
+    return records if params[:include_archive] != "false"
+
+    records.where(is_archive: false)
   end
 
   def serialize(target, serializer: PageSerializer)

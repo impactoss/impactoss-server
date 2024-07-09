@@ -42,6 +42,18 @@ RSpec.describe IndicatorsController, type: :controller do
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(2)
       end
+
+      context "when include_archive=false" do
+        subject { get :index, format: :json, params: {include_archive: false} }
+        let!(:archived) { FactoryBot.create(:indicator, is_archive: true) }
+
+        it "will not show is_archived items" do
+          sign_in manager
+          json = JSON.parse(subject.body)
+          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
+            .to eq([indicator.id, draft_indicator.id].sort)
+        end
+      end
     end
 
     context "filters" do
