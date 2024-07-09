@@ -56,9 +56,9 @@ class RecommendationsController < ApplicationController
       Recommendation
     end
 
-    return records if params[:include_archive] != "false"
-
-    records.where(is_archive: false)
+    records = records.where(is_archive: false) if params[:include_archive] == "false"
+    records = records.select(&:is_current) if params[:current_only] == "true"
+    records
   end
 
   # Use callbacks to share common setup or constraints between actions.

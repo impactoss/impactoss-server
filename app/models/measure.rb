@@ -21,4 +21,8 @@ class Measure < VersionedRecord
 
   validates :title, presence: true
   validates :reference, uniqueness: true
+
+  def is_current
+    recommendations.empty? || recommendations.any?(&:is_current)
+  end
 end

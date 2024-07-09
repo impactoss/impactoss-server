@@ -26,6 +26,10 @@ class Indicator < VersionedRecord
 
   accepts_nested_attributes_for :measure_indicators
 
+  def is_current
+    measures.empty? || measures.any?(&:is_current)
+  end
+
   private
 
   def end_date_after_start_date

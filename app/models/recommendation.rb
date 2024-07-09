@@ -24,4 +24,12 @@ class Recommendation < VersionedRecord
 
   validates :title, presence: true
   validates :reference, presence: true, uniqueness: true
+
+  def is_current
+    reporting_cycle_taxonomy = Taxonomy.joins(:taxonomy).where(has_date: true).where(taxonomies_taxonomies: {priority: 1}).first
+    return true if reporting_cycle_taxonomy.nil? || categories.none? { _1.taxonomy_id == reporting_cycle_taxonomy.id }
+
+    current_category = reporting_cycle_taxonomy.categories.order(Arel.sql("COALESCE(date, created_at) DESC")).first
+    categories.include?(current_category)
+  end
 end

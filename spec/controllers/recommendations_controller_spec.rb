@@ -5,6 +5,8 @@ require "json"
 
 RSpec.describe RecommendationsController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
+  let!(:priority_taxonomy) { FactoryBot.create(:taxonomy, title: "priority", priority: 1) }
+  let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true) }
 
   describe "Get index" do
     subject { get :index, format: :json }
