@@ -261,6 +261,20 @@ RSpec.describe RecommendationsController, type: :controller do
         put :update, format: :json, params: {id: recommendation, recommendation: {title: ""}}
         expect(response).to have_http_status(422)
       end
+
+      context "when is_archive: true" do
+        let(:recommendation) { FactoryBot.create(:recommendation, :is_archive) }
+
+        it "can't be updated by manager" do
+          sign_in manager
+          expect(subject).not_to be_ok
+        end
+
+        it "can be updated by admin" do
+          sign_in admin
+          expect(subject).to be_ok
+        end
+      end
     end
   end
 

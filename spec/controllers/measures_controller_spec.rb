@@ -292,6 +292,28 @@ RSpec.describe MeasuresController, type: :controller do
         put :update, format: :json, params: {id: measure, measure: {title: ""}}
         expect(response).to have_http_status(422)
       end
+
+      context "when is_archive: true" do
+        let(:measure) { FactoryBot.create(:measure, :is_archive) }
+        subject do
+          put :update,
+            format: :json,
+            params: {
+              id: measure,
+              measure: {title: "test update", description: "test update", target_date: "today update"}
+            }
+        end
+
+        it "can't be updated by manager" do
+          sign_in user
+          expect(subject).not_to be_ok
+        end
+
+        it "can be updated by admin" do
+          sign_in admin
+          expect(subject).to be_ok
+        end
+      end
     end
   end
 

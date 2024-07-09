@@ -7,5 +7,9 @@ FactoryBot.define do
     document_url { "MyString" }
     document_public { false }
     draft { false }
+
+    trait :is_archive do
+      is_archive { true }
+    end
   end
 end

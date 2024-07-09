@@ -293,6 +293,34 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(subject).to be_ok
       end
 
+      context "when is_archive: true" do
+        let(:progress_report) { FactoryBot.create(:progress_report, :is_archive) }
+        subject {
+          put :update,
+            format: :json,
+            params: {
+              id: progress_report,
+              progress_report: {title: "test update", description: "test update"}
+            }
+        }
+
+        it "can't be updated by contributor to update a draft progress_report when they are the manager for the indicator" do
+          draft_progress_report_with_contributor.update(is_archive: true)
+          sign_in contributor
+          expect(draft_with_contributor_manager).not_to be_ok
+        end
+
+        it "can't be updated by manager" do
+          sign_in manager
+          expect(subject).not_to be_ok
+        end
+
+        it "can be updated by admin" do
+          sign_in admin
+          expect(subject).to be_ok
+        end
+      end
+
       it "will not allow the indicator_id to be updated" do
         sign_in manager
         put :update,

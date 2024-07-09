@@ -6,6 +6,10 @@ FactoryBot.define do
     description { Faker::Hipster.sentence }
     sequence(:reference) { Faker::Creature::Dog.breed + _1.to_s }
 
+    trait :is_archive do
+      is_archive { true }
+    end
+
     trait :without_measure do
       measures { [] }
     end

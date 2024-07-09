@@ -6,6 +6,10 @@ FactoryBot.define do
     url { Faker::Internet.url }
     association :taxonomy
 
+    trait :is_archive do
+      is_archive { true }
+    end
+
     trait :parent_category do
       title { "parent" }
     end

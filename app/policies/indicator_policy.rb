@@ -24,6 +24,10 @@ class IndicatorPolicy < ApplicationPolicy
     false
   end
 
+  def update?
+    super && (@user.role?("admin") || !@record.is_archive?)
+  end
+
   class Scope < Scope
     def resolve
       return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")

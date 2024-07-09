@@ -21,6 +21,8 @@ class ProgressReportPolicy < ApplicationPolicy
   end
 
   def update?
+    return false if @record.is_archive? && !@user.role?("admin")
+
     super || (@user.role?("contributor") && @record.draft? && !@record.draft_changed? && @record.manager == @user)
   end
 
