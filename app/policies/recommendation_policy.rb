@@ -9,6 +9,7 @@ class RecommendationPolicy < ApplicationPolicy
       :reference,
       :description,
       :framework_id,
+      :support_level,
       recommendation_categories_attributes: [:category_id]]
   end
 

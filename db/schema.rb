@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_05_021300) do
+ActiveRecord::Schema.define(version: 2024_07_26_032048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -235,6 +235,7 @@ ActiveRecord::Schema.define(version: 2024_05_05_021300) do
     t.integer "updated_by_id"
     t.integer "framework_id"
     t.integer "created_by_id"
+    t.integer "support_level"
     t.bigint "relationship_updated_by_id"
     t.datetime "relationship_updated_at", precision: 6
     t.index ["draft"], name: "index_recommendations_on_draft"
