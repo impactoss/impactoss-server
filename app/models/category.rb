@@ -26,8 +26,8 @@ class Category < VersionedRecord
 
   def is_current
     Taxonomy.current_reporting_cycle_id == taxonomy_id &&
-      date &&
-      category &&
+      date.present? &&
+      category.present? &&
       category.categories.order(date: :desc).first == self
   end
 

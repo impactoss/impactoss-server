@@ -5,8 +5,6 @@ require "json"
 
 RSpec.describe RecommendationsController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
-  let!(:priority_taxonomy) { FactoryBot.create(:taxonomy, title: "priority", priority: 1) }
-  let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true) }
 
   describe "Get index" do
     subject { get :index, format: :json }
@@ -54,6 +52,30 @@ RSpec.describe RecommendationsController, type: :controller do
           json = JSON.parse(subject.body)
           expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
             .to eq([recommendation.id, draft_recommendation.id].sort)
+        end
+      end
+
+      context "when current_only=true" do
+        let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
+        let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
+        let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
+        let!(:current_recommendation) { FactoryBot.create(:recommendation) }
+
+        before do
+          allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
+          parent_category = FactoryBot.create(:category, taxonomy: parent_taxonomy)
+          current_category.category = parent_category
+          current_recommendation.categories = [parent_category, current_category]
+        end
+
+        subject { get :index, format: :json, params: {current_only: true} }
+
+        it "will only show current recommendations" do
+          sign_in user
+          json = JSON.parse(subject.body)
+          expect(json["data"].length).to eq(1)
+          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
+            .to eq([current_recommendation.id].sort)
         end
       end
     end

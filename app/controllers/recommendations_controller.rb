@@ -57,7 +57,7 @@ class RecommendationsController < ApplicationController
     end
 
     records = records.where(is_archive: false) if params[:include_archive] == "false"
-    records = records.select(&:is_current) if params[:current_only] == "true"
+    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
     records
   end
 
