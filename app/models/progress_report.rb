@@ -23,7 +23,7 @@ class ProgressReport < VersionedRecord
   def send_updated_emails
     categories
       .flat_map(&:self_and_ancestors)
-      .reject { _1.updated_by_id == _1.manager_id }
+      .reject { |category| category.updated_by_id == category.manager_id }
       .each do |category|
         ProgressReportMailer.updated(self, category).deliver_now
       end
