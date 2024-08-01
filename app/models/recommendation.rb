@@ -28,8 +28,8 @@ class Recommendation < VersionedRecord
   SUPPORT_LEVELS = {
     noted: 0,
     supported_in_part: 1,
-    supported: 2,
+    supported: 2
   }
   enum support_level: SUPPORT_LEVELS
-  validates :support_level, inclusion: { in: SUPPORT_LEVELS.keys }, unless: -> { support_level.blank? }
+  validates :support_level, inclusion: {in: SUPPORT_LEVELS.keys}, unless: -> { support_level.blank? }
 end
