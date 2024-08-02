@@ -26,10 +26,25 @@ class Recommendation < VersionedRecord
   validates :reference, presence: true, uniqueness: true
 
   SUPPORT_LEVELS = {
-    noted: 0,
-    supported_in_part: 1,
-    supported: 2
+    "noted" => 0,
+    "supported_in_part" => 1,
+    "supported" => 2
   }
   enum support_level: SUPPORT_LEVELS
-  validates :support_level, inclusion: {in: SUPPORT_LEVELS.keys}, unless: -> { support_level.blank? }
+
+  # This approach prevents the validation process being aborted by an ArgumentError.
+  # Better enum validation exists in Rails 7.1 so we can replace this when we reach that version.
+  def support_level=(value)
+    if !SUPPORT_LEVELS.key?(value)
+      @invalid_support_level = true
+      return
+    end
+
+    super(value)
+  end
+  validate do
+    if @invalid_support_level
+      errors.add(:support_level, "is not a valid support_level. Valid options: #{SUPPORT_LEVELS.keys.join(", ")}")
+    end
+  end
 end

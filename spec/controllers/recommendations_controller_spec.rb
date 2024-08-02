@@ -89,7 +89,13 @@ RSpec.describe RecommendationsController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a recommendation" do
-        post :create, format: :json, params: {recommendation: {title: "test", reference: "1"}}
+        post :create, format: :json, params: {
+          recommendation: {
+            title: "test",
+            reference: "1",
+            support_level: "noted"
+          }
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -105,7 +111,8 @@ RSpec.describe RecommendationsController, type: :controller do
           params: {
             recommendation: {
               title: "test",
-              reference: "1"
+              reference: "1",
+              support_level: "supported_in_part"
             }
           }
       end
@@ -137,16 +144,30 @@ RSpec.describe RecommendationsController, type: :controller do
         post :create, format: :json, params: {recommendation: {description: "desc only"}}
         expect(response).to have_http_status(422)
       end
+
+      it "will return an error if the support_level is not one of the valid options" do
+        sign_in user
+        post :create, format: :json, params: {recommendation: {support_level: "something_else"}}
+        expect(response).to have_http_status(422)
+        expect(response.body).to include("is not a valid support_level")
+      end
     end
   end
 
   describe "PUT update" do
     let(:recommendation) { FactoryBot.create(:recommendation) }
+
     subject do
       put :update,
         format: :json,
-        params: {id: recommendation,
-                 recommendation: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: recommendation,
+          recommendation: {
+            title: "test update",
+            description: "test update",
+            target_date: "today update"
+          }
+        }
     end
 
     context "when not signed in" do
@@ -184,15 +205,32 @@ RSpec.describe RecommendationsController, type: :controller do
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {id: recommendation,
-                     recommendation: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: recommendation,
+              recommendation: {
+                title: "test update",
+                description: "test updateeee",
+                support_level: "supported",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
+            }
           expect(subject).to be_ok
         end
+
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
-            params: {id: recommendation,
-                     recommendation: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: recommendation,
+              recommendation: {
+                title: "test update",
+                description: "test updatebbbb",
+                support_level: "supported_in_part",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
+            }
           expect(subject).to_not be_ok
         end
       end
@@ -216,6 +254,13 @@ RSpec.describe RecommendationsController, type: :controller do
         sign_in user
         put :update, format: :json, params: {id: recommendation, recommendation: {title: ""}}
         expect(response).to have_http_status(422)
+      end
+
+      it "will return an error if the support_level is not one of the valid options" do
+        sign_in user
+        put :update, format: :json, params: {id: recommendation, recommendation: {support_level: "something_else"}}
+        expect(response).to have_http_status(422)
+        expect(response.body).to include("is not a valid support_level")
       end
     end
   end
