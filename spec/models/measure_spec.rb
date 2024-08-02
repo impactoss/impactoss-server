@@ -15,4 +15,38 @@ RSpec.describe Measure, type: :model do
   it { is_expected.to have_many :indicators }
   it { is_expected.to have_many :due_dates }
   it { is_expected.to have_many :progress_reports }
+
+  context "is_current" do
+    let(:measure) { FactoryBot.create(:measure) }
+    let(:recommendation) { FactoryBot.create(:recommendation) }
+
+    context "when there are recommendations" do
+      before do
+        measure.recommendations << recommendation
+        allow(recommendation).to receive(:is_current).and_return(is_current)
+      end
+
+      context "when a recommendation is current" do
+        let(:is_current) { true }
+
+        it "returns true" do
+          expect(measure.is_current).to eq(true)
+        end
+      end
+
+      context "when no recommendation is current" do
+        let(:is_current) { false }
+
+        it "returns false" do
+          expect(recommendation.is_current).to eq(false)
+        end
+      end
+    end
+
+    context "when there are no recommendations" do
+      it "returns true" do
+        expect(measure.is_current).to eq(true)
+      end
+    end
+  end
 end

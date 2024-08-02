@@ -85,4 +85,38 @@ context "a due_date has a progress_report" do
     expect(indicator.due_dates.has_progress_reports.first.id).to be due_date.id
     expect(due_date.progress_reports.count).to be 1
   end
+
+  context "is_current" do
+    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:measure) { FactoryBot.create(:measure) }
+
+    context "when there are measures" do
+      before do
+        indicator.measures << measure
+        allow(measure).to receive(:is_current).and_return(is_current)
+      end
+
+      context "when a measure is current" do
+        let(:is_current) { true }
+
+        it "returns true" do
+          expect(indicator.is_current).to eq(true)
+        end
+      end
+
+      context "when no measure is current" do
+        let(:is_current) { false }
+
+        it "returns false" do
+          expect(measure.is_current).to eq(false)
+        end
+      end
+    end
+
+    context "when there are no measures" do
+      it "returns true" do
+        expect(indicator.is_current).to eq(true)
+      end
+    end
+  end
 end
