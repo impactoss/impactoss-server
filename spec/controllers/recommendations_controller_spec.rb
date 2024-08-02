@@ -76,7 +76,6 @@ RSpec.describe RecommendationsController, type: :controller do
         subject { get :index, format: :json, params: {current_only: true} }
 
         it "will only show current recommendations" do
-          allow(draft_recommendation).to receive(:is_current).and_return(false)
           sign_in user
           json = JSON.parse(subject.body)
           expect(json["data"].length).to eq(2)
