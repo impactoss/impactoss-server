@@ -56,26 +56,33 @@ RSpec.describe RecommendationsController, type: :controller do
       end
 
       context "when current_only=true" do
+        let(:draft_recommendation) { nil }
         let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
         let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
         let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
-        let!(:current_recommendation) { FactoryBot.create(:recommendation) }
+        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation) }
+        let!(:non_current_recommendation) { FactoryBot.create(:recommendation) }
 
         before do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
           parent_category = FactoryBot.create(:category, taxonomy: parent_taxonomy)
+          non_current_category = FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
           current_category.category = parent_category
-          current_recommendation.categories = [parent_category, current_category]
+          recommendation.categories = [parent_category, current_category]
+          non_reporting_cycle_recommendation.categories = [parent_category]
+          non_current_recommendation.categories = [non_current_category]
         end
 
         subject { get :index, format: :json, params: {current_only: true} }
 
         it "will only show current recommendations" do
+          allow(draft_recommendation).to receive(:is_current).and_return(false)
           sign_in user
           json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(1)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([current_recommendation.id].sort)
+          expect(json["data"].length).to eq(2)
+          expect(json["data"].map { _1["id"] }.map(&:to_i).sort).to eq(
+            [recommendation.id, non_reporting_cycle_recommendation.id].sort
+          )
         end
       end
     end

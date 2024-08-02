@@ -26,6 +26,7 @@ class Recommendation < VersionedRecord
   validates :reference, presence: true, uniqueness: true
 
   def is_current
-    categories.any?(&:is_current)
+    categories.none?(&:has_reporting_cycle_taxonomy?) ||
+      categories.any?(&:is_current)
   end
 end
