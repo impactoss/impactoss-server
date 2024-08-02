@@ -105,6 +105,8 @@ RSpec.describe RecommendationsController, type: :controller do
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:category) { FactoryBot.create(:category) }
+      let(:support_level) { "supported_in_part" }
+
       subject do
         post :create,
           format: :json,
@@ -112,7 +114,7 @@ RSpec.describe RecommendationsController, type: :controller do
             recommendation: {
               title: "test",
               reference: "1",
-              support_level: "supported_in_part"
+              support_level: support_level
             }
           }
       end
@@ -145,11 +147,27 @@ RSpec.describe RecommendationsController, type: :controller do
         expect(response).to have_http_status(422)
       end
 
-      it "will return an error if the support_level is not one of the valid options" do
-        sign_in user
-        post :create, format: :json, params: {recommendation: {support_level: "something_else"}}
-        expect(response).to have_http_status(422)
-        expect(response.body).to include("is not a valid support_level")
+      context "when support_level is one of the valid options" do
+        let(:support_level) { "supported" }
+
+        it "will set the support_level" do
+          sign_in user
+          json = JSON.parse(subject.body)
+          expect(json.dig("data", "attributes", "support_level")).to eq("supported")
+        end
+      end
+
+      context "when support_level is not one of the valid options" do
+        let(:support_level) { "something_else" }
+
+        it "will return a validation error" do
+          sign_in user
+          expect(subject).to have_http_status(422)
+          json = JSON.parse(subject.body)
+          expect(json.dig("support_level")).to include(
+            "is not a valid support_level. Valid options: noted, supported_in_part, supported"
+          )
+        end
       end
     end
   end
@@ -254,6 +272,13 @@ RSpec.describe RecommendationsController, type: :controller do
         sign_in user
         put :update, format: :json, params: {id: recommendation, recommendation: {title: ""}}
         expect(response).to have_http_status(422)
+      end
+
+      it "will update the support_level if it is one of the valid options" do
+        sign_in user
+        put :update, format: :json, params: {id: recommendation, recommendation: {support_level: "noted"}}
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "support_level")).to eq("noted")
       end
 
       it "will return an error if the support_level is not one of the valid options" do
