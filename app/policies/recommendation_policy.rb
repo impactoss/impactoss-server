@@ -12,7 +12,8 @@ class RecommendationPolicy < ApplicationPolicy
       :framework_id,
       :support_level,
       (:is_archive if @user.role?("admin")),
-      recommendation_categories_attributes: [:category_id]]
+      recommendation_categories_attributes: [:category_id]
+    ]
   end
 
   def destroy?
