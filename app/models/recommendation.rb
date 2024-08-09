@@ -24,3 +24,4 @@ class Recommendation < VersionedRecord
 
   validates :title, presence: true
   validates :reference, presence: true, uniqueness: true
+end
