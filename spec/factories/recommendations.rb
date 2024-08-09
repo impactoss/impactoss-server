@@ -8,5 +8,9 @@ FactoryBot.define do
     trait :without_category do
       categories { [] }
     end
+
+    trait :is_archive do
+      is_archive { true }
+    end
   end
 end

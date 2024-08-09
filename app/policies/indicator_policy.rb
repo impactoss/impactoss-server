@@ -12,15 +12,20 @@ class IndicatorPolicy < ApplicationPolicy
       :repeat,
       :start_date,
       :title,
+      (:is_archive if @user.role?("admin")),
       measure_indicators_attributes: [
         :measure_id,
         measure_attributes: [:id, :title, :description, :target_date, :draft]
       ]
-    ]
+    ].compact
   end
 
   def destroy?
     false
+  end
+
+  def update?
+    super && (@user.role?("admin") || !@record.is_archive?)
   end
 
   class Scope < Scope

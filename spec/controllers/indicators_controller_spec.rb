@@ -4,6 +4,8 @@ require "rails_helper"
 require "json"
 
 RSpec.describe IndicatorsController, type: :controller do
+  let(:admin) { FactoryBot.create(:user, :admin) }
+
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:indicator) { FactoryBot.create(:indicator) }
@@ -20,7 +22,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will not see draft indicators" do
@@ -36,9 +38,21 @@ RSpec.describe IndicatorsController, type: :controller do
       end
 
       it "manager will see draft indicators" do
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(2)
+      end
+
+      context "when include_archive=false" do
+        subject { get :index, format: :json, params: {include_archive: false} }
+        let!(:archived) { FactoryBot.create(:indicator, is_archive: true) }
+
+        it "will not show is_archived items" do
+          sign_in manager
+          json = JSON.parse(subject.body)
+          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
+            .to eq([indicator.id, draft_indicator.id].sort)
+        end
       end
     end
 
@@ -90,20 +104,19 @@ RSpec.describe IndicatorsController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:measure) { FactoryBot.create(:measure) }
-      subject do
-        post :create,
-          format: :json,
-          params: {
-            indicator: {
-              title: "test",
-              description: "test",
-              target_date: "today"
-            }
+      let(:params) {
+        {
+          indicator: {
+            title: "test",
+            description: "test",
+            target_date: "today"
           }
-      end
+        }
+      }
+      subject { post :create, format: :json, params: }
 
       it "will not allow a guest to create a indicator" do
         sign_in guest
@@ -116,19 +129,44 @@ RSpec.describe IndicatorsController, type: :controller do
       end
 
       it "will allow a manager to create a indicator" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_created
+      end
+
+      context "is_archive" do
+        let(:params) {
+          {
+            indicator: {
+              title: "test",
+              description: "test",
+              target_date: "today",
+              is_archive: true
+            }
+          }
+        }
+
+        it "can't be set by manager" do
+          sign_in manager
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        end
+
+        it "can be set by admin" do
+          sign_in admin
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        end
       end
 
       it "will record what manager created the indicator", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         post :create, format: :json, params: {indicator: {description: "desc only"}}
         expect(response).to have_http_status(422)
       end
@@ -152,7 +190,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "will not allow a guest to update a indicator" do
@@ -166,12 +204,12 @@ RSpec.describe IndicatorsController, type: :controller do
       end
 
       it "will allow a manager to update a indicator" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_ok
       end
 
       it "will reject an update where the last_updated_at is older than updated_at in the database" do
-        sign_in user
+        sign_in manager
         indicator_get = get :show, params: {id: indicator}, format: :json
         json = JSON.parse(indicator_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
@@ -194,21 +232,21 @@ RSpec.describe IndicatorsController, type: :controller do
 
       it "will record what manager updated the indicator", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq manager.id
       end
 
       it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         indicator.versions.first.update_column(:whodunnit, contributor.id)
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(manager.id)
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         put :update, format: :json, params: {id: indicator, indicator: {title: ""}}
         expect(response).to have_http_status(422)
       end
@@ -228,7 +266,7 @@ RSpec.describe IndicatorsController, type: :controller do
     context "when user signed in" do
       let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "will not allow a guest to delete a indicator" do
@@ -242,7 +280,7 @@ RSpec.describe IndicatorsController, type: :controller do
       end
 
       it "will not allow a manager to delete a indicator" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_forbidden
       end
 

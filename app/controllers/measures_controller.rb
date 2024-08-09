@@ -48,7 +48,7 @@ class MeasuresController < ApplicationController
   private
 
   def base_object
-    if params[:category_id]
+    records = if params[:category_id]
       Category.find(params[:category_id]).measures
     elsif params[:recommendation_id]
       Recommendation.find(params[:recommendation_id]).measures
@@ -57,6 +57,10 @@ class MeasuresController < ApplicationController
     else
       Measure
     end
+
+    return records if params[:include_archive] != "false"
+
+    records.where(is_archive: false)
   end
 
   # Use callbacks to share common setup or constraints between actions.

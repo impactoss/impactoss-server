@@ -4,6 +4,8 @@ require "rails_helper"
 require "json"
 
 RSpec.describe RecommendationsController, type: :controller do
+  let(:admin) { FactoryBot.create(:user, :admin) }
+
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:recommendation) { FactoryBot.create(:recommendation) }
@@ -39,6 +41,18 @@ RSpec.describe RecommendationsController, type: :controller do
         sign_in user
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(2)
+      end
+
+      context "when include_archive=false" do
+        subject { get :index, format: :json, params: {include_archive: false} }
+        let!(:archived) { FactoryBot.create(:recommendation, is_archive: true) }
+
+        it "will not show archived recommendations" do
+          sign_in user
+          json = JSON.parse(subject.body)
+          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
+            .to eq([recommendation.id, draft_recommendation.id].sort)
+        end
       end
     end
 
@@ -96,19 +110,18 @@ RSpec.describe RecommendationsController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:category) { FactoryBot.create(:category) }
-      subject do
-        post :create,
-          format: :json,
-          params: {
-            recommendation: {
-              title: "test",
-              reference: "1"
-            }
+      let(:params) {
+        {
+          recommendation: {
+            title: "test",
+            reference: "1"
           }
-      end
+        }
+      }
+      subject { post :create, format: :json, params: }
 
       it "will not allow a guest to create a recommendation" do
         sign_in guest
@@ -121,19 +134,43 @@ RSpec.describe RecommendationsController, type: :controller do
       end
 
       it "will allow a manager to create a recommendation" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_created
+      end
+
+      context "is_archive" do
+        let(:params) {
+          {
+            recommendation: {
+              title: "test",
+              reference: "1",
+              is_archive: true
+            }
+          }
+        }
+
+        it "can't be set by manager" do
+          sign_in manager
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        end
+
+        it "can be set by admin" do
+          sign_in admin
+          expect(subject).to be_created
+          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        end
       end
 
       it "will record what manager created the recommendation", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         post :create, format: :json, params: {recommendation: {description: "desc only"}}
         expect(response).to have_http_status(422)
       end
@@ -145,8 +182,10 @@ RSpec.describe RecommendationsController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: recommendation,
-                 recommendation: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: recommendation,
+          recommendation: {title: "test update", description: "test update", target_date: "today update"}
+        }
     end
 
     context "when not signed in" do
@@ -157,7 +196,7 @@ RSpec.describe RecommendationsController, type: :controller do
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "will not allow a guest to update a recommendation" do
@@ -171,12 +210,12 @@ RSpec.describe RecommendationsController, type: :controller do
       end
 
       it "will allow a manager to update a recommendation" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_ok
       end
 
       it "will reject an update where the last_updated_at is older than updated_at in the database" do
-        sign_in user
+        sign_in manager
         recommendation_get = get :show, params: {id: recommendation}, format: :json
         json = JSON.parse(recommendation_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
@@ -184,38 +223,57 @@ RSpec.describe RecommendationsController, type: :controller do
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {id: recommendation,
-                     recommendation: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
+            params:
+            {
+              id: recommendation,
+              recommendation: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to be_ok
         end
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
-            params: {id: recommendation,
-                     recommendation: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
+            params: {
+              id: recommendation,
+              recommendation: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+            }
           expect(subject).to_not be_ok
         end
       end
 
       it "will record what manager updated the recommendation", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq manager.id
       end
 
       it "will return the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
         recommendation.versions.first.update_column(:whodunnit, contributor.id)
-        sign_in user
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(manager.id)
       end
 
       it "will return an error if params are incorrect" do
-        sign_in user
+        sign_in manager
         put :update, format: :json, params: {id: recommendation, recommendation: {title: ""}}
         expect(response).to have_http_status(422)
+      end
+
+      context "when is_archive: true" do
+        let(:recommendation) { FactoryBot.create(:recommendation, :is_archive) }
+
+        it "can't be updated by manager" do
+          sign_in manager
+          expect(subject).not_to be_ok
+        end
+
+        it "can be updated by admin" do
+          sign_in admin
+          expect(subject).to be_ok
+        end
       end
     end
   end
@@ -231,9 +289,8 @@ RSpec.describe RecommendationsController, type: :controller do
     end
 
     context "when user signed in" do
-      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "will not allow a guest to delete a recommendation" do
@@ -247,7 +304,7 @@ RSpec.describe RecommendationsController, type: :controller do
       end
 
       it "will not allow a manager to delete a recommendation" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_forbidden
       end
 

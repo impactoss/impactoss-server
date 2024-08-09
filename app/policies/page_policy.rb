@@ -20,7 +20,14 @@ class PagePolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:title, :content, :menu_title, :draft, :order]
+    [
+      :content,
+      :draft,
+      (:is_archive if @user.role?("admin")),
+      :menu_title,
+      :order,
+      :title
+    ].compact
   end
 
   class Scope < Scope
