@@ -130,9 +130,7 @@ RSpec.describe RecommendationsController, type: :controller do
               support_level: "1"
             }
           }
-        }
-      }
-      subject { post :create, format: :json, params: }
+      end
 
       it "will not allow a guest to create a recommendation" do
         sign_in guest
