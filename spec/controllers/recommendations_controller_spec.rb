@@ -103,13 +103,7 @@ RSpec.describe RecommendationsController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a recommendation" do
-        post :create, format: :json, params: {
-          recommendation: {
-            title: "test",
-            reference: "1",
-            support_level: "0"
-          }
-        }
+        post :create, format: :json, params: {recommendation: {title: "test", reference: "1"}}
         expect(response).to be_unauthorized
       end
     end
@@ -119,18 +113,15 @@ RSpec.describe RecommendationsController, type: :controller do
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:category) { FactoryBot.create(:category) }
-
-      subject do
-        post :create,
-          format: :json,
-          params: {
-            recommendation: {
-              title: "test",
-              reference: "1",
-              support_level: "1"
-            }
+      let(:params) {
+        {
+          recommendation: {
+            title: "test",
+            reference: "1"
           }
-      end
+        }
+      }
+      subject { post :create, format: :json, params: }
 
       it "will not allow a guest to create a recommendation" do
         sign_in guest
@@ -188,17 +179,12 @@ RSpec.describe RecommendationsController, type: :controller do
 
   describe "PUT update" do
     let(:recommendation) { FactoryBot.create(:recommendation) }
-
     subject do
       put :update,
         format: :json,
         params: {
           id: recommendation,
-          recommendation: {
-            title: "test update",
-            description: "test update",
-            target_date: "today update"
-          }
+          recommendation: {title: "test update", description: "test update", target_date: "today update"}
         }
     end
 
@@ -237,31 +223,19 @@ RSpec.describe RecommendationsController, type: :controller do
         Timecop.travel(Time.new + 15.days) do
           subject = put :update,
             format: :json,
-            params: {
+            params:
+            {
               id: recommendation,
-              recommendation: {
-                title: "test update",
-                description: "test updateeee",
-                support_level: "supported",
-                target_date: "today update",
-                updated_at: current_update_at
-              }
+              recommendation: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
             }
           expect(subject).to be_ok
         end
-
         Timecop.travel(Time.new + 5.days) do
           subject = put :update,
             format: :json,
             params: {
               id: recommendation,
-              recommendation: {
-                title: "test update",
-                description: "test updatebbbb",
-                support_level: "supported_in_part",
-                target_date: "today update",
-                updated_at: current_update_at
-              }
+              recommendation: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
             }
           expect(subject).to_not be_ok
         end
