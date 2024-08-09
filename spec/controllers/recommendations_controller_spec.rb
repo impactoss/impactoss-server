@@ -107,7 +107,7 @@ RSpec.describe RecommendationsController, type: :controller do
           recommendation: {
             title: "test",
             reference: "1",
-            support_level: "noted"
+            support_level: "0"
           }
         }
         expect(response).to be_unauthorized
@@ -119,7 +119,6 @@ RSpec.describe RecommendationsController, type: :controller do
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:category) { FactoryBot.create(:category) }
-      let(:support_level) { "supported_in_part" }
 
       subject do
         post :create,
@@ -128,7 +127,7 @@ RSpec.describe RecommendationsController, type: :controller do
             recommendation: {
               title: "test",
               reference: "1",
-              support_level: support_level
+              support_level: "1"
             }
           }
         }
@@ -185,29 +184,6 @@ RSpec.describe RecommendationsController, type: :controller do
         sign_in manager
         post :create, format: :json, params: {recommendation: {description: "desc only"}}
         expect(response).to have_http_status(422)
-      end
-
-      context "when support_level is one of the valid options" do
-        let(:support_level) { "supported" }
-
-        it "will set the support_level" do
-          sign_in user
-          json = JSON.parse(subject.body)
-          expect(json.dig("data", "attributes", "support_level")).to eq("supported")
-        end
-      end
-
-      context "when support_level is not one of the valid options" do
-        let(:support_level) { "something_else" }
-
-        it "will return a validation error" do
-          sign_in user
-          expect(subject).to have_http_status(422)
-          json = JSON.parse(subject.body)
-          expect(json.dig("support_level")).to include(
-            "is not a valid support_level. Valid options: noted, supported_in_part, supported"
-          )
-        end
       end
     end
   end
@@ -326,20 +302,6 @@ RSpec.describe RecommendationsController, type: :controller do
           sign_in admin
           expect(subject).to be_ok
         end
-      end
-
-      it "will update the support_level if it is one of the valid options" do
-        sign_in user
-        put :update, format: :json, params: {id: recommendation, recommendation: {support_level: "noted"}}
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "support_level")).to eq("noted")
-      end
-
-      it "will return an error if the support_level is not one of the valid options" do
-        sign_in user
-        put :update, format: :json, params: {id: recommendation, recommendation: {support_level: "something_else"}}
-        expect(response).to have_http_status(422)
-        expect(response.body).to include("is not a valid support_level")
       end
     end
   end

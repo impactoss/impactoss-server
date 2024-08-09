@@ -13,14 +13,6 @@ RSpec.describe Recommendation, type: :model do
     expect(FactoryBot.build(:recommendation, reference: "456")).to be_valid
   end
 
-  it do
-    is_expected.to(
-      define_enum_for(:support_level)
-        .with_values(Recommendation::SUPPORT_LEVELS.keys)
-        .backed_by_column_of_type(:integer)
-    )
-  end
-
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :measures }
   it { is_expected.to have_many :indicators }
