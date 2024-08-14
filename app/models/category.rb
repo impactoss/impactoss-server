@@ -24,6 +24,9 @@ class Category < VersionedRecord
   validate :sub_relation
   validate :only_manager_and_admin_users_can_be_assigned, if: :manager_id_changed?
 
+  scope :draft, -> { where(draft: true) }
+  scope :published, -> { where(draft: false) }
+
   def has_reporting_cycle_taxonomy?
     Taxonomy.current_reporting_cycle_id == taxonomy_id
   end
@@ -32,7 +35,7 @@ class Category < VersionedRecord
     has_reporting_cycle_taxonomy? &&
       date.present? &&
       category.present? &&
-      category.categories.order(date: :desc).first == self
+      category.categories.published.order(date: :desc).first == self
   end
 
   def only_manager_and_admin_users_can_be_assigned
