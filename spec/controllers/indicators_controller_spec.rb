@@ -54,6 +54,36 @@ RSpec.describe IndicatorsController, type: :controller do
             .to eq([indicator.id, draft_indicator.id].sort)
         end
       end
+
+      context "when current_only=true" do
+        let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
+        let!(:non_current_recommendation) { FactoryBot.create(:recommendation) }
+        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation) }
+        let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
+        let!(:recommendation) { FactoryBot.create(:recommendation) }
+        let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
+
+        before do
+          allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
+          parent_category = FactoryBot.create(:category, taxonomy: parent_taxonomy)
+          non_current_category = FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
+          current_category.category = parent_category
+          recommendation.categories = [parent_category, current_category]
+          non_reporting_cycle_recommendation.categories = [parent_category]
+          non_current_recommendation.categories = [non_current_category]
+        end
+
+        subject { get :index, format: :json, params: {current_only: true} }
+
+        it "will only show current indicators" do
+          sign_in manager
+          json = JSON.parse(subject.body)
+          expect(json["data"].length).to eq(2)
+          expect(json["data"].map { _1["id"] }.map(&:to_i).sort).to eq(
+            [indicator.id, draft_indicator.id].sort
+          )
+        end
+      end
     end
 
     context "filters" do
