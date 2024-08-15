@@ -35,7 +35,7 @@ class Category < VersionedRecord
     has_reporting_cycle_taxonomy? &&
       date.present? &&
       category.present? &&
-      (category.categories.published.order(date: :desc).first == self || self.draft)
+      (category.categories.published.order(date: :desc).first == self || draft)
   end
 
   def only_manager_and_admin_users_can_be_assigned
