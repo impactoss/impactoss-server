@@ -53,9 +53,9 @@ class IndicatorsController < ApplicationController
       Indicator
     end
 
-    return records if params[:include_archive] != "false"
-
-    records.where(is_archive: false)
+    records = records.where(is_archive: false) if params[:include_archive] == "false"
+    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
+    records
   end
 
   # Use callbacks to share common setup or constraints between actions.

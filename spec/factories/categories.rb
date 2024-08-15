@@ -17,5 +17,9 @@ FactoryBot.define do
     trait :sub_category do
       title { "sub" }
     end
+
+    trait :has_date do
+      date { Date.today }
+    end
   end
 end
