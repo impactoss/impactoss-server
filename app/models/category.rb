@@ -33,9 +33,15 @@ class Category < VersionedRecord
 
   def is_current
     has_reporting_cycle_taxonomy? &&
-      date.present? &&
-      category.present? &&
-      (category.categories.published.order(date: :desc).first == self || self.draft)
+      (draft ||
+        (category.present? &&
+          (category.categories.published.length == 1 ||
+            (date.present? &&
+              category.categories.published.order(date: :desc).first == self
+            )
+          )
+        )
+      )
   end
 
   def only_manager_and_admin_users_can_be_assigned
