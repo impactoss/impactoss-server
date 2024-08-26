@@ -1,0 +1,57 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: dev.Dockerfile
+    restart: unless-stopped
+    command: sleep infinity
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3123:3000"
+    environment:
+      EDITOR: code
+      GIT_EDITOR: "code --wait"
+      PGDATABASE: nz_justice_development
+      PGHOST: postgres
+      PGPASSWORD: impact
+      PGUSER: impact
+      RETRY_COUNT: 1
+      SHELL: /bin/zsh
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+    volumes:
+      - ..:/app:cached
+      - bundle_data:/usr/local/bundle:cached
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: ${DB_DATABASE:-nz_justice_development}
+      POSTGRES_USER: ${DB_USERNAME:-impact}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-impact}
+    healthcheck:
+      test: pg_isready
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    mem_limit: 1g
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+
+  mailpit:
+    image: axllent/mailpit
+    restart: unless-stopped
+    environment:
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+    ports:
+      - "${MAILPIT_PORT:-18025}:8025"
+
+volumes:
+  bundle_data:
+  postgres_data:

@@ -1,0 +1,52 @@
+// https://aka.ms/devcontainer.json
+{
+  "name": "Impact Dev Container",
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/app",
+  "forwardPorts": [
+    3123,
+    18025
+  ],
+  "runServices": [
+    "mailpit",
+    "postgres"
+  ],
+  "containerEnv": {
+    "RUN_CONTEXT": "devcontainer"
+  },
+  "portsAttributes": {
+    "3123": {
+      "label": "Application Port",
+      "onAutoForward": "notify"
+    },
+    "18025": {
+      "label": "Mailpit Port",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.tabSize": 2,
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "standardRuby.autofix": true,
+        "standardRuby.mode": "enableUnconditionally",
+        "[ruby]": {
+          "editor.defaultFormatter": "testdouble.vscode-standard-ruby",
+          "editor.formatOnSave": true,
+          "editor.formatOnSaveMode": "file"
+        }
+      },
+      "extensions": [
+        "eamodio.gitlens",
+        "ms-azuretools.vscode-docker",
+        "sleistner.vscode-fileutils",
+        "testdouble.vscode-standard-ruby"
+      ]
+    }
+  }
+}
