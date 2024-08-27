@@ -13,10 +13,10 @@ RSpec.describe ProgressReport, type: :model do
   describe "#send_updated_emails" do
     let(:categories) { FactoryBot.create_list(:category, 5) }
     let(:child_categories) do
-      categories.map {
+      categories.map { |parent|
         FactoryBot.create(:category,
-          parent_id: _1.id,
-          taxonomy: FactoryBot.create(:taxonomy, taxonomy: _1.taxonomy))
+          parent_id: parent.id,
+          taxonomy: FactoryBot.create(:taxonomy, taxonomy: parent.taxonomy))
       }
     end
     let(:manager_category) { FactoryBot.create(:category, manager:) }
@@ -50,6 +50,23 @@ RSpec.describe ProgressReport, type: :model do
       end
 
       subject.send_updated_emails
+    end
+  end
+
+  context "is_current" do
+    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:progress_report) { FactoryBot.create(:progress_report, indicator:) }
+
+    it "is false when indicator.is_current = false" do
+      allow(indicator).to receive(:is_current).and_return(false)
+
+      expect(progress_report.is_current).to eq(false)
+    end
+
+    it "is true when indicator.is_current = true" do
+      allow(indicator).to receive(:is_current).and_return(true)
+
+      expect(progress_report.is_current).to eq(true)
     end
   end
 end

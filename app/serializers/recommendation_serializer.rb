@@ -12,7 +12,8 @@ class RecommendationSerializer
     :support_level,
     :relationship_updated_at,
     :relationship_updated_by_id,
-    :is_archive
+    :is_archive,
+    :is_current
   )
 
   set_type :recommendations
