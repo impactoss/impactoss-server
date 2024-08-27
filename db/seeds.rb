@@ -165,9 +165,15 @@ class Seeds
     progress.categories.create!(title: "Completed", reference: "3")
 
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
-    body.categories.create!(
+    upr = body.categories.create!(
       title: "Human rights council (UPR)",
       short_title: "UPR"
+    )
+    cycle.categories.create!(
+      title: "Universal Periodic Review 2024",
+      short_title: "UPR-2024",
+      reference: "UPR-2024",
+      category: upr
     )
     body.categories.create!(
       title: "International Covenant on Civil and Political Rights",
@@ -287,7 +293,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Economic, social and cultural rights",
-      short_title: "ESC rights "
+      short_title: "ESC rights"
     )
     issue.categories.create!(
       title: "Right to an adequate standard of living",
@@ -310,11 +316,11 @@ class Seeds
       short_title: "Women & girls"
     )
     issue.categories.create!(
-      title: "Rights of children and young people ",
+      title: "Rights of children and young people",
       short_title: "Children (rights of)"
     )
     issue.categories.create!(
-      title: "Rights of persons with disabilities ",
+      title: "Rights of persons with disabilities",
       short_title: "Disabilities (rights)"
     )
     issue.categories.create!(
@@ -461,7 +467,7 @@ class Seeds
     )
     persons.categories.create!(
       title: "Persons living in poverty",
-      short_title: "Poverty "
+      short_title: "Poverty"
     )
     persons.categories.create!(
       title: "Persons with disabilities",
@@ -493,7 +499,7 @@ class Seeds
     )
     persons.categories.create!(
       title: "Persons in slavery/trafficked persons",
-      short_title: "Slavery "
+      short_title: "Slavery"
     )
     persons.categories.create!(
       title: "Public officials",
