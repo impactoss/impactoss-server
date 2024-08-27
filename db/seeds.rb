@@ -282,7 +282,7 @@ class Seeds
       short_title: "Environment"
     )
     issue.categories.create!(
-      title: "Counter-Terrorism",
+      title: "Counter-terrorism",
       short_title: "Counter-terrorism"
     )
     issue.categories.create!(
@@ -311,19 +311,19 @@ class Seeds
     )
     issue.categories.create!(
       title: "Rights of children and young people ",
-      short_title: "Children"
+      short_title: "Children (rights of)"
     )
     issue.categories.create!(
       title: "Rights of persons with disabilities ",
-      short_title: "Disabilities"
+      short_title: "Disabilities (rights)"
     )
     issue.categories.create!(
       title: "Indigenous rights and rights of ethnic minorities",
-      short_title: "Indigenous"
+      short_title: "Indigenous (rights of)"
     )
     issue.categories.create!(
       title: "Rights of refugees, migrants and asylum seekers",
-      short_title: "Migrants"
+      short_title: "Migrants (rights of)"
     )
     issue.categories.create!(
       title: "Rights of older persons",
@@ -334,8 +334,8 @@ class Seeds
       short_title: "NHRF"
     )
     issue.categories.create!(
-      title: "International instruments	",
-      short_title: "Int. instruments"
+      title: "International instruments",
+      short_title: "Intl. instruments"
     )
     issue.categories.create!(
       title: "Human rights and criminal justice",
@@ -355,7 +355,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Human rights education, trainings and awareness raising",
-      short_title: "HR Education"
+      short_title: "HR education"
     )
     issue.categories.create!(
       title: "Context, statistics, budget, civil society",
@@ -379,7 +379,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Human rights and use of mercenaries",
-      short_title: "Mercenaries"
+      short_title: "Mercenaries (use of)"
     )
     issue.categories.create!(
       title: "Civil and political rights – general measures of implementation",
@@ -391,7 +391,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Liberty and security of the person",
-      short_title: "Liberty"
+      short_title: "Liberty & security"
     )
     issue.categories.create!(
       title: "Fundamental freedoms",
@@ -407,7 +407,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Right to participation in public affairs and right to vote",
-      short_title: "Paritcipation"
+      short_title: "Participation"
     )
     issue.categories.create!(
       title: "Rights related to marriage and family",
@@ -428,6 +428,10 @@ class Seeds
     issue.categories.create!(
       title: "Human rights defenders",
       short_title: "HRD"
+    )
+    issue.categories.create!(
+      title: "International conventions",
+      short_title: "Intl. conventions"
     )
 
     # Affected Persons (http://uhri.ohchr.org/search/annotations)
@@ -514,10 +518,6 @@ class Seeds
     persons.categories.create!(
       title: "Mercenaries",
       short_title: "Mercenaries"
-    )
-    persons.categories.create!(
-      title: "Persons deprived of their liberty",
-      short_title: "Liberty"
     )
     persons.categories.create!(
       title: "Persons living in rural areas",
