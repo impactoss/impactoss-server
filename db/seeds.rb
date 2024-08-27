@@ -204,7 +204,7 @@ class Seeds
     )
     org.categories.create!(
       title: "Ministry of Foreign Affairs and Trade",
-      short_title: "MFAT",
+      short_title: "MFAT"
     )
     org.categories.create!(
       title: "Ministry for Women",
@@ -220,7 +220,7 @@ class Seeds
     )
     org.categories.create!(
       title: "Te Puni Kokiri",
-      short_title: "TPK",
+      short_title: "TPK"
     )
     org.categories.create!(
       title: "Ministry of Business, Innovation and Employment",
