@@ -20,7 +20,7 @@ class Measure < VersionedRecord
   accepts_nested_attributes_for :measure_categories
 
   validates :title, presence: true
-  validates :reference, uniqueness: true
+  validates :reference, presence: true, uniqueness: true
 
   def is_current
     recommendations.empty? || recommendations.any?(&:is_current)

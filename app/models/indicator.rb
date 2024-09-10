@@ -2,7 +2,7 @@ class Indicator < VersionedRecord
   validates :title, presence: true
   validates :end_date, presence: true, if: :repeat?
   validates :frequency_months, presence: true, if: :repeat?
-  validates :reference, uniqueness: true
+  validates :reference, presence: true, uniqueness: true
   validate :end_date_after_start_date, if: :end_date?
 
   after_create :build_due_dates
