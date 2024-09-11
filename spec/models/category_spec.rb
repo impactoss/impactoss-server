@@ -15,6 +15,38 @@ RSpec.describe Category, type: :model do
   it { is_expected.to have_many :children_due_dates }
 
   context "Sub-relation validations" do
+    it "will not allow guest users to be assigned" do
+      category = FactoryBot.create(:category)
+      user = FactoryBot.create(:user)
+      category.manager_id = user.id
+      expect { category.save! }.to raise_exception(/Manager must be a manager or an admin/)
+    end
+
+    it "will not allow contributor users to be assigned" do
+      category = FactoryBot.create(:category)
+      user = FactoryBot.create(:user, :contributor)
+      category.manager_id = user.id
+      expect { category.save! }.to raise_exception(/Manager must be a manager or an admin/)
+    end
+
+    it "will allow manager users to be assigned" do
+      category = FactoryBot.create(:category)
+      user = FactoryBot.create(:user, :manager)
+      expect {
+        category.manager_id = user.id
+        category.save!
+      }.to change { category.reload.manager_id }.from(nil).to(user.id)
+    end
+
+    it "will allow admin users to be assigned" do
+      category = FactoryBot.create(:category)
+      user = FactoryBot.create(:user, :admin)
+      expect {
+        category.manager_id = user.id
+        category.save!
+      }.to change { category.reload.manager_id }.from(nil).to(user.id)
+    end
+
     it "Should update parent_id with correct taxonomy relation" do
       category = FactoryBot.create(:category, :parent_category)
       sub_category = FactoryBot.create(:category, :sub_category)
@@ -50,7 +82,7 @@ RSpec.describe Category, type: :model do
       category = FactoryBot.create(:category, :parent_category)
       sub_category = FactoryBot.create(:category, :sub_category)
       sub_category.parent_id = category.id
-      expect { sub_category.save! }.to raise_exception(/Validation failed: Parent Taxonomy does not have parent categorys taxonomy as parent./)
+      expect { sub_category.save! }.to raise_exception(/Validation failed: Parent Taxonomy does not have parent category's taxonomy as parent./)
     end
   end
 end

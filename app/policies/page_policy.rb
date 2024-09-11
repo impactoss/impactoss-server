@@ -16,17 +16,24 @@ class PagePolicy < ApplicationPolicy
   end
 
   def destroy?
-    @user.role?("admin")
+    false
   end
 
   def permitted_attributes
-    [:title, :content, :menu_title, :draft, :order]
+    [
+      :content,
+      :draft,
+      (:is_archive if @user.role?("admin")),
+      :menu_title,
+      :order,
+      :title
+    ].compact
   end
 
   class Scope < Scope
     def resolve
       return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false)
+      scope.where(draft: false, is_archive: false)
     end
   end
 end

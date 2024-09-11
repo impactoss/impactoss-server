@@ -22,9 +22,23 @@ module HumanRightsNationalReporting
     config.active_record.default_timezone = :local
 
     config.middleware.insert_before 0, Rack::Cors do
+      if ENV["ALLOWED_ORIGIN_S3"]
+        allow do
+          origins ENV["ALLOWED_ORIGIN_S3"].split(",").map(&:strip)
+          resource "/s3/*",
+            headers: :any,
+            methods: :any,
+            expose: ["access-token", "expiry", "token-type", "uid", "client"],
+            credentials: true
+        end
+      end
+
       allow do
         origins "*"
-        resource "*", headers: :any, methods: :any, expose: ["access-token", "expiry", "token-type", "uid", "client"]
+        resource "*",
+          headers: :any,
+          methods: :any,
+          expose: ["access-token", "expiry", "token-type", "uid", "client"]
       end
     end
 
@@ -43,5 +57,10 @@ module HumanRightsNationalReporting
     config.active_record.belongs_to_required_by_default = true
 
     config.load_defaults = true
+
+    config.i18n.locale = ENV.fetch("LOCALE", "en-NZ")
+    config.i18n.fallbacks = true
+
+    config.x.reporting_cycle_taxonomy_id = ENV.fetch("REPORTING_CYCLE_TAXONOMY_ID", "2").to_i
   end
 end

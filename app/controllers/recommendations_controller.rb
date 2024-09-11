@@ -48,13 +48,17 @@ class RecommendationsController < ApplicationController
   private
 
   def base_object
-    if params[:category_id]
+    records = if params[:category_id]
       Category.find(params[:category_id]).recommendations
     elsif params[:measure_id]
       Measure.find(params[:measure_id]).recommendations
     else
       Recommendation
     end
+
+    records = records.where(is_archive: false) if params[:include_archive] == "false"
+    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
+    records
   end
 
   # Use callbacks to share common setup or constraints between actions.

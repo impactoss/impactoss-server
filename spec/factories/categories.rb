@@ -6,12 +6,20 @@ FactoryBot.define do
     url { Faker::Internet.url }
     association :taxonomy
 
+    trait :is_archive do
+      is_archive { true }
+    end
+
     trait :parent_category do
       title { "parent" }
     end
 
     trait :sub_category do
       title { "sub" }
+    end
+
+    trait :has_date do
+      date { Date.today }
     end
   end
 end

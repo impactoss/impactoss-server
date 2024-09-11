@@ -1,5 +1,5 @@
 class MeasureIndicatorSerializer
-  include FastApplicationSerializer
+  include FastVersionedSerializer
 
   attributes :measure_id, :indicator_id
 

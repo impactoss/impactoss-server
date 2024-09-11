@@ -1,0 +1,25 @@
+name: Formatting
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+env:
+  GIT_COMMITTER_NAME: GitHub Actions
+  GIT_COMMITTER_EMAIL: actions@users.noreply.github.com
+
+jobs:
+  standardrb:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - run: bundle exec standardrb --fix && git diff --quiet
+
+      - if: failure()
+        run: git commit -a --fixup=HEAD --author=. && git push

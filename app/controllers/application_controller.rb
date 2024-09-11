@@ -2,7 +2,7 @@
 
 class ApplicationController < ActionController::Base
   include DeviseTokenAuth::Concerns::SetUserByToken
-  include Pundit
+  include Pundit::Authorization
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   protect_from_forgery with: :exception
@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def serialize(target, serializer:)
-    serializer.new(target).serialized_json
+    serializer.new(target).serializable_hash.to_json
   end
 
   def layout_by_resource

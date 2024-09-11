@@ -1,7 +1,20 @@
 class RecommendationSerializer
   include FastVersionedSerializer
 
-  attributes :title, :accepted, :response, :draft, :reference, :description, :framework_id
+  attributes(
+    :title,
+    :accepted,
+    :response,
+    :draft,
+    :reference,
+    :description,
+    :framework_id,
+    :support_level,
+    :relationship_updated_at,
+    :relationship_updated_by_id,
+    :is_archive,
+    :is_current
+  )
 
   set_type :recommendations
 end

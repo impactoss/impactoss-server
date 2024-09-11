@@ -1,8 +1,8 @@
-require "fast_jsonapi"
+require "jsonapi/serializer"
 
 module FastApplicationSerializer
   def self.included(base)
-    base.include FastJsonapi::ObjectSerializer
+    base.include JSONAPI::Serializer
 
     base.attribute :created_at do |object|
       object.created_at&.in_time_zone&.iso8601

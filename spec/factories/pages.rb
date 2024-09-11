@@ -4,5 +4,9 @@ FactoryBot.define do
     content { "MyText" }
     menu_title { "MyString" }
     draft { false }
+
+    trait :is_archive do
+      is_archive { true }
+    end
   end
 end

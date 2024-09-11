@@ -78,7 +78,11 @@ RSpec.describe UserRolesController, type: :controller do
 
   describe "Get show" do
     let(:user_role) { FactoryBot.create(:user_role) }
-    subject { get :show, params: {id: user_role}, format: :json }
+    subject {
+      get :show, params: {
+        id: user_role
+      }, format: :json
+    }
 
     context "when not signed in" do
       it "does not show the user_role" do
@@ -92,7 +96,11 @@ RSpec.describe UserRolesController, type: :controller do
       let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:admin) { FactoryBot.create(:user, :admin) }
 
-      subject { get :show, params: {id: contributor.user_roles.first.id}, format: :json }
+      subject {
+        get :show, params: {
+          id: contributor.user_roles.first.id
+        }, format: :json
+      }
 
       let(:guest) { FactoryBot.create(:user) }
       let(:manager) { FactoryBot.create(:user, :manager) }
@@ -106,19 +114,23 @@ RSpec.describe UserRolesController, type: :controller do
       it "shows user_role for contributor" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(contributor.user_roles.first.id)
+        expect(json.dig("data", "id").to_i).to eq(contributor.user_roles.first.id)
       end
       it "shows user_role for manager" do
         sign_in manager
-        subject_manager = get :show, params: {id: manager.user_roles.first.id}, format: :json
+        subject_manager = get :show, params: {
+          id: manager.user_roles.first.id
+        }, format: :json
         json = JSON.parse(subject_manager.body)
-        expect(json["data"]["id"].to_i).to eq(manager.user_roles.first.id)
+        expect(json.dig("data", "id").to_i).to eq(manager.user_roles.first.id)
       end
       it "shows user_role for admin" do
         sign_in admin
-        subject_manager = get :show, params: {id: admin.user_roles.first.id}, format: :json
+        subject_manager = get :show, params: {
+          id: admin.user_roles.first.id
+        }, format: :json
         json = JSON.parse(subject_manager.body)
-        expect(json["data"]["id"].to_i).to eq(admin.user_roles.first.id)
+        expect(json.dig("data", "id").to_i).to eq(admin.user_roles.first.id)
       end
     end
   end
@@ -126,7 +138,9 @@ RSpec.describe UserRolesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a user_role" do
-        post :create, format: :json, params: {user_role: {user_id: 1, role_id: 1}}
+        post :create, format: :json, params: {
+          user_role: {user_id: 1, role_id: 1}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -251,8 +265,25 @@ RSpec.describe UserRolesController, type: :controller do
 
       it "will return an error if params are incorrect" do
         sign_in admin
-        post :create, format: :json, params: {user_role: {description: "desc only", taxonomy_id: 999}}
+        post :create, format: :json, params: {
+          user_role: {description: "desc only", taxonomy_id: 999}
+        }
         expect(response).to have_http_status(422)
+      end
+
+      it "will record what admin created the user role", versioning: true do
+        expect(PaperTrail).to be_enabled
+        sign_in admin
+        subject = post :create,
+          format: :json,
+          params: {
+            user_role: {
+              user_id: manager.id,
+              role_id: admin_role.id
+            }
+          }
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
     end
   end
@@ -270,7 +301,11 @@ RSpec.describe UserRolesController, type: :controller do
     let(:admin_role) { FactoryBot.create(:role, :admin) }
     let(:admin) { FactoryBot.create(:user, roles: [admin_role, contributor_role]) }
 
-    subject { delete :destroy, format: :json, params: {id: contributor.user_roles.first} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: contributor.user_roles.first
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a user_role" do
@@ -291,21 +326,33 @@ RSpec.describe UserRolesController, type: :controller do
 
       it "will allow a manager to delete a contributor user_role but not for an admin or another manager" do
         sign_in manager
-        subject = delete :destroy, format: :json, params: {id: contributor.user_roles.first}
+        subject = delete :destroy, format: :json, params: {
+          id: contributor.user_roles.first
+        }
         expect(subject).to be_no_content
-        subject = delete :destroy, format: :json, params: {id: manager2.user_roles.find_by(role_id: contributor_role.id)}
+        subject = delete :destroy, format: :json, params: {
+          id: manager2.user_roles.find_by(role_id: contributor_role.id)
+        }
         expect(subject).to be_forbidden
-        subject = delete :destroy, format: :json, params: {id: admin.user_roles.find_by(role_id: contributor_role.id)}
+        subject = delete :destroy, format: :json, params: {
+          id: admin.user_roles.find_by(role_id: contributor_role.id)
+        }
         expect(subject).to be_forbidden
       end
 
       it "will allow an admin to delete a manager, contributor, and admin user_role" do
         sign_in admin
-        subject = delete :destroy, format: :json, params: {id: manager.user_roles.first}
+        subject = delete :destroy, format: :json, params: {
+          id: manager.user_roles.first
+        }
         expect(subject).to be_no_content
-        subject = delete :destroy, format: :json, params: {id: contributor2.user_roles.first}
+        subject = delete :destroy, format: :json, params: {
+          id: contributor2.user_roles.first
+        }
         expect(subject).to be_no_content
-        subject = delete :destroy, format: :json, params: {id: admin.user_roles.first}
+        subject = delete :destroy, format: :json, params: {
+          id: admin.user_roles.first
+        }
         expect(subject).to be_no_content
       end
     end

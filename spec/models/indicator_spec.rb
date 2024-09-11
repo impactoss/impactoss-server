@@ -2,6 +2,14 @@ require "rails_helper"
 
 RSpec.describe Indicator, type: :model do
   it { is_expected.to validate_presence_of :title }
+
+  it "validates uniqueness of reference" do
+    FactoryBot.create(:indicator, reference: "123")
+
+    expect(FactoryBot.build(:indicator, reference: "123")).to be_invalid
+    expect(FactoryBot.build(:indicator, reference: "456")).to be_valid
+  end
+
   it { is_expected.to have_many :measures }
   it { is_expected.to have_many :progress_reports }
   it { is_expected.to have_many :due_dates }
@@ -43,9 +51,11 @@ RSpec.describe Indicator, type: :model do
 end
 context "a due_date has a progress_report" do
   let(:indicator) {
-    indicator = FactoryBot.create(:indicator, :with_12_due_dates)
-    warn "created first 12"
-    indicator
+    Timecop.travel(2019, 1, 1) do
+      indicator = FactoryBot.create(:indicator, :with_12_due_dates)
+      warn "created first 12"
+      indicator
+    end
   }
   let!(:progress_report) { FactoryBot.create(:progress_report, indicator: indicator, title: "test", due_date: indicator.due_dates.last) }
 
@@ -74,5 +84,39 @@ context "a due_date has a progress_report" do
     expect(indicator.due_dates.has_progress_reports.count).to be 1
     expect(indicator.due_dates.has_progress_reports.first.id).to be due_date.id
     expect(due_date.progress_reports.count).to be 1
+  end
+
+  context "is_current" do
+    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:measure) { FactoryBot.create(:measure) }
+
+    context "when there are measures" do
+      before do
+        indicator.measures << measure
+        allow(measure).to receive(:is_current).and_return(is_current)
+      end
+
+      context "when a measure is current" do
+        let(:is_current) { true }
+
+        it "returns true" do
+          expect(indicator.is_current).to eq(true)
+        end
+      end
+
+      context "when no measure is current" do
+        let(:is_current) { false }
+
+        it "returns false" do
+          expect(measure.is_current).to eq(false)
+        end
+      end
+    end
+
+    context "when there are no measures" do
+      it "returns true" do
+        expect(indicator.is_current).to eq(true)
+      end
+    end
   end
 end

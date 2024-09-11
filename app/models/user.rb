@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
 class User < VersionedRecord
-  # Include default devise modules.
-  devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :trackable, :validatable
-  include DeviseTokenAuth::Concerns::User
-  has_paper_trail ignore: [:tokens, :updated_at]
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
     :recoverable, :rememberable, :trackable, :validatable
+  #  :omniauthable
+  include DeviseTokenAuth::Concerns::User
+  has_paper_trail ignore: [:tokens, :updated_at]
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -20,10 +17,16 @@ class User < VersionedRecord
   has_many :categories, through: :user_categories
   has_many :bookmarks
 
+  belongs_to :relationship_updated_by, class_name: "User", required: false
+
   validates :email, presence: true
   validates :name, presence: true
 
   def role?(role)
     roles.where(name: role).any?
+  end
+
+  def domain
+    email.to_s.split("@").last
   end
 end

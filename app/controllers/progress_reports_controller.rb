@@ -34,6 +34,7 @@ class ProgressReportsController < ApplicationController
     if params[:progress_report][:updated_at] && DateTime.parse(params[:progress_report][:updated_at]).to_i != @progress_report.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
+
     if @progress_report.update!(permitted_attributes(@progress_report))
       set_and_authorize_progress_report
       render json: serialize(@progress_report)
@@ -54,7 +55,11 @@ class ProgressReportsController < ApplicationController
   end
 
   def base_object
-    ProgressReport
+    records = ProgressReport
+
+    records = records.where(is_archive: false) if params[:include_archive] == "false"
+    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
+    records
   end
 
   def serialize(target, serializer: ProgressReportSerializer)

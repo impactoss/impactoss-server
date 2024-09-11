@@ -2,6 +2,7 @@ class Indicator < VersionedRecord
   validates :title, presence: true
   validates :end_date, presence: true, if: :repeat?
   validates :frequency_months, presence: true, if: :repeat?
+  validates :reference, uniqueness: true
   validate :end_date_after_start_date, if: :end_date?
 
   after_create :build_due_dates
@@ -21,8 +22,13 @@ class Indicator < VersionedRecord
   # has_many :direct_recommendations, through: :indicators_recommendations, source: :recommendation
 
   belongs_to :manager, class_name: "User", foreign_key: :manager_id, required: false
+  belongs_to :relationship_updated_by, class_name: "User", required: false
 
   accepts_nested_attributes_for :measure_indicators
+
+  def is_current
+    measures.empty? || measures.any?(&:is_current)
+  end
 
   private
 

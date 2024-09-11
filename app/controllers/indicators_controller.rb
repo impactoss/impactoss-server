@@ -47,11 +47,15 @@ class IndicatorsController < ApplicationController
   private
 
   def base_object
-    if params[:measure_id]
+    records = if params[:measure_id]
       Measure.find(params[:measure_id]).indicators
     else
       Indicator
     end
+
+    records = records.where(is_archive: false) if params[:include_archive] == "false"
+    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
+    records
   end
 
   # Use callbacks to share common setup or constraints between actions.

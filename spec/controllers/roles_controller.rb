@@ -51,14 +51,18 @@ RSpec.describe RolesController, type: :controller do
 
   describe "Get show" do
     let(:role) { FactoryBot.create(:role) }
-    subject { get :show, params: {id: role}, format: :json }
+    subject {
+      get :show, params: {
+        id: role
+      }, format: :json
+    }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
       it "shows the role" do
         json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(role.id)
+        expect(json.dig("data", "id").to_i).to eq(role.id)
       end
     end
   end
@@ -66,7 +70,9 @@ RSpec.describe RolesController, type: :controller do
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a role" do
-        post :create, format: :json, params: {role: {name: "test", friendly_name: "test"}}
+        post :create, format: :json, params: {
+          role: {name: "test", friendly_name: "test"}
+        }
         expect(response).to be_unauthorized
       end
     end
@@ -78,7 +84,9 @@ RSpec.describe RolesController, type: :controller do
       let(:admin) { FactoryBot.create(:user, :admin) }
 
       subject do
-        post :create, format: :json, params: {role: {name: "test", friendly_name: "test"}}
+        post :create, format: :json, params: {
+          role: {name: "test", friendly_name: "test"}
+        }
       end
 
       it "will not allow a guest to create a role" do
@@ -108,7 +116,9 @@ RSpec.describe RolesController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: role.id, role: {name: "test", friendly_name: "test"}}
+        params: {
+          id: role.id, role: {name: "test", friendly_name: "test"}
+        }
     end
 
     context "when not signed in" do
@@ -147,7 +157,11 @@ RSpec.describe RolesController, type: :controller do
 
   describe "Delete destroy" do
     let(:role) { FactoryBot.create(:role) }
-    subject { delete :destroy, format: :json, params: {id: role} }
+    subject {
+      delete :destroy, format: :json, params: {
+        id: role
+      }
+    }
 
     context "when not signed in" do
       it "not allow deleting a measure" do

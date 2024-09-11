@@ -1,4 +1,9 @@
-Sadata Progress Report Due
+Progress report due for <%= @indicator.title %>
 
-Hi <%= @manager_name %>,
-There is a a progress report due for <%= @indicator.title %> on <%= @due_date.due_date %> for your category <%= @category_title %>
+Hi <%= @category.manager_name %>,
+
+A progress report is due on <%= @due_date %> for a Human Rights Body (<%= @category.title %>) you were assigned to: <%= @client_url %>/categories/<%= @category.id %>
+
+Visit the indicator page to review due dates and progress reports: <%= @client_url %>/indicators/<%= @indicator.id %>
+
+Thank you!
