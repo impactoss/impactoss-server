@@ -183,7 +183,9 @@ class Seeds
       title: "SDGs",
       has_manager: true,
       allow_multiple: true,
-      priority: 31
+      priority: 31,
+      tags_measures: false,
+      tags_users: false
     )
     FrameworkTaxonomy.create!(
       framework: hr,
