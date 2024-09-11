@@ -39,6 +39,14 @@ class Seeds
       has_measures: true,
       has_response: true
     )
+    sdgfw = Framework.new(
+        title: 'Sustainable Debelopment Goals',
+        short_title: 'SDGs',
+        has_indicators: true,
+        has_measures: true,
+        has_response: false,
+      )
+    sdgfw.save!
 
     # Set up taxonomies
     # 1. Global taxonomy
@@ -152,6 +160,40 @@ class Seeds
       priority: 7
     )
 
+    # 9. Country specific taxonomy
+    cluster = Taxonomy.create!(
+        title: 'Thematic cluster',
+        tags_measures: true,
+        tags_users: false,
+        allow_multiple: true,
+        priority: 100,
+        groups_measures_default: 1
+      )
+    FrameworkTaxonomy.create!(
+      framework: hr,
+      taxonomy: cluster
+    )
+    FrameworkTaxonomy.create!(
+      framework: sdsfw,
+      taxonomy: cluster
+    )
+    # 10. Global taxonomy
+    sdg = Taxonomy.create!(
+        framework:sdgfw,
+        title: 'SDGs',
+        has_manager: true,
+        allow_multiple: true,
+        priority: 31
+      )
+      FrameworkTaxonomy.create!(
+        framework: hr,
+        taxonomy: sdg
+      )
+      FrameworkTaxonomy.create!(
+        framework: sdsfw,
+        taxonomy: sdg
+      )
+
     # Set up categories
     # SMART categories
     smart.categories.create!(title: "Specific", short_title: "S", reference: "1")
@@ -212,322 +254,500 @@ class Seeds
       title: "Ministry of Foreign Affairs and Trade",
       short_title: "MFAT"
     )
-    org.categories.create!(
-      title: "Ministry for Women",
-      short_title: "MfW"
+
+    # # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
+    # # TODO level 2 and 3 human rights
+    issue.categories.create!(
+      title:'Scope of international obligations',
+      short_title:'Int. obligations',
+      reference:'A1',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Ministry of Social Development",
-      short_title: "MSD"
+    issue.categories.create!(
+      title:'Cooperation with human rights mechanisms and institutions',
+      short_title:'Cooperation ',
+      reference:'A2',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Whaikaha: Ministry of Disabled People",
-      short_title: "Whaikaha"
+    issue.categories.create!(
+      title:'Inter-State cooperation & development assistance',
+      short_title:'Inter-State cooperation',
+      reference:'A3',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Te Puni Kokiri",
-      short_title: "TPK"
+    issue.categories.create!(
+      title:'Legal, institutional and policy framework',
+      short_title:'Framework',
+      reference:'A4',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Ministry of Business, Innovation and Employment",
-      short_title: "MBIE"
+    issue.categories.create!(
+      title:'Human rights education, trainings and awareness raising',
+      short_title:'HR education',
+      reference:'A5',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Department of Internal Affairs",
-      short_title: "DIA"
+    issue.categories.create!(
+      title:'Context, statistics, budget, civil society',
+      short_title:'Context',
+      reference:'A6',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Department of Corrections",
-      short_title: "Corrections"
+    issue.categories.create!(
+      title:'International criminal and humanitarian law',
+      short_title:'Int. law',
+      reference:'B1',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "New Zealand Police",
-      short_title: "Police"
+    issue.categories.create!(
+      title:'Right to self-determination',
+      short_title:'Self-determination',
+      reference:'B2',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Crown Response Unit",
-      short_title: "CRU"
+    issue.categories.create!(
+      title:'Equality and non-discrimination',
+      short_title:'Equality',
+      reference:'B3',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Ministry of Housing and Urban Development",
-      short_title: "HUD"
+    issue.categories.create!(
+      title:'Right to development',
+      short_title:'Development',
+      reference:'B4',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Ministry of Health",
-      short_title: "MoH"
+    issue.categories.create!(
+      title:'Right to a remedy',
+      short_title:'Remedy',
+      reference:'B5',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Ministry of Education",
-      short_title: "MoE"
+    issue.categories.create!(
+      title:'Business & Human Rights',
+      short_title:'Business',
+      reference:'B6',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Ministry for the Environment",
-      short_title: "MfE"
+    issue.categories.create!(
+      title:'Human rights and environmental issues',
+      short_title:'Environment',
+      reference:'B7',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "National Emergency Management Agency",
-      short_title: "NEMA"
+    issue.categories.create!(
+      title:'Human rights & counter-terrorism',
+      short_title:'Counter-terrorism',
+      reference:'B8',
+      description:'',
+      url:''
     )
-    org.categories.create!(
-      title: "Te Puna Aonui",
-      short_title: "TPA"
+    issue.categories.create!(
+      title:'Human rights & use of mercenaries',
+      short_title:'Mercenaries',
+      reference:'B9',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Civil & political rights - general measures of implementation',
+      short_title:'Civil & political',
+      reference:'D1',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Right to physical and moral integrity',
+      short_title:'Integrity',
+      reference:'D2',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Liberty and security of the person',
+      short_title:'Liberty',
+      reference:'D3',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Fundamental freedoms',
+      short_title:'Freedoms',
+      reference:'D4',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Administration of justice',
+      short_title:'Justice',
+      reference:'D5',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Rights related to name, identity, nationality',
+      short_title:'Identity',
+      reference:'D6',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Right to participation in public affairs and right to vote',
+      short_title:'Participation',
+      reference:'D7',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Rights related to marriage & family',
+      short_title:'Family',
+      reference:'D8',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Economic, social & cultural rights - general measures of implementation',
+      short_title:'Economic, social & cultural',
+      reference:'E1',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Right to an adequate standard of living',
+      short_title:'Standard of living',
+      reference:'E2',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Labour rights',
+      short_title:'Labour rights',
+      reference:'E3',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Right to health',
+      short_title:'Health',
+      reference:'E4',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Right to education',
+      short_title:'Education',
+      reference:'E5',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Rights to protection of property; financial credit',
+      short_title:'Property',
+      reference:'E6',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Cultural rights',
+      short_title:'Cultural rights',
+      reference:'E7',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Women',
+      short_title:'Women',
+      reference:'F1',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Children',
+      short_title:'Children',
+      reference:'F3',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Persons with disabilities',
+      short_title:'Persons with disabilities',
+      reference:'F4',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Members of minorities',
+      short_title:'Minorities',
+      reference:'G1',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Indigenous peoples',
+      short_title:'Indigenous peoples',
+      reference:'G3',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Migrants',
+      short_title:'Migrants',
+      reference:'G4',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Refugees & asylum seekers',
+      short_title:'Refugees',
+      reference:'G5',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Internally displaced persons',
+      short_title:'Internally displaced',
+      reference:'G5',
+      description:'',
+      url:''
+    )
+    issue.categories.create!(
+      title:'Human rights defenders',
+      short_title:'HR defenders',
+      reference:'H1',
+      description:'',
+      url:''
     )
 
-    # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
-    # TODO level 2 and 3 human rights
-    issue.categories.create!(
-      title: "Equality and non-discrimination",
-      short_title: "Equality"
-    )
-    issue.categories.create!(
-      title: "International cooperation",
-      short_title: "Cooperation"
-    )
-    issue.categories.create!(
-      title: "Human rights and environmental issues",
-      short_title: "Environment"
-    )
-    issue.categories.create!(
-      title: "Counter-terrorism",
-      short_title: "Counter-terrorism"
-    )
-    issue.categories.create!(
-      title: "Economic, social and cultural rights",
-      short_title: "ESC rights"
-    )
-    issue.categories.create!(
-      title: "Right to an adequate standard of living",
-      short_title: "Standard of living"
-    )
-    issue.categories.create!(
-      title: "Employment rights ",
-      short_title: "Employment"
-    )
-    issue.categories.create!(
-      title: "Right to health",
-      short_title: "Health"
-    )
-    issue.categories.create!(
-      title: "Right to education",
-      short_title: "Education"
-    )
-    issue.categories.create!(
-      title: "Rights of women and girls",
-      short_title: "Women & girls"
-    )
-    issue.categories.create!(
-      title: "Rights of children and young people",
-      short_title: "Children (rights of)"
-    )
-    issue.categories.create!(
-      title: "Rights of persons with disabilities",
-      short_title: "Disabilities (rights)"
-    )
-    issue.categories.create!(
-      title: "Indigenous rights and rights of ethnic minorities",
-      short_title: "Indigenous (rights of)"
-    )
-    issue.categories.create!(
-      title: "Rights of refugees, migrants and asylum seekers",
-      short_title: "Migrants (rights of)"
-    )
-    issue.categories.create!(
-      title: "Rights of older persons",
-      short_title: "Older persons"
-    )
-    issue.categories.create!(
-      title: "National human rights framework",
-      short_title: "NHRF"
-    )
-    issue.categories.create!(
-      title: "International instruments",
-      short_title: "Intl. instruments"
-    )
-    issue.categories.create!(
-      title: "Human rights and criminal justice",
-      short_title: "Criminal justice"
-    )
-    issue.categories.create!(
-      title: "Human trafficking, modern slavery and business and human rights",
-      short_title: "Business"
-    )
-    issue.categories.create!(
-      title: "Scope of international obligations",
-      short_title: "Intl. obligations"
-    )
-    issue.categories.create!(
-      title: "Inter-State cooperation and development assistance",
-      short_title: "Inter-State cooperation"
-    )
-    issue.categories.create!(
-      title: "Human rights education, trainings and awareness raising",
-      short_title: "HR education"
-    )
-    issue.categories.create!(
-      title: "Context, statistics, budget, civil society",
-      short_title: "Context"
-    )
-    issue.categories.create!(
-      title: "International criminal and humanitarian law",
-      short_title: "Intl. law"
-    )
-    issue.categories.create!(
-      title: "Right to self-determination",
-      short_title: "Self-determination"
-    )
-    issue.categories.create!(
-      title: "Right to development",
-      short_title: "Development"
-    )
-    issue.categories.create!(
-      title: "Right to a remedy",
-      short_title: "Remedy"
-    )
-    issue.categories.create!(
-      title: "Human rights and use of mercenaries",
-      short_title: "Mercenaries (use of)"
-    )
-    issue.categories.create!(
-      title: "Civil and political rights – general measures of implementation",
-      short_title: "Civil & political"
-    )
-    issue.categories.create!(
-      title: "Right to physical and moral integrity",
-      short_title: "Integrity"
-    )
-    issue.categories.create!(
-      title: "Liberty and security of the person",
-      short_title: "Liberty & security"
-    )
-    issue.categories.create!(
-      title: "Fundamental freedoms",
-      short_title: "Freedom"
-    )
-    issue.categories.create!(
-      title: "Administration of justice",
-      short_title: "Justice"
-    )
-    issue.categories.create!(
-      title: "Rights related to name, identity, nationality",
-      short_title: "Identity"
-    )
-    issue.categories.create!(
-      title: "Right to participation in public affairs and right to vote",
-      short_title: "Participation"
-    )
-    issue.categories.create!(
-      title: "Rights related to marriage and family",
-      short_title: "Family"
-    )
-    issue.categories.create!(
-      title: "Rights to protection of property, financial credit",
-      short_title: "Property"
-    )
-    issue.categories.create!(
-      title: "Cultural rights",
-      short_title: "Cultural rights"
-    )
-    issue.categories.create!(
-      title: "Internally displaced persons",
-      short_title: "Displaced"
-    )
-    issue.categories.create!(
-      title: "Human rights defenders",
-      short_title: "HRD"
-    )
-    issue.categories.create!(
-      title: "International conventions",
-      short_title: "Intl. conventions"
-    )
 
-    # Affected Persons (http://uhri.ohchr.org/search/annotations)
+  # Affected Persons (http://uhri.ohchr.org/search/annotations)
     persons.categories.create!(
-      title: "Children and young people",
-      short_title: "Children"
+      title:'Children',
+      short_title:'Children',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Disappeared persons",
-      short_title: "Disappeared"
+      title:'Children in street situations',
+      short_title:'CSS',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Indigenous peoples",
-      short_title: "Indigenous"
+      title:'Disappeared persons',
+      short_title:'Disappeared',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Lesbian, gay, bisexual, transgender and intersex persons",
-      short_title: "LGBTI"
+      title:'Educational staff',
+      short_title:'Edu',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Migrants, refugees and asylum seekers",
-      short_title: "Migrants"
+      title:'General',
+      short_title:'General',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Minorities / racial, ethnic, linguistic, religious or descent-based groups",
-      short_title: "Minorities"
+      title:'Girls',
+      short_title:'Girls',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Persons living in poverty",
-      short_title: "Poverty"
+      title:'Human rights defenders',
+      short_title:'HRD',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Persons with disabilities",
-      short_title: "Disabilities"
+      title:'Indigenous peoples',
+      short_title:'Indigenous',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Stateless persons",
-      short_title: "Stateless"
+      title:'Internally displaced persons',
+      short_title:'IDP',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Women and girls",
-      short_title: "Women"
+      title:'Judges, lawyers and prosecutors',
+      short_title:'JLP',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Pacific people",
-      short_title: "Pacific"
+      title:'Law enforcement / police officials',
+      short_title:'Law',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Māori",
-      short_title: "Māori"
+      title:'Lesbian, gay, bisexual and transgender and intersex persons (LGBTI)',
+      short_title:'LGBTI',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Older persons ",
-      short_title: "Older"
+      title:'Media',
+      short_title:'Media',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Persons experiencing homelessness",
-      short_title: "Homelessness"
+      title:'Medical staff',
+      short_title:'Medical',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Persons in slavery/trafficked persons",
-      short_title: "Slavery"
+      title:'Mercenaries',
+      short_title:'Mercenaries',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Public officials",
-      short_title: "Public officials"
+      title:'Migrants',
+      short_title:'Migrants',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Media",
-      short_title: "Media"
+      title:'Military staff',
+      short_title:'Military',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Non-citizens",
-      short_title: "Non-citizens"
+      title:'Minorities / racial, ethnic, linguistic, religious or descent-based groups',
+      short_title:'Minorities',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Persons deprived of their liberty",
-      short_title: "Liberty"
+      title:'Non-citizens',
+      short_title:'Non-citizens',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Private security",
-      short_title: "Private security"
+      title:'Older persons',
+      short_title:'Old',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Mercenaries",
-      short_title: "Mercenaries"
+      title:'Persons affected by armed conflict',
+      short_title:'Armed conflict',
+      description:'',
+      url:''
     )
     persons.categories.create!(
-      title: "Persons living in rural areas",
-      short_title: "Rural"
+      title:'Persons deprived of their liberty',
+      short_title:'Liberty',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Persons living in poverty',
+      short_title:'Poverty',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Persons living in rural areas',
+      short_title:'Rural',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Persons living with HIV/AIDS',
+      short_title:'HIV',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Persons with disabilities',
+      short_title:'Disabilities',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Prison officials',
+      short_title:'Prison officials',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Private security',
+      short_title:'Private security',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Public officials',
+      short_title:'Public officials',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Refugees & asylum seekers',
+      short_title:'Refugees',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Rural women',
+      short_title:'Rural women',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Social workers',
+      short_title:'Social workers',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Stateless persons',
+      short_title:'Stateless',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Vulnerable persons/groups',
+      short_title:'Vulnerable',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Women',
+      short_title:'Women',
+      description:'',
+      url:''
+    )
+    persons.categories.create!(
+      title:'Youth',
+      short_title:'Youth',
+      description:'',
+      url:''
     )
     # Countries
     country.categories.create!(
@@ -1317,6 +1537,126 @@ class Seeds
     country.categories.create!(
       short_title: "ZWE",
       title: "Zimbabwe"
+    )
+    # SDGs
+    sdg.categories.create!(
+      description:'End poverty in all its forms everywhere',
+      title:'No poverty',
+      reference: 1,
+      short_title:'SDG 1',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'End hunger, achieve food security and improved nutrition and promote sustainable agriculture',
+      title:'Zero hunger',
+      reference: 2,
+      short_title:'SDG 2',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Ensure healthy lives and promote well-being for all at all ages',
+      title:'Good Health and Well-being',
+      reference: 3,
+      short_title:'SDG 3',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all',
+      title:'Quality Education',
+      reference: 4,
+      short_title:'SDG 4',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Achieve gender equality and empower all women and girls',
+      title:'Gender Equality',
+      reference: 5,
+      short_title:'SDG 5',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Ensure availability and sustainable management of water and sanitation for all',
+      title:'Clean Water and Sanitation',
+      reference: 6,
+      short_title:'SDG 6',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Ensure access to affordable, reliable, sustainable and modern energy for all',
+      title:'Affordable and Clean Energy',
+      reference: 7,
+      short_title:'SDG 7',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all',
+      title:'Decent Work and Economic Growth',
+      reference: 8,
+      short_title:'SDG 8',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation',
+      title:'Industry, Innovation and Infrastructure',
+      reference: 9,
+      short_title:'SDG 9',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Reduce income inequality within and among countries',
+      title:'Reduced Inequalities',
+      reference: 10,
+      short_title:'SDG 10',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Make cities and human settlements inclusive, safe, resilient and sustainable',
+      title:'Sustainable Cities and Communities',
+      reference: 11,
+      short_title:'SDG 11',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Ensure sustainable consumption and production patterns',
+      title:'Responsible Consumption and Production',
+      reference: 12,
+      short_title:'SDG 12',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Take urgent action to combat climate change and its impacts by regulating emissions and promoting developments in renewable energy',
+      title:'Climate Action',
+      reference: 13,
+      short_title:'SDG 13',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Conserve and sustainably use the oceans, seas and marine resources for sustainable development',
+      title:'Life Below Water',
+      reference: 14,
+      short_title:'SDG 14',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss',
+      title:'Life on Land',
+      reference: 15,
+      short_title:'SDG 15',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels',
+      title:'Peace, Justice and Strong Institutions',
+      reference: 16,
+      short_title:'SDG 16',
+      url:''
+    )
+    sdg.categories.create!(
+      description:'Strengthen the means of implementation and revitalize the global partnership for sustainable development',
+      title:'Partnerships for the Goals',
+      reference: 17,
+      short_title:'SDG 17',
+      url:''
     )
   end
 
