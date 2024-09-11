@@ -6,52 +6,63 @@ require "json"
 RSpec.describe MeasuresController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
 
+  def serialized(subject_measure)
+    MeasureSerializer.new(subject_measure).serializable_hash[:data].as_json
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:measure) { FactoryBot.create(:measure) }
-    let!(:draft_measure) { FactoryBot.create(:measure, draft: true) }
+    let!(:measure) { FactoryBot.create(:measure, reference: "Published Measure") }
+    let!(:archived_measure) { FactoryBot.create(:measure, is_archive: true, reference: "Archived Measure") }
+    let!(:draft_measure) { FactoryBot.create(:measure, draft: true, reference: "Draft Measure") }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
-      it "all published measures (no drafts)" do
+      it "will see only published measures (no archived or drafts)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(measure)])
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "guest will not see draft measures" do
+      it "guest will see only published measures (no archived or draft)" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(measure)])
       end
 
-      it "contributor will see draft measures" do
+      it "contributor will see all measures" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(measure),
+          serialized(archived_measure),
+          serialized(draft_measure)
+        ])
       end
 
-      it "manager will see draft measures" do
-        sign_in user
+      it "manager will see all measures" do
+        sign_in manager
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(measure),
+          serialized(archived_measure),
+          serialized(draft_measure)
+        ])
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
-        let!(:archived) { FactoryBot.create(:measure, is_archive: true) }
 
         it "will not show is_archived items" do
-          sign_in user
+          sign_in manager
           json = JSON.parse(subject.body)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([measure.id, draft_measure.id].sort)
+          expect(json["data"]).to match_array([serialized(measure), serialized(draft_measure)])
         end
       end
     end
@@ -97,20 +108,29 @@ RSpec.describe MeasuresController, type: :controller do
   end
 
   describe "Get show" do
-    let(:measure) { FactoryBot.create(:measure) }
-    let(:draft_measure) { FactoryBot.create(:measure, draft: true) }
-    subject { get :show, params: {id: measure}, format: :json }
+    let(:measure) { FactoryBot.create(:measure, reference: "Published Measure") }
+    let(:archived_measure) { FactoryBot.create(:measure, draft: true, reference: "Archived Measure") }
+    let(:draft_measure) { FactoryBot.create(:measure, draft: true, reference: "Draft Measure") }
+
+    def show(subject_measure)
+      get :show, params: {id: subject_measure}, format: :json
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it { expect(show(measure)).to be_ok }
 
-      it "shows the measure" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(measure.id)
+      it "shows the published measure" do
+        json = JSON.parse(show(measure).body)
+        expect(json["data"]).to eq(serialized(measure))
       end
 
-      it "will not show draft measure" do
-        get :show, params: {id: draft_measure}, format: :json
+      it "will not show the archived measure" do
+        show(archived_measure)
+        expect(response).to be_not_found
+      end
+
+      it "will not show the draft measure" do
+        show(draft_measure)
         expect(response).to be_not_found
       end
     end

@@ -6,17 +6,22 @@ require "json"
 RSpec.describe ProgressReportsController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
 
+  def serialized(subject_progress_report)
+    ProgressReportSerializer.new(subject_progress_report).serializable_hash[:data].as_json
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:progress_report) { FactoryBot.create(:progress_report) }
-    let!(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true) }
+    let!(:progress_report) { FactoryBot.create(:progress_report, title: "Published Progress Report") }
+    let!(:archived_progress_report) { FactoryBot.create(:progress_report, is_archive: true, title: "Archived Progress Report") }
+    let!(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true, title: "Draft Progress Report") }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
-      it "all published progress_reports (no drafts)" do
+      it "will see only published progress_reports (no archived or draft)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(progress_report)])
       end
     end
 
@@ -25,59 +30,70 @@ RSpec.describe ProgressReportsController, type: :controller do
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "guest will not see draft progress_reports" do
+      it "guest will see only published progress_reports (no archived or draft)" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(progress_report)])
       end
 
-      it "contributor will see draft progress_reports" do
+      it "contributor will all progress_reports" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(progress_report),
+          serialized(archived_progress_report),
+          serialized(draft_progress_report)
+        ])
       end
 
-      it "manager will see draft progress_reports" do
+      it "manager will all progress_reports" do
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(progress_report),
+          serialized(archived_progress_report),
+          serialized(draft_progress_report)
+        ])
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
-        let!(:archived) { FactoryBot.create(:progress_report, is_archive: true) }
 
         it "will not show is_archived items" do
           sign_in manager
           json = JSON.parse(subject.body)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([progress_report.id, draft_progress_report.id].sort)
+          expect(json["data"]).to match_array([serialized(progress_report), serialized(draft_progress_report)])
         end
       end
     end
   end
 
   describe "Get show" do
-    let(:progress_report) { FactoryBot.create(:progress_report) }
-    let(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true) }
-    subject {
+    let(:progress_report) { FactoryBot.create(:progress_report, title: "Published Progress Report") }
+    let(:archived_progress_report) { FactoryBot.create(:progress_report, is_archive: true, title: "Archived Progress Report") }
+    let(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true, title: "Draft Progress Report") }
+
+    def show(subject_progress_report)
       get :show, params: {
-        id: progress_report
+        id: subject_progress_report
       }, format: :json
-    }
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it { expect(show(progress_report)).to be_ok }
 
       it "shows the progress_report" do
-        json = JSON.parse(subject.body)
+        json = JSON.parse(show(progress_report).body)
         expect(json.dig("data", "id").to_i).to eq(progress_report.id)
       end
 
-      it "will not show draft progress_report" do
-        get :show, params: {
-          id: draft_progress_report
-        }, format: :json
+      it "will not show the archived progress_report" do
+        show(archived_progress_report)
+        expect(response).to be_not_found
+      end
+
+      it "will not show the draft progress_report" do
+        show(draft_progress_report)
         expect(response).to be_not_found
       end
     end

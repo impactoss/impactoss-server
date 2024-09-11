@@ -2,17 +2,22 @@ require "rails_helper"
 require "json"
 
 RSpec.describe CategoriesController, type: :controller do
+  def serialized(subject_category)
+    CategorySerializer.new(subject_category).serializable_hash[:data].as_json
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:category) { FactoryBot.create(:category) }
-    let!(:draft_category) { FactoryBot.create(:category, draft: true) }
+    let!(:category) { FactoryBot.create(:category, reference: "Published Category") }
+    let!(:archived_category) { FactoryBot.create(:category, is_archive: true, reference: "Archived Category") }
+    let!(:draft_category) { FactoryBot.create(:category, draft: true, reference: "Draft Category") }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
-      it "all published categories (no drafts)" do
+      it "will see only published categories (no archived or drafts)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(category)])
       end
     end
 
@@ -21,59 +26,74 @@ RSpec.describe CategoriesController, type: :controller do
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "guest will not see draft categories" do
+      it "guest will see only published categories (no archived or draft)" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(category)])
       end
 
-      it "contributor will see draft categories" do
+      it "contributor will see all categories" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(category),
+          serialized(archived_category),
+          serialized(draft_category)
+        ])
       end
 
-      it "manager will see draft categories" do
+      it "manager will see all categories" do
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(category),
+          serialized(archived_category),
+          serialized(draft_category)
+        ])
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
-        let!(:archived) { FactoryBot.create(:category, is_archive: true) }
 
         it "will not show is_archived items" do
           sign_in manager
           json = JSON.parse(subject.body)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([category.id, draft_category.id].sort)
+          expect(json["data"]).to match_array([
+            serialized(category),
+            serialized(draft_category)
+          ])
         end
       end
     end
   end
 
   describe "Get show" do
-    let(:category) { FactoryBot.create(:category) }
-    let(:draft_category) { FactoryBot.create(:category, draft: true) }
-    subject {
+    let!(:category) { FactoryBot.create(:category, reference: "Published Category") }
+    let!(:archived_category) { FactoryBot.create(:category, is_archive: true, reference: "Archived Category") }
+    let!(:draft_category) { FactoryBot.create(:category, draft: true, reference: "Draft Category") }
+
+    def show(subject_category)
       get :show, params: {
-        id: category
+        id: subject_category
       }, format: :json
-    }
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it { expect(show(category)).to be_ok }
 
-      it "shows the category" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(category.id)
+      it "shows the published category" do
+        show(category)
+        json = JSON.parse(response.body)
+        expect(json["data"]).to eq(serialized(category))
+      end
+
+      it "will not show archived category" do
+        show(archived_category)
+        expect(response).to be_not_found
       end
 
       it "will not show draft category" do
-        get :show, params: {
-          id: draft_category
-        }, format: :json
+        show(draft_category)
         expect(response).to be_not_found
       end
     end

@@ -6,17 +6,22 @@ require "json"
 RSpec.describe RecommendationsController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
 
+  def serialized(subject_recommendation)
+    RecommendationSerializer.new(subject_recommendation).serializable_hash[:data].as_json
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:recommendation) { FactoryBot.create(:recommendation) }
-    let!(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true) }
+    let!(:recommendation) { FactoryBot.create(:recommendation, reference: "Published Recommendation") }
+    let!(:archived_recommendation) { FactoryBot.create(:recommendation, is_archive: true, reference: "Archived Recommendation") }
+    let!(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true, reference: "Draft Recommendation") }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
-      it "all published recommendations (no drafts)" do
+      it "will see only published recommendations (no archived or draft)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(recommendation)])
       end
     end
 
@@ -25,43 +30,48 @@ RSpec.describe RecommendationsController, type: :controller do
       let(:user) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "guest will not see draft recommendations" do
+      it "guest will see only published recommendations (no archived or draft)" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(recommendation)])
       end
 
-      it "contributor will see draft recommendations" do
+      it "contributor will see all recommendations" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(recommendation),
+          serialized(archived_recommendation),
+          serialized(draft_recommendation)
+        ])
       end
 
-      it "manager will see draft recommendations" do
+      it "manager will see all recommendations" do
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(recommendation),
+          serialized(archived_recommendation),
+          serialized(draft_recommendation)
+        ])
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
-        let!(:archived) { FactoryBot.create(:recommendation, is_archive: true) }
 
         it "will not show archived recommendations" do
           sign_in user
           json = JSON.parse(subject.body)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([recommendation.id, draft_recommendation.id].sort)
+          expect(json["data"]).to match_array([serialized(recommendation), serialized(draft_recommendation)])
         end
       end
 
       context "when current_only=true" do
-        let(:draft_recommendation) { nil }
         let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
         let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
         let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
-        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation) }
-        let!(:non_current_recommendation) { FactoryBot.create(:recommendation) }
+        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation, reference: "Non-Reporting-Cycle Recommendation") }
+        let!(:non_current_recommendation) { FactoryBot.create(:recommendation, reference: "Non-Current Recommendation") }
 
         before do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
@@ -78,10 +88,12 @@ RSpec.describe RecommendationsController, type: :controller do
         it "will only show current recommendations" do
           sign_in user
           json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(2)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort).to eq(
-            [recommendation.id, non_reporting_cycle_recommendation.id].sort
-          )
+          expect(json["data"]).to match_array([
+            serialized(recommendation),
+            serialized(archived_recommendation),
+            serialized(draft_recommendation),
+            serialized(non_reporting_cycle_recommendation)
+          ])
         end
       end
     end
@@ -111,20 +123,29 @@ RSpec.describe RecommendationsController, type: :controller do
   end
 
   describe "Get show" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
-    let(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true) }
-    subject { get :show, params: {id: recommendation}, format: :json }
+    let(:recommendation) { FactoryBot.create(:recommendation, reference: "Published Recommendation") }
+    let(:archived_recommendation) { FactoryBot.create(:recommendation, is_archive: true, reference: "Archived Recommendation") }
+    let(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true, reference: "Draft Recommendation") }
+
+    def show(subject_recommendation)
+      get :show, params: {id: subject_recommendation}, format: :json
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it { expect(show(recommendation)).to be_ok }
 
-      it "shows the recommendation" do
-        json = JSON.parse(subject.body)
+      it "shows the published recommendation" do
+        json = JSON.parse(show(recommendation).body)
         expect(json.dig("data", "id").to_i).to eq(recommendation.id)
       end
 
-      it "will not show draft recommendation" do
-        get :show, params: {id: draft_recommendation}, format: :json
+      it "will not show the archived recommendation" do
+        show(archived_recommendation)
+        expect(response).to be_not_found
+      end
+
+      it "will not show the draft recommendation" do
+        show(draft_recommendation)
         expect(response).to be_not_found
       end
     end
