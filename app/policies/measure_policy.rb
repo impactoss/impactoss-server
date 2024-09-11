@@ -43,7 +43,7 @@ class MeasurePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false)
+      scope.where(draft: false, is_archive: false)
     end
   end
 end

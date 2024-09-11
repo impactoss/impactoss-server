@@ -2,17 +2,22 @@ require "rails_helper"
 require "json"
 
 RSpec.describe PagesController, type: :controller do
+  def serialized(subject_page)
+    PageSerializer.new(subject_page).serializable_hash[:data].as_json
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:page) { FactoryBot.create(:page) }
-    let!(:draft_page) { FactoryBot.create(:page, draft: true) }
+    let!(:page) { FactoryBot.create(:page, title: "Published Page") }
+    let!(:archived_page) { FactoryBot.create(:page, is_archive: true, title: "Archived Page") }
+    let!(:draft_page) { FactoryBot.create(:page, draft: true, title: "Draft Page") }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
-      it "all published pages (no drafts)" do
+      it "will see only published pages (no archived or draft)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(page)])
       end
     end
 
@@ -21,53 +26,68 @@ RSpec.describe PagesController, type: :controller do
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "guest will not see draft pages" do
+      it "guest will see only published pages (no archived or draft)" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(page)])
       end
 
-      it "contributor will see draft pages" do
+      it "contributor will see all pages" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(page),
+          serialized(archived_page),
+          serialized(draft_page)
+        ])
       end
 
-      it "manager will see draft pages" do
+      it "manager will see all pages" do
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(page),
+          serialized(archived_page),
+          serialized(draft_page)
+        ])
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
-        let!(:archived) { FactoryBot.create(:page, is_archive: true) }
 
         it "will not show is_archived items" do
           sign_in manager
           json = JSON.parse(subject.body)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([page.id, draft_page.id].sort)
+          expect(json["data"]).to match_array([serialized(page), serialized(draft_page)])
         end
       end
     end
   end
 
   describe "Get show" do
-    let(:page) { FactoryBot.create(:page) }
-    let(:draft_page) { FactoryBot.create(:page, draft: true) }
-    subject { get :show, params: {id: page}, format: :json }
+    let(:page) { FactoryBot.create(:page, title: "Published Page") }
+    let(:archived_page) { FactoryBot.create(:page, is_archive: true, title: "Archived Page") }
+    let(:draft_page) { FactoryBot.create(:page, draft: true, title: "Draft Page") }
+
+    def show(subject_page)
+      get :show, params: {id: subject_page}, format: :json
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it { expect(show(page)).to be_ok }
 
-      it "shows the page" do
-        json = JSON.parse(subject.body)
+      it "shows the published page" do
+        json = JSON.parse(show(page).body)
         expect(json.dig("data", "id").to_i).to eq(page.id)
       end
 
-      it "will not show draft page" do
-        get :show, params: {id: draft_page}, format: :json
+      it "will not show the archived page" do
+        show(archived_page)
+        expect(response).to be_not_found
+      end
+
+      it "will not show the draft page" do
+        show(draft_page)
         expect(response).to be_not_found
       end
     end

@@ -4,19 +4,24 @@ require "rails_helper"
 require "json"
 
 RSpec.describe IndicatorsController, type: :controller do
+  def serialized(subject_indicator)
+    IndicatorSerializer.new(subject_indicator).serializable_hash[:data].as_json
+  end
+
   let(:admin) { FactoryBot.create(:user, :admin) }
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:indicator) { FactoryBot.create(:indicator) }
-    let!(:draft_indicator) { FactoryBot.create(:indicator, draft: true) }
+    let!(:indicator) { FactoryBot.create(:indicator, reference: "Published Indicator") }
+    let!(:archived_indicator) { FactoryBot.create(:indicator, is_archive: true, reference: "Archived Indicator") }
+    let!(:draft_indicator) { FactoryBot.create(:indicator, draft: true, reference: "Draft Indicator") }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
-      it "all published indicators (no drafts)" do
+      it "will see only published indicators (no archived or draft)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(indicator)])
       end
     end
 
@@ -25,33 +30,43 @@ RSpec.describe IndicatorsController, type: :controller do
       let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "guest will not see draft indicators" do
+      it "guest will see only published indicators (no archived or draft)" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(indicator)])
       end
 
-      it "contributor will see draft indicators" do
+      it "contributor will see all indicators" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(indicator),
+          serialized(archived_indicator),
+          serialized(draft_indicator)
+        ])
       end
 
-      it "manager will see draft indicators" do
+      it "manager will see all indicators" do
         sign_in manager
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([
+          serialized(indicator),
+          serialized(archived_indicator),
+          serialized(draft_indicator)
+        ])
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
-        let!(:archived) { FactoryBot.create(:indicator, is_archive: true) }
 
         it "will not show is_archived items" do
           sign_in manager
           json = JSON.parse(subject.body)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort)
-            .to eq([indicator.id, draft_indicator.id].sort)
+
+          expect(json["data"]).to match_array([
+            serialized(indicator),
+            serialized(draft_indicator)
+          ])
         end
       end
 
@@ -62,6 +77,14 @@ RSpec.describe IndicatorsController, type: :controller do
         let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
         let!(:recommendation) { FactoryBot.create(:recommendation) }
         let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
+        let!(:non_current_recommendation_measure) do
+          FactoryBot.create(:recommendation_measure, measure: non_current_measure, recommendation: non_current_recommendation)
+        end
+        let!(:non_current_measure) { FactoryBot.create(:measure) }
+        let!(:non_current_indicator) { FactoryBot.create(:indicator, reference: "Non-Current Indicator") }
+        let!(:non_current_measure_indicator) do
+          FactoryBot.create(:measure_indicator, measure: non_current_measure, indicator: non_current_indicator)
+        end
 
         before do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
@@ -78,10 +101,12 @@ RSpec.describe IndicatorsController, type: :controller do
         it "will only show current indicators" do
           sign_in manager
           json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(2)
-          expect(json["data"].map { _1["id"] }.map(&:to_i).sort).to eq(
-            [indicator.id, draft_indicator.id].sort
-          )
+
+          expect(json["data"]).to match_array([
+            serialized(indicator),
+            serialized(archived_indicator),
+            serialized(draft_indicator)
+          ])
         end
       end
     end
@@ -103,20 +128,29 @@ RSpec.describe IndicatorsController, type: :controller do
   end
 
   describe "Get show" do
-    let(:indicator) { FactoryBot.create(:indicator) }
-    let(:draft_indicator) { FactoryBot.create(:indicator, draft: true) }
-    subject { get :show, params: {id: indicator}, format: :json }
+    let(:indicator) { FactoryBot.create(:indicator, reference: "Published Indicator") }
+    let(:archived_indicator) { FactoryBot.create(:indicator, is_archive: true, reference: "Archived Indicator") }
+    let(:draft_indicator) { FactoryBot.create(:indicator, draft: true, reference: "Draft Indicator") }
+
+    def show(subject_indicator)
+      get :show, params: {id: subject_indicator}, format: :json
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it { expect(show(indicator)).to be_ok }
 
-      it "shows the indicator" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(indicator.id)
+      it "shows the published indicator" do
+        json = JSON.parse(show(indicator).body)
+        expect(json["data"]).to eq(serialized(indicator))
       end
 
-      it "will not show draft indicator" do
-        get :show, params: {id: draft_indicator}, format: :json
+      it "will not show the archived indicator" do
+        show(archived_indicator)
+        expect(response).to be_not_found
+      end
+
+      it "will not show the draft indicator" do
+        show(draft_indicator)
         expect(response).to be_not_found
       end
     end
