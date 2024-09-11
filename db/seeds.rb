@@ -174,7 +174,7 @@ class Seeds
       taxonomy: cluster
     )
     FrameworkTaxonomy.create!(
-      framework: sdsfw,
+      framework: sdgfw,
       taxonomy: cluster
     )
     # 10. Global taxonomy
@@ -190,7 +190,7 @@ class Seeds
         taxonomy: sdg
       )
       FrameworkTaxonomy.create!(
-        framework: sdsfw,
+        framework: sdgfw,
         taxonomy: sdg
       )
 
