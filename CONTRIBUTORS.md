@@ -1,6 +1,3 @@
-### marine-defrag
-- tmfrnz
-
 ### impactoss-server
 - tmfrnz
 - joshmcarthur
@@ -12,3 +9,4 @@
 - parndt
 - ben-rabid
 - sjukkola
+- lukearndt
