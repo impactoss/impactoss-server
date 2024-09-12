@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Indicator, type: :model do
+  it { is_expected.to validate_presence_of :reference }
   it { is_expected.to validate_presence_of :title }
 
   it "validates uniqueness of reference" do
