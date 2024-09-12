@@ -156,9 +156,10 @@ RSpec.describe MeasuresController, type: :controller do
       let(:params) {
         {
           measure: {
-            title: "test",
             description: "test",
-            target_date: "today"
+            reference: "test reference",
+            target_date: "today",
+            title: "test"
           }
         }
       }
@@ -197,10 +198,11 @@ RSpec.describe MeasuresController, type: :controller do
         let(:params) {
           {
             measure: {
-              title: "test",
               description: "test",
+              is_archive: true,
+              reference: "test reference",
               target_date: "today",
-              is_archive: true
+              title: "test"
             }
           }
         }
@@ -240,8 +242,15 @@ RSpec.describe MeasuresController, type: :controller do
     subject do
       put :update,
         format: :json,
-        params: {id: measure,
-                 measure: {title: "test update", description: "test update", target_date: "today update"}}
+        params: {
+          id: measure,
+          measure: {
+            title: "test update",
+            description: "test update",
+            reference: "test reference update",
+            target_date: "today update"
+          }
+        }
     end
 
     context "when not signed in" do

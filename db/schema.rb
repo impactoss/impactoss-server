@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_07_26_032048) do
+ActiveRecord::Schema.define(version: 2024_09_10_012254) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2024_07_26_032048) do
   end
 
   create_table "categories", id: :serial, force: :cascade do |t|
-    t.text "title"
+    t.text "title", null: false
     t.string "short_title"
     t.text "description"
     t.string "url"
@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(version: 2024_07_26_032048) do
     t.date "start_date"
     t.boolean "repeat", default: false
     t.date "end_date"
-    t.string "reference"
+    t.string "reference", null: false
     t.integer "updated_by_id"
     t.integer "created_by_id"
     t.datetime "relationship_updated_at", precision: 6
@@ -147,14 +147,14 @@ ActiveRecord::Schema.define(version: 2024_07_26_032048) do
     t.integer "created_by_id"
     t.datetime "relationship_updated_at", precision: 6
     t.bigint "relationship_updated_by_id"
-    t.string "reference"
+    t.string "reference", null: false
     t.boolean "is_archive", default: false, null: false
     t.index ["draft"], name: "index_measures_on_draft"
     t.index ["reference"], name: "index_measures_on_reference", unique: true
   end
 
   create_table "pages", id: :serial, force: :cascade do |t|
-    t.string "title"
+    t.string "title", null: false
     t.text "content"
     t.string "menu_title"
     t.boolean "draft", default: false
@@ -170,7 +170,7 @@ ActiveRecord::Schema.define(version: 2024_07_26_032048) do
   create_table "progress_reports", id: :serial, force: :cascade do |t|
     t.integer "indicator_id"
     t.integer "due_date_id"
-    t.text "title"
+    t.text "title", null: false
     t.text "description"
     t.string "document_url"
     t.boolean "document_public"
