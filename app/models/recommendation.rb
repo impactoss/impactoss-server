@@ -8,8 +8,16 @@ class Recommendation < VersionedRecord
 
   has_many :measures, through: :recommendation_measures
   has_many :categories, through: :recommendation_categories
-  has_many :indicators, through: :recommendation_indicators
+
+  has_many :direct_indicators, through: :recommendation_indicators, source: :indicator
   has_many :indicators_via_measures, through: :measures, source: :indicators
+
+  def indicator_ids
+    (direct_indicators.select(:id) + indicators_via_measures.select(:id)).uniq
+  end
+
+  has_many :indicators, ->(recommendation) { where(id: recommendation.indicator_ids) }
+
   has_many :progress_reports, through: :indicators
   has_many :due_dates, through: :indicators
 
