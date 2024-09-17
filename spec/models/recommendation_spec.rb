@@ -15,7 +15,56 @@ RSpec.describe Recommendation, type: :model do
 
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :measures }
-  it { is_expected.to have_many :indicators }
+  it { is_expected.to have_many :direct_indicators }
+  it { is_expected.to have_many :indicators_via_measures }
+
+  describe "indicators" do
+    subject { FactoryBot.create(:recommendation) }
+
+    let(:first_direct_indicator) { FactoryBot.create(:indicator, title: "First Direct Indicator") }
+    let(:second_direct_indicator) { FactoryBot.create(:indicator, title: "Second Direct Indicator") }
+
+    let(:indicator_via_first_measure) { FactoryBot.create(:indicator, title: "Indicator via First Measure") }
+    let(:indicator_via_second_measure) { FactoryBot.create(:indicator, title: "Indicator via Second Measure") }
+
+    let(:first_shared_indicator) { FactoryBot.create(:indicator, title: "First Shared Indicator") }
+    let(:second_shared_indicator) { FactoryBot.create(:indicator, title: "Second Shared Indicator") }
+
+    let(:first_measure) { FactoryBot.create(:measure) }
+    let(:second_measure) { FactoryBot.create(:measure) }
+
+    before do
+      # Create direct indicators
+      FactoryBot.create(:recommendation_indicator, recommendation: subject, indicator: first_direct_indicator)
+      FactoryBot.create(:recommendation_indicator, recommendation: subject, indicator: second_direct_indicator)
+
+      # Create indicators via measures
+      FactoryBot.create(:measure_indicator, measure: first_measure, indicator: indicator_via_first_measure)
+      FactoryBot.create(:measure_indicator, measure: second_measure, indicator: indicator_via_second_measure)
+
+      # Associate measures with the recommendation
+      FactoryBot.create(:recommendation_measure, recommendation: subject, measure: first_measure)
+      FactoryBot.create(:recommendation_measure, recommendation: subject, measure: second_measure)
+
+      # Create shared indicators
+      FactoryBot.create(:measure_indicator, measure: first_measure, indicator: first_shared_indicator)
+      FactoryBot.create(:recommendation_indicator, recommendation: subject, indicator: first_shared_indicator)
+      FactoryBot.create(:measure_indicator, measure: second_measure, indicator: second_shared_indicator)
+      FactoryBot.create(:recommendation_indicator, recommendation: subject, indicator: second_shared_indicator)
+    end
+
+    it "contains all distinct indicators from measures and recommendations" do
+      expect(subject.indicators.to_a).to match_array([
+        first_direct_indicator,
+        second_direct_indicator,
+        indicator_via_first_measure,
+        indicator_via_second_measure,
+        first_shared_indicator,
+        second_shared_indicator
+      ])
+    end
+  end
+
   it { is_expected.to have_many :progress_reports }
   it { is_expected.to have_many :due_dates }
   it { is_expected.to have_many :recommendations }
