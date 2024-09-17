@@ -96,7 +96,7 @@ RSpec.describe RecommendationCategoriesController, type: :controller do
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
+      let(:manager) { FactoryBot.create(:user, :manager) }
       let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "will not allow a guest to delete a recommendation_category" do
@@ -110,8 +110,19 @@ RSpec.describe RecommendationCategoriesController, type: :controller do
       end
 
       it "will allow a manager to delete a recommendation_category" do
-        sign_in user
+        sign_in manager
         expect(subject).to be_no_content
+      end
+
+      context "when the recommendation_category does not exist" do
+        let(:recommendation_category) do
+          {id: -1}
+        end
+
+        it "returns the same response as a successful deletion" do
+          sign_in manager
+          expect(subject).to be_no_content
+        end
       end
     end
   end

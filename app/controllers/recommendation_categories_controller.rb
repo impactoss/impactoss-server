@@ -45,6 +45,9 @@ class RecommendationCategoriesController < ApplicationController
   def set_and_authorize_recommendation_category
     @recommendation_category = policy_scope(base_object).find(params[:id])
     authorize @recommendation_category
+  rescue ActiveRecord::RecordNotFound
+    raise unless action_name == "destroy"
+    head :no_content
   end
 
   def base_object

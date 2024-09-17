@@ -45,6 +45,9 @@ class UserCategoriesController < ApplicationController
   def set_and_authorize_user_category
     @user_category = policy_scope(base_object).find(params[:id])
     authorize @user_category
+  rescue ActiveRecord::RecordNotFound
+    raise unless action_name == "destroy"
+    head :no_content
   end
 
   def base_object

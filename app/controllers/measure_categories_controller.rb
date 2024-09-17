@@ -46,6 +46,9 @@ class MeasureCategoriesController < ApplicationController
   def set_and_authorize_measure_category
     @measure_category = policy_scope(base_object).find(params[:id])
     authorize @measure_category
+  rescue ActiveRecord::RecordNotFound
+    raise unless action_name == "destroy"
+    head :no_content
   end
 
   def base_object
