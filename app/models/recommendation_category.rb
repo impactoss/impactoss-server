@@ -13,8 +13,8 @@ class RecommendationCategory < VersionedRecord
 
   private
 
-  def disallow_multiple
-    RecommendationCategory
+  def disallow_multiple?
+    self.class
       .joins(category: :taxonomy)
       .where({
         recommendation_id: recommendation_id,
@@ -26,13 +26,13 @@ class RecommendationCategory < VersionedRecord
   end
 
   def enforce_allow_multiple_from_taxonomy
-    if disallow_multiple
-      other_recommendation_categories_on_recommendation.destroy_all
+    if disallow_multiple?
+      others_on_recommendation.destroy_all
     end
   end
 
-  def other_recommendation_categories_on_recommendation
-    RecommendationCategory.where(recommendation_id: recommendation_id).where.not(category_id: category_id)
+  def others_on_recommendation
+    self.class.where(recommendation_id: recommendation_id).where.not(category_id: category_id)
   end
 
   def set_relationship_updated
