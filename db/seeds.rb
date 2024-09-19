@@ -154,11 +154,36 @@ class Seeds
 
     # Set up categories
     # SMART categories
-    smart.categories.create!(title: "Specific", short_title: "S", reference: "1")
-    smart.categories.create!(title: "Measurable", short_title: "M", reference: "2")
-    smart.categories.create!(title: "Assignable", short_title: "A", reference: "3")
-    smart.categories.create!(title: "Result-oriented", short_title: "R", reference: "4")
-    smart.categories.create!(title: "Timebound", short_title: "T", reference: "5")
+    smart.categories.create!(
+      title: "Specific",
+      short_title: "S",
+      reference: "1",
+      description: "The action and associated indicators are clear and concrete. They are focused on a particular programme or activity, or a particular aspect of the programme or activity"
+    )
+    smart.categories.create!(
+      title: "Measurable",
+      short_title: "M",
+      reference: "2",
+      description: "The indicators should have a clear unit of measurement, such as delivering an aspect of a programme or activity, percentages, numbers or rates."
+    )
+    smart.categories.create!(
+      title: "Assignable",
+      short_title: "A",
+      reference: "3",
+      description: "An agency is clearly responsible for the action and associated indicators"
+    )
+    smart.categories.create!(
+      title: "Relevant",
+      short_title: "R",
+      reference: "4",
+      description: "The actions should have a clear relationship to its indicators."
+    )
+    smart.categories.create!(
+      title: "Time-Bound",
+      short_title: "T",
+      reference: "5",
+      description: "The action should have a clear completion date. Where a completion date is not available due to the ongoing or progressive nature of the action, the indicators should have clear end dates and be measured at specific points in time to track progress against the action."
+    )
 
     progress.categories.create!(title: "In preparation", reference: "1")
     progress.categories.create!(title: "In progress", reference: "2")
