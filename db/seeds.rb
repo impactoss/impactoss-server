@@ -297,6 +297,10 @@ class Seeds
       title: "Te Puna Aonui",
       short_title: "TPA"
     )
+    org.categories.create!(
+      title: "Public Service Commission",
+      short_title: "PSC"
+    )
 
     # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
     # TODO level 2 and 3 human rights
@@ -350,7 +354,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Indigenous rights and rights of ethnic minorities",
-      short_title: "Indigenous (rights of)"
+      short_title: "Indigenous rights"
     )
     issue.categories.create!(
       title: "Rights of refugees, migrants and asylum seekers",
