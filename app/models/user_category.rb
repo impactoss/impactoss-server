@@ -6,31 +6,18 @@ class UserCategory < ApplicationRecord
   validates :user_id, presence: true
   validates :category_id, presence: true
 
-  after_commit :enforce_allow_multiple_from_taxonomy, on: [:create, :update]
+  after_commit :destroy_disallowed_sibling_categories, on: [:create, :update]
   after_commit :set_relationship_updated, on: [:create, :update, :destroy]
 
   private
 
-  def disallow_multiple?
-    self.class
-      .joins(category: :taxonomy)
-      .where({
-        user_id: user_id,
-        category: {
-          taxonomies: {allow_multiple: false}
-        }
-      })
-      .count > 0
-  end
+  def destroy_disallowed_sibling_categories
+    return unless category
 
-  def enforce_allow_multiple_from_taxonomy
-    if disallow_multiple?
-      others_on_user.destroy_all
-    end
-  end
-
-  def others_on_user
-    self.class.where(user_id: user_id).where.not(category_id: category_id)
+    self.class.where(
+      category_id: category.disallowed_sibling_category_ids,
+      user_id: user_id
+    ).destroy_all
   end
 
   def set_relationship_updated
