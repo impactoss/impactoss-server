@@ -48,41 +48,44 @@ RSpec.describe MeasureCategory, type: :model do
     end
   end
 
-  context "adding a category when the measure has\n" do
+  context "adding a category when the measure has:\n" do
     let(:run_test) do
-      # The setup can get complicated so we want to make sure that the preconditions are correct
+      # This test is complicated so first we'll verify the setup
+
+      # Check that the other measure starts with the expected categories
       expect(
-        other_measure.categories.map(&:short_title)
+        other_measure.reload.categories.map(&:short_title)
       ).to match_array(
         other_measure_categories.map(&:short_title)
       )
-      expect(other_measure.categories).to match_array(other_measure_categories)
+      expect(other_measure.reload.categories).to match_array(other_measure_categories)
 
+      # Check that the subject measure starts with the expected categories
       expect(
-        measure.categories.map(&:short_title)
+        measure.reload.categories.map(&:short_title)
       ).to match_array(
         categories_before.map(&:short_title)
       )
-      expect(measure.categories).to match_array(categories_before)
+      expect(measure.reload.categories).to match_array(categories_before)
 
       # Create the new category
       described_class.create(category: new_category, measure: measure)
 
-      # The measure should have the new category, either added or replacing an existing one
+      # The measure should have the new category, either added or by replacing an existing one
       expect(
-        measure.categories.map(&:short_title)
+        measure.categories.reload.map(&:short_title)
       ).to match_array(
         categories_after.map(&:short_title)
       )
-      expect(measure.categories).to match_array(categories_after)
+      expect(measure.categories.reload).to match_array(categories_after)
 
       # The other measure should be unaffected by the change
       expect(
-        other_measure.categories.map(&:short_title)
+        other_measure.categories.reload.map(&:short_title)
       ).to match_array(
         other_measure_categories.map(&:short_title)
       )
-      expect(other_measure.categories).to match_array(other_measure_categories)
+      expect(other_measure.categories.reload).to match_array(other_measure_categories)
     end
 
     let!(:other_measure_categories) do
@@ -104,12 +107,12 @@ RSpec.describe MeasureCategory, type: :model do
 
     let!(:taxonomies_allow) do
       3.times.map do |index|
-        FactoryBot.create(:taxonomy, allow_multiple: true, title: "Taxonomy: Allow Multiple, #{index}")
+        FactoryBot.create(:taxonomy, allow_multiple: true, title: "Taxonomy: Allow Multiple, #{index + 1}")
       end
     end
     let!(:taxonomies_disallow) do
       3.times.map do |index|
-        FactoryBot.create(:taxonomy, allow_multiple: false, title: "Taxonomy: Disallow Multiple, #{index}")
+        FactoryBot.create(:taxonomy, allow_multiple: false, title: "Taxonomy: Disallow Multiple, #{index + 1}")
       end
     end
 
@@ -119,8 +122,8 @@ RSpec.describe MeasureCategory, type: :model do
           FactoryBot.create(
             :category,
             taxonomy: taxonomy,
-            short_title: "Taxonomy Allow #{taxonomy_index} - Category #{category_index}",
-            title: "Category #{category_index} for Taxonomy Allow #{taxonomy_index}"
+            short_title: "Taxonomy Allow #{taxonomy_index + 1} - Category #{category_index + 1}",
+            title: "Category #{category_index + 1} for Taxonomy Allow #{taxonomy_index + 1}"
           )
         end
       end
@@ -131,8 +134,8 @@ RSpec.describe MeasureCategory, type: :model do
           FactoryBot.create(
             :category,
             taxonomy: taxonomy,
-            short_title: "Taxonomy Allow #{taxonomy_index} - Category #{category_index}",
-            title: "Category #{category_index} for Taxonomy Allow #{taxonomy_index}"
+            short_title: "Taxonomy Allow #{taxonomy_index + 1} - Category #{category_index + 1}",
+            title: "Category #{category_index + 1} for Taxonomy Allow #{taxonomy_index + 1}"
           )
         end
       end
@@ -143,7 +146,7 @@ RSpec.describe MeasureCategory, type: :model do
       let(:new_category) { categories_allow.first.first }
       let(:categories_after) { [new_category] }
 
-      it "adds the new category without replacing" do
+      it "adds the new category without replacement" do
         run_test
       end
     end
@@ -173,11 +176,11 @@ RSpec.describe MeasureCategory, type: :model do
         let(:categories_after) do
           [
             categories_allow.first.first,
-            new_category # added without replacing
+            new_category # added without replacement
           ]
         end
 
-        it "adds the new category without replacing" do
+        it "adds the new category without replacement" do
           run_test
         end
       end
@@ -192,11 +195,11 @@ RSpec.describe MeasureCategory, type: :model do
         let(:categories_after) do
           [
             categories_disallow.first.first,
-            new_category # added without replacing
+            new_category # added without replacement
           ]
         end
 
-        it "adds the new category without replacing" do
+        it "adds the new category without replacement" do
           run_test
         end
       end
@@ -211,11 +214,11 @@ RSpec.describe MeasureCategory, type: :model do
         let(:categories_after) do
           [
             categories_allow.first.first,
-            new_category # added without replacing
+            new_category # added without replacement
           ]
         end
 
-        it "adds the new category without replacing" do
+        it "adds the new category without replacement" do
           run_test
         end
       end
@@ -239,11 +242,11 @@ RSpec.describe MeasureCategory, type: :model do
           [
             categories_allow.first.first,
             categories_allow.first.second,
-            new_category # added without replacing
+            new_category # added without replacement
           ]
         end
 
-        it "adds the new category without replacing" do
+        it "adds the new category without replacement" do
           run_test
         end
       end
@@ -265,11 +268,11 @@ RSpec.describe MeasureCategory, type: :model do
           [
             categories_allow.first.first,
             categories_allow.second.first,
-            new_category # added without replacing
+            new_category # added without replacement
           ]
         end
 
-        it "adds the new category without replacing" do
+        it "adds the new category without replacement" do
           run_test
         end
       end
@@ -329,9 +332,9 @@ RSpec.describe MeasureCategory, type: :model do
       end
     end
 
-    context "two existing categories from each taxonomy with allow_multiple: true\n" do
+    context "two existing categories from the first two taxonomies with allow_multiple: true\n" do
       before do
-        categories_allow.each do |taxonomy|
+        categories_allow.first(2).each do |taxonomy|
           taxonomy.first(2).each do |category|
             described_class.create(category: category, measure: measure)
           end
@@ -345,18 +348,19 @@ RSpec.describe MeasureCategory, type: :model do
           end
         end
 
+        let(:categories_before) do
+          [
+            categories_allow.first.first,
+            categories_allow.first.second,
+            categories_allow.second.first,
+            categories_allow.second.second,
+            categories_disallow.first.first,
+            categories_disallow.second.first,
+            categories_disallow.third.first
+          ]
+        end
+
         context "and the new category is from a taxonomy with allow_multiple: true\n" do
-          let(:categories_before) do
-            [
-              categories_allow.first.first,
-              categories_allow.first.second,
-              categories_allow.second.first,
-              categories_allow.second.second,
-              categories_disallow.first.first,
-              categories_disallow.second.first,
-              categories_disallow.third.first
-            ]
-          end
           let(:new_category) { categories_allow.third.first }
           let(:categories_after) do
             [
@@ -364,30 +368,19 @@ RSpec.describe MeasureCategory, type: :model do
               categories_allow.first.second,
               categories_allow.second.first,
               categories_allow.second.second,
-              categories_disallow.first.first,
-              categories_disallow.second.first,
-              categories_disallow.third.first,
-              new_category # added without replacing
-            ]
-          end
-
-          it "adds the new category without replacing" do
-            run_test
-          end
-        end
-
-        context "and the new category is from a taxonomy with allow_multiple: false\n" do
-          let(:categories_before) do
-            [
-              categories_allow.first.first,
-              categories_allow.first.second,
-              categories_allow.second.first,
-              categories_allow.second.second,
+              new_category, # added without replacement
               categories_disallow.first.first,
               categories_disallow.second.first,
               categories_disallow.third.first
             ]
           end
+
+          it "adds the new category without replacement" do
+            run_test
+          end
+        end
+
+        context "and the new category is from a taxonomy with allow_multiple: false\n" do
           let(:new_category) { categories_disallow.first.second }
           let(:categories_after) do
             [
@@ -435,11 +428,11 @@ RSpec.describe MeasureCategory, type: :model do
               categories_allow.second.second,
               categories_disallow.first.first,
               categories_disallow.second.first,
-              new_category # added without replacing
+              new_category # added without replacement
             ]
           end
 
-          it "adds the new category without replacing" do
+          it "adds the new category without replacement" do
             run_test
           end
         end
@@ -468,7 +461,7 @@ RSpec.describe MeasureCategory, type: :model do
             [
               categories_allow.first.first,
               categories_allow.first.second,
-              new_category, # added without replacing
+              new_category, # added without replacement
               categories_allow.second.first,
               categories_allow.second.second,
               categories_disallow.first.first,
@@ -476,7 +469,7 @@ RSpec.describe MeasureCategory, type: :model do
             ]
           end
 
-          it "adds the new category without replacing" do
+          it "adds the new category without replacement" do
             run_test
           end
         end
@@ -491,11 +484,11 @@ RSpec.describe MeasureCategory, type: :model do
               categories_allow.second.second,
               categories_disallow.first.first,
               categories_disallow.second.first,
-              new_category # added without replacing
+              new_category # added without replacement
             ]
           end
 
-          it "adds the new category without replacing" do
+          it "adds the new category without replacement" do
             run_test
           end
         end
