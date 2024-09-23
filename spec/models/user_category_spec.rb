@@ -64,8 +64,12 @@ RSpec.describe UserCategory, type: :model do
       )
       expect(user.reload.categories).to match_array(categories_before)
 
-      # Create the new category
-      described_class.create(category: new_category, user: user)
+      # Create the new category alongside any potential race conditions
+      [potential_race_conditions, new_category].flatten.compact.map do |category_to_add|
+        Thread.new do
+          described_class.create(category: category_to_add, user: user)
+        end
+      end.each(&:join)
 
       # The user should have the new category, either added or by replacing an existing one
       expect(
@@ -98,6 +102,8 @@ RSpec.describe UserCategory, type: :model do
         end
       end
     end
+
+    let(:potential_race_conditions) { nil }
 
     let(:user) { FactoryBot.create(:user) }
 
@@ -296,6 +302,12 @@ RSpec.describe UserCategory, type: :model do
               new_category # replaced categories_disallow.first.first
             ]
           end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
+            ]
+          end
 
           it "replaces the existing category from its taxonomy" do
             run_test
@@ -318,6 +330,12 @@ RSpec.describe UserCategory, type: :model do
             [
               new_category, # replaced categories_disallow.first.first
               categories_disallow.second.first
+            ]
+          end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
             ]
           end
 
@@ -389,6 +407,12 @@ RSpec.describe UserCategory, type: :model do
               categories_disallow.third.first
             ]
           end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
+            ]
+          end
 
           it "replaces the existing category from its taxonomy" do
             run_test
@@ -443,6 +467,12 @@ RSpec.describe UserCategory, type: :model do
               categories_allow.second.second,
               new_category, # replaced categories_disallow.first.first
               categories_disallow.second.first
+            ]
+          end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
             ]
           end
 

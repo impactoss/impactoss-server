@@ -68,8 +68,12 @@ RSpec.describe RecommendationCategory, type: :model do
       )
       expect(recommendation.reload.categories).to match_array(categories_before)
 
-      # Create the new category
-      described_class.create(category: new_category, recommendation: recommendation)
+      # Create the new category alongside any potential race conditions
+      [potential_race_conditions, new_category].flatten.compact.map do |category_to_add|
+        Thread.new do
+          described_class.create(category: category_to_add, recommendation: recommendation)
+        end
+      end.each(&:join)
 
       # The recommendation should have the new category, either added or by replacing an existing one
       expect(
@@ -102,6 +106,8 @@ RSpec.describe RecommendationCategory, type: :model do
         end
       end
     end
+
+    let(:potential_race_conditions) { nil }
 
     let(:recommendation) { FactoryBot.create(:recommendation) }
 
@@ -160,6 +166,12 @@ RSpec.describe RecommendationCategory, type: :model do
         let(:categories_before) { [categories_disallow.first.first] }
         let(:new_category) { categories_disallow.first.second }
         let(:categories_after) { [new_category] }
+        let(:potential_race_conditions) do
+          [
+            categories_disallow.first.first,
+            categories_disallow.first.third
+          ]
+        end
 
         it "replaces the existing category" do
           run_test
@@ -300,6 +312,12 @@ RSpec.describe RecommendationCategory, type: :model do
               new_category # replaced categories_disallow.first.first
             ]
           end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
+            ]
+          end
 
           it "replaces the existing category from its taxonomy" do
             run_test
@@ -322,6 +340,12 @@ RSpec.describe RecommendationCategory, type: :model do
             [
               new_category, # replaced categories_disallow.first.first
               categories_disallow.second.first
+            ]
+          end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
             ]
           end
 
@@ -393,6 +417,12 @@ RSpec.describe RecommendationCategory, type: :model do
               categories_disallow.third.first
             ]
           end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
+            ]
+          end
 
           it "replaces the existing category from its taxonomy" do
             run_test
@@ -447,6 +477,12 @@ RSpec.describe RecommendationCategory, type: :model do
               categories_allow.second.second,
               new_category, # replaced categories_disallow.first.first
               categories_disallow.second.first
+            ]
+          end
+          let(:potential_race_conditions) do
+            [
+              categories_disallow.first.first,
+              categories_disallow.first.third
             ]
           end
 
