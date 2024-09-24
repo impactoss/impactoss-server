@@ -11,6 +11,8 @@ module Clockwork # leftovers:keep
     SendOverdueEmailsJob.perform_now
   end
 
+  # Should this also have a call to send Category Due Emails?
+
   every(1.day, "Send Category Overdue Emails", at: "9:15", tz: Rails.application.config.time_zone) do
     SendCategoryOverdueEmailsJob.perform_now
   end
