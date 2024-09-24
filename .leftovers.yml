@@ -1,6 +1,9 @@
 # for instructions on how to address these
 # see https://github.com/robotdana/leftovers/tree/v0.12.2/README.md#how-to-resolve
 
+exclude_paths:
+  - 'vendor/**/*'
+
 keep:
   # Policies are used by Pundit to determine what a user can and cannot do.
   # Ideally we'd keep track of which policies are actually used, but we
