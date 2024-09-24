@@ -24,10 +24,6 @@ class Taxonomy < VersionedRecord
     end
   end
 
-  def self.current_reporting_cycle
-    find(current_reporting_cycle_id)
-  end
-
   def self.current_reporting_cycle_id
     Rails.application.config.x.reporting_cycle_taxonomy_id
   end
