@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   before_action :set_paper_trail_whodunnit
 
   # Allow pundit to authorize a non-logged in user
-  def pundit_user
+  def pundit_user # leftovers:keep
     current_user || User.new
   end
 
