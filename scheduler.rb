@@ -15,7 +15,7 @@ module Clockwork
     SendCategoryOverdueEmailsJob.perform_now
   end
 
-  every(1.day, "Send Progress Report Updated Emails", at: "22:05", tz: Rails.application.config.time_zone) do
+  every(1.day, "Send Progress Report Updated Emails", at: "4:53", tz: Rails.application.config.time_zone) do
     SendProgressReportUpdatedEmailsJob.perform_now
   end
 
