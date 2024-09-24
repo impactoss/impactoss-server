@@ -3,7 +3,7 @@ require File.expand_path("../config/environment", __FILE__)
 require "clockwork"
 
 module Clockwork
-  every(1.day, "Send Due Emails", at: "10:30", tz: Rails.application.config.time_zone) do
+  every(1.day, "Send Due Emails", at: "22:15", tz: Rails.application.config.time_zone) do
     SendDueEmailsJob.perform_now
   end
 
@@ -15,7 +15,7 @@ module Clockwork
     SendCategoryOverdueEmailsJob.perform_now
   end
 
-  every(1.day, "Send Progress Report Updated Emails", at: "00:00", tz: Rails.application.config.time_zone) do
+  every(1.day, "Send Progress Report Updated Emails", at: "22:05", tz: Rails.application.config.time_zone) do
     SendProgressReportUpdatedEmailsJob.perform_now
   end
 
