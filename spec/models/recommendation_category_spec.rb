@@ -50,7 +50,7 @@ RSpec.describe RecommendationCategory, type: :model do
 
   context "adding a category when the recommendation has:\n" do
     let(:run_test) do
-      # This test is complicated so first we'll verify the setup
+      # This test is complicated so first we'll check that we've set it up correctly
 
       # Check that the other recommendation starts with the expected categories
       expect(
