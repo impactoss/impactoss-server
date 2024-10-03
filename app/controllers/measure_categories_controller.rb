@@ -20,7 +20,7 @@ class MeasureCategoriesController < ApplicationController
     @measure_category.assign_attributes(permitted_attributes(@measure_category))
     authorize @measure_category
 
-    if @measure_category.save
+    if @measure_category.save_with_cleanup
       render json: serialize(@measure_category), status: :created, location: @measure_category
     else
       render json: @measure_category.errors, status: :unprocessable_entity
