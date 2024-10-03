@@ -14,11 +14,10 @@ class MeasureCategory < VersionedRecord
   # previous relationships (there should only be one) between the measure
   # and other categories of the same taxonomy
   def save_with_cleanup
-    self.class.transaction do
-      cat = category
-      if cat && cat.taxonomy&.allow_multiple == false
-        where(
-          category_id: cat.taxonomy.categories.where.not(id: cat.id).pluck(:id),
+    transaction do
+      if category && category.taxonomy&.allow_multiple == false
+        self.class.where(
+          category_id: category.taxonomy.categories.where.not(id: category.id).pluck(:id),
           measure_id: measure_id
         ).destroy_all
       end
