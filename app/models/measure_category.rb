@@ -15,18 +15,17 @@ class MeasureCategory < VersionedRecord
   # and other categories of the same taxonomy
   def save_with_cleanup
     self.class.transaction do
-      cat = self.category
+      cat = category
       if cat && cat.taxonomy&.allow_multiple == false
         where(
           category_id: cat.taxonomy.categories.where.not(id: cat.id).pluck(:id),
-          measure_id: self.measure_id,
+          measure_id: measure_id
         ).destroy_all
       end
 
       save!
     end
   end
-
 
   private
 
