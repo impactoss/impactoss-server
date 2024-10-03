@@ -17,16 +17,14 @@ class MeasureCategoriesController < ApplicationController
   # POST /measure_categories
   def create
     @measure_category = MeasureCategory.new
-    new_attributes = permitted_attributes(@measure_category)
 
+    @measure_category.assign_attributes(permitted_attributes(@measure_category))
     authorize @measure_category
 
-    begin
-      @measure_category.save_with_cleanup
+    if @measure_category.save_with_cleanup
       render json: serialize(@measure_category), status: :created, location: @measure_category
-    rescue ActiveRecord::RecordInvalid => e
-      # Handle validation errors
-      render json: e.record.errors, status: :unprocessable_entity
+    else
+      render json: @measure_category.errors, status: :unprocessable_entity
     end
   end
 
