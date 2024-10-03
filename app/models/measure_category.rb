@@ -7,6 +7,7 @@ class MeasureCategory < VersionedRecord
   validates :category_id, uniqueness: {scope: :measure_id}
   validates :measure_id, presence: true
   validates :category_id, presence: true
+  validate :single_category_per_taxonomy, on: :create
 
   after_commit :set_relationship_updated, on: [:create, :update, :destroy]
 
@@ -34,6 +35,19 @@ class MeasureCategory < VersionedRecord
     if measure && !measure.destroyed?
       measure.update_column(:relationship_updated_at, Time.zone.now)
       measure.update_column(:relationship_updated_by_id, ::PaperTrail.request.whodunnit)
+    end
+  end
+
+  def single_category_per_taxonomy
+    if category && category.taxonomy && !category.taxonomy.allow_multiple
+      existing_categories = self.class.where(
+        category_id: category.taxonomy.categories.pluck(:id),  # Ensure you're using IDs here
+        measure_id: measure_id
+      )
+
+      if existing_categories.count >=1
+        errors.add(:category, "This measure already has a category in the same taxonomy. Multiple categories are not allowed for the taxonomy.")
+      end
     end
   end
 end
