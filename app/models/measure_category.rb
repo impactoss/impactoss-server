@@ -45,7 +45,7 @@ class MeasureCategory < VersionedRecord
         measure_id: measure_id
       )
 
-      if existing_categories.count >=1
+      if existing_categories.count >= 1
         errors.add(:category, "This measure already has a category in the same taxonomy. Multiple categories are not allowed for the taxonomy.")
       end
     end
