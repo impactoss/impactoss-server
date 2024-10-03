@@ -8,22 +8,27 @@ class MeasureCategory < VersionedRecord
   validates :measure_id, presence: true
   validates :category_id, presence: true
 
-  around_save :enforce_allow_multiple
   after_commit :set_relationship_updated, on: [:create, :update, :destroy]
 
-  private
+  # replacing "save": before creating the record we need to remove all
+  # previous relationships (there should only be one) between the measure
+  # and other categories of the same taxonomy
+  def save_with_cleanup
+    self.class.transaction do
+      cat = self.category
+      if cat && cat.taxonomy&.allow_multiple == false
+        where(
+          category_id: cat.taxonomy.categories.where.not(id: cat.id).pluck(:id),
+          measure_id: self.measure_id,
+        ).destroy_all
+      end
 
-  def enforce_allow_multiple
-    yield and return unless category && category.taxonomy&.allow_multiple == false
-
-    transaction do
-      yield
-      self.class.where(
-        category_id: category.taxonomy.categories.where.not(id: category_id).pluck(:id),
-        measure_id: measure_id
-      ).destroy_all
+      save!
     end
   end
+
+
+  private
 
   def set_relationship_updated
     if measure && !measure.destroyed?
