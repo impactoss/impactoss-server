@@ -40,7 +40,7 @@ class MeasureCategory < VersionedRecord
   end
 
   def single_category_per_taxonomy
-    if category && category.taxonomy && !category.taxonomy.allow_multiple
+    if category&.taxonomy && !category.taxonomy.allow_multiple
       existing_categories = self.class.where(
         category_id: category.taxonomy.categories.pluck(:id),  # Ensure you're using IDs here
         measure_id: measure_id
