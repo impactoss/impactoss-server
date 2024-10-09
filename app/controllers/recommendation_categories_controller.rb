@@ -20,7 +20,7 @@ class RecommendationCategoriesController < ApplicationController
     @recommendation_category.assign_attributes(permitted_attributes(@recommendation_category))
     authorize @recommendation_category
 
-    if @recommendation_category.save
+    if @recommendation_category.save_with_cleanup
       render json: serialize(@recommendation_category), status: :created, location: @recommendation_category
     else
       render json: @recommendation_category.errors, status: :unprocessable_entity

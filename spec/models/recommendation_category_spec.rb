@@ -70,8 +70,12 @@ RSpec.describe RecommendationCategory, type: :model do
 
       # Create the new category alongside any potential race conditions
       [potential_race_conditions, new_category].flatten.compact.map do |category_to_add|
+        described_class.new(category: category_to_add, recommendation: recommendation)
+      end.map do |recommendation_category|
         Thread.new do
-          described_class.create(category: category_to_add, recommendation: recommendation)
+          recommendation_category.save_with_cleanup
+        rescue ActiveRecord::RecordInvalid => error
+          error
         end
       end.each(&:join)
 

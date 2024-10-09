@@ -20,7 +20,7 @@ class UserCategoriesController < ApplicationController
     @user_category.assign_attributes(permitted_attributes(@user_category))
     authorize @user_category
 
-    if @user_category.save
+    if @user_category.save_with_cleanup
       render json: serialize(@user_category), status: :created, location: @user_category
     else
       render json: @user_category.errors, status: :unprocessable_entity
