@@ -16,7 +16,7 @@ class MeasureCategory < VersionedRecord
   # and other categories of the same taxonomy
   # also we need to lock the measure to ensure that no other category is associated
   def save_with_cleanup
-    measure.with_lock do
+    with_locked_measure do
       transaction do
         if category && category.taxonomy&.allow_multiple == false
           self.class.where(
@@ -49,6 +49,16 @@ class MeasureCategory < VersionedRecord
       if existing_categories.count >= 1
         errors.add(:category, "This measure already has a category in the same taxonomy. Multiple categories are not allowed for the taxonomy.")
       end
+    end
+  end
+
+  def with_locked_measure
+    if measure
+      measure.with_lock do
+        yield
+      end
+    else
+      yield
     end
   end
 end

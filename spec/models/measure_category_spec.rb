@@ -48,7 +48,7 @@ RSpec.describe MeasureCategory, type: :model do
     end
   end
 
-  context "adding a category when the measure has:\n" do
+  context "save_with_cleanup when the measure has:\n" do
     let(:run_test) do
       # This test is complicated so first we'll check that we've set it up correctly
 
@@ -70,8 +70,12 @@ RSpec.describe MeasureCategory, type: :model do
 
       # Create the new category alongside any potential race conditions
       [potential_race_conditions, new_category].flatten.compact.map do |category_to_add|
+        described_class.new(category: category_to_add, measure: measure)
+      end.map do |measure_category|
         Thread.new do
-          described_class.create(category: category_to_add, measure: measure)
+          measure_category.save_with_cleanup
+        rescue ActiveRecord::RecordInvalid => error
+          error
         end
       end.each(&:join)
 
