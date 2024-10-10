@@ -14,16 +14,18 @@ class MeasureCategory < VersionedRecord
   # replacing "save": before creating the record we need to remove all
   # previous relationships (there should only be one) between the measure
   # and other categories of the same taxonomy
-  # also we need to lock the measure to ensure that no other category is associated
+  # also we need an advisory lock to ensure that no other category is associated during the transaction
   def save_with_cleanup
-    with_locked_measure do
+    if multiple_categories_allowed_for_taxonomy?
+      return save!
+    end
+
+    self.class.with_advisory_lock("MeasureCategory-measure_id_#{measure_id}-taxonomy_id_#{category.taxonomy_id}") do
       transaction do
-        if category && category.taxonomy&.allow_multiple == false
-          self.class.where(
-            category_id: category.taxonomy.categories.where.not(id: category.id).pluck(:id),
-            measure_id: measure_id
-          ).destroy_all
-        end
+        self.class.where(
+          category_id: category.taxonomy.categories.where.not(id: category.id).pluck(:id),
+          measure_id: measure_id
+        ).destroy_all
 
         save!
       end
@@ -31,6 +33,10 @@ class MeasureCategory < VersionedRecord
   end
 
   private
+
+  def multiple_categories_allowed_for_taxonomy?
+    !category&.taxonomy || category&.taxonomy&.allow_multiple
+  end
 
   def set_relationship_updated
     if measure && !measure.destroyed?
@@ -40,25 +46,15 @@ class MeasureCategory < VersionedRecord
   end
 
   def single_category_per_taxonomy
-    if category&.taxonomy && !category.taxonomy.allow_multiple
-      existing_categories = self.class.where(
-        category_id: category.taxonomy.categories.pluck(:id),  # Ensure you're using IDs here
-        measure_id: measure_id
-      )
+    return if multiple_categories_allowed_for_taxonomy?
 
-      if existing_categories.count >= 1
-        errors.add(:category, "This measure already has a category in the same taxonomy. Multiple categories are not allowed for the taxonomy.")
-      end
-    end
-  end
+    existing_categories = self.class.where(
+      category_id: category.taxonomy.categories.pluck(:id),  # Ensure you're using IDs here
+      measure_id: measure_id
+    )
 
-  def with_locked_measure
-    if measure
-      measure.with_lock do
-        yield
-      end
-    else
-      yield
+    if existing_categories.count >= 1
+      errors.add(:category, "This measure already has a category in the same taxonomy. Multiple categories are not allowed for the taxonomy.")
     end
   end
 end

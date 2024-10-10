@@ -16,14 +16,16 @@ class RecommendationCategory < VersionedRecord
   # and other categories of the same taxonomy
   # also we need to lock the recommendation to ensure that no other category is associated
   def save_with_cleanup
-    with_locked_recommendation do
+    if multiple_categories_allowed_for_taxonomy?
+      return save!
+    end
+
+    self.class.with_advisory_lock("RecommendationCategory-recommendation_id_#{recommendation_id}-taxonomy_id_#{category.taxonomy_id}") do
       transaction do
-        if category && category.taxonomy&.allow_multiple == false
-          self.class.where(
-            category_id: category.taxonomy.categories.where.not(id: category.id).pluck(:id),
-            recommendation_id: recommendation_id
-          ).destroy_all
-        end
+        self.class.where(
+          category_id: category.taxonomy.categories.where.not(id: category.id).pluck(:id),
+          recommendation_id: recommendation_id
+        ).destroy_all
 
         save!
       end
@@ -31,6 +33,10 @@ class RecommendationCategory < VersionedRecord
   end
 
   private
+
+  def multiple_categories_allowed_for_taxonomy?
+    !category&.taxonomy || category&.taxonomy&.allow_multiple
+  end
 
   def set_relationship_updated
     if recommendation && !recommendation.destroyed?
@@ -49,16 +55,6 @@ class RecommendationCategory < VersionedRecord
       if existing_categories.count >= 1
         errors.add(:category, "This recommendation already has a category in the same taxonomy. Multiple categories are not allowed for the taxonomy.")
       end
-    end
-  end
-
-  def with_locked_recommendation
-    if recommendation
-      recommendation.with_lock do
-        yield
-      end
-    else
-      yield
     end
   end
 end
