@@ -20,7 +20,7 @@ class UserCategoriesController < ApplicationController
     @user_category.assign_attributes(permitted_attributes(@user_category))
     authorize @user_category
 
-    if @user_category.save
+    if @user_category.save_with_cleanup
       render json: serialize(@user_category), status: :created, location: @user_category
     else
       render json: @user_category.errors, status: :unprocessable_entity
@@ -45,6 +45,9 @@ class UserCategoriesController < ApplicationController
   def set_and_authorize_user_category
     @user_category = policy_scope(base_object).find(params[:id])
     authorize @user_category
+  rescue ActiveRecord::RecordNotFound
+    raise unless action_name == "destroy"
+    head :no_content
   end
 
   def base_object

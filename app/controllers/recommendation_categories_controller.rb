@@ -20,7 +20,7 @@ class RecommendationCategoriesController < ApplicationController
     @recommendation_category.assign_attributes(permitted_attributes(@recommendation_category))
     authorize @recommendation_category
 
-    if @recommendation_category.save
+    if @recommendation_category.save_with_cleanup
       render json: serialize(@recommendation_category), status: :created, location: @recommendation_category
     else
       render json: @recommendation_category.errors, status: :unprocessable_entity
@@ -45,6 +45,9 @@ class RecommendationCategoriesController < ApplicationController
   def set_and_authorize_recommendation_category
     @recommendation_category = policy_scope(base_object).find(params[:id])
     authorize @recommendation_category
+  rescue ActiveRecord::RecordNotFound
+    raise unless action_name == "destroy"
+    head :no_content
   end
 
   def base_object

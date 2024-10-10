@@ -27,6 +27,12 @@ class Category < VersionedRecord
   scope :draft, -> { where(draft: true) }
   scope :published, -> { where(draft: false) }
 
+  def disallowed_sibling_category_ids
+    return [] if taxonomy.allow_multiple
+
+    taxonomy.categories.where.not(id: id).pluck(:id)
+  end
+
   def has_reporting_cycle_taxonomy?
     Taxonomy.current_reporting_cycle_id == taxonomy_id
   end
