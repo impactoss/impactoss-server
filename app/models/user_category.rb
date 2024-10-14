@@ -18,7 +18,11 @@ class UserCategory < ApplicationRecord
       return save!
     end
 
-    self.class.with_advisory_lock("UserCategory-user_id_#{user_id}-taxonomy_id_#{category.taxonomy_id}") do
+    if self.class.advisory_lock_exists?(lock_name)
+      return false
+    end
+
+    self.class.with_advisory_lock(lock_name) do
       transaction do
         if category && category.taxonomy&.allow_multiple == false
           self.class.where(
@@ -33,6 +37,10 @@ class UserCategory < ApplicationRecord
   end
 
   private
+
+  def lock_name
+    "UserCategory-user_id_#{user_id}-taxonomy_id_#{category.taxonomy_id}"
+  end
 
   def multiple_categories_allowed_for_taxonomy?
     !category&.taxonomy || category&.taxonomy&.allow_multiple
