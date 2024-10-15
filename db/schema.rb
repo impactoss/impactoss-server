@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_09_10_012254) do
+ActiveRecord::Schema.define(version: 2024_10_15_031345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -240,10 +240,10 @@ ActiveRecord::Schema.define(version: 2024_09_10_012254) do
     t.integer "updated_by_id"
     t.integer "framework_id"
     t.integer "created_by_id"
-    t.integer "support_level"
     t.bigint "relationship_updated_by_id"
     t.datetime "relationship_updated_at", precision: 6
     t.boolean "is_archive", default: false, null: false
+    t.integer "support_level"
     t.index ["draft"], name: "index_recommendations_on_draft"
     t.index ["framework_id"], name: "index_recommendations_on_framework_id"
     t.index ["reference"], name: "index_recommendations_on_reference", unique: true
@@ -255,56 +255,6 @@ ActiveRecord::Schema.define(version: 2024_09_10_012254) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "created_by_id"
-  end
-
-  create_table "sdgtarget_categories", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "category_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-  end
-
-  create_table "sdgtarget_indicators", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "indicator_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-    t.index ["indicator_id"], name: "index_sdgtarget_indicators_on_indicator_id"
-    t.index ["sdgtarget_id"], name: "index_sdgtarget_indicators_on_sdgtarget_id"
-  end
-
-  create_table "sdgtarget_measures", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "measure_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-    t.index ["measure_id"], name: "index_sdgtarget_measures_on_measure_id"
-    t.index ["sdgtarget_id"], name: "index_sdgtarget_measures_on_sdgtarget_id"
-  end
-
-  create_table "sdgtarget_recommendations", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "recommendation_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-    t.index ["recommendation_id"], name: "index_sdgtarget_recommendations_on_recommendation_id"
-    t.index ["sdgtarget_id"], name: "index_sdgtarget_recommendations_on_sdgtarget_id"
-  end
-
-  create_table "sdgtargets", id: :serial, force: :cascade do |t|
-    t.string "reference"
-    t.text "title"
-    t.text "description"
-    t.boolean "draft", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "updated_by_id"
-    t.integer "created_by_id"
-    t.index ["draft"], name: "index_sdgtargets_on_draft"
   end
 
   create_table "taxonomies", id: :serial, force: :cascade do |t|
