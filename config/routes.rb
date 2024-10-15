@@ -15,10 +15,6 @@ Rails.application.routes.draw do
   get "s3/sign"
 
   resources :measure_categories
-  resources :sdgtarget_categories
-  resources :sdgtarget_indicators
-  resources :sdgtarget_measures
-  resources :sdgtarget_recommendations
   resources :measure_indicators
   resources :recommendation_categories
   resources :user_categories
@@ -43,7 +39,6 @@ Rails.application.routes.draw do
   resources :user_roles
   resources :roles
   resources :pages
-  resources :sdgtargets
   resources :bookmarks
 
   resources :frameworks, only: [:index, :show]
