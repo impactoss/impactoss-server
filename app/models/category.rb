@@ -6,7 +6,6 @@ class Category < VersionedRecord
   has_many :recommendation_categories, inverse_of: :category, dependent: :destroy
   has_many :user_categories, inverse_of: :category, dependent: :destroy
   has_many :measure_categories, inverse_of: :category, dependent: :destroy
-  has_many :sdgtarget_categories, inverse_of: :category, dependent: :destroy
   has_many :recommendations, through: :recommendation_categories
   has_many :users, through: :user_categories
   has_many :measures, through: :measure_categories

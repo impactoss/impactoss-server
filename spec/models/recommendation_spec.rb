@@ -22,7 +22,6 @@ RSpec.describe Recommendation, type: :model do
   it { is_expected.to have_many :recommendation_recommendations }
   it { is_expected.to have_many :recommendation_categories }
   it { is_expected.to have_many :recommendation_measures }
-  it { is_expected.to have_many :sdgtarget_recommendations }
   it { is_expected.to have_many :recommendation_indicators }
 
   it { is_expected.to belong_to(:framework).optional }

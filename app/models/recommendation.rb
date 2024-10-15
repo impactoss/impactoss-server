@@ -3,7 +3,6 @@
 class Recommendation < VersionedRecord
   has_many :recommendation_measures, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_categories, inverse_of: :recommendation, dependent: :destroy
-  has_many :sdgtarget_recommendations, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_indicators, inverse_of: :recommendation, dependent: :destroy
 
   has_many :measures, through: :recommendation_measures
