@@ -7,7 +7,7 @@ module Clockwork
     SendDueEmailsJob.perform_now
   end
 
-  every(1.day, "Send Overdue Emails", at: "9:15", tz: Rails.application.config.time_zone) do
+  every(1.day, "Send Overdue Emails", at: "6:40", tz: Rails.application.config.time_zone) do
     SendOverdueEmailsJob.perform_now
   end
 
