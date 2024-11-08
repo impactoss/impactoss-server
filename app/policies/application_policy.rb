@@ -5,24 +5,24 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?
-    true
-  end
-
   def create?
-    @user.role?("admin") || @user.role?("manager")
-  end
-
-  def update?
-    @user.role?("admin") || @user.role?("manager")
-  end
-
-  def show?
-    true
+    operation_allowed?("create")
   end
 
   def destroy?
-    @user.role?("admin") || @user.role?("manager")
+    operation_allowed?("destroy")
+  end
+
+  def index?
+    operation_allowed?("read")
+  end
+
+  def show?
+    operation_allowed?("read")
+  end
+
+  def update?
+    operation_allowed?("update")
   end
 
   class Scope
@@ -35,5 +35,15 @@ class ApplicationPolicy
       @user = user
       @scope = scope
     end
+  end
+
+  private
+
+  def operation_allowed?(operation)
+    Permission.allowed?(user: @user, operation: operation, resource: resource)
+  end
+
+  def resource
+    self.class.to_s.gsub("Policy", "").underscore
   end
 end

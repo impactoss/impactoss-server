@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_09_10_012254) do
+ActiveRecord::Schema.define(version: 2024_11_07_231038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,6 +167,17 @@ ActiveRecord::Schema.define(version: 2024_09_10_012254) do
     t.index ["draft"], name: "index_pages_on_draft"
   end
 
+  create_table "permissions", force: :cascade do |t|
+    t.string "operation", null: false
+    t.string "resource", null: false
+    t.string "status", null: false
+    t.datetime "publicly_allowed_at"
+    t.boolean "organisation_only", default: false
+    t.boolean "user_only", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "progress_reports", id: :serial, force: :cascade do |t|
     t.integer "indicator_id"
     t.integer "due_date_id"
@@ -240,13 +251,25 @@ ActiveRecord::Schema.define(version: 2024_09_10_012254) do
     t.integer "updated_by_id"
     t.integer "framework_id"
     t.integer "created_by_id"
-    t.integer "support_level"
     t.bigint "relationship_updated_by_id"
     t.datetime "relationship_updated_at", precision: 6
     t.boolean "is_archive", default: false, null: false
+    t.integer "support_level"
     t.index ["draft"], name: "index_recommendations_on_draft"
     t.index ["framework_id"], name: "index_recommendations_on_framework_id"
     t.index ["reference"], name: "index_recommendations_on_reference", unique: true
+  end
+
+  create_table "role_permissions", force: :cascade do |t|
+    t.bigint "permission_id", null: false
+    t.bigint "role_id", null: false
+    t.datetime "revoked_at"
+    t.bigint "updated_by_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
+    t.index ["role_id"], name: "index_role_permissions_on_role_id"
+    t.index ["updated_by_id"], name: "index_role_permissions_on_updated_by_id"
   end
 
   create_table "roles", id: :serial, force: :cascade do |t|
@@ -255,56 +278,6 @@ ActiveRecord::Schema.define(version: 2024_09_10_012254) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "created_by_id"
-  end
-
-  create_table "sdgtarget_categories", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "category_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-  end
-
-  create_table "sdgtarget_indicators", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "indicator_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-    t.index ["indicator_id"], name: "index_sdgtarget_indicators_on_indicator_id"
-    t.index ["sdgtarget_id"], name: "index_sdgtarget_indicators_on_sdgtarget_id"
-  end
-
-  create_table "sdgtarget_measures", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "measure_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-    t.index ["measure_id"], name: "index_sdgtarget_measures_on_measure_id"
-    t.index ["sdgtarget_id"], name: "index_sdgtarget_measures_on_sdgtarget_id"
-  end
-
-  create_table "sdgtarget_recommendations", id: :serial, force: :cascade do |t|
-    t.integer "sdgtarget_id"
-    t.integer "recommendation_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "created_by_id"
-    t.index ["recommendation_id"], name: "index_sdgtarget_recommendations_on_recommendation_id"
-    t.index ["sdgtarget_id"], name: "index_sdgtarget_recommendations_on_sdgtarget_id"
-  end
-
-  create_table "sdgtargets", id: :serial, force: :cascade do |t|
-    t.string "reference"
-    t.text "title"
-    t.text "description"
-    t.boolean "draft", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "updated_by_id"
-    t.integer "created_by_id"
-    t.index ["draft"], name: "index_sdgtargets_on_draft"
   end
 
   create_table "taxonomies", id: :serial, force: :cascade do |t|
@@ -403,6 +376,9 @@ ActiveRecord::Schema.define(version: 2024_09_10_012254) do
   add_foreign_key "recommendation_recommendations", "users", column: "updated_by_id"
   add_foreign_key "recommendations", "frameworks"
   add_foreign_key "recommendations", "users", column: "relationship_updated_by_id"
+  add_foreign_key "role_permissions", "permissions"
+  add_foreign_key "role_permissions", "roles"
+  add_foreign_key "role_permissions", "users", column: "updated_by_id"
   add_foreign_key "taxonomies", "frameworks"
   add_foreign_key "user_categories", "users", column: "updated_by_id"
   add_foreign_key "users", "users", column: "relationship_updated_by_id"

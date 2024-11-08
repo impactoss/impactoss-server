@@ -22,14 +22,48 @@ class Seeds
 
   def base_seeds!
     # Set up user roles
-    Role.new(name: "admin", friendly_name: "Admin").save!
-    Role.new(name: "manager", friendly_name: "Manager").save!
-    Role.new(name: "contributor", friendly_name: "Contributor").save!
+    admin_role = Role.create!(name: "admin", friendly_name: "Admin")
+    contributor_role = Role.create!(name: "contributor", friendly_name: "Contributor")
+    manager_role = Role.create!(name: "manager", friendly_name: "Manager")
 
     Page.new(title: "Copyright", menu_title: "Copyright").save!
     Page.new(title: "Disclaimer", menu_title: "Disclaimer").save!
     Page.new(title: "Privacy", menu_title: "Privacy").save!
     Page.new(title: "About the Human Rights Monitor", menu_title: "About").save!
+
+    # Set up permissions
+    Permission.resources.each do |resource|
+      Permission.operations.each do |operation|
+        Permission.status_options.each do |status|
+          Permission.find_or_create_by!(resource: resource, operation: operation, status: status).inspect
+        end
+      end
+    end
+
+    # Assign permissions to roles
+    Permission.grant(
+      force: true,
+      operations: Permission.read_operations + Permission.write_operations + Permission.permission_operations,
+      resources: Permission.resources,
+      roles: [admin_role],
+      statuses: Permission.status_options
+    )
+
+    Permission.grant(
+      force: true,
+      operations: Permission.read_operations + Permission.write_operations,
+      resources: Permission.resources,
+      roles: [manager_role],
+      statuses: Permission.status_options
+    )
+
+    Permission.grant(
+      force: true,
+      operations: Permission.read_operations,
+      resources: Permission.resources,
+      roles: [contributor_role],
+      statuses: Permission.status_options
+    )
 
     # set up frameworks
     hr = Framework.create!(
