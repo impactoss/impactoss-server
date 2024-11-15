@@ -9,14 +9,14 @@ FactoryBot.define do
   end
 
   trait :admin do
-    roles { [create(:role, :admin)] }
+    roles { [Role.find_by(name: "admin")] }
   end
 
   trait :manager do
-    roles { [create(:role, :manager)] }
+    roles { [Role.find_by(name: "manager")] }
   end
 
   trait :contributor do
-    roles { [create(:role, :contributor)] }
+    roles { [Role.find_by(name: "contributor")] }
   end
 end

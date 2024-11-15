@@ -27,20 +27,65 @@ class ApplicationPolicy
 
   class Scope
     attr_reader :user, :scope
+
     def resolve
-      scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
+      filter_draft(filter_archived(scope))
     end
 
     def initialize(user, scope)
       @user = user
       @scope = scope
     end
+
+    private
+
+    def filter_archived(query)
+      return query if query.column_names.exclude?("is_archive")
+
+      if operation_allowed?("read", ["archived"])
+        query
+      else
+        query.where(is_archive: false)
+      end
+    end
+
+    def filter_draft(query)
+      return query if query.column_names.exclude?("draft")
+
+      if operation_allowed?("read", ["draft"])
+        query
+      else
+        query.where(draft: false)
+      end
+    end
+
+    def filter_user_only(query)
+      return query if .column_names.exclude?("user_only")
+
+      if operation_allowed?("read", ["user_only"])
+        query
+      else
+        query.where(user_only: false)
+      end
+    end
+
+    def operation_allowed?(operation, statuses)
+      Permission.allowed?(
+        user: user,
+        operation: operation,
+        resource: scope.model_name.singular.underscore,
+        statuses: statuses
+      )
+    end
   end
 
-  private
-
-  def operation_allowed?(operation)
-    Permission.allowed?(user: @user, operation: operation, resource: resource)
+  def operation_allowed?(operation, statuses = ["active"])
+    Permission.allowed?(
+      user: @user,
+      operation: operation,
+      resource: resource,
+      statuses: statuses
+    )
   end
 
   def resource

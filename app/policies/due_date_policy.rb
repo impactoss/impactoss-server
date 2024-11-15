@@ -25,10 +25,10 @@ class DueDatePolicy < ApplicationPolicy
     false
   end
 
-  class Scope < Scope
-    def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.none
-    end
-  end
+  # class Scope < Scope
+  #   def resolve
+  #     return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
+  #     scope.none
+  #   end
+  # end
 end
