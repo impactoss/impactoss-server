@@ -141,6 +141,7 @@ GEM
       faraday-net_http (>= 2.0, < 3.2)
     faraday-net_http (3.1.0)
       net-http
+    fast_ignore (0.17.4)
     ffi (1.16.3)
     fog-aws (3.21.0)
       fog-core (~> 2.1)
@@ -202,6 +203,10 @@ GEM
     language_server-protocol (3.17.0.3)
     launchy (2.5.2)
       addressable (~> 2.8)
+    leftovers (0.12.2)
+      fast_ignore (>= 0.17.0)
+      parallel
+      parser
     letter_opener (1.8.1)
       launchy (>= 2.2, < 3)
     letter_opener_web (2.0.0)
@@ -479,6 +484,7 @@ DEPENDENCIES
   jsonapi-serializer
   kaminari
   launchy
+  leftovers
   letter_opener_web
   listen
   net-imap

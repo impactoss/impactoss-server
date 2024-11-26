@@ -3,7 +3,7 @@ class Framework < ApplicationRecord
   has_many :frameworks, through: :framework_frameworks, source: :other_framework
 
   has_many :framework_taxonomies, inverse_of: :framework, dependent: :destroy
-  has_many :taxonomies, through: :framework_taxonomies
+  has_many :taxonomies, through: :framework_taxonomies # leftovers:keep
 
   has_many :recommendations
 

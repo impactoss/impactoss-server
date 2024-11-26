@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksController
+class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksController # leftovers:keep
   def auth_hash
     @_auth_hash ||= request.env["omniauth.auth"] ||= session.delete("dta.omniauth.auth")
   end
 
-  def get_resource_from_auth_hash
+  def get_resource_from_auth_hash # leftovers:keep
     super
 
     if @resource

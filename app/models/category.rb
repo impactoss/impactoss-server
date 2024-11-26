@@ -8,7 +8,7 @@ class Category < VersionedRecord
   has_many :measure_categories, inverse_of: :category, dependent: :destroy
   has_many :sdgtarget_categories, inverse_of: :category, dependent: :destroy
   has_many :recommendations, through: :recommendation_categories
-  has_many :users, through: :user_categories
+  has_many :users, through: :user_categories # leftovers:keep
   has_many :measures, through: :measure_categories
   has_many :indicators, through: :recommendations
   has_many :indicators_via_measures, through: :recommendations
