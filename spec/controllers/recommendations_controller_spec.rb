@@ -7,7 +7,7 @@ RSpec.describe RecommendationsController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
 
   def serialized(subject_recommendation)
-    RecommendationSerializer.new(subject_recommendation).serializable_hash[:data].as_json
+    serialized_record(subject_recommendation, RecommendationSerializer)
   end
 
   describe "Get index" do

@@ -4,11 +4,9 @@ class RolePermission
       new.call(**args)
     end
 
-    def call(force: false, granting_user: nil, intended_environment: nil)
-      if !(Rails.env.development? || Rails.env.test?) || (
-        intended_environment.present? &&
-        intended_environment == Rails.env)
-        raise "You can only run this in a development or test environment. You can bypass this restriction using the intended_environment argument."
+    def call(intended_environment:, force: false, granting_user: nil)
+      if intended_environment != Rails.env || Rails.env.nil?
+        raise "You must specify the intended environment to run this setup script. This is to prevent accidental execution in sensitive environments like production."
       end
 
       if !roles_ready?
@@ -19,12 +17,14 @@ class RolePermission
         Permission::Setup.call(intended_environment: intended_environment)
       end
 
+      require "pry"
+
       RolePermission::Config.base_permissions_by_role.flat_map do |role_name, config|
         Permission.grant(
           force: force,
           granting_user: granting_user,
-          operations: config[:operations],
-          resources: config[:resources],
+          operations: config["operations"],
+          resources: config["resources"],
           roles: [roles_by_name[role_name]],
           statuses: Permission::Config.status_options
         )

@@ -9,6 +9,7 @@ RSpec.describe "recommendation to indicator relationships", type: :request do
 
   describe "get one recommendation/indicator relationship" do
     let!(:recommendation_indicator) { FactoryBot.create(:recommendation_indicator, created_by:, updated_by:) }
+
     it "returns the recommendation/indicator releationship requested" do
       get "/recommendation_indicators/#{recommendation_indicator.id}"
 

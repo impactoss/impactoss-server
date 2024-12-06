@@ -5,7 +5,7 @@ require "json"
 
 RSpec.describe IndicatorsController, type: :controller do
   def serialized(subject_indicator)
-    IndicatorSerializer.new(subject_indicator).serializable_hash[:data].as_json
+    serialized_record(subject_indicator, IndicatorSerializer)
   end
 
   let(:admin) { FactoryBot.create(:user, :admin) }

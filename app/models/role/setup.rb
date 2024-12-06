@@ -4,11 +4,9 @@ class Role
       new.call(**args)
     end
 
-    def call(intended_environment: nil)
-      if !(Rails.env.development? || Rails.env.test?) || (
-        intended_environment.present? &&
-        intended_environment == Rails.env)
-        raise "You can only run this in a development or test environment. You can bypass this restriction using the intended_environment argument."
+    def call(intended_environment:)
+      if intended_environment != Rails.env || Rails.env.nil?
+        raise "You must specify the intended environment to run this setup script. This is to prevent accidental execution in sensitive environments like production."
       end
 
       roles.map do |role|

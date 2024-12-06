@@ -7,7 +7,7 @@ RSpec.describe MeasuresController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
 
   def serialized(subject_measure)
-    MeasureSerializer.new(subject_measure).serializable_hash[:data].as_json
+    serialized_record(subject_measure, MeasureSerializer)
   end
 
   describe "Get index" do

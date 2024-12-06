@@ -26,6 +26,10 @@ class Permission
       %w[bookmark]
     end
 
+    def self.owned_resources
+      organisation_only_resources + user_only_resources
+    end
+
     # Format: {
     #   (resource) => {
     #     (operation) => ["status"]
@@ -37,6 +41,12 @@ class Permission
           "read" => ["active"]
         },
         "recommendation_measure" => {
+          "read" => ["active"]
+        },
+        "recommendation_indicator" => {
+          "read" => ["active"]
+        },
+        "sdgtarget" => {
           "read" => ["active"]
         }
       }
@@ -77,7 +87,7 @@ class Permission
     end
 
     def self.status_options
-      %w[active archived draft owner]
+      %w[active archived draft]
     end
   end
 end

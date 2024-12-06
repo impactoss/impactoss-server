@@ -22,6 +22,11 @@ class User < VersionedRecord
   validates :email, presence: true
   validates :name, presence: true
 
+  def organisation?(organisation_id:)
+    # TODO: Implement this when we have organisations
+    # organisations.find_by(id: organisation_id).present?
+  end
+
   def role?(role)
     roles.where(name: role).any?
   end

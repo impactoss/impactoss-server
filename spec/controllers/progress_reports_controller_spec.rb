@@ -7,7 +7,7 @@ RSpec.describe ProgressReportsController, type: :controller do
   let(:admin) { FactoryBot.create(:user, :admin) }
 
   def serialized(subject_progress_report)
-    ProgressReportSerializer.new(subject_progress_report).serializable_hash[:data].as_json
+    serialized_record(subject_progress_report, ProgressReportSerializer)
   end
 
   describe "Get index" do

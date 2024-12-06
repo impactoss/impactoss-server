@@ -3,7 +3,7 @@ require "json"
 
 RSpec.describe CategoriesController, type: :controller do
   def serialized(subject_category)
-    CategorySerializer.new(subject_category).serializable_hash[:data].as_json
+    serialized_record(subject_category, CategorySerializer)
   end
 
   describe "Get index" do

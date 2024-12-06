@@ -4,28 +4,26 @@ class Permission
       new.call(**args)
     end
 
-    def call(intended_environment: nil)
-      if !(Rails.env.development? || Rails.env.test?) || (
-        intended_environment.present? &&
-        intended_environment == Rails.env)
-        raise "You can only run this in a development or test environment. You can bypass this restriction using the intended_environment argument."
+    def call(intended_environment:)
+      if intended_environment != Rails.env || Rails.env.nil?
+        raise "You must specify the intended environment to run this setup script. This is to prevent accidental execution in sensitive environments like production."
       end
 
       Permission::Config.resources.flat_map do |resource|
         Permission::Config.operations.flat_map do |operation|
           Permission::Config.status_options.flat_map do |status|
-            permission = Permission.find_or_create_by!(
-              resource: resource,
-              operation: operation,
-              status: status,
-              organization_only: Permission::Config.organization_only_resources.include?(resource),
-              user_only: Permission::Config.user_only_resources.include?(resource)
-            )
+            organisation_only = Permission::Config.organisation_only_resources.include?(resource)
+            publicly_allowed = Permission::Config.public_operations.dig(resource, operation)&.include?(status)
+            user_only = Permission::Config.user_only_resources.include?(resource)
 
-            if Permission::Config.public_operations.dig(resource, operation)&.include?(status)
-              permission.update!(publicly_allowed_at: DateTime.now)
-              permission.reload
-            end
+            permission = Permission.find_or_create_by!(
+              operation: operation,
+              resource: resource,
+              status: status,
+              organisation_only_at: organisation_only ? DateTime.now : nil,
+              publicly_allowed_at: publicly_allowed ? DateTime.now : nil,
+              user_only_at: user_only ? DateTime.now : nil
+            )
 
             permission
           end

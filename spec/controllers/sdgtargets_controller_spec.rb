@@ -4,6 +4,10 @@ require "rails_helper"
 require "json"
 
 RSpec.describe SdgtargetsController, type: :controller do
+  def serialized(sdgtarget)
+    serialized_record(sdgtarget, SdgtargetSerializer)
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:sdgtarget) { FactoryBot.create(:sdgtarget) }
@@ -14,7 +18,7 @@ RSpec.describe SdgtargetsController, type: :controller do
 
       it "all published sdgtargets (no drafts)" do
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(sdgtarget)])
       end
     end
 
@@ -26,19 +30,19 @@ RSpec.describe SdgtargetsController, type: :controller do
       it "guest will not see draft sdgtargets" do
         sign_in guest
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
+        expect(json["data"]).to match_array([serialized(sdgtarget)])
       end
 
       it "contributor will see draft sdgtargets" do
         sign_in contributor
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([serialized(sdgtarget), serialized(draft_sdgtarget)])
       end
 
       it "manager will see draft sdgtargets" do
         sign_in user
         json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+        expect(json["data"]).to match_array([serialized(sdgtarget), serialized(draft_sdgtarget)])
       end
     end
   end
@@ -57,7 +61,7 @@ RSpec.describe SdgtargetsController, type: :controller do
 
       it "shows the sdgtarget" do
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(sdgtarget.id)
+        expect(json["data"]).to eq(serialized(sdgtarget))
       end
 
       it "will not show draft sdgtarget" do

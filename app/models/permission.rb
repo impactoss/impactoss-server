@@ -6,7 +6,11 @@ class Permission < VersionedRecord
   validates :resource, presence: true, inclusion: {in: Permission::Config.resources}
   validates :status, presence: true, inclusion: {in: Permission::Config.status_options}
 
-  def self.allowed?(operation:, resource:, user:, statuses: ["active"])
+  scope :organisation_only, -> { where.not(organisation_only_at: nil) }
+  scope :publicly_allowed, -> { where.not(publicly_allowed_at: nil) }
+  scope :user_only, -> { where.not(user_only_at: nil) }
+
+  def self.relevant(operation:, resource:, user:, statuses: ["active"])
     permissions = where(operation: operation, resource: resource, status: statuses)
 
     missing_statuses = statuses - permissions.pluck(:status)
@@ -16,11 +20,7 @@ class Permission < VersionedRecord
         "#{"Permission".pluralize(missing_statuses.size)} not found for operation '#{operation}', resource '#{resource}', and #{"status".pluralize(missing_statuses.size)} '#{missing_statuses.join(", ")}'"
     end
 
-    return true if permissions.all?(&:publicly_allowed?)
-
-    permissions.all? do |permission|
-      permission.allow?(user: user)
-    end
+    permissions
   end
 
   def self.grant(operations:, resources:, roles:, statuses:, granting_user: nil, force: false)
@@ -86,6 +86,8 @@ class Permission < VersionedRecord
   end
 
   def allow?(user:)
+    return true if publicly_allowed?
+
     role_permissions.active.find_by(role: user.role_ids).present?
   end
 
@@ -101,11 +103,19 @@ class Permission < VersionedRecord
     "Permission to #{operation} a #{resource} with the #{status} status"
   end
 
+  def organisation_only?
+    organisation_only_at.present?
+  end
+
   def publicly_allowed?
     publicly_allowed_at.present?
   end
 
   def title
     "#{resource} #{operation}: #{status}".titleize
+  end
+
+  def user_only?
+    user_only_at.present?
   end
 end

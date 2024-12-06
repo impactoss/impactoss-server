@@ -3,7 +3,7 @@ require "json"
 
 RSpec.describe PagesController, type: :controller do
   def serialized(subject_page)
-    PageSerializer.new(subject_page).serializable_hash[:data].as_json
+    serialized_record(subject_page, PageSerializer)
   end
 
   describe "Get index" do
