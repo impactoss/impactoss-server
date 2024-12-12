@@ -29,7 +29,7 @@ class UserRolesController < ApplicationController
 
   # PATCH/PUT /user_roles/1
   def update
-    if @user_role.update_attributes!(permitted_attributes(@user_role))
+    if @user_role.update!(permitted_attributes(@user_role))
       render json: serialize(@user_role)
     end
   end

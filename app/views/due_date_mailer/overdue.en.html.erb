@@ -1,9 +1,17 @@
-<h1>Sadata Progress Report Overdue!</h1>
+<h3>Progress report overdue for <%= @indicator.title %></h3>
 
 <p>
   Hi <%= @manager_name %>,
 </p>
 
 <p>
-  You had a progress report overdue for <%= @indicator.title %> on <%= @due_date.due_date %>
+  A progress report was due on <%= @due_date %> for an indicator you were assigned to.
+</p>
+
+<p>
+  Visit the <a href="<%= @client_url %>/indicators/<%= @indicator.id %>">indicator page</a> to submit your progress report.
+</p>
+
+<p>
+  Thank you!
 </p>

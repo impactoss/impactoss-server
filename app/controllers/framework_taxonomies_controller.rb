@@ -1,5 +1,4 @@
 class FrameworkTaxonomiesController < ApplicationController
-
   # GET /framework_taxonomies/:id
   def show
     @framework_taxonomy = policy_scope(base_object).find(params[:id])
@@ -23,5 +22,4 @@ class FrameworkTaxonomiesController < ApplicationController
   def serialize(target, serializer: FrameworkTaxonomySerializer)
     super
   end
-
 end

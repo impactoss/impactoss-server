@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class MeasuresController < ApplicationController
   before_action :set_and_authorize_measure, only: [:show, :update, :destroy]
 
@@ -33,7 +34,7 @@ class MeasuresController < ApplicationController
     if params[:measure][:updated_at] && DateTime.parse(params[:measure][:updated_at]).to_i != @measure.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    if @measure.update_attributes!(permitted_attributes(@measure))
+    if @measure.update!(permitted_attributes(@measure))
       set_and_authorize_measure
       render json: serialize(@measure)
     end
@@ -47,7 +48,7 @@ class MeasuresController < ApplicationController
   private
 
   def base_object
-    if params[:category_id]
+    records = if params[:category_id]
       Category.find(params[:category_id]).measures
     elsif params[:recommendation_id]
       Recommendation.find(params[:recommendation_id]).measures
@@ -56,6 +57,10 @@ class MeasuresController < ApplicationController
     else
       Measure
     end
+
+    records = records.where(is_archive: false) if params[:include_archive] == "false"
+    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
+    records
   end
 
   # Use callbacks to share common setup or constraints between actions.

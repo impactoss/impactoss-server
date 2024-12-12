@@ -32,7 +32,7 @@ class CategoriesController < ApplicationController
     if params[:category][:updated_at] && DateTime.parse(params[:category][:updated_at]).to_i != @category.updated_at.to_i
       return render json: '{"error":"Record outdated"}', status: :unprocessable_entity
     end
-    if @category.update_attributes!(permitted_attributes(@category))
+    if @category.update!(permitted_attributes(@category))
       set_and_authorize_category
       render json: serialize(@category)
     end
@@ -52,7 +52,11 @@ class CategoriesController < ApplicationController
   end
 
   def base_object
-    Category
+    records = Category
+
+    return records if params[:include_archive] != "false"
+
+    records.where(is_archive: false)
   end
 
   def serialize(target, serializer: CategorySerializer)

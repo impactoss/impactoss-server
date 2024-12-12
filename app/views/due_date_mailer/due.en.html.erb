@@ -1,10 +1,17 @@
-<h1>Sadata Progress Report Due</h1>
+<h3>Progress Report Due for <%= @indicator.title %></h3>
 
 <p>
   Hi <%= @manager_name %>,
 </p>
 
 <p>
-  You have a progress report due for <%= @indicator.title %> on <%= @due_date.due_date %>
+  A progress report is due on <%= @due_date %> for an indicator you were assigned to.
 </p>
 
+<p>
+  Visit the <a href="<%= @client_url %>/indicators/<%= @indicator.id %>">indicator page</a> to submit your progress report.
+</p>
+
+<p>
+  Thank you!
+</p>

@@ -29,7 +29,7 @@ class MeasureIndicatorsController < ApplicationController
 
   # PATCH/PUT /measure_indicators/1
   def update
-    if @measure_indicator.update_attributes!(permitted_attributes(@measure_indicator))
+    if @measure_indicator.update!(permitted_attributes(@measure_indicator))
       set_and_authorize_measure_indicator
       render json: serialize(@measure_indicator)
     end

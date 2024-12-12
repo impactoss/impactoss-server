@@ -21,7 +21,7 @@ class SdgtargetRecommendationsController < ApplicationController
     authorize @sdgtarget_recommendation
 
     if @sdgtarget_recommendation.save
-      render json: @sdgtarget_recommendation, status: :created, location: @sdgtarget_recommendation
+      render json: serialize(@sdgtarget_recommendation), status: :created, location: @sdgtarget_recommendation
     else
       render json: @sdgtarget_recommendation.errors, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class SdgtargetRecommendationsController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: @sdgtarget_recommendation if @sdgtarget_recommendation.update_attributes!(permitted_attributes(@sdgtarget_recommendation))
+    render json: serialize(@sdgtarget_recommendation) if @sdgtarget_recommendation.update!(permitted_attributes(@sdgtarget_recommendation))
   end
 
   # DELETE /sdgtarget_categories/1

@@ -29,7 +29,7 @@ class SdgtargetMeasuresController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: serialize(@sdgtarget_measure) if @sdgtarget_measure.update_attributes!(permitted_attributes(@sdgtarget_measure))
+    render json: serialize(@sdgtarget_measure) if @sdgtarget_measure.update!(permitted_attributes(@sdgtarget_measure))
   end
 
   # DELETE /sdgtarget_categories/1

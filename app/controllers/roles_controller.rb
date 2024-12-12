@@ -29,7 +29,7 @@ class RolesController < ApplicationController
 
   # PATCH/PUT /roles/1
   def update
-    render json: serialize(@role) if @role.update_attributes!(permitted_attributes(@role))
+    render json: serialize(@role) if @role.update!(permitted_attributes(@role))
   end
 
   # DELETE /roles/1

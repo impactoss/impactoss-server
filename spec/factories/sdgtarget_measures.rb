@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :sdgtarget_measure do
     association :sdgtarget
     association :measure

@@ -29,7 +29,7 @@ class SdgtargetIndicatorsController < ApplicationController
 
   # PATCH/PUT /sdgtarget_categories/1
   def update
-    render json: serialize(@sdgtarget_indicator) if @sdgtarget_indicator.update_attributes!(permitted_attributes(@sdgtarget_indicator))
+    render json: serialize(@sdgtarget_indicator) if @sdgtarget_indicator.update!(permitted_attributes(@sdgtarget_indicator))
   end
 
   # DELETE /sdgtarget_categories/1

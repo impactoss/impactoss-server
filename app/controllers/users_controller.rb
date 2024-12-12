@@ -31,7 +31,7 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    render json: serialize(@user) if @user.update_attributes!(permitted_attributes(@user))
+    render json: serialize(@user) if @user.update!(permitted_attributes(@user))
   end
 
   # DELETE /users/1
@@ -46,7 +46,17 @@ class UsersController < ApplicationController
   end
 
   def serialize(target, serializer: UserSerializer)
-    super
+    return super if base_object === target && policy(target).show_email?
+
+    JSON.parse(super).tap do |json|
+      if Array === json["data"]
+        json["data"].each do |data|
+          data["attributes"].delete("email") unless policy(base_object.new(id: data["id"])).show_email?
+        end
+      else
+        json["data"]["attributes"].delete("email")
+      end
+    end
   end
 
   # Use callbacks to share common setup or constraints between actions.

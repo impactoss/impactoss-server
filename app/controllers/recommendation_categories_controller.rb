@@ -29,7 +29,7 @@ class RecommendationCategoriesController < ApplicationController
 
   # PATCH/PUT /recommendation_categories/1
   def update
-    if @recommendation_category.update_attributes!(permitted_attributes(@recommendation_category))
+    if @recommendation_category.update!(permitted_attributes(@recommendation_category))
       render json: serialize(@recommendation_category)
     end
   end

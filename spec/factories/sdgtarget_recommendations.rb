@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :sdgtarget_recommendation do
     association :sdgtarget
     association :recommendation

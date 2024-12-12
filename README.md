@@ -1,22 +1,13 @@
 ![IMPACT OSS](header.png?raw=true "IMPACT OSS")
 
-# IMPACT OSS server application
+# Server application based of IMPACT OSS
 
-This is the source code for the server-side application (the "API") of IMPACT OSS.
+This is the source code for the server-side application (the "API") of IMPACT OSS
 
-It is a **Rails 5.0.1 application** and is a thin server that is responsible for:
+It is a **Rails 6.1.7 application** and is a thin server that is responsible for:
 * database management and access via an API (Application Programming Interface)
 * user authentication
 * automated email reminders
-
-##### IMPACT OSS client application
-
-It complements the IMPACT OSS client-side application (the "UI") that you can find here: https://github.com/impactoss/impactoss-client
-
-The client is a React JavaScript application and is a single page application that is responsible for:
-* public User Interface (UI)
-* admin UI
-
 ---
 
 ## About IMPACT OSS
@@ -27,12 +18,7 @@ The IMPACT OSS project is maintained by the Impact Open Source Software Trust. T
 
 ---
 
-## Documentation
-
-#### Configuration & Installation
-
-The IMPACT OSS installation guide provides detailed instructions on how to configure and install both server and client applications:
-https://install-guide.impactoss.org/
+## OUTDATED: Documentation
 
 #### How to set up a development environment
 
@@ -40,8 +26,7 @@ https://install-guide.impactoss.org/
 
 This project requires:
 
-* Ruby 2.3.3, preferably managed using [rbenv][]
-* PhantomJS (in order to use the [poltergeist][] gem)
+* Ruby 3.1.2, preferably managed using [rbenv][]
 * PostgreSQL must be installed and accepting connections
 
 On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
@@ -127,7 +112,6 @@ Run the `bin/setup` script. This script will:
 2. Run `rails s` to start the Rails app.
 
 [rbenv]:https://github.com/sstephenson/rbenv
-[poltergeist]:https://github.com/teampoltergeist/poltergeist
 [Homebrew]:http://brew.sh
 
 ---

@@ -1,2 +1,2 @@
-web: bin/rails server -p $PORT -e $RAILS_ENV
+web: bin/rails server -u puma -p $PORT -e $RAILS_ENV
 clock: bundle exec clockwork scheduler.rb

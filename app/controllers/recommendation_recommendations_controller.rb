@@ -17,7 +17,7 @@ class RecommendationRecommendationsController < ApplicationController
     authorize @recommendation_recommendation
 
     if @recommendation_recommendation.save
-      render json: @recommendation_recommendation, status: :created, location: @recommendation_recommendation
+      render json: serialize(@recommendation_recommendation), status: :created, location: @recommendation_recommendation
     else
       render json: @recommendation_recommendation.errors, status: :unprocessable_entity
     end
@@ -41,5 +41,4 @@ class RecommendationRecommendationsController < ApplicationController
   def serialize(target, serializer: RecommendationRecommendationSerializer)
     super
   end
-
 end

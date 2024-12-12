@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :recommendation_indicator do
     association :recommendation
     association :indicator

@@ -1,13 +1,40 @@
 # frozen_string_literal: true
+
 class CategoryPolicy < ApplicationPolicy
   def permitted_attributes
-    [:title, :parent_id, :short_title, :description, :url, :draft, :taxonomy_id, :manager_id, :order, :reference, :date, :user_only]
+    [
+      :date,
+      :description,
+      :draft,
+      (:manager_id unless @record.persisted? && !@user.role?("admin")),
+      :order,
+      :parent_id,
+      :reference,
+      :short_title,
+      :taxonomy_id,
+      :title,
+      :url,
+      :user_only,
+      (:is_archive if @user.role?("admin"))
+    ].compact
+  end
+
+  def destroy?
+    false
+  end
+
+  def create?
+    @user.role?("admin")
+  end
+
+  def update?
+    @user.role?("admin")
   end
 
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?('admin') || @user.role?('manager') || @user.role?('contributor')
-      scope.where(draft: false)
+      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
+      scope.where(draft: false, is_archive: false)
     end
   end
 end

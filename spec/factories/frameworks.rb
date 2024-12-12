@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :framework do
     title { Faker::Creature::Cat.registry }
   end

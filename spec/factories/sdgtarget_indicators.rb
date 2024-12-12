@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :sdgtarget_indicator do
     association :sdgtarget
     association :indicator
