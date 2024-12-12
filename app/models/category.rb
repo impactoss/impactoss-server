@@ -6,16 +6,9 @@ class Category < VersionedRecord
   has_many :recommendation_categories, inverse_of: :category, dependent: :destroy
   has_many :user_categories, inverse_of: :category, dependent: :destroy
   has_many :measure_categories, inverse_of: :category, dependent: :destroy
-  has_many :sdgtarget_categories, inverse_of: :category, dependent: :destroy
   has_many :recommendations, through: :recommendation_categories
   has_many :users, through: :user_categories
   has_many :measures, through: :measure_categories
-  has_many :indicators, through: :recommendations
-  has_many :indicators_via_measures, through: :recommendations
-  has_many :progress_reports, through: :indicators_via_measures
-  has_many :due_dates, -> { distinct }, through: :indicators_via_measures
-
-  has_many :children_due_dates, -> { distinct }, through: :categories, source: :due_dates
 
   delegate :name, :email, to: :manager, prefix: true, allow_nil: true
 
@@ -26,6 +19,23 @@ class Category < VersionedRecord
 
   scope :draft, -> { where(draft: true) }
   scope :published, -> { where(draft: false) }
+
+  def combined_indicator_ids
+    (
+      recommendations.flat_map(&:indicator_ids) +
+      categories.flat_map(&:combined_indicator_ids)
+    ).uniq
+  end
+
+  def due_dates
+    DueDate.where(indicator_id: combined_indicator_ids)
+  end
+
+  def disallowed_sibling_category_ids
+    return [] if taxonomy.allow_multiple
+
+    taxonomy.categories.where.not(id: id).pluck(:id)
+  end
 
   def has_reporting_cycle_taxonomy?
     Taxonomy.current_reporting_cycle_id == taxonomy_id
@@ -86,18 +96,10 @@ class Category < VersionedRecord
     due_dates.are_due.each do |due_date|
       DueDateMailer.category_due(due_date, self).deliver_now
     end
-
-    children_due_dates.are_due.each do |due_date|
-      DueDateMailer.category_due(due_date, self).deliver_now
-    end
   end
 
   def send_overdue_emails
     due_dates.are_overdue.each do |due_date|
-      DueDateMailer.category_overdue(due_date, self).deliver_now
-    end
-
-    children_due_dates.are_overdue.each do |due_date|
       DueDateMailer.category_overdue(due_date, self).deliver_now
     end
   end

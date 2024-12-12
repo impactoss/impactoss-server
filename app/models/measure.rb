@@ -2,7 +2,6 @@
 
 class Measure < VersionedRecord
   has_many :recommendation_measures, inverse_of: :measure, dependent: :destroy
-  has_many :sdgtarget_measures, inverse_of: :measure, dependent: :destroy
   has_many :measure_categories, inverse_of: :measure, dependent: :destroy
   has_many :measure_indicators, inverse_of: :measure, dependent: :destroy
 
