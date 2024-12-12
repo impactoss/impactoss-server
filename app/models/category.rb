@@ -32,6 +32,12 @@ class Category < VersionedRecord
     DueDate.where(indicator_id: combined_indicator_ids)
   end
 
+  def disallowed_sibling_category_ids
+    return [] if taxonomy.allow_multiple
+
+    taxonomy.categories.where.not(id: id).pluck(:id)
+  end
+
   def has_reporting_cycle_taxonomy?
     Taxonomy.current_reporting_cycle_id == taxonomy_id
   end
