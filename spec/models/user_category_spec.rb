@@ -1,4 +1,5 @@
 require "rails_helper"
+require_relative "../shared_examples/enforce_allow_multiple"
 
 RSpec.describe UserCategory, type: :model do
   it { is_expected.to belong_to :user }
@@ -43,4 +44,11 @@ RSpec.describe UserCategory, type: :model do
       expect { subject.destroy }.to change { user.reload.relationship_updated_by_id }.to(whodunnit)
     end
   end
+
+  include_examples "save_with_cleanup enforces taxonomy.allow_multiple", {
+    association: :user,
+    factory: :user,
+    name: "User",
+    title: :name
+  }
 end
