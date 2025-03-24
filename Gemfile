@@ -6,7 +6,7 @@ ruby file: ".ruby-version"
 gem "batch_api"
 gem "bcrypt", "~> 3.1.7"
 gem "clockwork"
-gem 'devise', '~> 4.9.0'
+gem "devise", "~> 4.9.0"
 gem "devise_token_auth", "~> 1.2"
 gem "omniauth-azure-activedirectory-v2", "~> 2.1.0"
 gem "fog-aws"
