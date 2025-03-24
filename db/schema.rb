@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_10_15_031345) do
-
+ActiveRecord::Schema[7.2].define(version: 2025_03_24_162158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -104,7 +103,7 @@ ActiveRecord::Schema.define(version: 2024_10_15_031345) do
     t.string "reference", null: false
     t.integer "updated_by_id"
     t.integer "created_by_id"
-    t.datetime "relationship_updated_at", precision: 6
+    t.datetime "relationship_updated_at"
     t.bigint "relationship_updated_by_id"
     t.boolean "is_archive", default: false, null: false
     t.index ["created_at"], name: "index_indicators_on_created_at"
@@ -145,7 +144,7 @@ ActiveRecord::Schema.define(version: 2024_10_15_031345) do
     t.text "target_date_comment"
     t.integer "updated_by_id"
     t.integer "created_by_id"
-    t.datetime "relationship_updated_at", precision: 6
+    t.datetime "relationship_updated_at"
     t.bigint "relationship_updated_by_id"
     t.string "reference", null: false
     t.boolean "is_archive", default: false, null: false
@@ -241,7 +240,7 @@ ActiveRecord::Schema.define(version: 2024_10_15_031345) do
     t.integer "framework_id"
     t.integer "created_by_id"
     t.bigint "relationship_updated_by_id"
-    t.datetime "relationship_updated_at", precision: 6
+    t.datetime "relationship_updated_at"
     t.boolean "is_archive", default: false, null: false
     t.integer "support_level"
     t.index ["draft"], name: "index_recommendations_on_draft"
@@ -319,7 +318,7 @@ ActiveRecord::Schema.define(version: 2024_10_15_031345) do
     t.integer "updated_by_id"
     t.boolean "allow_password_change", default: true
     t.integer "created_by_id"
-    t.datetime "relationship_updated_at", precision: 6
+    t.datetime "relationship_updated_at"
     t.bigint "relationship_updated_by_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
