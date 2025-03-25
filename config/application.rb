@@ -62,5 +62,7 @@ module HumanRightsNationalReporting
 
     config.i18n.default_locale = :"en-NZ"
     config.i18n.fallbacks = true
+
+    config.x.reporting_cycle_taxonomy_id = ENV.fetch("REPORTING_CYCLE_TAXONOMY_ID", "2").to_i
   end
 end
