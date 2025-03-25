@@ -4,7 +4,7 @@
 
 This is the source code for the server-side application (the "API") of IMPACT OSS
 
-It is a **Rails 6.1.7 application** and is a thin server that is responsible for:
+It is a **Rails 7.2.2.1 application** and is a thin server that is responsible for:
 
 - database management and access via an API (Application Programming Interface)
 - user authentication
