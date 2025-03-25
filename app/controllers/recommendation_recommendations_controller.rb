@@ -27,6 +27,8 @@ class RecommendationRecommendationsController < ApplicationController
     @recommendation_recommendation.destroy
   end
 
+  def update; head :not_implemented; end
+
   private
 
   def set_and_authorize_recommendation_recommendation
