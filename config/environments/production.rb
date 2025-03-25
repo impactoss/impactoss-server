@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
@@ -75,6 +77,28 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
+  #
+  # Production SMTP config
+  if ENV.fetch("EMAIL_ENABLED", false)
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      port: ENV["SMTP_PORT"],
+      address: ENV["SMTP_SERVER"],
+      user_name: ENV["SMTP_LOGIN"],
+      password: ENV["SMTP_PASSWORD"],
+      domain: "impactoss.org",
+      authentication: :plain
+    }
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.default_url_options = {
+      host: ENV["ACTION_MAILER_HOST"] || "impactoss.org",
+      protocol: ENV["ACTION_MAILER_PROTOCOL"] || "https"
+    }
+    config.action_mailer.asset_host = ENV["ACTION_MAILER_ASSET_HOST"] || "https://impactoss.org"
+  else
+    config.action_mailer.perform_deliveries = false
+    config.action_mailer.raise_delivery_errors = false
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
