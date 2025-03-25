@@ -20,6 +20,4 @@ class VersionedRecord < ApplicationRecord
     !PaperTrail.request.whodunnit.nil? &&
       self.class.column_names.include?("updated_by_id")
   end
-
-
 end

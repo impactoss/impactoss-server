@@ -27,7 +27,9 @@ class RecommendationRecommendationsController < ApplicationController
     @recommendation_recommendation.destroy
   end
 
-  def update; head :not_implemented; end
+  def update
+    head :not_implemented
+  end
 
   private
 
