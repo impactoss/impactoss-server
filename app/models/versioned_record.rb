@@ -6,17 +6,24 @@ class VersionedRecord < ApplicationRecord
   after_commit :cache_updated_by_id, on: [:create, :update], if: :cache_updated_by_id?
   belongs_to :updated_by, class_name: "User", required: false
 
-  def self.paper_trail_ignored_columns = []
+  def self.inherited(base)
+    ignore = case base.name
+    in "User"
+      [:tokens, :updated_at]
+    else
+      []
+    end
 
-  has_paper_trail ignore: paper_trail_ignored_columns
+    base.has_paper_trail ignore: ignore
 
-  private
+    super
+  end
 
-  def cache_updated_by_id
+  private def cache_updated_by_id
     update_column(:updated_by_id, PaperTrail.request.whodunnit)
   end
 
-  def cache_updated_by_id?
+  private def cache_updated_by_id?
     !PaperTrail.request.whodunnit.nil? &&
       self.class.column_names.include?("updated_by_id")
   end

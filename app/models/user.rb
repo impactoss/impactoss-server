@@ -28,6 +28,4 @@ class User < VersionedRecord
   def domain
     email.to_s.split("@").last
   end
-
-  def self.paper_trail_ignored_columns = [:tokens, :updated_at]
 end
