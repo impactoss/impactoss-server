@@ -7,7 +7,6 @@ class User < VersionedRecord
     :recoverable, :rememberable, :trackable, :validatable
   #  :omniauthable
   include DeviseTokenAuth::Concerns::User
-  has_paper_trail ignore: [:tokens, :updated_at]
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -29,4 +28,6 @@ class User < VersionedRecord
   def domain
     email.to_s.split("@").last
   end
+
+  def self.paper_trail_ignored_columns = [:tokens, :updated_at]
 end
