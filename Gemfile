@@ -54,7 +54,7 @@ end
 group :test do
   gem "capybara"
   gem "connection_pool"
-  gem "database_cleaner"
+  gem 'database_cleaner-active_record', '~> 2.2.0'
   gem "launchy"
   gem "pry-rails"
   gem "shoulda-matchers"
