@@ -60,6 +60,8 @@ module HumanRightsNationalReporting
       batch_config.operation_middleware = proc {}
     end
 
+    config.active_record.belongs_to_required_by_default = true
+
     config.i18n.default_locale = ENV.fetch("LOCALE", "en-NZ").to_sym
     config.i18n.fallbacks = true
 
