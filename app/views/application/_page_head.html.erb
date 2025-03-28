@@ -3,6 +3,4 @@
 
 <title><%= content_for?(:title) ? yield(:title) : t("sitewide_header.title.main") %></title>
 
-<%= stylesheet_link_tag    "application" %>
-<%= javascript_include_tag "application", 'data-turbolinks-track' => true %>
 <%= csrf_meta_tags %>

@@ -12,6 +12,18 @@ class FrameworkFrameworksController < ApplicationController
     render json: serialize(@framework_frameworks)
   end
 
+  def create
+    head :not_implemented
+  end
+
+  def update
+    head :not_implemented
+  end
+
+  def destroy
+    head :not_implemented
+  end
+
   private
 
   def base_object
