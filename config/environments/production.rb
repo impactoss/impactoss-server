@@ -85,7 +85,7 @@ Rails.application.configure do
   if ENV.fetch("EMAIL_ENABLED", false)
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      port: ENV.fetch["SMTP_PORT"],
+      port: ENV.fetch("SMTP_PORT"),
       address: ENV.fetch("SMTP_SERVER"),
       user_name: ENV.fetch("SMTP_LOGIN"),
       password: ENV.fetch("SMTP_PASSWORD"),
