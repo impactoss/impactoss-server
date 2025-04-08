@@ -18,7 +18,7 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
   end
 
   protected def render_data_or_redirect(message, data, user_data = {})
-    return super if ['inAppBrowser', 'newWindow'].include?(omniauth_window_type)
+    return super if ["inAppBrowser", "newWindow"].include?(omniauth_window_type)
     return super unless auth_origin_url
 
     # we have overridden this to pass allow_other_host: true
