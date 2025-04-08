@@ -11,6 +11,8 @@ Rails.application.config.filter_parameters += [
   :cookie,
   :crypt,
   :csrf,
+  :cvc,
+  :cvv,
   :email,
   :otp,
   :passw,
