@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require "active_support/core_ext/integer/time"
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
-  config.cache_classes = true
+  # This replaces config.cache_classes = true in Rails 7
+  config.enable_reloading = false
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
@@ -16,6 +19,10 @@ Rails.application.configure do
   config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
 
+  # Ensures that a master key has been made available in ENV["RAILS_MASTER_KEY"], config/master.key, or an environment
+  # key such as config/credentials/production.key. This key is used to decrypt credentials (and other encrypted files).
+  # config.require_master_key = true
+
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
@@ -26,12 +33,12 @@ Rails.application.configure do
 
   # Disable minification since it adds a *huge* amount of time to precompile.
   # Anyway, gzip alone gets us about 70% of the benefits of minify+gzip.
-  config.assets.js_compressor = false
-  config.assets.css_compressor = false
+  # config.assets.js_compressor = false
+  # config.assets.css_compressor = false
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
-
+  # config.assets.compile = false
+#
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
@@ -41,6 +48,9 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
   config.action_dispatch.x_sendfile_header = nil
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
 
   # Mount Action Cable outside main process or domain
   # config.action_cable.mount_path = nil
@@ -52,7 +62,7 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", :debug)
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
@@ -63,6 +73,8 @@ Rails.application.configure do
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "human-rights-national-reporting_#{Rails.env}"
+
+  # Disable caching for Action Mailer templates even if Action Controller caching is enabled.
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -73,19 +85,20 @@ Rails.application.configure do
   if ENV.fetch("EMAIL_ENABLED", false)
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      port: ENV["SMTP_PORT"],
-      address: ENV["SMTP_SERVER"],
-      user_name: ENV["SMTP_LOGIN"],
-      password: ENV["SMTP_PASSWORD"],
-      domain: "impactoss.org",
-      authentication: :plain
+      port: ENV.fetch("SMTP_PORT"),
+      address: ENV.fetch("SMTP_SERVER"),
+      user_name: ENV.fetch("SMTP_LOGIN"),
+      password: ENV.fetch("SMTP_PASSWORD"),
+      domain: ENV.fetch("SMTP_DOMAIN", "impactoss.org"),
+      authentication: ENV.fetch("SMTP_AUTH", :plain).to_sym,
+      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", true)
     }
     config.action_mailer.raise_delivery_errors = true
     config.action_mailer.default_url_options = {
-      host: ENV["ACTION_MAILER_HOST"] || "impactoss.org",
-      protocol: ENV["ACTION_MAILER_PROTOCOL"] || "https"
+      host: ENV.fetch("ACTION_MAILER_HOST", "impactoss.org"),
+      protocol: ENV.fetch("ACTION_MAILER_PROTOCOL", "https")
     }
-    config.action_mailer.asset_host = ENV["ACTION_MAILER_ASSET_HOST"] || "https://impactoss.org"
+    config.action_mailer.asset_host = ENV.fetch("ACTION_MAILER_ASSET_HOST", "https://impactoss.org")
   else
     config.action_mailer.perform_deliveries = false
     config.action_mailer.raise_delivery_errors = false
@@ -96,21 +109,19 @@ Rails.application.configure do
   config.i18n.fallbacks = true
 
   # Send deprecation notices to registered listeners.
-  config.active_support.deprecation = :notify
+  config.active_support.deprecation_behavior = :notify
+  config.active_support.report_deprecations = true
 
-  # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
-
-  # Use a different logger for distributed setups.
-  # require 'syslog/logger'
-  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
-
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger = ActiveSupport::Logger.new($stdout)
-    logger.formatter = config.log_formatter
-    config.logger = ActiveSupport::TaggedLogging.new(logger)
+  # Log to STDOUT by default (Rails 7 default)
+  if ENV.fetch("RAILS_LOG_TO_STDOUT", true)
+    config.logger = ActiveSupport::Logger.new($stdout)
+      .tap { |logger| logger.formatter = ::Logger::Formatter.new }
+      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
   end
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production - a Rails 7 security improvement
+  config.active_record.attributes_for_inspect = [:id]
 end

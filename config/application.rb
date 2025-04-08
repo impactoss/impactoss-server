@@ -10,16 +10,22 @@ Bundler.require(*Rails.groups)
 
 module HumanRightsNationalReporting
   class Application < Rails::Application
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 7.2
 
-    # Ensure non-standard paths are eager-loaded in production
-    # (these paths are also autoloaded in development mode)
-    # config.eager_load_paths += %W(#{config.root}/lib)
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w[assets tasks])
 
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
     config.time_zone = "Pacific/Auckland"
     config.active_record.default_timezone = :local
+    # config.eager_load_paths << Rails.root.join("extras")
 
     config.middleware.insert_before 0, Rack::Cors do
       if ENV["ALLOWED_ORIGIN_S3"]
@@ -56,9 +62,7 @@ module HumanRightsNationalReporting
 
     config.active_record.belongs_to_required_by_default = true
 
-    config.load_defaults = true
-
-    config.i18n.locale = ENV.fetch("LOCALE", "en-NZ")
+    config.i18n.locale = ENV.fetch("LOCALE", "en-NZ").to_sym
     config.i18n.fallbacks = true
 
     config.x.reporting_cycle_taxonomy_id = ENV.fetch("REPORTING_CYCLE_TAXONOMY_ID", "2").to_i
