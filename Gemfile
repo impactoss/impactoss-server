@@ -18,7 +18,7 @@ gem "pg", "~> 1.2"
 gem "puma", "~> 6.6"
 gem "pundit"
 gem "rack-cors", require: "rack/cors"
-gem "rails", "~> 7.2.2.1"
+gem "rails", "~> 8.0.2"
 gem "secure_headers", ">= 7.1.0"
 gem "with_advisory_lock"
 
