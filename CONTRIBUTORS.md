@@ -10,3 +10,4 @@
 - ben-rabid
 - sjukkola
 - lukearndt
+- jonathanarndt

@@ -2,5 +2,23 @@
 
 # Be sure to restart your server when you modify this file.
 
-# Configure sensitive parameters which will be filtered from the log file.
-Rails.application.config.filter_parameters += %w[password secret session cookie csrf]
+# Configure parameters to be partially matched (e.g. passw matches password) and filtered from the log file.
+# Use this to limit dissemination of sensitive information.
+# See the ActiveSupport::ParameterFilter documentation for supported notations and behaviors.
+Rails.application.config.filter_parameters += [
+  :_key,
+  :certificate,
+  :cookie,
+  :crypt,
+  :csrf,
+  :cvc,
+  :cvv,
+  :email,
+  :otp,
+  :passw,
+  :salt,
+  :secret,
+  :session,
+  :ssn,
+  :token
+]

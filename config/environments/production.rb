@@ -1,68 +1,73 @@
 # frozen_string_literal: true
 
+require "active_support/core_ext/integer/time"
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
-  config.cache_classes = true
+  config.enable_reloading = false
 
-  # Eager load code on boot. This eager loads most of Rails and
-  # your application in memory, allowing both threaded web servers
-  # and those relying on copy on write to perform better.
-  # Rake tasks automatically ignore this option for performance.
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
-  # Full error reports are disabled and caching is turned on.
+  # Full error reports are disabled.
   config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = {"cache-control" => "public, max-age=#{1.year.to_i}"}
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
-  # Compress JavaScripts and CSS.
-  # config.assets.js_compressor = :uglifier
-  # config.assets.css_compressor = :sass
-
-  # Disable minification since it adds a *huge* amount of time to precompile.
-  # Anyway, gzip alone gets us about 70% of the benefits of minify+gzip.
-  config.assets.js_compressor = false
-  config.assets.css_compressor = false
-
-  # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
-
-  # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
-
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.action_controller.asset_host = 'http://assets.example.com'
+  # config.asset_host = "http://assets.example.com"
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
   config.action_dispatch.x_sendfile_header = nil
 
-  # Mount Action Cable outside main process or domain
-  # config.action_cable.mount_path = nil
-  # config.action_cable.url = 'wss://example.com/cable'
-  # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Use the lowest log level to ensure availability of diagnostic information
-  # when problems arise.
-  config.log_level = :debug
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [:request_id]
+  config.logger = ActiveSupport::TaggedLogging.logger($stdout)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!)
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", :debug)
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
 
-  # Use a different cache store in production.
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # Replace the default in-process memory cache store with a durable alternative.
   # config.cache_store = :mem_cache_store
 
-  # Use a real queuing backend for Active Job (and separate queues per environment)
-  # config.active_job.queue_adapter     = :resque
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "human-rights-national-reporting_#{Rails.env}"
+
+  # Disable caching for Action Mailer templates even if Action Controller caching is enabled.
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -73,19 +78,20 @@ Rails.application.configure do
   if ENV.fetch("EMAIL_ENABLED", false)
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      port: ENV["SMTP_PORT"],
-      address: ENV["SMTP_SERVER"],
-      user_name: ENV["SMTP_LOGIN"],
-      password: ENV["SMTP_PASSWORD"],
-      domain: "impactoss.org",
-      authentication: :plain
+      port: ENV.fetch("SMTP_PORT"),
+      address: ENV.fetch("SMTP_SERVER"),
+      user_name: ENV.fetch("SMTP_LOGIN"),
+      password: ENV.fetch("SMTP_PASSWORD"),
+      domain: ENV.fetch("SMTP_DOMAIN", "impactoss.org"),
+      authentication: ENV.fetch("SMTP_AUTH", :plain).to_sym,
+      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", true)
     }
     config.action_mailer.raise_delivery_errors = true
     config.action_mailer.default_url_options = {
-      host: ENV["ACTION_MAILER_HOST"] || "impactoss.org",
-      protocol: ENV["ACTION_MAILER_PROTOCOL"] || "https"
+      host: ENV.fetch("ACTION_MAILER_HOST", "impactoss.org"),
+      protocol: ENV.fetch("ACTION_MAILER_PROTOCOL", "https")
     }
-    config.action_mailer.asset_host = ENV["ACTION_MAILER_ASSET_HOST"] || "https://impactoss.org"
+    config.action_mailer.asset_host = ENV.fetch("ACTION_MAILER_ASSET_HOST", "https://impactoss.org")
   else
     config.action_mailer.perform_deliveries = false
     config.action_mailer.raise_delivery_errors = false
@@ -96,21 +102,28 @@ Rails.application.configure do
   config.i18n.fallbacks = true
 
   # Send deprecation notices to registered listeners.
-  config.active_support.deprecation = :notify
+  config.active_support.deprecation_behavior = :notify
+  config.active_support.report_deprecations = true
 
-  # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
-
-  # Use a different logger for distributed setups.
-  # require 'syslog/logger'
-  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
-
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger = ActiveSupport::Logger.new($stdout)
-    logger.formatter = config.log_formatter
-    config.logger = ActiveSupport::TaggedLogging.new(logger)
+  # Log to STDOUT by default (Rails 7 default)
+  if ENV.fetch("RAILS_LOG_TO_STDOUT", true)
+    config.logger = ActiveSupport::Logger.new($stdout)
+      .tap { |logger| logger.formatter = ::Logger::Formatter.new }
+      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
   end
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [:id]
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

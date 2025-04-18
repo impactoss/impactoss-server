@@ -4,10 +4,12 @@
 
 This is the source code for the server-side application (the "API") of IMPACT OSS
 
-It is a **Rails 6.1.7 application** and is a thin server that is responsible for:
-* database management and access via an API (Application Programming Interface)
-* user authentication
-* automated email reminders
+It is a **Rails 7.2.2.1 application** and is a thin server that is responsible for:
+
+- database management and access via an API (Application Programming Interface)
+- user authentication
+- automated email reminders
+
 ---
 
 ## About IMPACT OSS
@@ -26,8 +28,8 @@ The IMPACT OSS project is maintained by the Impact Open Source Software Trust. T
 
 This project requires:
 
-* Ruby 3.1.2, preferably managed using [rbenv][]
-* PostgreSQL must be installed and accepting connections
+- Ruby 3.3.7, preferably managed using [rbenv][]
+- PostgreSQL must be installed and accepting connections
 
 On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
 
@@ -78,6 +80,7 @@ overcommit --sign
 ```
 
 To install the extra linters, run
+
 ```
 [sudo] pip install yamllint
 npm install -g jshint
@@ -101,18 +104,18 @@ And then run the resulting image:
 
 Run the `bin/setup` script. This script will:
 
-* Check you have the required Ruby version
-* Install gems using Bundler
-* Create local copies of `.env` and `database.yml`
-* Create, migrate, and seed the database
+- Check you have the required Ruby version
+- Install gems using Bundler
+- Create local copies of `.env` and `database.yml`
+- Create, migrate, and seed the database
 
 ##### Run it!
 
 1. Run `rake spec` to make sure everything works.
 2. Run `rails s` to start the Rails app.
 
-[rbenv]:https://github.com/sstephenson/rbenv
-[Homebrew]:http://brew.sh
+[rbenv]: https://github.com/sstephenson/rbenv
+[Homebrew]: http://brew.sh
 
 ---
 

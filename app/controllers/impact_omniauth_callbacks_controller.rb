@@ -17,20 +17,29 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
     @resource
   end
 
-  private
+  protected def render_data_or_redirect(message, data, user_data = {})
+    return super if ["inAppBrowser", "newWindow"].include?(omniauth_window_type)
+    return super unless auth_origin_url
 
-  def auth_hash_groups
+    # we have overridden this to pass allow_other_host: true
+    redirect_to(
+      DeviseTokenAuth::Url.generate(auth_origin_url, data.merge(blank: true).merge(redirect_options)),
+      allow_other_host: true
+    )
+  end
+
+  private def auth_hash_groups
     auth_hash.dig("extra", "raw_info", "groups") || []
   end
 
-  def auth_hash_name
+  private def auth_hash_name
     [
       auth_hash.dig("info", "first_name"),
       auth_hash.dig("info", "last_name")
     ].reject(&:blank?).join(" ") || auth_hash.dig("info", "name")
   end
 
-  def azure_groups
+  private def azure_groups
     {
       admin: ENV["AZURE_GROUP_ADMIN"],
       contributor: ENV["AZURE_GROUP_CONTRIBUTOR"],
@@ -38,7 +47,7 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
     }
   end
 
-  def azure_role_names
+  private def azure_role_names
     azure_groups
       .select { |role, uuid| auth_hash_groups.include?(uuid) }
       .keys

@@ -11,6 +11,10 @@ RSpec.describe User, type: :model do
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :managed_indicators }
 
+  it "configures paper_trail to particular fields" do
+    expect(described_class.paper_trail_options).to include(ignore: ["tokens", "updated_at"])
+  end
+
   it "is valid" do
     expect(subject).to be_valid
   end

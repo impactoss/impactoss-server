@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%= render "application/page_head" %>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= content_for?(:title) ? yield(:title) : t(:main, scope: %i[header title]) %></title>
+    <%= csrf_meta_tags %>
+    <link rel="stylesheet" href="/assets/application.css" media="all" />
   </head>
 
   <body>
-    <%= render "application/sitewide_header" %>
+    <header>
+      <img src="/images/logo.png" alt="<%= t(:alt, scope: %i[header logo]) %>" width="450" height="88" />
+    </header>
+
     <%= render "application/flash" %>
 
     <%= yield %>
-
   </body>
 </html>
