@@ -29,7 +29,7 @@ class Seeds
     Page.new(title: "Copyright", menu_title: "Copyright").save!
     Page.new(title: "Disclaimer", menu_title: "Disclaimer").save!
     Page.new(title: "Privacy", menu_title: "Privacy").save!
-    Page.new(title: "About the Human Rights Monitor", menu_title: "About").save!
+    Page.new(title: "About IMPACT OSS", menu_title: "About").save!
 
     # set up frameworks
     hr = Framework.create!(
@@ -40,13 +40,21 @@ class Seeds
       has_response: true
     )
     sdgfw = Framework.new(
-      title: "Sustainable Debelopment Goals",
+      title: "Sustainable Development Goals",
       short_title: "SDGs",
       has_indicators: true,
       has_measures: true,
       has_response: false
     )
     sdgfw.save!
+
+    ndp = Framework.create!(
+      title: "National Development Plan",
+      short_title: "NDP",
+      has_indicators: true,
+      has_measures: true,
+      has_response: false
+    )
 
     # Set up taxonomies
     # 1. Global taxonomy
@@ -175,6 +183,10 @@ class Seeds
     )
     FrameworkTaxonomy.create!(
       framework: sdgfw,
+      taxonomy: cluster
+    )
+    FrameworkTaxonomy.create!(
+      framework: ndp,
       taxonomy: cluster
     )
     # 10. Global taxonomy
