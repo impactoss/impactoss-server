@@ -48,6 +48,7 @@ group :development, :test do
   gem "factory_bot_rails", "~> 6.0"
   gem "faker"
   gem "i18n-tasks", "~> 0.9.6"
+  gem "leftovers", require: false
   gem "rspec-rails"
 end
 
