@@ -33,7 +33,7 @@ class Seeds
 
     # set up frameworks
     hr = Framework.create!(
-      title: "International Human Rights Obligations",
+      title: "Human Rights Obligations",
       short_title: "HR",
       has_indicators: false,
       has_measures: true,
