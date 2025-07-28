@@ -2,10 +2,7 @@
 
 class MeasureIndicatorPolicy < ApplicationPolicy
   def permitted_attributes
-    [:measure_id,
-      :indicator_id,
-      measure_attributes: [:id, :title, :description, :target_date, :draft],
-      indicator_attributes: [:id, :title, :description, :draft]]
+    [:measure_id, :indicator_id]
   end
 
   def update?

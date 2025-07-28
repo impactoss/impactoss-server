@@ -1,5 +1,6 @@
 class MeasureIndicatorsController < ApplicationController
-  before_action :set_and_authorize_measure_indicator, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_measure_indicator, only: [:show, :destroy]
+  skip_before_action :authenticate_user!, only: [:update]
 
   # GET /measure_indicators
   def index
@@ -27,17 +28,13 @@ class MeasureIndicatorsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /measure_indicators/1
-  def update
-    if @measure_indicator.update!(permitted_attributes(@measure_indicator))
-      set_and_authorize_measure_indicator
-      render json: serialize(@measure_indicator)
-    end
-  end
-
   # DELETE /measure_indicators/1
   def destroy
     @measure_indicator.destroy
+  end
+
+  def update
+    head :not_implemented
   end
 
   private
@@ -46,6 +43,20 @@ class MeasureIndicatorsController < ApplicationController
   def set_and_authorize_measure_indicator
     @measure_indicator = policy_scope(base_object).find(params[:id])
     authorize @measure_indicator
+  rescue ActiveRecord::RecordNotFound
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
 
   def base_object

@@ -23,8 +23,6 @@ RSpec.describe Recommendation, type: :model do
 
   it { is_expected.to belong_to(:framework).optional }
 
-  it { is_expected.to accept_nested_attributes_for :recommendation_categories }
-
   context "is_current" do
     let(:category) { FactoryBot.create(:category) }
     let(:recommendation) { FactoryBot.create(:recommendation) }

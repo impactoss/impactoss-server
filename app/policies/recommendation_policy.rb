@@ -11,8 +11,7 @@ class RecommendationPolicy < ApplicationPolicy
       :description,
       :framework_id,
       :support_level,
-      (:is_archive if @user.role?("admin")),
-      recommendation_categories_attributes: [:category_id]
+      (:is_archive if @user.role?("admin"))
     ]
   end
 

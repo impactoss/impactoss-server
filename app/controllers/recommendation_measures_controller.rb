@@ -1,5 +1,6 @@
 class RecommendationMeasuresController < ApplicationController
-  before_action :set_and_authorize_recommendation_measure, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_recommendation_measure, only: [:show, :destroy]
+  skip_before_action :authenticate_user!, only: [:update]
 
   # GET /recommendation_measures
   def index
@@ -27,16 +28,13 @@ class RecommendationMeasuresController < ApplicationController
     end
   end
 
-  # PATCH/PUT /recommendation_measures/1
-  def update
-    if @recommendation_measure.update!(permitted_attributes(@recommendation_measure))
-      render json: serialize(@recommendation_measure)
-    end
-  end
-
   # DELETE /recommendation_measures/1
   def destroy
     @recommendation_measure.destroy
+  end
+
+  def update
+    head :not_implemented
   end
 
   private
@@ -45,6 +43,20 @@ class RecommendationMeasuresController < ApplicationController
   def set_and_authorize_recommendation_measure
     @recommendation_measure = policy_scope(base_object).find(params[:id])
     authorize @recommendation_measure
+  rescue ActiveRecord::RecordNotFound
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
 
   def base_object

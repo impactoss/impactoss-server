@@ -1,5 +1,6 @@
 class UserRolesController < ApplicationController
-  before_action :set_and_authorize_user_role, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_user_role, only: [:show, :destroy]
+  skip_before_action :authenticate_user!, only: [:update]
 
   # GET /user_roles
   def index
@@ -27,16 +28,13 @@ class UserRolesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /user_roles/1
-  def update
-    if @user_role.update!(permitted_attributes(@user_role))
-      render json: serialize(@user_role)
-    end
-  end
-
   # DELETE /user_roles/1
   def destroy
     @user_role.destroy
+  end
+
+  def update
+    head :not_implemented
   end
 
   private
@@ -45,7 +43,22 @@ class UserRolesController < ApplicationController
   def set_and_authorize_user_role
     @user_role = policy_scope(base_object).find(params[:id])
     authorize @user_role
+  rescue ActiveRecord::RecordNotFound
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
+
 
   def base_object
     UserRole

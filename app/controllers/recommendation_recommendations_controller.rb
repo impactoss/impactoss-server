@@ -36,6 +36,20 @@ class RecommendationRecommendationsController < ApplicationController
   def set_and_authorize_recommendation_recommendation
     @recommendation_recommendation = policy_scope(base_object).find(params[:id])
     authorize @recommendation_recommendation
+  rescue ActiveRecord::RecordNotFound
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
 
   def base_object

@@ -1,13 +1,14 @@
 class RecommendationCategory < VersionedRecord
-  belongs_to :recommendation
-  belongs_to :category
-  accepts_nested_attributes_for :recommendation
-  accepts_nested_attributes_for :category
+  belongs_to :recommendation, optional: true
+  belongs_to :category, optional: true
 
   validates :category_id, uniqueness: {scope: :recommendation_id}
   validates :recommendation_id, presence: true
   validates :category_id, presence: true
   validate :single_category_per_taxonomy, on: :create
+
+  validate :recommendation_must_exist, on: :create
+  validate :category_must_exist, on: :create
 
   after_commit :set_relationship_updated, on: [:create, :update, :destroy]
 
@@ -37,6 +38,22 @@ class RecommendationCategory < VersionedRecord
   end
 
   private
+
+  def recommendation_must_exist
+    return if recommendation_id.blank?
+
+    unless Recommendation.exists?(recommendation_id)
+      errors.add(:recommendation, "must exist (id: #{recommendation_id})")
+    end
+  end
+
+  def category_must_exist
+    return if category_id.blank?
+
+    unless Category.exists?(category_id)
+      errors.add(:category, "must exist (id: #{category_id})")
+    end
+  end
 
   def lock_name
     "RecommendationCategory-recommendation_id_#{recommendation_id}-taxonomy_id_#{category.taxonomy_id}"

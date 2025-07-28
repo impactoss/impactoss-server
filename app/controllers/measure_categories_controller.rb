@@ -1,5 +1,6 @@
 class MeasureCategoriesController < ApplicationController
-  before_action :set_and_authorize_measure_category, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_measure_category, only: [:show, :destroy]
+  skip_before_action :authenticate_user!, only: [:update]
 
   # GET /measure_categories
   def index
@@ -27,17 +28,13 @@ class MeasureCategoriesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /measure_categories/1
-  def update
-    if @measure_category.update!(permitted_attributes(@measure_category))
-      set_and_authorize_measure_category
-      render json: serialize(@measure_category)
-    end
-  end
-
   # DELETE /measure_categories/1
   def destroy
     @measure_category.destroy
+  end
+
+  def update
+    head :not_implemented
   end
 
   private
@@ -47,8 +44,19 @@ class MeasureCategoriesController < ApplicationController
     @measure_category = policy_scope(base_object).find(params[:id])
     authorize @measure_category
   rescue ActiveRecord::RecordNotFound
-    raise unless action_name == "destroy"
-    head :no_content
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
 
   def base_object

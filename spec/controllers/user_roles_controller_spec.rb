@@ -316,7 +316,7 @@ RSpec.describe UserRolesController, type: :controller do
     context "when user signed in" do
       it "will not allow a guest to delete a user_role" do
         sign_in guest
-        expect(subject).to be_not_found
+        expect(subject).to be_forbidden
       end
 
       it "will not allow a contributor to delete a user_role" do
