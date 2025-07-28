@@ -169,7 +169,6 @@ class Seeds
       priority: 7
     )
 
-
     # 9. Country specific taxonomy
     cluster = Taxonomy.create!(
       title: "Thematic cluster",
