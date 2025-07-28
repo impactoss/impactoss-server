@@ -11,24 +11,7 @@ class MeasurePolicy < ApplicationPolicy
       :target_date_comment,
       :target_date,
       :title,
-      (:is_archive if @user.role?("admin")),
-      recommendation_measures_attributes: [
-        :recommendation_id,
-        recommendation_attributes: [:id, :title, :number, :draft]
-      ],
-      measure_categories_attributes: [
-        :category_id,
-        category_attributes: [
-          :description,
-          :draft,
-          :id,
-          :manager_id,
-          :short_title,
-          :taxonomy_id,
-          :title,
-          :url
-        ]
-      ]
+      (:is_archive if @user.role?("admin"))
     ].compact
   end
 

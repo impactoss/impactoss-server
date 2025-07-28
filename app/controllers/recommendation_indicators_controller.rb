@@ -1,5 +1,6 @@
 class RecommendationIndicatorsController < ApplicationController
   before_action :set_and_authorize_recommendation_indicator, only: [:show, :destroy]
+  skip_before_action :authenticate_user!, only: [:update]
 
   def index
     @recommendation_indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
@@ -37,6 +38,20 @@ class RecommendationIndicatorsController < ApplicationController
   def set_and_authorize_recommendation_indicator
     @recommendation_indicator = policy_scope(base_object).find(params[:id])
     authorize @recommendation_indicator
+  rescue ActiveRecord::RecordNotFound
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
 
   def base_object

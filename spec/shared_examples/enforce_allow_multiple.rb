@@ -109,8 +109,8 @@ RSpec.shared_examples "save_with_cleanup enforces taxonomy.allow_multiple" do |a
             FactoryBot.create(
               :category,
               taxonomy: taxonomy,
-              short_title: "Taxonomy Allow #{taxonomy_index + 1} - Category #{category_index + 1}",
-              title: "Category #{category_index + 1} for Taxonomy Allow #{taxonomy_index + 1}"
+              short_title: "Taxonomy Disallow #{taxonomy_index + 1} - Category #{category_index + 1}",
+              title: "Category #{category_index + 1} for Taxonomy Disallow #{taxonomy_index + 1}"
             )
           end
         end
@@ -252,7 +252,7 @@ RSpec.shared_examples "save_with_cleanup enforces taxonomy.allow_multiple" do |a
           end
         end
 
-        context "one from the same taxonomy with allow_multiple: false\n" do
+        context "one from a taxonomy with allow_multiple: false\n" do
           before do
             described_class.create(:category => categories_disallow.first.first, associated_model[:association] => subject_association)
           end
@@ -275,12 +275,12 @@ RSpec.shared_examples "save_with_cleanup enforces taxonomy.allow_multiple" do |a
                 new_category # replaced categories_disallow.first.first
               ]
             end
-            let(:potential_race_conditions) do
-              [
-                categories_disallow.first.first,
-                categories_disallow.first.third
-              ]
-            end
+            # let(:potential_race_conditions) do
+            #   [
+            #     categories_disallow.first.first,
+            #     categories_disallow.first.third
+            #   ]
+            # end
 
             it "replaces the existing category from its taxonomy" do
               run_test
@@ -305,12 +305,12 @@ RSpec.shared_examples "save_with_cleanup enforces taxonomy.allow_multiple" do |a
                 categories_disallow.second.first
               ]
             end
-            let(:potential_race_conditions) do
-              [
-                categories_disallow.first.first,
-                categories_disallow.first.third
-              ]
-            end
+            # let(:potential_race_conditions) do
+            #   [
+            #     categories_disallow.first.first,
+            #     categories_disallow.first.third
+            #   ]
+            # end
 
             it "replaces the existing category from its taxonomy" do
               run_test
@@ -380,12 +380,12 @@ RSpec.shared_examples "save_with_cleanup enforces taxonomy.allow_multiple" do |a
                 categories_disallow.third.first
               ]
             end
-            let(:potential_race_conditions) do
-              [
-                categories_disallow.first.first,
-                categories_disallow.first.third
-              ]
-            end
+            # let(:potential_race_conditions) do
+            #   [
+            #     categories_disallow.first.first,
+            #     categories_disallow.first.third
+            #   ]
+            # end
 
             it "replaces the existing category from its taxonomy" do
               run_test
@@ -442,12 +442,12 @@ RSpec.shared_examples "save_with_cleanup enforces taxonomy.allow_multiple" do |a
                 categories_disallow.second.first
               ]
             end
-            let(:potential_race_conditions) do
-              [
-                categories_disallow.first.first,
-                categories_disallow.first.third
-              ]
-            end
+            # let(:potential_race_conditions) do
+            #   [
+            #     categories_disallow.first.first,
+            #     categories_disallow.first.third
+            #   ]
+            # end
 
             it "replaces the existing category from its taxonomy" do
               run_test

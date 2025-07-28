@@ -29,15 +29,32 @@ class Seeds
     Page.new(title: "Copyright", menu_title: "Copyright").save!
     Page.new(title: "Disclaimer", menu_title: "Disclaimer").save!
     Page.new(title: "Privacy", menu_title: "Privacy").save!
-    Page.new(title: "About the Human Rights Monitor", menu_title: "About").save!
+    Page.new(title: "About IMPACT OSS", menu_title: "About").save!
 
     # set up frameworks
     hr = Framework.create!(
-      title: "International Human Rights Obligations",
+      title: "Human Rights Obligations",
       short_title: "HR",
       has_indicators: false,
       has_measures: true,
       has_response: true
+    )
+
+    sdgfw = Framework.new(
+      title: "Sustainable Development Goals",
+      short_title: "SDGs",
+      has_indicators: true,
+      has_measures: true,
+      has_response: false
+    )
+    sdgfw.save!
+
+    ndp = Framework.create!(
+      title: "National Development Plan",
+      short_title: "NDP",
+      has_indicators: true,
+      has_measures: true,
+      has_response: false
     )
 
     # Set up taxonomies
@@ -150,6 +167,46 @@ class Seeds
       tags_users: false,
       allow_multiple: false,
       priority: 7
+    )
+
+    # 9. Country specific taxonomy
+    cluster = Taxonomy.create!(
+      title: "Thematic cluster",
+      tags_measures: true,
+      tags_users: false,
+      allow_multiple: true,
+      priority: 100,
+      groups_measures_default: 1
+    )
+    FrameworkTaxonomy.create!(
+      framework: hr,
+      taxonomy: cluster
+    )
+    FrameworkTaxonomy.create!(
+      framework: sdgfw,
+      taxonomy: cluster
+    )
+    FrameworkTaxonomy.create!(
+      framework: ndp,
+      taxonomy: cluster
+    )
+    # 10. Global taxonomy
+    sdg = Taxonomy.create!(
+      framework: sdgfw,
+      title: "SDGs",
+      has_manager: true,
+      allow_multiple: true,
+      priority: 31,
+      tags_measures: false,
+      tags_users: false
+    )
+    FrameworkTaxonomy.create!(
+      framework: hr,
+      taxonomy: sdg
+    )
+    FrameworkTaxonomy.create!(
+      framework: sdgfw,
+      taxonomy: sdg
     )
 
     # Set up categories
