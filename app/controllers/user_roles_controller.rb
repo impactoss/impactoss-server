@@ -59,7 +59,6 @@ class UserRolesController < ApplicationController
     end
   end
 
-
   def base_object
     UserRole
   end
