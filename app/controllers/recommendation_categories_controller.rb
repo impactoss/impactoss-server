@@ -1,5 +1,6 @@
 class RecommendationCategoriesController < ApplicationController
-  before_action :set_and_authorize_recommendation_category, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_recommendation_category, only: [:show, :destroy]
+  skip_before_action :authenticate_user!, only: [:update]
 
   # GET /recommendation_categories
   def index
@@ -27,16 +28,13 @@ class RecommendationCategoriesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /recommendation_categories/1
-  def update
-    if @recommendation_category.update!(permitted_attributes(@recommendation_category))
-      render json: serialize(@recommendation_category)
-    end
-  end
-
   # DELETE /recommendation_categories/1
   def destroy
     @recommendation_category.destroy
+  end
+
+  def update
+    head :not_implemented
   end
 
   private
@@ -46,8 +44,19 @@ class RecommendationCategoriesController < ApplicationController
     @recommendation_category = policy_scope(base_object).find(params[:id])
     authorize @recommendation_category
   rescue ActiveRecord::RecordNotFound
-    raise unless action_name == "destroy"
-    head :no_content
+    if action_name == "destroy"
+      record = base_object.find_by(id: params[:id])
+
+      if record.present?
+        # Record exists but is out of scope — test authorization anyway
+        authorize record
+      end
+
+      # If we got here, it's okay to respond as deleted
+      head :no_content
+    else
+      raise
+    end
   end
 
   def base_object

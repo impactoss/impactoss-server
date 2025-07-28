@@ -24,10 +24,7 @@ class UserRolePolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:user_id,
-      :role_id,
-      user_attributes: [:id],
-      role_attributes: [:id]]
+    [:user_id, :role_id]
   end
 
   class Scope < Scope

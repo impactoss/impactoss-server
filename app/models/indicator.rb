@@ -23,8 +23,6 @@ class Indicator < VersionedRecord
   belongs_to :manager, class_name: "User", foreign_key: :manager_id, required: false
   belongs_to :relationship_updated_by, class_name: "User", required: false
 
-  accepts_nested_attributes_for :measure_indicators
-
   def is_current
     measures.empty? || measures.any?(&:is_current)
   end

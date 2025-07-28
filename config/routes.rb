@@ -14,29 +14,19 @@ Rails.application.routes.draw do
   get "static_pages/home"
   get "s3/sign"
 
-  resources :measure_categories
-  resources :measure_indicators
-  resources :recommendation_categories
-  resources :user_categories
-  resources :recommendation_measures
-  resources :categories do
-    resources :recommendations, only: [:index, :show]
-    resources :measures, only: [:index, :show]
-  end
-  resources :recommendations do
-    resources :measures, only: [:index, :show]
-  end
-  resources :measures do
-    resources :recommendations, only: [:index, :show]
-  end
-  resources :indicators do
-    resources :measures, only: [:index, :show]
-    resources :progress_reports, only: [:index, :show]
-  end
+  resources :measure_categories, only: [:index, :show, :create, :destroy]
+  resources :measure_indicators, only: [:index, :show, :create, :destroy]
+  resources :recommendation_categories, only: [:index, :show, :create, :destroy]
+  resources :user_categories, only: [:index, :show, :create, :destroy]
+  resources :recommendation_measures, only: [:index, :show, :create, :destroy]
+  resources :categories
+  resources :recommendations
+  resources :measures
+  resources :indicators
   resources :progress_reports
   resources :due_dates
   resources :users
-  resources :user_roles
+  resources :user_roles, only: [:index, :show, :create, :destroy]
   resources :roles
   resources :pages
   resources :bookmarks
@@ -45,8 +35,8 @@ Rails.application.routes.draw do
   resources :framework_frameworks, only: [:index, :show]
   resources :framework_taxonomies, only: [:index, :show]
 
-  resources :recommendation_recommendations, except: [:update]
-  resources :recommendation_indicators, except: [:update]
+  resources :recommendation_recommendations, only: [:index, :show, :create, :destroy]
+  resources :recommendation_indicators, only: [:index, :show, :create, :destroy]
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

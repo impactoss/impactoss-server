@@ -1,12 +1,12 @@
 class MeasureCategory < VersionedRecord
-  belongs_to :measure
-  belongs_to :category
-  accepts_nested_attributes_for :measure
-  accepts_nested_attributes_for :category
+  belongs_to :measure, optional: true
+  belongs_to :category, optional: true
 
   validates :category_id, uniqueness: {scope: :measure_id}
   validates :measure_id, presence: true
   validates :category_id, presence: true
+  validate :measure_must_exist, on: :create
+  validate :category_must_exist, on: :create
   validate :single_category_per_taxonomy, on: :create
 
   after_commit :set_relationship_updated, on: [:create, :update, :destroy]
@@ -37,6 +37,22 @@ class MeasureCategory < VersionedRecord
   end
 
   private
+
+  def measure_must_exist
+    return if measure_id.blank?
+
+    unless Measure.exists?(measure_id)
+      errors.add(:measure, "must exist (id: #{measure_id})")
+    end
+  end
+
+  def category_must_exist
+    return if category_id.blank?
+
+    unless Category.exists?(category_id)
+      errors.add(:category, "must exist (id: #{category_id})")
+    end
+  end
 
   def lock_name
     "MeasureCategory-measure_id_#{measure_id}-taxonomy_id_#{category.taxonomy_id}"
