@@ -1,7 +1,7 @@
 class Taxonomy < VersionedRecord
   has_many :categories
   belongs_to :taxonomy, class_name: "Taxonomy", foreign_key: :parent_id, optional: true
-  has_many :taxonomies, class_name: "Taxonomy", foreign_key: :parent_id
+  has_many :taxonomies, class_name: "Taxonomy", foreign_key: :parent_id # leftovers:keep
 
   has_many :framework_taxonomies, inverse_of: :taxonomy, dependent: :destroy
   has_many :frameworks, through: :framework_taxonomies
@@ -22,10 +22,6 @@ class Taxonomy < VersionedRecord
         errors.add(:parent_id, "Parent taxonomy is already a sub-taxonomy.")
       end
     end
-  end
-
-  def self.current_reporting_cycle
-    find(current_reporting_cycle_id)
   end
 
   def self.current_reporting_cycle_id

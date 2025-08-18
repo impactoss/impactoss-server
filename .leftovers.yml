@@ -1,0 +1,45 @@
+# for instructions on how to address these
+# see https://github.com/robotdana/leftovers/tree/v0.12.2/README.md#how-to-resolve
+
+exclude_paths:
+  - 'vendor/**/*'
+
+keep:
+  # Policies are used by Pundit to determine what a user can and cannot do.
+  # Ideally we'd keep track of which policies are actually used, but we
+  # haven't figured out a way to do that yet.
+  - path: 'app/policies/*_policy.rb'
+    privacy: public
+    type: Method
+    names:
+      - create?
+      - destroy?
+      - edit?
+      - index?
+      - permitted_attributes
+      - resolve
+      - show?
+      - update?
+  - path: 'app/policies/*_policy.rb'
+    type: Constant
+    name:
+      - has_suffix: Policy
+
+  # Mailer previews are used to display emails in the browser.
+  # They're not used in production, but they're useful for development.
+  - path: 'spec/mailers/previews/*_preview.rb'
+    privacy: public
+    type: Constant
+    name:
+      - has_suffix: Preview
+
+dynamic:
+  # Nested associations are usually assigned in our controllers,
+  # but the process is often too indirect for leftovers to spot.
+  - path: 'app/models/*.rb'
+    name: accepts_nested_attributes_for
+    calls:
+      argument: '*'
+      transforms:
+        - add_suffix: '_attributes'
+        - add_suffix: '_attributes='
