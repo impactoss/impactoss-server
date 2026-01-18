@@ -248,7 +248,7 @@ class Seeds
       title: "Convention on the Elimination of All Forms of Discrimination against Women 2019",
       short_title: "CEDAW-2019",
       reference: "CEDAW-2019",
-      category: cecaw
+      category: cedaw
     )
     cerd = body.categories.create!(
       title: "International Convention on the Elimination of All Forms of Racial Discrimination",
@@ -441,7 +441,6 @@ class Seeds
       title: "Privacy",
       short_title: "Privacy"
     )
-
 
     # Affected Persons (http://uhri.ohchr.org/search/annotations)
     group.categories.create!(
