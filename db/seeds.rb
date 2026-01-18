@@ -240,7 +240,7 @@ class Seeds
       reference: "CRPD-2017",
       category: crpd
     )
-    cedaw = body.categories.create!(
+    body.categories.create!(
       title: "Convention on the Elimination of All Forms of Discrimination against Women",
       short_title: "CEDAW"
     )
@@ -441,7 +441,6 @@ class Seeds
       title: "Privacy",
       short_title: "Privacy"
     )
-
 
     # Affected Persons (http://uhri.ohchr.org/search/annotations)
     group.categories.create!(
