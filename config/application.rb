@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "boot"
-require_relative 'features'
+require_relative "features"
 
 require "rails/all"
 
