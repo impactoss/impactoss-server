@@ -23,7 +23,7 @@ module HumanRightsNationalReporting
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    config.time_zone = "Pacific/Auckland"
+    config.time_zone = "Edinburgh"
     config.active_record.default_timezone = :local
     # config.eager_load_paths << Rails.root.join("extras")
 
@@ -48,21 +48,21 @@ module HumanRightsNationalReporting
       end
     end
 
-    config.middleware.use BatchApi::RackMiddleware do |batch_config|
-      # you can set various configuration options:
-      batch_config.verb = :post # default :post
-      batch_config.endpoint = "/batchapi" # default /batch
-      batch_config.limit = 200 # how many operations max per request, default 50
-
-      # default middleware stack run for each batch request
-      batch_config.batch_middleware = proc {}
-      # default middleware stack run for each individual operation
-      batch_config.operation_middleware = proc {}
-    end
+    # config.middleware.use BatchApi::RackMiddleware do |batch_config|
+    #   # you can set various configuration options:
+    #   batch_config.verb = :post # default :post
+    #   batch_config.endpoint = "/batchapi" # default /batch
+    #   batch_config.limit = 200 # how many operations max per request, default 50
+    #
+    #   # default middleware stack run for each batch request
+    #   batch_config.batch_middleware = proc {}
+    #   # default middleware stack run for each individual operation
+    #   batch_config.operation_middleware = proc {}
+    # end
 
     config.active_record.belongs_to_required_by_default = true
 
-    config.i18n.locale = ENV.fetch("LOCALE", "en-NZ").to_sym
+    config.i18n.locale = ENV.fetch("LOCALE", "en-GB").to_sym
     config.i18n.fallbacks = true
 
     config.x.reporting_cycle_taxonomy_id = ENV.fetch("REPORTING_CYCLE_TAXONOMY_ID", "2").to_i

@@ -14,17 +14,17 @@ Rails.application.routes.draw do
   get "static_pages/home"
   get "s3/sign"
 
-  resources :measure_categories, only: [:index, :show, :create, :destroy]
-  resources :measure_indicators, only: [:index, :show, :create, :destroy]
+  # resources :measure_categories, only: [:index, :show, :create, :destroy]
+  # resources :measure_indicators, only: [:index, :show, :create, :destroy]
   resources :recommendation_categories, only: [:index, :show, :create, :destroy]
   resources :user_categories, only: [:index, :show, :create, :destroy]
-  resources :recommendation_measures, only: [:index, :show, :create, :destroy]
+  # resources :recommendation_measures, only: [:index, :show, :create, :destroy]
   resources :categories
   resources :recommendations
-  resources :measures
-  resources :indicators
-  resources :progress_reports
-  resources :due_dates
+  # resources :measures
+  # resources :indicators
+  # resources :progress_reports
+  # resources :due_dates
   resources :users
   resources :user_roles, only: [:index, :show, :create, :destroy]
   resources :roles
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
   resources :framework_taxonomies, only: [:index, :show]
 
   resources :recommendation_recommendations, only: [:index, :show, :create, :destroy]
-  resources :recommendation_indicators, only: [:index, :show, :create, :destroy]
+  # resources :recommendation_indicators, only: [:index, :show, :create, :destroy]
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
