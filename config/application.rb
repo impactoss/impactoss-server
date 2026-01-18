@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "boot"
+require_relative 'features'
 
 require "rails/all"
 
@@ -64,7 +65,6 @@ module HumanRightsNationalReporting
 
     config.i18n.locale = ENV.fetch("LOCALE", "en-GB").to_sym
     config.i18n.fallbacks = true
-
     config.x.reporting_cycle_taxonomy_id = ENV.fetch("REPORTING_CYCLE_TAXONOMY_ID", "2").to_i
   end
 end

@@ -4,6 +4,10 @@ require "rails_helper"
 require "json"
 
 RSpec.describe ProgressReportsController, type: :controller do
+  before do
+    skip "Feature disabled" unless Features.enabled?(:progress_reports)
+  end
+
   let(:admin) { FactoryBot.create(:user, :admin) }
 
   def serialized(subject_progress_report)

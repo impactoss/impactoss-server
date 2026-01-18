@@ -4,6 +4,10 @@ require "rails_helper"
 require "json"
 
 RSpec.describe IndicatorsController, type: :controller do
+  before do
+    skip "Feature disabled" unless Features.enabled?(:indicators)
+  end
+
   def serialized(subject_indicator)
     IndicatorSerializer.new(subject_indicator).serializable_hash[:data].as_json
   end

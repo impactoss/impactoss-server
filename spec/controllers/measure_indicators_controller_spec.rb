@@ -2,6 +2,10 @@ require "rails_helper"
 require "json"
 
 RSpec.describe MeasureIndicatorsController, type: :controller do
+  before do
+    skip "Feature disabled" unless Features.enabled?(:measures) && Features.enabled?(:indicators)
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
 

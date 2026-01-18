@@ -2,6 +2,10 @@ require "rails_helper"
 require "json"
 
 RSpec.describe DueDatesController, type: :controller do
+  before do
+    skip "Feature disabled" unless Features.enabled?(:progress_reports)
+  end
+
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:due_date) { FactoryBot.create(:due_date) }

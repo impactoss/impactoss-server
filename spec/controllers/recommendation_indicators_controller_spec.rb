@@ -2,6 +2,10 @@ require "rails_helper"
 require "json"
 
 RSpec.describe RecommendationIndicatorsController, type: :controller do
+  before do
+    skip "Feature disabled" unless Features.enabled?(:indicators)
+  end
+
   describe "index" do
     subject { get :index, format: :json }
 
