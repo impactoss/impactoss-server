@@ -37,7 +37,7 @@ class Seeds
       short_title: "HR",
       has_indicators: false,
       has_measures: true,
-      has_response: true
+      has_response: false
     )
 
     # Set up taxonomies
