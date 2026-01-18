@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   end
   get "static_pages/home"
   get "s3/sign"
+  get 'features', to: 'features#index'
 
   resources :categories
   resources :recommendations
