@@ -1,4 +1,4 @@
-class Api::FeaturesController < ApplicationController
+class FeaturesController < ApplicationController
   def index
     render json: { features: Features::FEATURES }
   end
