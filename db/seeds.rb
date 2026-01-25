@@ -48,7 +48,7 @@ class Seeds
       tags_users: false,
       tags_measures: false,
       allow_multiple: false,
-      has_manager: true,
+      has_manager: false,
       priority: 1,
       is_smart: false,
       groups_recommendations_default: 1
