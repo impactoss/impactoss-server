@@ -1,14 +1,14 @@
 # config/permissions.rb
 module Permissions
   ROLE_HIERARCHY = {
-    'admin' => 3,
-    'manager' => 2,
-    'contributor' => 1
+    "admin" => 3,
+    "manager" => 2,
+    "contributor" => 1
   }.freeze
 
   def self.allowed_for(model, action)
     result = DEFINITIONS.dig(model.to_s, action.to_s) ||
-             DEFINITIONS.dig('application', action.to_s)
+      DEFINITIONS.dig("application", action.to_s)
 
     # Return the result as-is if it's true/false (for special permissions like update_self)
     return result if result == true || result == false
@@ -39,80 +39,82 @@ module Permissions
   end
 
   DEFINITIONS = {
-    'application' => {
-      'create' => ['manager'],
-      'update' => ['manager'],
-      'update_archived' => ['admin'],
-      'destroy' => ['manager'],
-      'modify_is_archive' => ['admin'],
-      'view_archived' => ['contributor'],
-      'view_draft' => ['contributor'],
-      'view_all' => ['contributor'] # Contributors+ can see content
+    "application" => {
+      "create" => ["manager"],
+      "update" => ["manager"],
+      "update_archived" => ["admin"],
+      "destroy" => ["manager"],
+      "modify_is_archive" => ["admin"],
+      "modify_draft" => ["manager"],
+      "view_archived" => ["manager"],
+      "view_draft" => ["manager"]
     },
 
-    'category' => {
-      'create' => ['admin'],
-      'update' => ['admin'],
-      'destroy' => [], # Disabled
-      'modify_manager_id' => ['admin'],  # Only admins can change manager after creation
-      'assign_as_responsible' => ['manager']
+    "category" => {
+      # "create" => ["manager"],
+      # "update" => ["manager"],
+      "destroy" => [], # Disabled
+      "modify_manager_id" => ["admin"],  # Only admins can change manager after creation
+      "assign_as_responsible" => ["admin"]
     },
 
-    'due_date' => {
+    "due_date" => {
       # create/update/destroy blocked in policy - due dates are auto-generated
-      'show' => ['contributor'],
-      'view_all' => ['contributor']
+      "show" => ["manager"],
+      "view_all" => ["manager"]
     },
 
-    'indicator' => {
-      # 'create' => ['manager'],
+    "indicator" => {
+      # 'create' => [], # disabled feature
       # 'update' => ['manager'],
-      'destroy' => [],  # Disabled
-      'assign_as_responsible' => ['contributor']
+      "destroy" => [],  # Disabled
+      "assign_as_responsible" => ["manager"]
     },
 
-    'measure' => {
-      # 'create' => ['manager'],
+    "measure" => {
+      # 'create' => [], # disabled feature
       # 'update' => ['manager'],
-      'destroy' => []  # Disabled
+      "destroy" => []  # Disabled
     },
 
-    'page' => {
-      'create' => ['admin'],
-      'update' => ['admin'],
-      'destroy' => []  # Disabled
+    "page" => {
+      "create" => ["admin"],
+      "modify_draft" => ["admin"],
+      # "update" => ["manager"],
+      "destroy" => []  # Disabled
     },
 
-    'progress_report' => {
-      # 'create' => ['manager'],
+    "progress_report" => {
+      # 'create' => [], # disabled feature
       # 'update' => ['manager'],
-      'create_own' => ['contributor'],  # Contributors can create their own
-      'update_own' => ['contributor']  # Contributors can update their own drafts
+      "modify_draft" => ["manager"],
+      "create_own_draft" => ["manager"], # managers can create their own
+      "update_own_draft" => ["manager"]  # managers can update their own drafts
       # 'destroy' => [], # blocked in policy
     },
 
-    'recommendation' => {
+    "recommendation" => {
       # 'create' => ['manager'],
       # 'update' => ['manager'],
-      'destroy' => []  # Disabled
+      "destroy" => []  # Disabled
     },
 
-    'user' => {
+    "user" => {
       # 'create' => [], blocked in policy
-      'update_self' => true, # true = everyone, false/[] = disabled, ['role'] = specific roles
-      'update_any' => ['admin'],
-      'update_lower' => ['manager'],
+      "update_self" => true, # true = everyone, false/[] = disabled, ['role'] = specific roles
+      "update_any" => ["admin"],
+      "update_lower" => ["admin"],
       # 'destroy' => [], blocked in policy
-      'show_email' => ['admin'],
-      'view_all' => ['manager']  # Managers+ can see all users
+      "show_email" => ["admin"],
+      "view_all" => ["manager"]  # managers+ can see all users
     },
 
-    'user_role' => {
-      'create_any' => ['admin'],
-      'create_lower' => ['manager'],
-      'destroy_any' => ['admin'],
-      'destroy_lower' => ['manager'],
-      'show' => ['contributor']
+    "user_role" => {
+      "create_any" => ["admin"],
+      "create_lower" => ["admin"],
+      "destroy_any" => ["admin"],
+      "destroy_lower" => ["admin"],
+      "view_all" => ["manager"] # managers+ can see content
     }
   }.freeze
 end

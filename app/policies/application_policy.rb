@@ -37,7 +37,7 @@ class ApplicationPolicy
   private
 
   def allowed_roles_for(action)
-    policy_key = self.class.name.underscore.gsub('_policy', '')
+    policy_key = self.class.name.underscore.gsub("_policy", "")
     Permissions.allowed_for(policy_key, action)
   end
 
@@ -48,14 +48,14 @@ class ApplicationPolicy
       query = scope
 
       # Filter archived content if model has is_archive
-      if scope.column_names.include?('is_archive')
+      if scope.column_names.include?("is_archive")
         unless @user.has_any_role?(allowed_roles_for_scope(:view_archived))
           query = query.where(is_archive: false)
         end
       end
 
       # Filter draft content if model has draft
-      if scope.column_names.include?('draft')
+      if scope.column_names.include?("draft")
         unless @user.has_any_role?(allowed_roles_for_scope(:view_draft))
           query = query.where(draft: false)
         end

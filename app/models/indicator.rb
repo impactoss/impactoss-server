@@ -58,9 +58,9 @@ class Indicator < VersionedRecord
   def responsible_has_required_role
     return if manager_id.nil?
 
-    allowed_roles = Permissions.allowed_for('indicator', 'assign_as_responsible')
+    allowed_roles = Permissions.allowed_for("indicator", "assign_as_responsible")
     return if manager.has_any_role?(allowed_roles)
 
-    errors.add(:manager_id, "must have one of these roles: #{allowed_roles.join(', ')}")
+    errors.add(:manager_id, "must have one of these roles: #{allowed_roles.join(", ")}")
   end
 end

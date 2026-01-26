@@ -5,10 +5,10 @@ RSpec.shared_examples "permission system" do |model_name, action, http_method, p
     let(:guest) { FactoryBot.create(:user) }
 
     [
-      { config: ['admin'], description: "admin-only" },
-      { config: ['manager'], description: "manager+ (via hierarchy)" },
-      { config: ['contributor'], description: "all roles (via hierarchy)" },
-      { config: [], description: "disabled for all roles" }
+      {config: ["admin"], description: "admin-only"},
+      {config: ["manager"], description: "manager+ (via hierarchy)"},
+      {config: ["contributor"], description: "all roles (via hierarchy)"},
+      {config: [], description: "disabled for all roles"}
     ].each do |test_case|
       context "when configured as #{test_case[:description]}" do
         before do

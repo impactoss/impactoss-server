@@ -17,7 +17,6 @@ class Category < VersionedRecord
   validate :sub_relation
   validate :responsible_has_required_role, if: :manager_id_changed?
 
-
   scope :draft, -> { where(draft: true) }
   scope :published, -> { where(draft: false) }
 
@@ -58,10 +57,10 @@ class Category < VersionedRecord
   def responsible_has_required_role
     return if manager_id.nil?
 
-    allowed_roles = Permissions.allowed_for('category', 'assign_as_responsible')
+    allowed_roles = Permissions.allowed_for("category", "assign_as_responsible")
     return if manager.has_any_role?(allowed_roles)
 
-    errors.add(:manager_id, "must have one of these roles: #{allowed_roles.join(', ')}")
+    errors.add(:manager_id, "must have one of these roles: #{allowed_roles.join(", ")}")
   end
 
   def sub_relation

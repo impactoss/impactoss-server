@@ -491,41 +491,43 @@ RSpec.describe MeasuresController, type: :controller do
 
   describe "Permission system tests: measures" do
     include_examples "permission system",
-      'measure',
+      "measure",
       :create,
       :post,
-      -> { {
-        measure: {
-          title: "test",
-          description: "test",
-          reference: "test-#{SecureRandom.hex(4)}", # Unique reference
-          target_date: Date.today
+      -> {
+        {
+          measure: {
+            title: "test",
+            description: "test",
+            reference: "test-#{SecureRandom.hex(4)}", # Unique reference
+            target_date: Date.today
+          }
         }
-      } }
+      }
 
     include_examples "permission system",
-     'measure',
-     :update,
-     :put,
-     -> {
-       measure = FactoryBot.create(:measure)
-       {
-         id: measure.id,
-         measure: {
-           title: "updated",
-           description: "updated"
-         }
-       }
-     }
+      "measure",
+      :update,
+      :put,
+      -> {
+        measure = FactoryBot.create(:measure)
+        {
+          id: measure.id,
+          measure: {
+            title: "updated",
+            description: "updated"
+          }
+        }
+      }
 
-   include_examples "permission system",
-     'measure',
-     :destroy,
-     :delete,
-     -> {
-       measure = FactoryBot.create(:measure)
-       { id: measure.id }
-     }
+    include_examples "permission system",
+      "measure",
+      :destroy,
+      :delete,
+      -> {
+        measure = FactoryBot.create(:measure)
+        {id: measure.id}
+      }
   end
   describe "Scope permission system tests: measures" do
     include_examples "filtered scope permission system",
