@@ -11,9 +11,4 @@ module ControllerMacros
     end
     user
   end
-
-  def sign_in_admin
-    user = sign_in
-    allow(user).to receive(:role?).with("admin").and_return(true)
-  end
 end

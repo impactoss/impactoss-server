@@ -7,7 +7,7 @@ class Category < VersionedRecord
   has_many :user_categories, inverse_of: :category, dependent: :destroy
   has_many :measure_categories, inverse_of: :category, dependent: :destroy
   has_many :recommendations, through: :recommendation_categories
-  has_many :users, through: :user_categories
+  has_many :users, through: :user_categories # leftovers:keep
   has_many :measures, through: :measure_categories
 
   delegate :name, :email, to: :manager, prefix: true, allow_nil: true
