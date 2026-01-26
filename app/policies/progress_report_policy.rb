@@ -2,18 +2,27 @@
 
 class ProgressReportPolicy < ApplicationPolicy
   def permitted_attributes
-    [
-      :indicator_id, :due_date_id, :title, :description, :document_url, :document_public, :draft,
-      (:is_archive if @user.role?("admin")),
-      indicator_attributes: [:id, :title, :description, :draft],
-      due_date_attributes: [:id, :due_date, :indicator_id, :draft]
-    ].compact
+    attrs = [
+      :indicator_id,
+      :due_date_id,
+      :title,
+      :description,
+      :document_url,
+      :document_public,
+      :draft
+    ]
+
+    attrs << :is_archive if @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs.compact
   end
 
   def create?
-    return true if @user.role?("admin") || @user.role?("manager")
+    return true if @user.has_any_role?(allowed_roles_for(:create))
 
-    @user.role?("contributor") && @record.draft? && @record.manager == @user
+    # Contributors can create their own draft reports
+    @user.has_any_role?(allowed_roles_for(:create_own)) &&
+      @record.draft? &&
+      @record.manager == @user
   end
 
   def destroy?

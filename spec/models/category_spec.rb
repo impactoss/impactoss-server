@@ -15,14 +15,14 @@ RSpec.describe Category, type: :model do
       category = FactoryBot.create(:category)
       user = FactoryBot.create(:user)
       category.manager_id = user.id
-      expect { category.save! }.to raise_exception(/Manager must be a manager or an admin/)
+      expect { category.save! }.to raise_exception(/must have one of these roles/)
     end
 
     it "will not allow contributor users to be assigned" do
       category = FactoryBot.create(:category)
       user = FactoryBot.create(:user, :contributor)
       category.manager_id = user.id
-      expect { category.save! }.to raise_exception(/Manager must be a manager or an admin/)
+      expect { category.save! }.to raise_exception(/must have one of these roles/)
     end
 
     it "will allow manager users to be assigned" do

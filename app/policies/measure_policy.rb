@@ -2,7 +2,7 @@
 
 class MeasurePolicy < ApplicationPolicy
   def permitted_attributes
-    [
+    attrs = [
       :description,
       :draft,
       :indicator_summary,
@@ -10,23 +10,10 @@ class MeasurePolicy < ApplicationPolicy
       :reference,
       :target_date_comment,
       :target_date,
-      :title,
-      (:is_archive if @user.role?("admin"))
-    ].compact
-  end
+      :title
+    ]
 
-  def destroy?
-    false
-  end
-
-  def update?
-    super && (@user.role?("admin") || !@record.is_archive?)
-  end
-
-  class Scope < Scope
-    def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false, is_archive: false)
-    end
+    attrs << :is_archive if @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs.compact
   end
 end

@@ -1,13 +1,5 @@
 class UserPolicy < ApplicationPolicy
-  def index?
-    true
-  end
-
   def create?
-    false
-  end
-
-  def edit?
     false
   end
 
@@ -24,14 +16,29 @@ class UserPolicy < ApplicationPolicy
   end
 
   def show_email?
-    @user.role?("admin") || @record.id == @user.id
+    own_record? || @user.has_any_role?(allowed_roles_for(:show_email))
+  end
+
+  private
+
+  def own_record?
+    @record.id == @user.id
   end
 
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager")
+      if @user.has_any_role?(allowed_roles_for_scope(:view_all))
+        scope.all
+      else
+        scope.where(id: @user.id)
+      end
+    end
 
-      scope.where(id: @user.id)
+    private
+
+    def allowed_roles_for_scope(action)
+      policy_key = @scope.model_name.singular
+      Permissions.allowed_for(policy_key, action)
     end
   end
 end

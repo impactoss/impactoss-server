@@ -15,7 +15,8 @@ class Category < VersionedRecord
   validates :title, presence: true
 
   validate :sub_relation
-  validate :only_manager_and_admin_users_can_be_assigned, if: :manager_id_changed?
+  validate :responsible_has_required_role, if: :manager_id_changed?
+
 
   scope :draft, -> { where(draft: true) }
   scope :published, -> { where(draft: false) }
@@ -54,10 +55,13 @@ class Category < VersionedRecord
       )
   end
 
-  def only_manager_and_admin_users_can_be_assigned
-    return if manager_id.nil? || manager.role?("admin") || manager.role?("manager")
+  def responsible_has_required_role
+    return if manager_id.nil?
 
-    errors.add(:manager_id, "must be a manager or an admin")
+    allowed_roles = Permissions.allowed_for('category', 'assign_as_responsible')
+    return if manager.has_any_role?(allowed_roles)
+
+    errors.add(:manager_id, "must have one of these roles: #{allowed_roles.join(', ')}")
   end
 
   def sub_relation

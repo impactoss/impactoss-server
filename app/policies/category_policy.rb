@@ -2,11 +2,10 @@
 
 class CategoryPolicy < ApplicationPolicy
   def permitted_attributes
-    [
+    attrs = [
       :date,
       :description,
       :draft,
-      (:manager_id unless @record.persisted? && !@user.role?("admin")),
       :order,
       :parent_id,
       :reference,
@@ -14,27 +13,16 @@ class CategoryPolicy < ApplicationPolicy
       :taxonomy_id,
       :title,
       :url,
-      :user_only,
-      (:is_archive if @user.role?("admin"))
-    ].compact
+      :user_only
+    ]
+
+    # manager_id can be set on create, or on update by admins only
+    attrs << :manager_id unless @record.persisted? && !@user.has_any_role?(allowed_roles_for(:modify_manager_id))
+
+    attrs << :is_archive if @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+
+    attrs.compact
   end
 
-  def destroy?
-    false
-  end
-
-  def create?
-    @user.role?("admin")
-  end
-
-  def update?
-    @user.role?("admin")
-  end
-
-  class Scope < Scope
-    def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false, is_archive: false)
-    end
-  end
+  # destroy?, create? and update? inherited from ApplicationPolicy
 end
