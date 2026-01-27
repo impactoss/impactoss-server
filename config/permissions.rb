@@ -87,10 +87,10 @@ module Permissions
     "progress_report" => {
       # 'create' => [], # disabled feature
       # 'update' => ['manager'],
+      # 'destroy' => [], # blocked in policy
       "modify_draft" => ["manager"],
       "create_own_draft" => ["manager"], # managers can create their own
       "update_own_draft" => ["manager"]  # managers can update their own drafts
-      # 'destroy' => [], # blocked in policy
     },
 
     "recommendation" => {
