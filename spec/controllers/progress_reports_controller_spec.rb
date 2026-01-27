@@ -140,7 +140,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
 
     def self.allowed_create_own_roles
-      @allowed_create_own_roles ||= Permissions.roles_with_permission("progress_report", "create_own")
+      @allowed_create_own_roles ||= Permissions.roles_with_permission("progress_report", "create_own_draft")
     end
 
     def self.all_roles
@@ -149,14 +149,6 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     def self.forbidden_create_roles
       @forbidden_create_roles ||= all_roles - allowed_create_roles
-    end
-
-    def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("progress_report", "modify_is_archive")
-    end
-
-    def self.forbidden_modify_archive_roles
-      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
     end
 
     context "when not signed in" do
@@ -189,7 +181,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
-      context "create_own permission (contributors creating their own drafts)" do
+      context "create_own_draft permission (contributors creating their own drafts)" do
         allowed_create_own_roles.each do |role|
           # Call the class method directly - we're already at class level here
           next if allowed_create_roles.include?(role)
@@ -255,32 +247,17 @@ RSpec.describe ProgressReportsController, type: :controller do
           }
         }
 
-        allowed_modify_archive_roles.each do |role|
-          it "can be set by #{role}" do
-            user = FactoryBot.create(:user, role.to_sym)
-            sign_in user
+        it "cannot be set on create (always defaults to false)" do
+          # Test with any role that can create
+          skip "No role can create indicators" if self.class.allowed_create_roles.empty?
 
-            # Skip if this role can't create at all
-            next unless self.class.allowed_create_roles.include?(role)
+          user = FactoryBot.create(:user, self.class.allowed_create_roles.first.to_sym)
+          sign_in user
 
-            response = post :create, format: :json, params: params_with_archive
-            expect(response).to be_created
-            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
-          end
-        end
-
-        forbidden_modify_archive_roles.each do |role|
-          it "cannot be set by #{role}" do
-            user = FactoryBot.create(:user, role.to_sym)
-            sign_in user
-
-            # Skip if this role can't create at all
-            next unless self.class.allowed_create_roles.include?(role)
-
-            response = post :create, format: :json, params: params_with_archive
-            expect(response).to be_created
-            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
-          end
+          response = post :create, format: :json, params: params_with_archive
+          expect(response).to be_created
+          # is_archive is always filtered on create, regardless of permissions
+          expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
         end
       end
 
@@ -309,6 +286,8 @@ RSpec.describe ProgressReportsController, type: :controller do
 
   describe "PUT update" do
     let(:progress_report) { FactoryBot.create(:progress_report) }
+    let(:due_date) { FactoryBot.create(:due_date) }
+    let(:indicator) { FactoryBot.create(:indicator) }
     let(:params) {
       {
         id: progress_report,
@@ -326,7 +305,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
 
     def self.allowed_update_own_roles
-      @allowed_update_own_roles ||= Permissions.roles_with_permission("progress_report", "update_own")
+      @allowed_update_own_roles ||= Permissions.roles_with_permission("progress_report", "update_own_draft")
     end
 
     def self.all_roles
@@ -343,6 +322,14 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     def self.forbidden_update_archived_roles
       @forbidden_update_archived_roles ||= all_roles - allowed_update_archived_roles
+    end
+
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("progress_report", "modify_is_archive")
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
     end
 
     context "when not signed in" do
@@ -375,7 +362,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
-      context "update_own permission (contributors updating their own drafts)" do
+      context "update_own_draft permission (contributors updating their own drafts)" do
         allowed_update_own_roles.each do |role|
           # Skip roles that already have full update permission
           next if allowed_update_roles.include?(role)
@@ -431,6 +418,48 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
+      context "is_archive attribute" do
+        let(:progress_report) { FactoryBot.create(:progress_report) }
+        let(:params_with_archive) {
+          {
+            id: progress_report,
+            progress_report: {
+              title: "test update",
+              is_archive: true
+            }
+          }
+        }
+
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_archive
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
+        end
+
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_archive
+            expect(response).to be_ok
+            # is_archive filtered by permitted_attributes, remains false
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
+      end
+
       context "when is_archive: true" do
         let(:archived_report) { FactoryBot.create(:progress_report, :is_archive) }
         let(:archived_params) {
@@ -469,7 +498,7 @@ RSpec.describe ProgressReportsController, type: :controller do
           end
         end
 
-        # Test that update_own doesn't bypass the archived check
+        # Test that update_own_draft doesn't bypass the archived check
         (allowed_update_own_roles - allowed_update_archived_roles).each do |role|
           it "does not allow #{role} to update their own archived draft (archived check takes precedence)" do
             user = FactoryBot.create(:user, role.to_sym)

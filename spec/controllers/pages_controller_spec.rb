@@ -136,14 +136,6 @@ RSpec.describe PagesController, type: :controller do
       @forbidden_create_roles ||= all_roles - allowed_create_roles
     end
 
-    def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("page", "modify_is_archive")
-    end
-
-    def self.forbidden_modify_archive_roles
-      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
-    end
-
     context "when not signed in" do
       it "does not allow creating a page" do
         expect(subject).to be_unauthorized
@@ -186,32 +178,17 @@ RSpec.describe PagesController, type: :controller do
           }
         }
 
-        allowed_modify_archive_roles.each do |role|
-          it "can be set by #{role}" do
-            user = FactoryBot.create(:user, role.to_sym)
-            sign_in user
+        it "cannot be set on create (always defaults to false)" do
+          # Test with any role that can create
+          skip "No role can create indicators" if self.class.allowed_create_roles.empty?
 
-            # Skip if this role can't create at all
-            next unless self.class.allowed_create_roles.include?(role)
+          user = FactoryBot.create(:user, self.class.allowed_create_roles.first.to_sym)
+          sign_in user
 
-            response = post :create, format: :json, params: params_with_archive
-            expect(response).to be_created
-            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
-          end
-        end
-
-        forbidden_modify_archive_roles.each do |role|
-          it "cannot be set by #{role}" do
-            user = FactoryBot.create(:user, role.to_sym)
-            sign_in user
-
-            # Skip if this role can't create at all
-            next unless self.class.allowed_create_roles.include?(role)
-
-            response = post :create, format: :json, params: params_with_archive
-            expect(response).to be_created
-            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
-          end
+          response = post :create, format: :json, params: params_with_archive
+          expect(response).to be_created
+          # is_archive is always filtered on create, regardless of permissions
+          expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
         end
       end
 
@@ -261,6 +238,14 @@ RSpec.describe PagesController, type: :controller do
       @forbidden_update_roles ||= all_roles - allowed_update_roles
     end
 
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("page", "modify_is_archive")
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
     context "when not signed in" do
       it "does not allow updating a page" do
         expect(subject).to be_unauthorized
@@ -288,6 +273,50 @@ RSpec.describe PagesController, type: :controller do
           user = FactoryBot.create(:user, role.to_sym)
           sign_in user
           expect(subject).to be_forbidden
+        end
+      end
+
+      context "is_archive attribute" do
+        let(:page) { FactoryBot.create(:page) }
+        let(:params_with_archive) {
+          {
+            id: page,
+            page: {
+              title: "test",
+              content: "bla",
+              menu_title: "test",
+              is_archive: true
+            }
+          }
+        }
+
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_archive
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
+        end
+
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_archive
+            expect(response).to be_ok
+            # is_archive filtered by permitted_attributes, remains false
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
         end
       end
 
