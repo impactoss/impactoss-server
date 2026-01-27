@@ -8,7 +8,7 @@ module Permissions
 
   def self.allowed_for(model, action)
     result = DEFINITIONS.dig(model.to_s, action.to_s) ||
-      DEFINITIONS.dig("application", action.to_s)
+             DEFINITIONS.dig('application', action.to_s)
 
     # Return the result as-is if it's true/false (for special permissions like update_self)
     return result if result == true || result == false
@@ -102,7 +102,6 @@ module Permissions
     "user" => {
       # 'create' => [], blocked in policy
       "update_self" => true, # true = everyone, false/[] = disabled, ['role'] = specific roles
-      "update_any" => ["admin"],
       "update_lower" => ["admin"],
       # 'destroy' => [], blocked in policy
       "show_email" => ["admin"],
