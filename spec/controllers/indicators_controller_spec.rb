@@ -4,10 +4,6 @@ require "rails_helper"
 require "json"
 
 RSpec.describe IndicatorsController, type: :controller do
-  before do
-    skip "Feature disabled" unless Features.enabled?(:indicators)
-  end
-
   def serialized(subject_indicator)
     IndicatorSerializer.new(subject_indicator).serializable_hash[:data].as_json
   end
@@ -161,49 +157,72 @@ RSpec.describe IndicatorsController, type: :controller do
   end
 
   describe "Post create" do
-    context "when not signed in" do
-      it "not allow creating a indicator" do
-        post :create, format: :json, params: {
-          indicator: {title: "test", description: "test", target_date: "today"}
+    let(:measure) { FactoryBot.create(:measure) }
+    let(:params) {
+      {
+        indicator: {
+          description: "test",
+          reference: "test reference",
+          target_date: "today",
+          title: "test"
         }
-        expect(response).to be_unauthorized
+      }
+    }
+    subject { post :create, format: :json, params: params }
+
+    # Define roles once at the top of the describe block
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission('indicator', 'create')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('indicator', 'modify_is_archive')
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
+    context "when not signed in" do
+      it "does not allow creating an indicator" do
+        expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:measure) { FactoryBot.create(:measure) }
-      let(:params) {
-        {
-          indicator: {
-            description: "test",
-            reference: "test reference",
-            target_date: "today",
-            title: "test"
-          }
-        }
-      }
-      subject { post :create, format: :json, params: }
 
-      it "will not allow a guest to create a indicator" do
+      it "does not allow a guest (no roles) to create an indicator" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to create a indicator" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create an indicator" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_created
+        end
       end
 
-      it "will allow a manager to create a indicator" do
-        sign_in manager
-        expect(subject).to be_created
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create an indicator" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      context "is_archive" do
-        let(:params) {
+      context "is_archive attribute" do
+        let(:params_with_archive) {
           {
             indicator: {
               description: "test",
@@ -215,29 +234,49 @@ RSpec.describe IndicatorsController, type: :controller do
           }
         }
 
-        it "can't be set by manager" do
-          sign_in manager
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
         end
 
-        it "can be set by admin" do
-          sign_in admin
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
         end
       end
 
-      it "will record what manager created the indicator", versioning: true do
+      it "records what user created the indicator", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in manager
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in manager
-        post :create, format: :json, params: {indicator: {description: "desc only"}}
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        post :create, format: :json, params: {
+          indicator: {description: "desc only"}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -245,86 +284,126 @@ RSpec.describe IndicatorsController, type: :controller do
 
   describe "PUT update" do
     let!(:indicator) { FactoryBot.create(:indicator) }
-    subject do
-      put :update,
-        format: :json,
-        params: {
-          id: indicator,
-          indicator: {
-            description: "test update",
-            reference: "test refrerence update",
-            target_date: "today update",
-            title: "test update"
-          }
+    let(:params) {
+      {
+        id: indicator,
+        indicator: {
+          description: "test update",
+          reference: "test reference update",
+          target_date: "today update",
+          title: "test update"
         }
+      }
+    }
+    subject { put :update, format: :json, params: params }
+
+    # Define roles at class level
+    def self.allowed_update_roles
+      @allowed_update_roles ||= Permissions.roles_with_permission('indicator', 'update')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_update_roles
+      @forbidden_update_roles ||= all_roles - allowed_update_roles
     end
 
     context "when not signed in" do
-      it "not allow updating a indicator" do
+      it "does not allow updating an indicator" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to update a indicator" do
+      it "does not allow a guest (no roles) to update an indicator" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to update a indicator" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_update_roles.each do |role|
+        it "allows #{role} to update an indicator" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_ok
+        end
       end
 
-      it "will allow a manager to update a indicator" do
-        sign_in manager
-        expect(subject).to be_ok
+      forbidden_update_roles.each do |role|
+        it "does not allow #{role} to update an indicator" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      it "will reject an update where the last_updated_at is older than updated_at in the database" do
-        sign_in manager
-        indicator_get = get :show, params: {id: indicator}, format: :json
+      it "rejects an update where last_updated_at is older than updated_at in the database" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+
+        indicator_get = get :show, params: { id: indicator }, format: :json
         json = JSON.parse(indicator_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
-            params: {id: indicator,
-                     indicator: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
-          expect(subject).to be_ok
+            params: {
+              id: indicator,
+              indicator: {
+                title: "test update",
+                description: "test updateeee",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
+            }
+          expect(response).to be_ok
         end
+
         Timecop.travel(Time.new + 5.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
-            params: {id: indicator,
-                     indicator: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
-          expect(subject).to_not be_ok
+            params: {
+              id: indicator,
+              indicator: {
+                title: "test update",
+                description: "test updatebbbb",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
+            }
+          expect(response).to_not be_ok
         end
       end
 
-      it "will record what manager updated the indicator", versioning: true do
+      it "records what user updated the indicator", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in manager
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq manager.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
 
-      it "will return the latest updated_by", versioning: true do
+      it "returns the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
-        indicator.versions.first.update_column(:whodunnit, contributor.id)
-        sign_in manager
+        guest = FactoryBot.create(:user)
+        admin = FactoryBot.create(:user, :admin)
+        indicator.versions.first.update_column(:whodunnit, guest.id)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(manager.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in manager
-        put :update, format: :json, params: {id: indicator, indicator: {title: ""}}
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        put :update, format: :json, params: {
+          id: indicator,
+          indicator: { title: "" }
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -332,39 +411,111 @@ RSpec.describe IndicatorsController, type: :controller do
 
   describe "Delete destroy" do
     let(:indicator) { FactoryBot.create(:indicator) }
-    subject { delete :destroy, format: :json, params: {id: indicator} }
+    subject { delete :destroy, format: :json, params: { id: indicator } }
+
+    # Define roles at class level
+    def self.allowed_destroy_roles
+      @allowed_destroy_roles ||= Permissions.roles_with_permission('indicator', 'destroy')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_destroy_roles
+      @forbidden_destroy_roles ||= all_roles - allowed_destroy_roles
+    end
 
     context "when not signed in" do
-      it "not allow deleting a indicator" do
+      it "does not allow deleting an indicator" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
-      let(:admin) { FactoryBot.create(:user, :admin) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to delete a indicator" do
+      it "does not allow a guest (no roles) to delete an indicator" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to delete a indicator" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      if allowed_destroy_roles.any?
+        allowed_destroy_roles.each do |role|
+          it "allows #{role} to delete an indicator" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_no_content
+          end
+        end
+      else
+        it "is disabled for all roles" do
+          self.class.all_roles.each do |role|
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_forbidden
+          end
+        end
       end
 
-      it "will not allow a manager to delete a indicator" do
-        sign_in manager
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow an admin to delete a indicator" do
-        sign_in admin
-        expect(subject).to be_forbidden
+      forbidden_destroy_roles.each do |role|
+        it "does not allow #{role} to delete an indicator" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
+  end
+
+  describe "Permission system tests: indicators" do
+    include_examples "permission system",
+      'indicator',
+      :create,
+      :post,
+      -> { {
+        indicator: {
+          title: "test",
+          description: "test",
+          reference: "test-#{SecureRandom.hex(4)}" # Unique reference
+        }
+      } }
+
+    include_examples "permission system",
+     'indicator',
+     :update,
+     :put,
+     -> {
+       indicator = FactoryBot.create(:indicator)
+       {
+         id: indicator.id,
+         indicator: {
+           title: "updated",
+           description: "updated"
+         }
+       }
+     }
+
+   include_examples "permission system",
+     'indicator',
+     :destroy,
+     :delete,
+     -> {
+       indicator = FactoryBot.create(:indicator)
+       { id: indicator.id }
+     }
+  end
+  describe "Scope permission system tests: indicators" do
+    include_examples "filtered scope permission system",
+      'indicator', :draft, 'view_draft', true
+
+    include_examples "filtered scope permission system",
+      'indicator', :is_archive, 'view_archived', true
+
+    include_examples "show with scope permission system",
+      'indicator', :draft, 'view_draft', true
+
+    include_examples "show with scope permission system",
+      'indicator', :is_archive, 'view_archived', true
   end
 end

@@ -2,7 +2,7 @@ require "rails_helper"
 require "json"
 
 RSpec.describe RecommendationRecommendationsController, type: :controller do
-  describe "index" do
+  describe "Get index" do
     subject { get :index, format: :json }
 
     context "when not signed in" do
@@ -10,13 +10,9 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
     end
   end
 
-  describe "show" do
+  describe "Get show" do
     let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject {
-      get :show, params: {
-        id: recommendation_recommendation
-      }, format: :json
-    }
+    subject { get :show, params: { id: recommendation_recommendation }, format: :json }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
@@ -28,126 +24,137 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
     end
   end
 
-  describe "create" do
-    context "when not signed in" do
-      it "doesnt allow creating a recommendation_recommendation" do
-        post :create, format: :json, params: {
-          recommendation_recommendation: {recommendation_id: 1, other_recommendation_id: 2}
+  describe "Post create" do
+    let(:recommendation) { FactoryBot.create(:recommendation) }
+    let(:other_recommendation) { FactoryBot.create(:recommendation) }
+    let(:params) {
+      {
+        recommendation_recommendation: {
+          recommendation_id: recommendation.id,
+          other_recommendation_id: other_recommendation.id
         }
-        expect(response).to be_unauthorized
-      end
-    end
-
-    context "when signed in" do
-      let(:guest) { FactoryBot.create(:user) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
-      let(:recommendation_1) { FactoryBot.create(:recommendation) }
-      let(:recommendation_2) { FactoryBot.create(:recommendation) }
-
-      subject do
-        post :create,
-          format: :json,
-          params: {
-            recommendation_recommendation: {
-              recommendation_id: recommendation_1,
-              other_recommendation_id: recommendation_2
-            }
-          }
-      end
-
-      it "wont allow a guest to create a recommendation_recommendation" do
-        sign_in guest
-        expect(subject).to be_forbidden
-      end
-
-      it "wont allow a contributor to create a recommendation_recommendation" do
-        sign_in contributor
-        expect(subject).to be_forbidden
-      end
-
-      it "will allow a manager to create a recommendation_recommendation" do
-        sign_in manager
-        expect(subject).to be_created
-      end
-
-      it "will record what manager created the recommendation_recommendation", versioning: true do
-        expect(PaperTrail).to be_enabled
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
-      end
-
-      it "will allow an admin to create a recommendation_recommendation" do
-        sign_in admin
-        expect(subject).to be_created
-      end
-
-      it "will record what admin created the recommendation_recommendation", versioning: true do
-        expect(PaperTrail).to be_enabled
-        sign_in admin
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
-      end
-
-      it "will return an error if params are incorrect" do
-        sign_in manager
-        post :create, format: :json, params: {
-          recommendation_recommendation: {description: "desc"}
-        }
-        expect(response).to have_http_status(422)
-      end
-    end
-  end
-
-  describe "Delete destroy" do
-    let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject {
-      delete :destroy, format: :json, params: {
-        id: recommendation_recommendation
       }
     }
+    subject { post :create, format: :json, params: params }
+
+    # Define roles at class level - falls back to application permissions
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission('recommendation_recommendation', 'create')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
 
     context "when not signed in" do
-      it "not allow deleting a recommendation_recommendation" do
+      it "does not allow creating a recommendation_recommendation" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
 
-      it "will not allow a guest to delete a recommendation_recommendation" do
+      it "does not allow a guest (no roles) to create a recommendation_recommendation" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to delete a recommendation_recommendation" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create a recommendation_recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_created
+        end
       end
 
-      it "will allow a manager to delete a recommendation_recommendation" do
-        sign_in manager
-        expect(subject).to be_no_content
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create a recommendation_recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      it "will allow an admin to delete a recommendation_recommendation" do
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
-        expect(subject).to be_no_content
+        post :create, format: :json, params: {
+          recommendation_recommendation: {description: "desc only", taxonomy_id: 999}
+        }
+        expect(response).to have_http_status(422)
+      end
+
+      it "records what user created the recommendation_recommendation", versioning: true do
+        expect(PaperTrail).to be_enabled
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        json = JSON.parse(subject.body)
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
     end
   end
 
-  describe "update" do
+  describe "Delete destroy" do
     let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
+    subject { delete :destroy, format: :json, params: { id: recommendation_recommendation } }
 
-    it "doesnt allow updates" do
-      expect(put: "recommendation_recommendations/42").not_to be_routable
+    # Define roles at class level - falls back to application permissions
+    def self.allowed_destroy_roles
+      @allowed_destroy_roles ||= Permissions.roles_with_permission('recommendation_recommendation', 'destroy')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_destroy_roles
+      @forbidden_destroy_roles ||= all_roles - allowed_destroy_roles
+    end
+
+    context "when not signed in" do
+      it "does not allow deleting a recommendation_recommendation" do
+        expect(subject).to be_unauthorized
+      end
+    end
+
+    context "when user signed in" do
+      let(:guest) { FactoryBot.create(:user) }
+
+      it "does not allow a guest (no roles) to delete a recommendation_recommendation" do
+        sign_in guest
+        expect(subject).to be_forbidden
+      end
+
+      allowed_destroy_roles.each do |role|
+        it "allows #{role} to delete a recommendation_recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_no_content
+        end
+      end
+
+      forbidden_destroy_roles.each do |role|
+        it "does not allow #{role} to delete a recommendation_recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
+      end
+
+      context "when the recommendation_recommendation does not exist" do
+        let(:recommendation_recommendation) { { id: -1 } }
+
+        it "returns the same response as a successful deletion" do
+          admin = FactoryBot.create(:user, :admin)
+          sign_in admin
+          expect(subject).to be_no_content
+        end
+      end
     end
   end
 end

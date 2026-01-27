@@ -4,10 +4,6 @@ require "rails_helper"
 require "json"
 
 RSpec.describe MeasuresController, type: :controller do
-  before do
-    skip "Feature disabled" unless Features.enabled?(:measures)
-  end
-
   let(:admin) { FactoryBot.create(:user, :admin) }
 
   def serialized(subject_measure)
@@ -141,98 +137,124 @@ RSpec.describe MeasuresController, type: :controller do
   end
 
   describe "Post create" do
-    context "when not signed in" do
-      it "not allow creating a measure" do
-        post :create, format: :json, params: {
-          measure: {title: "test", description: "test", target_date: "today"}
+    let(:recommendation) { FactoryBot.create(:recommendation) }
+    let(:category) { FactoryBot.create(:category) }
+    let(:params) {
+      {
+        measure: {
+          description: "test",
+          reference: "test reference",
+          target_date: Date.today,
+          title: "test"
         }
-        expect(response).to be_unauthorized
+      }
+    }
+    subject { post :create, format: :json, params: params }
+
+    # Define roles once at the top of the describe block
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission('measure', 'create')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('measure', 'modify_is_archive')
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
+    context "when not signed in" do
+      it "does not allow creating a measure" do
+        expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:recommendation) { FactoryBot.create(:recommendation) }
-      let(:category) { FactoryBot.create(:category) }
 
-      let(:params) {
-        {
-          measure: {
-            description: "test",
-            reference: "test reference",
-            target_date: "today",
-            title: "test"
-          }
-        }
-      }
-      subject do
-        post :create, format: :json, params:
-        # This is an example creating a new recommendation record in the post
-        # post :create,
-        #      format: :json,
-        #      params: {
-
-        #        measure: {
-        #          title: 'test',
-        #          description: 'test',
-        #          target_date: 'today',
-        #          recommendation_measures_attributes: [ { recommendation_attributes: { title: 'test 1', number: 1 } } ]
-        #        }
-        #      }
-      end
-
-      it "will not allow a guest to create a measure" do
+      it "does not allow a guest (no roles) to create a measure" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to create a measure" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create a measure" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_created
+        end
       end
 
-      it "will allow a manager to create a measure" do
-        sign_in manager
-        expect(subject).to be_created
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create a measure" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      context "is_archive" do
-        let(:params) {
+      context "is_archive attribute" do
+        let(:params_with_archive) {
           {
             measure: {
               description: "test",
               is_archive: true,
               reference: "test reference",
-              target_date: "today",
+              target_date: Date.today,
               title: "test"
             }
           }
         }
 
-        it "can't be set by manager" do
-          sign_in manager
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
         end
 
-        it "can be set by admin" do
-          sign_in admin
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
         end
       end
 
-      it "will record what manager created the measure", versioning: true do
+      it "records what user created the measure", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in manager
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in manager
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         post :create, format: :json, params: {
           measure: {description: "desc only"}
         }
@@ -243,108 +265,166 @@ RSpec.describe MeasuresController, type: :controller do
 
   describe "PUT update" do
     let(:measure) { FactoryBot.create(:measure) }
-    subject do
-      put :update,
-        format: :json,
-        params: {
-          id: measure,
-          measure: {
-            title: "test update",
-            description: "test update",
-            reference: "test reference update",
-            target_date: "today update"
-          }
+    let(:params) {
+      {
+        id: measure,
+        measure: {
+          title: "test update",
+          description: "test update",
+          reference: "test reference update",
+          target_date: Date.today
         }
+      }
+    }
+    subject { put :update, format: :json, params: params }
+
+    # Define roles at class level
+    def self.allowed_update_roles
+      @allowed_update_roles ||= Permissions.roles_with_permission('measure', 'update')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_update_roles
+      @forbidden_update_roles ||= all_roles - allowed_update_roles
+    end
+
+    def self.allowed_update_archived_roles
+      @allowed_update_archived_roles ||= Permissions.roles_with_permission('measure', 'update_archived')
+    end
+
+    def self.forbidden_update_archived_roles
+      @forbidden_update_archived_roles ||= all_roles - allowed_update_archived_roles
     end
 
     context "when not signed in" do
-      it "not allow updating a measure" do
+      it "does not allow updating a measure" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to update a measure" do
+      it "does not allow a guest (no roles) to update a measure" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to update a measure" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_update_roles.each do |role|
+        it "allows #{role} to update a measure" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_ok
+        end
       end
 
-      it "will allow a manager to update a measure" do
-        sign_in user
-        expect(subject).to be_ok
+      forbidden_update_roles.each do |role|
+        it "does not allow #{role} to update a measure" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      it "will reject and update where the last_updated_at is older than updated_at in the database" do
-        sign_in user
-        measure_get = get :show, params: {id: measure}, format: :json
+      it "rejects an update where last_updated_at is older than updated_at in the database" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+
+        measure_get = get :show, params: { id: measure }, format: :json
         json = JSON.parse(measure_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
-            params: {id: measure,
-                     measure: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}}
-          expect(subject).to be_ok
+            params: {
+              id: measure,
+              measure: {
+                title: "test update",
+                description: "test updateeee",
+                target_date: Date.today,
+                updated_at: current_update_at
+              }
+            }
+          expect(response).to be_ok
         end
+
         Timecop.travel(Time.new + 5.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
-            params: {id: measure,
-                     measure: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}}
-          expect(subject).to_not be_ok
+            params: {
+              id: measure,
+              measure: {
+                title: "test update",
+                description: "test updatebbbb",
+                target_date: Date.today,
+                updated_at: current_update_at
+              }
+            }
+          expect(response).to_not be_ok
         end
       end
 
-      it "will record what manager updated the measure", versioning: true do
+      it "records what user updated the measure", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
 
-      it "will return the latest updated_by", versioning: true do
+      it "returns the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
-        measure.versions.first.update_column(:whodunnit, contributor.id)
-        sign_in user
+        guest = FactoryBot.create(:user)
+        admin = FactoryBot.create(:user, :admin)
+        measure.versions.first.update_column(:whodunnit, guest.id)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(user.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in user
-        put :update, format: :json, params: {id: measure, measure: {title: ""}}
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        put :update, format: :json, params: {
+          id: measure,
+          measure: { title: "" }
+        }
         expect(response).to have_http_status(422)
       end
 
       context "when is_archive: true" do
-        let(:measure) { FactoryBot.create(:measure, :is_archive) }
-        subject do
-          put :update,
-            format: :json,
-            params: {
-              id: measure,
-              measure: {title: "test update", description: "test update", target_date: "today update"}
+        let(:archived_measure) { FactoryBot.create(:measure, :is_archive) }
+        let(:archived_params) {
+          {
+            id: archived_measure,
+            measure: {
+              title: "test update",
+              description: "test update",
+              target_date: Date.today
             }
+          }
+        }
+
+        allowed_update_archived_roles.each do |role|
+          it "allows #{role} to update archived measure" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            response = put :update, format: :json, params: archived_params
+            expect(response).to be_ok
+          end
         end
 
-        it "can't be updated by manager" do
-          sign_in user
-          expect(subject).not_to be_ok
-        end
-
-        it "can be updated by admin" do
-          sign_in admin
-          expect(subject).to be_ok
+        forbidden_update_archived_roles.each do |role|
+          it "does not allow #{role} to update archived measure" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            response = put :update, format: :json, params: archived_params
+            expect(response).to be_forbidden
+          end
         end
       end
     end
@@ -352,41 +432,64 @@ RSpec.describe MeasuresController, type: :controller do
 
   describe "Delete destroy" do
     let(:measure) { FactoryBot.create(:measure) }
-    subject { delete :destroy, format: :json, params: {id: measure} }
+    subject { delete :destroy, format: :json, params: { id: measure } }
+
+    # Define roles at class level
+    def self.allowed_destroy_roles
+      @allowed_destroy_roles ||= Permissions.roles_with_permission('measure', 'destroy')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_destroy_roles
+      @forbidden_destroy_roles ||= all_roles - allowed_destroy_roles
+    end
 
     context "when not signed in" do
-      it "not allow deleting a measure" do
+      it "does not allow deleting a measure" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to delete a measure" do
+      it "does not allow a guest (no roles) to delete a measure" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to delete a measure" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      if allowed_destroy_roles.any?
+        allowed_destroy_roles.each do |role|
+          it "allows #{role} to delete a measure" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_no_content
+          end
+        end
+      else
+        it "is disabled for all roles" do
+          self.class.all_roles.each do |role|
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_forbidden
+          end
+        end
       end
 
-      it "will not allow a manager to delete a measure" do
-        sign_in user
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow an admin to delete a measure" do
-        sign_in admin
-        expect(subject).to be_forbidden
+      forbidden_destroy_roles.each do |role|
+        it "does not allow #{role} to delete a measure" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
   end
-  describe "Permission system tests" do
+
+  describe "Permission system tests: measures" do
     include_examples "permission system",
       'measure',
       :create,
@@ -423,5 +526,18 @@ RSpec.describe MeasuresController, type: :controller do
        measure = FactoryBot.create(:measure)
        { id: measure.id }
      }
+  end
+  describe "Scope permission system tests: measures" do
+    include_examples "filtered scope permission system",
+      'measure', :draft, 'view_draft', true
+
+    include_examples "filtered scope permission system",
+      'measure', :is_archive, 'view_archived', true
+
+    include_examples "show with scope permission system",
+      'measure', :draft, 'view_draft', true
+
+    include_examples "show with scope permission system",
+      'measure', :is_archive, 'view_archived', true
   end
 end

@@ -4,6 +4,30 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
+    # Check self-update permission
+    if @record.id == @user.id
+      update_self_permission = Permissions.allowed_for('user', 'update_self')
+
+      # If true, anyone can update themselves
+      return true if update_self_permission == true
+      
+      # If false or empty array, disabled
+      return false if update_self_permission == false || update_self_permission.nil? || update_self_permission.empty?
+
+      # If array of roles, check if user has required role
+      return @user.has_any_role?(update_self_permission) if update_self_permission.is_a?(Array)
+    end
+
+    # Admins can update anyone
+    return true if @user.has_any_role?(allowed_roles_for(:update_any))
+
+    # Managers can update lower-level users (contributors, guests)
+    if @user.has_any_role?(allowed_roles_for(:update_lower))
+      user_max_level = @user.roles.map { |r| Permissions::ROLE_HIERARCHY[r.name] }.compact.max || 0
+      record_max_level = @record.roles.map { |r| Permissions::ROLE_HIERARCHY[r.name] }.compact.max || 0
+      return user_max_level > record_max_level
+    end
+
     false
   end
 

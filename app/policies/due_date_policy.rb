@@ -6,7 +6,14 @@ class DueDatePolicy < ApplicationPolicy
   end
 
   def show?
-    super || @user.has_any_role?(allowed_roles_for(:show))
+    allowed = allowed_roles_for(:show)
+    result = @user.has_any_role?(allowed)
+
+    puts "=== SHOW DEBUG ==="
+    puts "User roles: #{@user.roles.pluck(:name)}"
+    puts "Allowed: #{allowed.inspect}"
+    puts "Result: #{result}"
+    @user.has_any_role?(allowed_roles_for(:show))
   end
 
   def create?

@@ -94,67 +94,120 @@ RSpec.describe PagesController, type: :controller do
   end
 
   describe "Post create" do
-    context "when not signed in" do
-      it "not allow creating a page" do
-        post :create, format: :json, params: {
-          page: {title: "test", description: "test", target_date: "today"}
-        }
-        expect(response).to be_unauthorized
-      end
-    end
-
-    context "when signed in" do
-      let(:admin) { FactoryBot.create(:user, :admin) }
-      let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:taxonomy) { FactoryBot.create(:taxonomy) }
-      let(:page) {
-        {
+    let(:taxonomy) { FactoryBot.create(:taxonomy) }
+    let(:params) {
+      {
+        page: {
           title: "test",
           content: "bla",
           menu_title: "test"
         }
       }
+    }
+    subject { post :create, format: :json, params: params }
 
-      subject { post :create, format: :json, params: {page:} }
+    # Define roles once at the top of the describe block
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission('page', 'create')
+    end
 
-      it "will not allow a guest to create a page" do
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('page', 'modify_is_archive')
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
+    context "when not signed in" do
+      it "does not allow creating a page" do
+        expect(subject).to be_unauthorized
+      end
+    end
+
+    context "when signed in" do
+      let(:guest) { FactoryBot.create(:user) }
+
+      it "does not allow a guest (no roles) to create a page" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a manager to create a page" do
-        sign_in manager
-        expect(subject).to be_forbidden
-      end
-
-      it "will allow an admin to create a page" do
-        sign_in admin
-        expect(subject).to be_created
-      end
-
-      context "is_archive" do
-        subject {
-          post :create, format: :json, params: {
-            page: page.merge(is_archive: true)
-          }
-        }
-
-        it "can be set by admin" do
-          sign_in admin
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create a page" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
           expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
         end
       end
 
-      it "will record what user created the page", versioning: true do
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create a page" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
+      end
+
+      context "is_archive attribute" do
+        let(:params_with_archive) {
+          {
+            page: {
+              title: "test",
+              content: "bla",
+              menu_title: "test",
+              is_archive: true
+            }
+          }
+        }
+
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
+        end
+
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
+      end
+
+      it "records what user created the page", versioning: true do
         expect(PaperTrail).to be_enabled
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
-      it "will return an error if params are incorrect" do
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         post :create, format: :json, params: {
           page: {description: "desc only", taxonomy_id: 999}
@@ -166,77 +219,113 @@ RSpec.describe PagesController, type: :controller do
 
   describe "PUT update" do
     let(:page) { FactoryBot.create(:page) }
-    subject do
-      put :update,
-        format: :json,
-        params: {
-          id: page,
-          page: {title: "test update", description: "test update", target_date: "today update"}
+    let(:params) {
+      {
+        id: page,
+        page: {
+          title: "test update",
+          description: "test update",
+          target_date: "today update"
         }
+      }
+    }
+    subject { put :update, format: :json, params: params }
+
+    # Define roles at class level
+    def self.allowed_update_roles
+      @allowed_update_roles ||= Permissions.roles_with_permission('page', 'update')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_update_roles
+      @forbidden_update_roles ||= all_roles - allowed_update_roles
     end
 
     context "when not signed in" do
-      it "not allow updating a page" do
+      it "does not allow updating a page" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
 
-      it "will not allow a guest to update a page" do
+      it "does not allow a guest (no roles) to update a page" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a manager to update a page" do
-        sign_in manager
-        expect(subject).to be_forbidden
+      allowed_update_roles.each do |role|
+        it "allows #{role} to update a page" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_ok
+        end
       end
 
-      it "will allow an admin to update a page" do
-        sign_in admin
-        expect(subject).to be_ok
+      forbidden_update_roles.each do |role|
+        it "does not allow #{role} to update a page" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      it "will reject and update where the last_updated_at is older than updated_at in the database" do
+      it "rejects an update where last_updated_at is older than updated_at in the database" do
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
-        page_get = get :show, params: {id: page}, format: :json
+
+        page_get = get :show, params: { id: page }, format: :json
         json = JSON.parse(page_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
             params: {
               id: page,
-              page: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+              page: {
+                title: "test update",
+                description: "test updateeee",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
             }
-          expect(subject).to be_ok
+          expect(response).to be_ok
         end
+
         Timecop.travel(Time.new + 5.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
             params: {
               id: page,
-              page: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+              page: {
+                title: "test update",
+                description: "test updatebbbb",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
             }
-          expect(subject).to_not be_ok
+          expect(response).to_not be_ok
         end
       end
 
-      it "will record what manager updated the page", versioning: true do
+      it "records what user updated the page", versioning: true do
         expect(PaperTrail).to be_enabled
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
 
-      it "will return the latest updated_by", versioning: true do
+      it "returns the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
-        page.versions.first.update_column(:whodunnit, manager.id)
+        guest = FactoryBot.create(:user)
+        admin = FactoryBot.create(:user, :admin)
+        page.versions.first.update_column(:whodunnit, guest.id)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
@@ -274,5 +363,55 @@ RSpec.describe PagesController, type: :controller do
         expect(subject).to be_forbidden
       end
     end
+  end
+
+  describe "Permission system tests: pages" do
+    include_examples "permission system",
+      'page',
+      :create,
+      :post,
+      -> { {
+        page: {
+          title: "test",
+          content: "test"
+        }
+      } }
+
+    include_examples "permission system",
+     'page',
+     :update,
+     :put,
+     -> {
+       page = FactoryBot.create(:page)
+       {
+         id: page.id,
+         page: {
+           title: "updated",
+           content: "updated"
+         }
+       }
+     }
+
+   include_examples "permission system",
+     'page',
+     :destroy,
+     :delete,
+     -> {
+       page = FactoryBot.create(:page)
+       { id: page.id }
+     }
+  end
+  describe "Scope permission system tests: pages" do
+    include_examples "filtered scope permission system",
+      'page', :draft, 'view_draft', true
+
+    include_examples "filtered scope permission system",
+      'page', :is_archive, 'view_archived', true
+
+    include_examples "show with scope permission system",
+      'page', :draft, 'view_draft', true
+
+    include_examples "show with scope permission system",
+      'page', :is_archive, 'view_archived', true
   end
 end

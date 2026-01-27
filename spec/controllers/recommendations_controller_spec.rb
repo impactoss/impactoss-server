@@ -152,45 +152,70 @@ RSpec.describe RecommendationsController, type: :controller do
   end
 
   describe "Post create" do
+    let(:category) { FactoryBot.create(:category) }
+    let(:params) {
+      {
+        recommendation: {
+          title: "test",
+          reference: "1"
+        }
+      }
+    }
+    subject { post :create, format: :json, params: params }
+
+    # Define roles once at the top of the describe block
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission('recommendation', 'create')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('recommendation', 'modify_is_archive')
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
     context "when not signed in" do
-      it "not allow creating a recommendation" do
-        post :create, format: :json, params: {recommendation: {title: "test", reference: "1"}}
-        expect(response).to be_unauthorized
+      it "does not allow creating a recommendation" do
+        expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:category) { FactoryBot.create(:category) }
-      let(:params) {
-        {
-          recommendation: {
-            title: "test",
-            reference: "1"
-          }
-        }
-      }
-      subject { post :create, format: :json, params: }
 
-      it "will not allow a guest to create a recommendation" do
+      it "does not allow a guest (no roles) to create a recommendation" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to create a recommendation" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create a recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_created
+        end
       end
 
-      it "will allow a manager to create a recommendation" do
-        sign_in manager
-        expect(subject).to be_created
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create a recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      context "is_archive" do
-        let(:params) {
+      context "is_archive attribute" do
+        let(:params_with_archive) {
           {
             recommendation: {
               title: "test",
@@ -200,29 +225,49 @@ RSpec.describe RecommendationsController, type: :controller do
           }
         }
 
-        it "can't be set by manager" do
-          sign_in manager
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq false
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
         end
 
-        it "can be set by admin" do
-          sign_in admin
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_archive
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
         end
       end
 
-      it "will record what manager created the recommendation", versioning: true do
+      it "records what user created the recommendation", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in manager
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq manager.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in manager
-        post :create, format: :json, params: {recommendation: {description: "desc only"}}
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        post :create, format: :json, params: {
+          recommendation: {description: "desc only"}
+        }
         expect(response).to have_http_status(422)
       end
     end
@@ -230,100 +275,165 @@ RSpec.describe RecommendationsController, type: :controller do
 
   describe "PUT update" do
     let(:recommendation) { FactoryBot.create(:recommendation) }
-    subject do
-      put :update,
-        format: :json,
-        params: {
-          id: recommendation,
-          recommendation: {title: "test update", description: "test update", target_date: "today update"}
+    let(:params) {
+      {
+        id: recommendation,
+        recommendation: {
+          title: "test update",
+          description: "test update",
+          target_date: "today update"
         }
+      }
+    }
+    subject { put :update, format: :json, params: params }
+
+    # Define roles at class level
+    def self.allowed_update_roles
+      @allowed_update_roles ||= Permissions.roles_with_permission('recommendation', 'update')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_update_roles
+      @forbidden_update_roles ||= all_roles - allowed_update_roles
+    end
+
+    def self.allowed_update_archived_roles
+      @allowed_update_archived_roles ||= Permissions.roles_with_permission('recommendation', 'update_archived')
+    end
+
+    def self.forbidden_update_archived_roles
+      @forbidden_update_archived_roles ||= all_roles - allowed_update_archived_roles
     end
 
     context "when not signed in" do
-      it "not allow updating a recommendation" do
+      it "does not allow updating a recommendation" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to update a recommendation" do
+      it "does not allow a guest (no roles) to update a recommendation" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to update a recommendation" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_update_roles.each do |role|
+        it "allows #{role} to update a recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_ok
+        end
       end
 
-      it "will allow a manager to update a recommendation" do
-        sign_in manager
-        expect(subject).to be_ok
+      forbidden_update_roles.each do |role|
+        it "does not allow #{role} to update a recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      it "will reject an update where the last_updated_at is older than updated_at in the database" do
-        sign_in manager
-        recommendation_get = get :show, params: {id: recommendation}, format: :json
+      it "rejects an update where last_updated_at is older than updated_at in the database" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+
+        recommendation_get = get :show, params: { id: recommendation }, format: :json
         json = JSON.parse(recommendation_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
-          subject = put :update,
-            format: :json,
-            params:
-            {
-              id: recommendation,
-              recommendation: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
-            }
-          expect(subject).to be_ok
-        end
-        Timecop.travel(Time.new + 5.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
             params: {
               id: recommendation,
-              recommendation: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+              recommendation: {
+                title: "test update",
+                description: "test updateeee",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
             }
-          expect(subject).to_not be_ok
+          expect(response).to be_ok
+        end
+
+        Timecop.travel(Time.new + 5.days) do
+          response = put :update,
+            format: :json,
+            params: {
+              id: recommendation,
+              recommendation: {
+                title: "test update",
+                description: "test updatebbbb",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
+            }
+          expect(response).to_not be_ok
         end
       end
 
-      it "will record what manager updated the recommendation", versioning: true do
+      it "records what user updated the recommendation", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in manager
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq manager.id
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
 
-      it "will return the latest updated_by", versioning: true do
+      it "returns the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
-        recommendation.versions.first.update_column(:whodunnit, contributor.id)
-        sign_in manager
+        guest = FactoryBot.create(:user)
+        admin = FactoryBot.create(:user, :admin)
+        recommendation.versions.first.update_column(:whodunnit, guest.id)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(manager.id)
+        expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in manager
-        put :update, format: :json, params: {id: recommendation, recommendation: {title: ""}}
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        put :update, format: :json, params: {
+          id: recommendation,
+          recommendation: { title: "" }
+        }
         expect(response).to have_http_status(422)
       end
 
       context "when is_archive: true" do
-        let(:recommendation) { FactoryBot.create(:recommendation, :is_archive) }
+        let(:archived_recommendation) { FactoryBot.create(:recommendation, :is_archive) }
+        let(:archived_params) {
+          {
+            id: archived_recommendation,
+            recommendation: {
+              title: "test update",
+              description: "test update",
+              target_date: "today update"
+            }
+          }
+        }
 
-        it "can't be updated by manager" do
-          sign_in manager
-          expect(subject).not_to be_ok
+        allowed_update_archived_roles.each do |role|
+          it "allows #{role} to update archived recommendation" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            response = put :update, format: :json, params: archived_params
+            expect(response).to be_ok
+          end
         end
 
-        it "can be updated by admin" do
-          sign_in admin
-          expect(subject).to be_ok
+        forbidden_update_archived_roles.each do |role|
+          it "does not allow #{role} to update archived recommendation" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            response = put :update, format: :json, params: archived_params
+            expect(response).to be_forbidden
+          end
         end
       end
     end
@@ -331,38 +441,111 @@ RSpec.describe RecommendationsController, type: :controller do
 
   describe "Delete destroy" do
     let(:recommendation) { FactoryBot.create(:recommendation) }
-    subject { delete :destroy, format: :json, params: {id: recommendation} }
+    subject { delete :destroy, format: :json, params: { id: recommendation } }
+
+    # Define roles at class level
+    def self.allowed_destroy_roles
+      @allowed_destroy_roles ||= Permissions.roles_with_permission('recommendation', 'destroy')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_destroy_roles
+      @forbidden_destroy_roles ||= all_roles - allowed_destroy_roles
+    end
 
     context "when not signed in" do
-      it "not allow deleting a recommendation" do
+      it "does not allow deleting a recommendation" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to delete a recommendation" do
+      it "does not allow a guest (no roles) to delete a recommendation" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to delete a recommendation" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      if allowed_destroy_roles.any?
+        allowed_destroy_roles.each do |role|
+          it "allows #{role} to delete a recommendation" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_no_content
+          end
+        end
+      else
+        it "is disabled for all roles" do
+          self.class.all_roles.each do |role|
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_forbidden
+          end
+        end
       end
 
-      it "will not allow a manager to delete a recommendation" do
-        sign_in manager
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow an admin to delete a recommendation" do
-        sign_in admin
-        expect(subject).to be_forbidden
+      forbidden_destroy_roles.each do |role|
+        it "does not allow #{role} to delete a recommendation" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
+  end
+
+  describe "Permission system tests: recommendations" do
+    include_examples "permission system",
+      'recommendation',
+      :create,
+      :post,
+      -> { {
+        recommendation: {
+          title: "test",
+          description: "test",
+          reference: "test-#{SecureRandom.hex(4)}" # Unique reference
+        }
+      } }
+
+    include_examples "permission system",
+     'recommendation',
+     :update,
+     :put,
+     -> {
+       recommendation = FactoryBot.create(:recommendation)
+       {
+         id: recommendation.id,
+         recommendation: {
+           title: "updated",
+           description: "updated"
+         }
+       }
+     }
+
+   include_examples "permission system",
+     'recommendation',
+     :destroy,
+     :delete,
+     -> {
+       recommendation = FactoryBot.create(:recommendation)
+       { id: recommendation.id }
+     }
+  end
+  describe "Scope permission system tests: recommendations" do
+    include_examples "filtered scope permission system",
+      'recommendation', :draft, 'view_draft', true
+
+    include_examples "filtered scope permission system",
+      'recommendation', :is_archive, 'view_archived', true
+
+    include_examples "show with scope permission system",
+      'recommendation', :draft, 'view_draft', true
+
+    include_examples "show with scope permission system",
+      'recommendation', :is_archive, 'view_archived', true
   end
 end
