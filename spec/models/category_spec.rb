@@ -15,7 +15,7 @@ RSpec.describe Category, type: :model do
 
     # Define allowed roles at class level
     def self.allowed_assign_roles
-      @allowed_assign_roles ||= Permissions.roles_with_permission('category', 'assign_as_responsible')
+      @allowed_assign_roles ||= Permissions.roles_with_permission("category", "assign_as_responsible")
     end
 
     def self.all_roles
