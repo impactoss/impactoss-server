@@ -16,6 +16,19 @@ RSpec.describe MeasuresController, type: :controller do
     let!(:archived_measure) { FactoryBot.create(:measure, is_archive: true, reference: "Archived Measure") }
     let!(:draft_measure) { FactoryBot.create(:measure, draft: true, reference: "Draft Measure") }
 
+    # Define roles at class level
+    def self.allowed_view_archived_roles
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission('measure', 'view_archived')
+    end
+
+    def self.allowed_view_draft_roles
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission('measure', 'view_draft')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
@@ -27,8 +40,6 @@ RSpec.describe MeasuresController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will see only published measures (no archived or draft)" do
         sign_in guest
@@ -36,31 +47,37 @@ RSpec.describe MeasuresController, type: :controller do
         expect(json["data"]).to match_array([serialized(measure)])
       end
 
-      it "contributor will see all measures" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(measure),
-          serialized(archived_measure),
-          serialized(draft_measure)
-        ])
-      end
+      # Test each role's visibility based on permissions
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all measures" do
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(measure),
-          serialized(archived_measure),
-          serialized(draft_measure)
-        ])
+          it "sees appropriate measures based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
+
+            expected_measures = [measure] # Everyone sees published
+
+            # Add archived if role has view_archived permission
+            if self.class.allowed_view_archived_roles.include?(role)
+              expected_measures << archived_measure
+            end
+
+            # Add draft if role has view_draft permission
+            if self.class.allowed_view_draft_roles.include?(role)
+              expected_measures << draft_measure
+            end
+
+            expect(json["data"]).to match_array(expected_measures.map { |m| serialized(m) })
+          end
+        end
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
 
         it "will not show is_archived items" do
-          sign_in manager
+          sign_in admin
           json = JSON.parse(subject.body)
           expect(json["data"]).to match_array([serialized(measure), serialized(draft_measure)])
         end
@@ -423,7 +440,15 @@ RSpec.describe MeasuresController, type: :controller do
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
             response = put :update, format: :json, params: archived_params
-            expect(response).to be_forbidden
+
+            # If role can view archived, they see it but get forbidden
+            # Otherwise they can't see it at all (not_found due to scope)
+            allowed_view_archived = Permissions.roles_with_permission('measure', 'view_archived')
+            if allowed_view_archived.include?(role)
+              expect(response).to be_forbidden
+            else
+              expect(response).to be_not_found
+            end
           end
         end
       end

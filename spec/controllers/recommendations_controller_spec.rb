@@ -16,6 +16,19 @@ RSpec.describe RecommendationsController, type: :controller do
     let!(:archived_recommendation) { FactoryBot.create(:recommendation, is_archive: true, reference: "Archived Recommendation") }
     let!(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true, reference: "Draft Recommendation") }
 
+    # Define roles at class level
+    def self.allowed_view_archived_roles
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission('recommendation', 'view_archived')
+    end
+
+    def self.allowed_view_draft_roles
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission('recommendation', 'view_draft')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
@@ -27,8 +40,6 @@ RSpec.describe RecommendationsController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will see only published recommendations (no archived or draft)" do
         sign_in guest
@@ -36,31 +47,38 @@ RSpec.describe RecommendationsController, type: :controller do
         expect(json["data"]).to match_array([serialized(recommendation)])
       end
 
-      it "contributor will see all recommendations" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(recommendation),
-          serialized(archived_recommendation),
-          serialized(draft_recommendation)
-        ])
-      end
+      # Test each role's visibility based on permissions
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all recommendations" do
-        sign_in user
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(recommendation),
-          serialized(archived_recommendation),
-          serialized(draft_recommendation)
-        ])
+          it "sees appropriate recommendations based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
+
+            expected_recommendations = [recommendation] # Everyone sees published
+
+            # Add archived if role has view_archived permission
+            if self.class.allowed_view_archived_roles.include?(role)
+              expected_recommendations << archived_recommendation
+            end
+
+            # Add draft if role has view_draft permission
+            if self.class.allowed_view_draft_roles.include?(role)
+              expected_recommendations << draft_recommendation
+            end
+
+            expect(json["data"]).to match_array(expected_recommendations.map { |r| serialized(r) })
+          end
+        end
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
+        let(:admin) { FactoryBot.create(:user, :admin) }
 
         it "will not show archived recommendations" do
-          sign_in user
+          sign_in admin
           json = JSON.parse(subject.body)
           expect(json["data"]).to match_array([serialized(recommendation), serialized(draft_recommendation)])
         end
@@ -72,6 +90,7 @@ RSpec.describe RecommendationsController, type: :controller do
         let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
         let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation, reference: "Non-Reporting-Cycle Recommendation") }
         let!(:non_current_recommendation) { FactoryBot.create(:recommendation, reference: "Non-Current Recommendation") }
+        let(:admin) { FactoryBot.create(:user, :admin) }
 
         before do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
@@ -86,7 +105,7 @@ RSpec.describe RecommendationsController, type: :controller do
         subject { get :index, format: :json, params: {current_only: true} }
 
         it "will only show current recommendations" do
-          sign_in user
+          sign_in admin
           json = JSON.parse(subject.body)
           expect(json["data"]).to match_array([
             serialized(recommendation),
@@ -432,7 +451,15 @@ RSpec.describe RecommendationsController, type: :controller do
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
             response = put :update, format: :json, params: archived_params
-            expect(response).to be_forbidden
+
+            # If role can view archived, they see it but get forbidden
+            # Otherwise they can't see it at all (not_found due to scope)
+            allowed_view_archived = Permissions.roles_with_permission('recommendation', 'view_archived')
+            if allowed_view_archived.include?(role)
+              expect(response).to be_forbidden
+            else
+              expect(response).to be_not_found
+            end
           end
         end
       end

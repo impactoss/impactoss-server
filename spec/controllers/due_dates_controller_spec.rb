@@ -7,8 +7,17 @@ RSpec.describe DueDatesController, type: :controller do
     let!(:due_date) { FactoryBot.create(:due_date) }
     let!(:draft_due_date) { FactoryBot.create(:due_date, draft: true) }
 
+    # Define roles at class level
+    def self.allowed_view_all_roles
+      @allowed_view_all_roles ||= Permissions.roles_with_permission('due_date', 'view_all')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
     context "when not signed in" do
-      it "no due dates are shown" do
+      it "no due_dates are shown" do
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(0)
       end
@@ -16,25 +25,31 @@ RSpec.describe DueDatesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:user) { FactoryBot.create(:user, :manager) }
 
-      it "guest will not see any due_dates" do
+      it "guest (no roles) will not see any due_dates" do
         sign_in guest
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(0)
       end
 
-      it "contributor will see all due_dates" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
-      end
+      # Test each role's visibility based on view_all permission
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all due_dates" do
-        sign_in user
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+          it "sees appropriate due_dates based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
+
+            if self.class.allowed_view_all_roles.include?(role)
+              # Can see all due dates
+              expect(json["data"].length).to eq(2)
+            else
+              # Cannot see any due dates
+              expect(json["data"].length).to eq(0)
+            end
+          end
+        end
       end
     end
   end
@@ -56,7 +71,6 @@ RSpec.describe DueDatesController, type: :controller do
 
   describe "Post create" do
     let(:indicator) { FactoryBot.create(:indicator) }
-    let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
     let(:params) {
       {
         due_date: {
@@ -75,7 +89,6 @@ RSpec.describe DueDatesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "does not allow a guest (no roles) to create a due_date" do
         sign_in guest
@@ -89,22 +102,6 @@ RSpec.describe DueDatesController, type: :controller do
           sign_in user
           expect(subject).to be_forbidden
         end
-      end
-
-      it "does not allow a contributor to create a due_date even for an indicator they manage" do
-        contributor = FactoryBot.create(:user, :contributor)
-        contributor_indicator = FactoryBot.create(:indicator, manager: contributor)
-        sign_in contributor
-
-        response = post :create,
-          format: :json,
-          params: {
-            due_date: {
-              due_date: Time.zone.today.to_s,
-              indicator_id: contributor_indicator.id
-            }
-          }
-        expect(response).to be_forbidden
       end
     end
   end

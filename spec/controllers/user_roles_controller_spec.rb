@@ -5,6 +5,24 @@ RSpec.describe UserRolesController, type: :controller do
   describe "Get index" do
     subject { get :index, format: :json }
 
+    let(:guest) { FactoryBot.create(:user) }
+
+    # Define roles at class level
+    def self.allowed_view_all_roles
+      @allowed_view_all_roles ||= Permissions.roles_with_permission('user_role', 'view_all')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    # Dynamically create 2 users for each role type in the hierarchy
+    before do
+      Permissions::ROLE_HIERARCHY.keys.each do |role_name|
+        2.times { FactoryBot.create(:user, role_name.to_sym) }
+      end
+    end
+
     context "when not signed in" do
       it "shows an empty list" do
         json = JSON.parse(subject.body)
@@ -13,76 +31,51 @@ RSpec.describe UserRolesController, type: :controller do
     end
 
     context "when signed in" do
-      let(:guest) { FactoryBot.create(:user) }
-      let(:manager_role) { FactoryBot.create(:role, :manager) }
-      let(:manager) { FactoryBot.create(:user, roles: [manager_role]) }
-      let(:manager2) { FactoryBot.create(:user, roles: [manager_role]) }
-      let(:contributor_role) { FactoryBot.create(:role, :contributor) }
-      let(:contributor) { FactoryBot.create(:user, roles: [contributor_role]) }
-      let(:contributor2) { FactoryBot.create(:user, roles: [contributor_role]) }
-      let(:admin_role) { FactoryBot.create(:role, :admin) }
-      let(:admin) { FactoryBot.create(:user, roles: [admin_role]) }
-      let(:admin2) { FactoryBot.create(:user, roles: [admin_role]) }
-
-      it "does not show anything to guest user" do
+      it "does not show anything to guest user (no roles)" do
         sign_in guest
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(0)
       end
 
-      it "shows all users roles for contributors" do
-        contributor
-        contributor2
-        manager
-        manager2
-        admin
-        admin2
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(6)
-        returned_roles = json["data"].map { |user_role| user_role["attributes"]["role_id"] }.uniq
-        permitted_roles = [contributor.roles.first.id, manager.roles.first.id]
-        expect(permitted_roles - returned_roles).to be_empty
-      end
+      # Test each role's visibility based on view_all permission
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "shows all users roles for managers" do
-        contributor
-        contributor2
-        manager
-        manager2
-        admin
-        admin2
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(6)
-        returned_roles = json["data"].map { |user_role| user_role["attributes"]["role_id"] }.uniq
-        permitted_roles = [contributor.roles.first.id, manager.roles.first.id]
-        expect(permitted_roles - returned_roles).to be_empty
-      end
+          it "sees appropriate user_roles based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
 
-      it "shows all user roles for admin" do
-        contributor
-        contributor2
-        manager
-        manager2
-        admin2
-        sign_in admin
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(6)
-        returned_roles = json["data"].map { |user_role| user_role["attributes"]["role_id"] }.uniq
-        permitted_roles = [contributor.roles.first.id, manager.roles.first.id]
-        expect(permitted_roles - returned_roles).to be_empty
+            if self.class.allowed_view_all_roles.include?(role)
+              # Can see all user roles (2 users per role type + the test user)
+              expected_count = (Permissions::ROLE_HIERARCHY.keys.length * 2) + 1
+              expect(json["data"].length).to eq(expected_count)
+            else
+              # Can only see their own user role
+              expect(json["data"].length).to eq(1)
+            end
+          end
+        end
       end
     end
   end
 
   describe "Get show" do
-    let(:user_role) { FactoryBot.create(:user_role) }
+    let(:target_user) { FactoryBot.create(:user, :contributor) }
+    let(:target_user_role) { target_user.user_roles.first }
+
     subject {
-      get :show, params: {
-        id: user_role
-      }, format: :json
+      get :show, params: { id: target_user_role.id }, format: :json
     }
+
+    # Define roles at class level
+    def self.allowed_view_all_roles
+      @allowed_view_all_roles ||= Permissions.roles_with_permission('user_role', 'view_all')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
 
     context "when not signed in" do
       it "does not show the user_role" do
@@ -92,45 +85,43 @@ RSpec.describe UserRolesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
 
-      subject {
-        get :show, params: {
-          id: contributor.user_roles.first.id
-        }, format: :json
-      }
-
-      let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
-
-      it "shows no user_role for guest" do
+      it "guest (no roles) cannot see other user's user_role" do
         sign_in guest
         expect(subject).to be_not_found
       end
-      it "shows user_role for contributor" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.user_roles.first.id)
+
+      # Test viewing their own user_role (should work for all roles)
+      all_roles.each do |role|
+        it "#{role} can view their own user_role" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+
+          response = get :show, params: { id: user.user_roles.first.id }, format: :json
+          json = JSON.parse(response.body)
+          expect(json.dig("data", "id").to_i).to eq(user.user_roles.first.id)
+        end
       end
-      it "shows user_role for manager" do
-        sign_in manager
-        subject_manager = get :show, params: {
-          id: manager.user_roles.first.id
-        }, format: :json
-        json = JSON.parse(subject_manager.body)
-        expect(json.dig("data", "id").to_i).to eq(manager.user_roles.first.id)
-      end
-      it "shows user_role for admin" do
-        sign_in admin
-        subject_manager = get :show, params: {
-          id: admin.user_roles.first.id
-        }, format: :json
-        json = JSON.parse(subject_manager.body)
-        expect(json.dig("data", "id").to_i).to eq(admin.user_roles.first.id)
+
+      # Test viewing another user's user_role (depends on view_all permission)
+      all_roles.each do |role|
+        context "#{role} viewing another user's user_role" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
+
+          # Access directly at class level, not via self.class
+          can_view = allowed_view_all_roles.include?(role)
+
+          it "#{can_view ? 'can' : 'cannot'} see it" do
+            sign_in user
+
+            if self.class.allowed_view_all_roles.include?(role)
+              json = JSON.parse(subject.body)
+              expect(json.dig("data", "id").to_i).to eq(target_user_role.id)
+            else
+              expect(subject).to be_not_found
+            end
+          end
+        end
       end
     end
   end
@@ -173,6 +164,21 @@ RSpec.describe UserRolesController, type: :controller do
       it "does not allow a guest (no roles) to create a user_role" do
         sign_in guest
         expect(subject).to be_forbidden
+      end
+
+      it "does not allow manager to assign role to user who already has same/higher role" do
+        manager = FactoryBot.create(:user, :manager)
+        target_user = FactoryBot.create(:user, :admin) # Already has admin role
+        contributor_role_record = FactoryBot.create(:role, :contributor)
+        sign_in manager
+
+        response = post :create, format: :json, params: {
+          user_role: {
+            user_id: target_user.id,
+            role_id: contributor_role_record.id
+          }
+        }
+        expect(response).to be_forbidden
       end
 
       # Test create_any permission (admins can create any role)

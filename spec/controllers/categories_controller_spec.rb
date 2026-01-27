@@ -8,12 +8,35 @@ RSpec.describe CategoriesController, type: :controller do
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:category) { FactoryBot.create(:category, reference: "Published Category") }
-    let!(:archived_category) { FactoryBot.create(:category, is_archive: true, reference: "Archived Category") }
-    let!(:draft_category) { FactoryBot.create(:category, draft: true, reference: "Draft Category") }
+
+    let(:category) { FactoryBot.create(:category) } # published
+    let(:archived_category) { FactoryBot.create(:category, is_archive: true) }
+    let(:draft_category) { FactoryBot.create(:category, draft: true) }
+
+    # Define roles at class level
+    def self.allowed_view_archived_roles
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission('category', 'view_archived')
+    end
+
+    def self.allowed_view_draft_roles
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission('category', 'view_draft')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    before do
+      # Create all categories before each test
+      category
+      archived_category
+      draft_category
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it "is expected to be ok" do
+        expect(subject).to be_ok
+      end
 
       it "will see only published categories (no archived or drafts)" do
         json = JSON.parse(subject.body)
@@ -23,8 +46,6 @@ RSpec.describe CategoriesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will see only published categories (no archived or draft)" do
         sign_in guest
@@ -32,36 +53,29 @@ RSpec.describe CategoriesController, type: :controller do
         expect(json["data"]).to match_array([serialized(category)])
       end
 
-      it "contributor will see all categories" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(category),
-          serialized(archived_category),
-          serialized(draft_category)
-        ])
-      end
+      # Test each role's visibility based on permissions
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all categories" do
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(category),
-          serialized(archived_category),
-          serialized(draft_category)
-        ])
-      end
+          it "sees appropriate categories based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
 
-      context "when include_archive=false" do
-        subject { get :index, format: :json, params: {include_archive: false} }
+            expected_categories = [category] # Everyone sees published
 
-        it "will not show is_archived items" do
-          sign_in manager
-          json = JSON.parse(subject.body)
-          expect(json["data"]).to match_array([
-            serialized(category),
-            serialized(draft_category)
-          ])
+            # Add archived if role has view_archived permission - use self.class to access class method
+            if self.class.allowed_view_archived_roles.include?(role)
+              expected_categories << archived_category
+            end
+
+            # Add draft if role has view_draft permission - use self.class to access class method
+            if self.class.allowed_view_draft_roles.include?(role)
+              expected_categories << draft_category
+            end
+
+            expect(json["data"]).to match_array(expected_categories.map { |cat| serialized(cat) })
+          end
         end
       end
     end

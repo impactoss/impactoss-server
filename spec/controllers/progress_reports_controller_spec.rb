@@ -16,6 +16,19 @@ RSpec.describe ProgressReportsController, type: :controller do
     let!(:archived_progress_report) { FactoryBot.create(:progress_report, is_archive: true, title: "Archived Progress Report") }
     let!(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true, title: "Draft Progress Report") }
 
+    # Define roles at class level
+    def self.allowed_view_archived_roles
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission('progress_report', 'view_archived')
+    end
+
+    def self.allowed_view_draft_roles
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission('progress_report', 'view_draft')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
@@ -27,8 +40,6 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will see only published progress_reports (no archived or draft)" do
         sign_in guest
@@ -36,31 +47,38 @@ RSpec.describe ProgressReportsController, type: :controller do
         expect(json["data"]).to match_array([serialized(progress_report)])
       end
 
-      it "contributor will all progress_reports" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(progress_report),
-          serialized(archived_progress_report),
-          serialized(draft_progress_report)
-        ])
-      end
+      # Test each role's visibility based on permissions
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will all progress_reports" do
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(progress_report),
-          serialized(archived_progress_report),
-          serialized(draft_progress_report)
-        ])
+          it "sees appropriate progress_reports based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
+
+            expected_reports = [progress_report] # Everyone sees published
+
+            # Add archived if role has view_archived permission
+            if self.class.allowed_view_archived_roles.include?(role)
+              expected_reports << archived_progress_report
+            end
+
+            # Add draft if role has view_draft permission
+            if self.class.allowed_view_draft_roles.include?(role)
+              expected_reports << draft_progress_report
+            end
+
+            expect(json["data"]).to match_array(expected_reports.map { |r| serialized(r) })
+          end
+        end
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
+        let(:admin) { FactoryBot.create(:user, :admin) }
 
         it "will not show is_archived items" do
-          sign_in manager
+          sign_in admin
           json = JSON.parse(subject.body)
           expect(json["data"]).to match_array([serialized(progress_report), serialized(draft_progress_report)])
         end
@@ -435,21 +453,39 @@ RSpec.describe ProgressReportsController, type: :controller do
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
             response = put :update, format: :json, params: archived_params
-            expect(response).to be_forbidden
+
+            # If role can view archived, they see it but get forbidden
+            # Otherwise they can't see it at all (not_found due to scope)
+            allowed_view_archived = Permissions.roles_with_permission('progress_report', 'view_archived')
+            if allowed_view_archived.include?(role)
+              expect(response).to be_forbidden
+            else
+              expect(response).to be_not_found
+            end
           end
         end
 
-        it "does not allow contributors to update their own archived draft" do
-          contributor = FactoryBot.create(:user, :contributor)
-          contributor_indicator = FactoryBot.create(:indicator, manager: contributor)
-          archived_draft = FactoryBot.create(:progress_report, draft: true, is_archive: true, indicator: contributor_indicator)
+        # Test that update_own doesn't bypass the archived check
+        (allowed_update_own_roles - allowed_update_archived_roles).each do |role|
+          it "does not allow #{role} to update their own archived draft (archived check takes precedence)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            user_indicator = FactoryBot.create(:indicator, manager: user)
+            archived_draft = FactoryBot.create(:progress_report, draft: true, is_archive: true, indicator: user_indicator)
 
-          sign_in contributor
-          response = put :update, format: :json, params: {
-            id: archived_draft,
-            progress_report: {title: "test update", description: "test update"}
-          }
-          expect(response).to be_forbidden
+            sign_in user
+            response = put :update, format: :json, params: {
+              id: archived_draft,
+              progress_report: { title: "test update", description: "test update" }
+            }
+
+            # Check view_archived permission for expected response
+            allowed_view_archived = Permissions.roles_with_permission('progress_report', 'view_archived')
+            if allowed_view_archived.include?(role)
+              expect(response).to be_forbidden  # Sees it but blocked by archived check
+            else
+              expect(response).to be_not_found  # Can't see archived items
+            end
+          end
         end
       end
 

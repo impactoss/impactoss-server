@@ -16,6 +16,19 @@ RSpec.describe IndicatorsController, type: :controller do
     let!(:archived_indicator) { FactoryBot.create(:indicator, is_archive: true, reference: "Archived Indicator") }
     let!(:draft_indicator) { FactoryBot.create(:indicator, draft: true, reference: "Draft Indicator") }
 
+    # Define roles at class level
+    def self.allowed_view_archived_roles
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission('indicator', 'view_archived')
+    end
+
+    def self.allowed_view_draft_roles
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission('indicator', 'view_draft')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
     context "when not signed in" do
       it { expect(subject).to be_ok }
 
@@ -27,8 +40,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
+      let(:admin) { FactoryBot.create(:user, :admin) }
 
       it "guest will see only published indicators (no archived or draft)" do
         sign_in guest
@@ -36,31 +48,37 @@ RSpec.describe IndicatorsController, type: :controller do
         expect(json["data"]).to match_array([serialized(indicator)])
       end
 
-      it "contributor will see all indicators" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(indicator),
-          serialized(archived_indicator),
-          serialized(draft_indicator)
-        ])
-      end
+      # Test each role's visibility based on permissions
+      all_roles.each do |role|
+        context "#{role}" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all indicators" do
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(indicator),
-          serialized(archived_indicator),
-          serialized(draft_indicator)
-        ])
+          it "sees appropriate indicators based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
+
+            expected_indicators = [indicator] # Everyone sees published
+
+            # Add archived if role has view_archived permission
+            if self.class.allowed_view_archived_roles.include?(role)
+              expected_indicators << archived_indicator
+            end
+
+            # Add draft if role has view_draft permission
+            if self.class.allowed_view_draft_roles.include?(role)
+              expected_indicators << draft_indicator
+            end
+
+            expect(json["data"]).to match_array(expected_indicators.map { |ind| serialized(ind) })
+          end
+        end
       end
 
       context "when include_archive=false" do
         subject { get :index, format: :json, params: {include_archive: false} }
 
-        it "will not show is_archived items" do
-          sign_in manager
+        it "will not show is_archived items (using admin for test)" do
+          sign_in admin
           json = JSON.parse(subject.body)
 
           expect(json["data"]).to match_array([
@@ -98,8 +116,8 @@ RSpec.describe IndicatorsController, type: :controller do
 
         subject { get :index, format: :json, params: {current_only: true} }
 
-        it "will only show current indicators" do
-          sign_in manager
+        it "will only show current indicators (using admin for test)" do
+          sign_in admin
           json = JSON.parse(subject.body)
 
           expect(json["data"]).to match_array([
