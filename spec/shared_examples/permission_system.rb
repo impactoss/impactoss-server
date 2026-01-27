@@ -61,16 +61,9 @@ RSpec.shared_examples "permission system" do |model_name, action, http_method, p
 
           it "denies guest users (no roles)" do
             guest = FactoryBot.create(:user)
-
-            puts "=== GUEST TEST ==="
-            puts "Guest ID: #{guest.id}"
-            puts "Guest roles: #{guest.roles.pluck(:name)}"
-
             sign_in guest
-            response = send(http_method, action, format: :json, params: params_proc.call)
 
-            puts "Response status: #{response.status}"
-            puts "Response forbidden?: #{response.forbidden?}"
+            response = send(http_method, action, format: :json, params: params_proc.call)
 
             expect(response).to be_forbidden, "guest should always be forbidden"
           end
@@ -135,6 +128,15 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
 
         it "filters records correctly based on permission" do
           min_level = test_case[:config].map { |r| Permissions::ROLE_HIERARCHY[r] }.compact.min
+<<<<<<< HEAD
+=======
+          # DEBUG
+          puts "Normal record: #{normal_record.inspect}"
+          puts "Normal record draft: #{normal_record.draft}"
+          puts "Normal record is_archive: #{normal_record.is_archive}"
+          puts "Filtered record: #{filtered_record.inspect}"
+          puts "Testing field: #{field_name}"
+>>>>>>> 1c35cd6 (make publishing role dependent)
           Permissions::ROLE_HIERARCHY.each do |role, level|
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
@@ -142,6 +144,8 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
             get :index, format: :json
             json = JSON.parse(response.body)
             ids = json["data"].map { |d| d["id"].to_i }
+            # DEBUG
+            puts "#{role}: sees IDs #{ids}, normal_record.id=#{normal_record.id}, filtered_record.id=#{filtered_record.id}"
 
             expect(ids).to include(normal_record.id),
               "#{role} should see normal records"

@@ -4,7 +4,6 @@ class RecommendationPolicy < ApplicationPolicy
   def permitted_attributes
     attrs = [
       :title,
-      :draft,
       :accepted,
       :response,
       :reference,
@@ -13,7 +12,9 @@ class RecommendationPolicy < ApplicationPolicy
       :support_level
     ]
 
-    attrs << :is_archive if @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :is_archive if !@record.new_record? && @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :draft if @user.has_any_role?(allowed_roles_for(:modify_draft))
+
     attrs.compact
   end
 

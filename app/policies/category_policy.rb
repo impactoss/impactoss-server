@@ -5,7 +5,6 @@ class CategoryPolicy < ApplicationPolicy
     attrs = [
       :date,
       :description,
-      :draft,
       :order,
       :parent_id,
       :reference,
@@ -19,7 +18,8 @@ class CategoryPolicy < ApplicationPolicy
     # manager_id can be set on create, or on update by admins only
     attrs << :manager_id unless @record.persisted? && !@user.has_any_role?(allowed_roles_for(:modify_manager_id))
 
-    attrs << :is_archive if @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :is_archive if !@record.new_record? && @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :draft if @user.has_any_role?(allowed_roles_for(:modify_draft))
 
     attrs.compact
   end

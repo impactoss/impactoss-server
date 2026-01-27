@@ -9,9 +9,9 @@ RSpec.describe CategoriesController, type: :controller do
   describe "Get index" do
     subject { get :index, format: :json }
 
-    let(:category) { FactoryBot.create(:category) } # published
-    let(:archived_category) { FactoryBot.create(:category, is_archive: true) }
-    let(:draft_category) { FactoryBot.create(:category, draft: true) }
+    let(:category) { FactoryBot.create(:category, :published) } # published
+    let(:archived_category) { FactoryBot.create(:category, :published, is_archive: true) }
+    let(:draft_category) { FactoryBot.create(:category, :draft) }
 
     # Define roles at class level
     def self.allowed_view_archived_roles
@@ -82,9 +82,9 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe "Get show" do
-    let!(:category) { FactoryBot.create(:category, reference: "Published Category") }
-    let!(:archived_category) { FactoryBot.create(:category, is_archive: true, reference: "Archived Category") }
-    let!(:draft_category) { FactoryBot.create(:category, draft: true, reference: "Draft Category") }
+    let!(:category) { FactoryBot.create(:category, :published, reference: "Published Category") }
+    let!(:archived_category) { FactoryBot.create(:category, :published, is_archive: true, reference: "Archived Category") }
+    let!(:draft_category) { FactoryBot.create(:category, :draft, reference: "Draft Category") }
 
     def show(subject_category)
       get :show, params: {
@@ -139,6 +139,14 @@ RSpec.describe CategoriesController, type: :controller do
 
     def self.forbidden_create_roles
       @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("category", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -199,6 +207,50 @@ RSpec.describe CategoriesController, type: :controller do
         end
       end
 
+      context "draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            category: {
+              title: "test",
+              short_title: "bla",
+              description: "test",
+              target_date: "today",
+              taxonomy_id: taxonomy.id,
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       it "records what user created the category", versioning: true do
         expect(PaperTrail).to be_enabled
         admin = FactoryBot.create(:user, :admin)
@@ -219,7 +271,7 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe "Put update" do
-    let(:category) { FactoryBot.create(:category) }
+    let(:category) { FactoryBot.create(:category, :published) }
     let(:params) {
       {
         id: category,
@@ -259,6 +311,14 @@ RSpec.describe CategoriesController, type: :controller do
 
     def self.forbidden_modify_archive_roles
       @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("category", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -348,7 +408,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       context "is_archive attribute" do
-        let(:category) { FactoryBot.create(:category) }
+        let(:category) { FactoryBot.create(:category, :published) }
         let(:params_with_archive) {
           {
             id: category,
@@ -385,6 +445,48 @@ RSpec.describe CategoriesController, type: :controller do
             expect(response).to be_ok
             # is_archive filtered by permitted_attributes, remains false
             expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
+      end
+
+      context "draft attribute" do
+        let(:category) { FactoryBot.create(:category, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: category,
+            category: {
+              title: "test update",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
           end
         end
       end
@@ -459,7 +561,7 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:category) { FactoryBot.create(:category) }
+    let(:category) { FactoryBot.create(:category, :published) }
     subject {
       delete :destroy, format: :json, params: {id: category}
     }
@@ -540,7 +642,7 @@ RSpec.describe CategoriesController, type: :controller do
       :update,
       :put,
       -> {
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:category, :published)
         {
           id: category.id,
           category: {
@@ -555,7 +657,7 @@ RSpec.describe CategoriesController, type: :controller do
       :destroy,
       :delete,
       -> {
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:category, :published)
         {id: category.id}
       }
   end

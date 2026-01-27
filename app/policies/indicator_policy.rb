@@ -4,7 +4,6 @@ class IndicatorPolicy < ApplicationPolicy
   def permitted_attributes
     attrs = [
       :description,
-      :draft,
       :end_date,
       :frequency_months,
       :manager_id,
@@ -14,7 +13,9 @@ class IndicatorPolicy < ApplicationPolicy
       :title
     ]
 
-    attrs << :is_archive if @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :is_archive if !@record.new_record? && @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :draft if @user.has_any_role?(allowed_roles_for(:modify_draft))
+
     attrs.compact
   end
 end
