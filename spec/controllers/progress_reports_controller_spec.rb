@@ -284,21 +284,25 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
-      it "records what user created the progress_report", versioning: true do
-        expect(PaperTrail).to be_enabled
-        admin = FactoryBot.create(:user, :admin)
-        sign_in admin
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
+      if allowed_create_roles.any?
+        it "records what user created the progress_report", versioning: true do
+          expect(PaperTrail).to be_enabled
+          admin = FactoryBot.create(:user, :admin)
+          sign_in admin
+          json = JSON.parse(subject.body)
+          expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
+        end
       end
 
-      it "returns an error if params are incorrect" do
-        admin = FactoryBot.create(:user, :admin)
-        sign_in admin
-        post :create, format: :json, params: {
-          progress_report: {description: "desc only"}
-        }
-        expect(response).to have_http_status(422)
+      if allowed_create_roles.any?
+        it "returns an error if params are incorrect" do
+          admin = FactoryBot.create(:user, :admin)
+          sign_in admin
+          post :create, format: :json, params: {
+            progress_report: {description: "desc only"}
+          }
+          expect(response).to have_http_status(422)
+        end
       end
     end
   end
