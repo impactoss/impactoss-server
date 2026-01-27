@@ -354,7 +354,7 @@ RSpec.describe CategoriesController, type: :controller do
       context "manager_id attribute" do
         # Get the minimum role that can be assigned as manager
         def self.allowed_assign_roles
-          @allowed_assign_roles ||= Permissions.roles_with_permission('category', 'assign_as_responsible')
+          @allowed_assign_roles ||= Permissions.roles_with_permission("category", "assign_as_responsible")
         end
 
         # Create a user with the minimum assignable role
@@ -376,7 +376,7 @@ RSpec.describe CategoriesController, type: :controller do
                 format: :json,
                 params: {
                   id: category,
-                  category: { manager_id: assignable_user.id }
+                  category: {manager_id: assignable_user.id}
                 }
             }.to change { category.reload.manager_id }.to(assignable_user.id)
 
@@ -397,7 +397,7 @@ RSpec.describe CategoriesController, type: :controller do
                 format: :json,
                 params: {
                   id: category,
-                  category: { manager_id: assignable_user.id }
+                  category: {manager_id: assignable_user.id}
                 }
             }.not_to change { category.reload.manager_id }
 

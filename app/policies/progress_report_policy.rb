@@ -22,7 +22,7 @@ class ProgressReportPolicy < ApplicationPolicy
 
     # Contributors can create their own reports
     if @user.has_any_role?(allowed_roles_for(:create_own_draft)) &&
-       @record.manager == @user
+        @record.manager == @user
 
       # Must be draft unless they have modify_draft permission
       return false if !@record.draft? && !@user.has_any_role?(allowed_roles_for(:modify_draft))
@@ -51,7 +51,7 @@ class ProgressReportPolicy < ApplicationPolicy
       !@record.draft_changed? &&
       @record.manager == @user
 
-      # Can change draft status only if they have modify_draft permission
-      return false if @record.draft_changed? && !@user.has_any_role?(allowed_roles_for(:modify_draft))
+    # Can change draft status only if they have modify_draft permission
+    false if @record.draft_changed? && !@user.has_any_role?(allowed_roles_for(:modify_draft))
   end
 end
