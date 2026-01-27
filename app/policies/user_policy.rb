@@ -6,11 +6,11 @@ class UserPolicy < ApplicationPolicy
   def update?
     # Check self-update permission
     if @record.id == @user.id
-      update_self_permission = Permissions.allowed_for('user', 'update_self')
+      update_self_permission = Permissions.allowed_for("user", "update_self")
 
       # If true, anyone can update themselves
       return true if update_self_permission == true
-      
+
       # If false or empty array, disabled
       return false if update_self_permission == false || update_self_permission.nil? || update_self_permission.empty?
 

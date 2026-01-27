@@ -152,11 +152,11 @@ RSpec.describe UserRolesController, type: :controller do
 
     # Define roles at class level
     def self.allowed_create_any_roles
-      @allowed_create_any_roles ||= Permissions.roles_with_permission('user_role', 'create_any')
+      @allowed_create_any_roles ||= Permissions.roles_with_permission("user_role", "create_any")
     end
 
     def self.allowed_create_lower_roles
-      @allowed_create_lower_roles ||= Permissions.roles_with_permission('user_role', 'create_lower')
+      @allowed_create_lower_roles ||= Permissions.roles_with_permission("user_role", "create_lower")
     end
 
     def self.all_roles
@@ -283,15 +283,15 @@ RSpec.describe UserRolesController, type: :controller do
     let(:contributor_role) { FactoryBot.create(:role, :contributor) }
     let(:contributor) { FactoryBot.create(:user, roles: [contributor_role]) }
 
-    subject { delete :destroy, format: :json, params: { id: contributor.user_roles.first } }
+    subject { delete :destroy, format: :json, params: {id: contributor.user_roles.first} }
 
     # Define roles at class level
     def self.allowed_destroy_any_roles
-      @allowed_destroy_any_roles ||= Permissions.roles_with_permission('user_role', 'destroy_any')
+      @allowed_destroy_any_roles ||= Permissions.roles_with_permission("user_role", "destroy_any")
     end
 
     def self.allowed_destroy_lower_roles
-      @allowed_destroy_lower_roles ||= Permissions.roles_with_permission('user_role', 'destroy_lower')
+      @allowed_destroy_lower_roles ||= Permissions.roles_with_permission("user_role", "destroy_lower")
     end
 
     def self.all_roles
@@ -379,5 +379,4 @@ RSpec.describe UserRolesController, type: :controller do
       end
     end
   end
-
 end

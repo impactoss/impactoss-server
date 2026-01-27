@@ -12,7 +12,7 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
 
   describe "Get show" do
     let(:measure_indicator) { FactoryBot.create(:measure_indicator) }
-    subject { get :show, params: { id: measure_indicator }, format: :json }
+    subject { get :show, params: {id: measure_indicator}, format: :json }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
@@ -39,7 +39,7 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
 
     # Define roles at class level - falls back to application permissions
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('measure_indicator', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("measure_indicator", "create")
     end
 
     def self.all_roles
@@ -101,11 +101,11 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
 
   describe "Delete destroy" do
     let(:measure_indicator) { FactoryBot.create(:measure_indicator) }
-    subject { delete :destroy, format: :json, params: { id: measure_indicator } }
+    subject { delete :destroy, format: :json, params: {id: measure_indicator} }
 
     # Define roles at class level - falls back to application permissions
     def self.allowed_destroy_roles
-      @allowed_destroy_roles ||= Permissions.roles_with_permission('measure_indicator', 'destroy')
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("measure_indicator", "destroy")
     end
 
     def self.all_roles
@@ -147,7 +147,7 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
       end
 
       context "when the measure_indicator does not exist" do
-        let(:measure_indicator) { { id: -1 } }
+        let(:measure_indicator) { {id: -1} }
 
         it "returns the same response as a successful deletion" do
           admin = FactoryBot.create(:user, :admin)

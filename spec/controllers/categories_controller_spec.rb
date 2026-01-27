@@ -116,7 +116,7 @@ RSpec.describe CategoriesController, type: :controller do
 
     # Define roles once at the top of the describe block
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('category', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("category", "create")
     end
 
     def self.all_roles
@@ -128,7 +128,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('category', 'modify_is_archive')
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("category", "modify_is_archive")
     end
 
     def self.forbidden_modify_archive_roles
@@ -243,7 +243,7 @@ RSpec.describe CategoriesController, type: :controller do
 
     # Define roles at class level
     def self.allowed_update_roles
-      @allowed_update_roles ||= Permissions.roles_with_permission('category', 'update')
+      @allowed_update_roles ||= Permissions.roles_with_permission("category", "update")
     end
 
     def self.all_roles
@@ -255,7 +255,7 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     def self.allowed_modify_manager_id_roles
-      @allowed_modify_manager_id_roles ||= Permissions.roles_with_permission('category', 'modify_manager_id')
+      @allowed_modify_manager_id_roles ||= Permissions.roles_with_permission("category", "modify_manager_id")
     end
 
     def self.forbidden_modify_manager_id_roles
@@ -308,7 +308,7 @@ RSpec.describe CategoriesController, type: :controller do
                 format: :json,
                 params: {
                   id: category,
-                  category: { manager_id: manager.id }
+                  category: {manager_id: manager.id}
                 }
             }.to change { category.reload.manager_id }.to(manager.id)
 
@@ -329,7 +329,7 @@ RSpec.describe CategoriesController, type: :controller do
                 format: :json,
                 params: {
                   id: category,
-                  category: { manager_id: manager.id }
+                  category: {manager_id: manager.id}
                 }
             }.not_to change { category.reload.manager_id }
 
@@ -342,7 +342,7 @@ RSpec.describe CategoriesController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        category_get = get :show, params: { id: category }, format: :json
+        category_get = get :show, params: {id: category}, format: :json
         json = JSON.parse(category_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
@@ -400,7 +400,7 @@ RSpec.describe CategoriesController, type: :controller do
         sign_in admin
         put :update, format: :json, params: {
           id: category,
-          category: { taxonomy_id: 999 }
+          category: {taxonomy_id: 999}
         }
         expect(response).to have_http_status(422)
       end
@@ -410,12 +410,12 @@ RSpec.describe CategoriesController, type: :controller do
   describe "Delete destroy" do
     let(:category) { FactoryBot.create(:category) }
     subject {
-      delete :destroy, format: :json, params: { id: category }
+      delete :destroy, format: :json, params: {id: category}
     }
 
     # Define roles at class level
     def self.allowed_destroy_roles
-      @allowed_destroy_roles ||= Permissions.roles_with_permission('category', 'destroy')
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("category", "destroy")
     end
 
     def self.all_roles
@@ -470,53 +470,55 @@ RSpec.describe CategoriesController, type: :controller do
 
   describe "Permission system tests: categories" do
     include_examples "permission system",
-      'category',
+      "category",
       :create,
       :post,
-      -> { {
-        category: {
-          title: "test",
-          description: "test",
-          reference: "test-#{SecureRandom.hex(4)}", # Unique reference
-          date: Date.today
+      -> {
+        {
+          category: {
+            title: "test",
+            description: "test",
+            reference: "test-#{SecureRandom.hex(4)}", # Unique reference
+            date: Date.today
+          }
         }
-      } }
+      }
 
     include_examples "permission system",
-     'category',
-     :update,
-     :put,
-     -> {
-       category = FactoryBot.create(:category)
-       {
-         id: category.id,
-         category: {
-           title: "updated",
-           description: "updated"
-         }
-       }
-     }
+      "category",
+      :update,
+      :put,
+      -> {
+        category = FactoryBot.create(:category)
+        {
+          id: category.id,
+          category: {
+            title: "updated",
+            description: "updated"
+          }
+        }
+      }
 
-   include_examples "permission system",
-     'category',
-     :destroy,
-     :delete,
-     -> {
-       category = FactoryBot.create(:category)
-       { id: category.id }
-     }
+    include_examples "permission system",
+      "category",
+      :destroy,
+      :delete,
+      -> {
+        category = FactoryBot.create(:category)
+        {id: category.id}
+      }
   end
   describe "Scope permission system tests: categories" do
     include_examples "filtered scope permission system",
-      'category', :draft, 'view_draft', true
+      "category", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      'category', :is_archive, 'view_archived', true
+      "category", :is_archive, "view_archived", true
 
     include_examples "show with scope permission system",
-      'category', :draft, 'view_draft', true
+      "category", :draft, "view_draft", true
 
     include_examples "show with scope permission system",
-      'category', :is_archive, 'view_archived', true
+      "category", :is_archive, "view_archived", true
   end
 end

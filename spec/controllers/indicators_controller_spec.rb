@@ -172,7 +172,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
     # Define roles once at the top of the describe block
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('indicator', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("indicator", "create")
     end
 
     def self.all_roles
@@ -184,7 +184,7 @@ RSpec.describe IndicatorsController, type: :controller do
     end
 
     def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('indicator', 'modify_is_archive')
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("indicator", "modify_is_archive")
     end
 
     def self.forbidden_modify_archive_roles
@@ -299,7 +299,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
     # Define roles at class level
     def self.allowed_update_roles
-      @allowed_update_roles ||= Permissions.roles_with_permission('indicator', 'update')
+      @allowed_update_roles ||= Permissions.roles_with_permission("indicator", "update")
     end
 
     def self.all_roles
@@ -344,7 +344,7 @@ RSpec.describe IndicatorsController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        indicator_get = get :show, params: { id: indicator }, format: :json
+        indicator_get = get :show, params: {id: indicator}, format: :json
         json = JSON.parse(indicator_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
@@ -402,7 +402,7 @@ RSpec.describe IndicatorsController, type: :controller do
         sign_in admin
         put :update, format: :json, params: {
           id: indicator,
-          indicator: { title: "" }
+          indicator: {title: ""}
         }
         expect(response).to have_http_status(422)
       end
@@ -411,11 +411,11 @@ RSpec.describe IndicatorsController, type: :controller do
 
   describe "Delete destroy" do
     let(:indicator) { FactoryBot.create(:indicator) }
-    subject { delete :destroy, format: :json, params: { id: indicator } }
+    subject { delete :destroy, format: :json, params: {id: indicator} }
 
     # Define roles at class level
     def self.allowed_destroy_roles
-      @allowed_destroy_roles ||= Permissions.roles_with_permission('indicator', 'destroy')
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("indicator", "destroy")
     end
 
     def self.all_roles
@@ -470,52 +470,54 @@ RSpec.describe IndicatorsController, type: :controller do
 
   describe "Permission system tests: indicators" do
     include_examples "permission system",
-      'indicator',
+      "indicator",
       :create,
       :post,
-      -> { {
-        indicator: {
-          title: "test",
-          description: "test",
-          reference: "test-#{SecureRandom.hex(4)}" # Unique reference
+      -> {
+        {
+          indicator: {
+            title: "test",
+            description: "test",
+            reference: "test-#{SecureRandom.hex(4)}" # Unique reference
+          }
         }
-      } }
+      }
 
     include_examples "permission system",
-     'indicator',
-     :update,
-     :put,
-     -> {
-       indicator = FactoryBot.create(:indicator)
-       {
-         id: indicator.id,
-         indicator: {
-           title: "updated",
-           description: "updated"
-         }
-       }
-     }
+      "indicator",
+      :update,
+      :put,
+      -> {
+        indicator = FactoryBot.create(:indicator)
+        {
+          id: indicator.id,
+          indicator: {
+            title: "updated",
+            description: "updated"
+          }
+        }
+      }
 
-   include_examples "permission system",
-     'indicator',
-     :destroy,
-     :delete,
-     -> {
-       indicator = FactoryBot.create(:indicator)
-       { id: indicator.id }
-     }
+    include_examples "permission system",
+      "indicator",
+      :destroy,
+      :delete,
+      -> {
+        indicator = FactoryBot.create(:indicator)
+        {id: indicator.id}
+      }
   end
   describe "Scope permission system tests: indicators" do
     include_examples "filtered scope permission system",
-      'indicator', :draft, 'view_draft', true
+      "indicator", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      'indicator', :is_archive, 'view_archived', true
+      "indicator", :is_archive, "view_archived", true
 
     include_examples "show with scope permission system",
-      'indicator', :draft, 'view_draft', true
+      "indicator", :draft, "view_draft", true
 
     include_examples "show with scope permission system",
-      'indicator', :is_archive, 'view_archived', true
+      "indicator", :is_archive, "view_archived", true
   end
 end

@@ -257,7 +257,7 @@ RSpec.describe UsersController, type: :controller do
 
     # Define roles at class level
     def self.update_self_permission
-      @update_self_permission ||= Permissions.allowed_for('user', 'update_self')
+      @update_self_permission ||= Permissions.allowed_for("user", "update_self")
     end
 
     def self.update_self_enabled_for_all?
@@ -266,8 +266,8 @@ RSpec.describe UsersController, type: :controller do
 
     def self.update_self_disabled?
       update_self_permission == false ||
-      update_self_permission.nil? ||
-      (update_self_permission.is_a?(Array) && update_self_permission.empty?)
+        update_self_permission.nil? ||
+        (update_self_permission.is_a?(Array) && update_self_permission.empty?)
     end
 
     def self.update_self_roles
@@ -276,11 +276,11 @@ RSpec.describe UsersController, type: :controller do
     end
 
     def self.allowed_update_any_roles
-      @allowed_update_any_roles ||= Permissions.roles_with_permission('user', 'update_any')
+      @allowed_update_any_roles ||= Permissions.roles_with_permission("user", "update_any")
     end
 
     def self.allowed_update_lower_roles
-      @allowed_update_lower_roles ||= Permissions.roles_with_permission('user', 'update_lower')
+      @allowed_update_lower_roles ||= Permissions.roles_with_permission("user", "update_lower")
     end
 
     def self.all_roles
@@ -304,7 +304,7 @@ RSpec.describe UsersController, type: :controller do
 
             response = put :update, format: :json, params: {
               id: user.id,
-              user: { name: "Updated Name" }
+              user: {name: "Updated Name"}
             }
             expect(response).to be_ok
           end
@@ -316,7 +316,7 @@ RSpec.describe UsersController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user.id,
-                user: { name: "Updated Name" }
+                user: {name: "Updated Name"}
               }
               expect(response).to be_ok
             end
@@ -327,7 +327,7 @@ RSpec.describe UsersController, type: :controller do
             sign_in guest
             response = put :update, format: :json, params: {
               id: guest.id,
-              user: { name: "Updated Name" }
+              user: {name: "Updated Name"}
             }
             expect(response).to be_forbidden
 
@@ -338,7 +338,7 @@ RSpec.describe UsersController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user.id,
-                user: { name: "Updated Name" }
+                user: {name: "Updated Name"}
               }
               expect(response).to be_forbidden
             end
@@ -352,7 +352,7 @@ RSpec.describe UsersController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user.id,
-                user: { name: "Updated Name" }
+                user: {name: "Updated Name"}
               }
               expect(response).to be_ok
             end
@@ -367,7 +367,7 @@ RSpec.describe UsersController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user.id,
-                user: { name: "Updated Name" }
+                user: {name: "Updated Name"}
               }
               expect(response).to be_forbidden
             end
@@ -378,7 +378,7 @@ RSpec.describe UsersController, type: :controller do
 
             response = put :update, format: :json, params: {
               id: guest.id,
-              user: { name: "Updated Name" }
+              user: {name: "Updated Name"}
             }
             expect(response).to be_forbidden
           end
@@ -392,7 +392,7 @@ RSpec.describe UsersController, type: :controller do
 
           response = put :update, format: :json, params: {
             id: other_user.id,
-            user: { name: "Updated Name" }
+            user: {name: "Updated Name"}
           }
           expect(response).to be_not_found
         end
@@ -409,7 +409,7 @@ RSpec.describe UsersController, type: :controller do
 
                 response = put :update, format: :json, params: {
                   id: target.id,
-                  user: { name: "Updated Name" }
+                  user: {name: "Updated Name"}
                 }
                 expect(response).to be_ok
               end
@@ -435,7 +435,7 @@ RSpec.describe UsersController, type: :controller do
 
                   response = put :update, format: :json, params: {
                     id: target.id,
-                    user: { name: "Updated Name" }
+                    user: {name: "Updated Name"}
                   }
                   expect(response).to be_ok
                 end
@@ -446,7 +446,7 @@ RSpec.describe UsersController, type: :controller do
 
                   response = put :update, format: :json, params: {
                     id: target.id,
-                    user: { name: "Updated Name" }
+                    user: {name: "Updated Name"}
                   }
                   expect(response).to be_forbidden
                 end
@@ -457,7 +457,7 @@ RSpec.describe UsersController, type: :controller do
 
         # Test roles without update permissions
         roles_without_update = all_roles - allowed_update_any_roles - allowed_update_lower_roles
-        allowed_view_all_roles = Permissions.roles_with_permission('user', 'view_all')
+        allowed_view_all_roles = Permissions.roles_with_permission("user", "view_all")
 
         roles_without_update.each do |role|
           it "does not allow #{role} to update other users" do
@@ -467,7 +467,7 @@ RSpec.describe UsersController, type: :controller do
 
             response = put :update, format: :json, params: {
               id: other_user.id,
-              user: { name: "Updated Name" }
+              user: {name: "Updated Name"}
             }
 
             # If role can view all users, they see forbidden; otherwise not_found due to scope
@@ -484,7 +484,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe "Delete destroy" do
     let(:target_user) { FactoryBot.create(:user, :contributor) }
-    subject { delete :destroy, format: :json, params: { id: target_user } }
+    subject { delete :destroy, format: :json, params: {id: target_user} }
 
     context "when not signed in" do
       it "does not allow deleting a user" do
@@ -504,7 +504,7 @@ RSpec.describe UsersController, type: :controller do
         user = FactoryBot.create(:user, :contributor)
         sign_in user
 
-        response = delete :destroy, format: :json, params: { id: user.id }
+        response = delete :destroy, format: :json, params: {id: user.id}
         expect(response).to be_forbidden
       end
 

@@ -32,7 +32,7 @@ class ProgressReportPolicy < ApplicationPolicy
   def update?
     # Can't update archived unless specifically allowed
     return false if @record.try(:is_archive) &&
-                    !@user.has_any_role?(allowed_roles_for(:update_archived))
+      !@user.has_any_role?(allowed_roles_for(:update_archived))
 
     # Standard update permission
     return true if @user.has_any_role?(allowed_roles_for(:update))

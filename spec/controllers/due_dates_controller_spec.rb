@@ -114,7 +114,7 @@ RSpec.describe DueDatesController, type: :controller do
     let(:params) {
       {
         id: due_date,
-        due_date: { due_date: 1.year.ago.to_s }
+        due_date: {due_date: 1.year.ago.to_s}
       }
     }
     subject { put :update, format: :json, params: params }
@@ -146,7 +146,7 @@ RSpec.describe DueDatesController, type: :controller do
 
   describe "Delete destroy" do
     let(:due_date) { FactoryBot.create(:due_date) }
-    subject { delete :destroy, format: :json, params: { id: due_date } }
+    subject { delete :destroy, format: :json, params: {id: due_date} }
 
     context "when not signed in" do
       it "does not allow deleting a due_date" do
@@ -175,6 +175,6 @@ RSpec.describe DueDatesController, type: :controller do
 
   describe "Scope permission system tests" do
     include_examples "all or nothing scope permission system",
-      'due_date', 'view_all'
+      "due_date", "view_all"
   end
 end

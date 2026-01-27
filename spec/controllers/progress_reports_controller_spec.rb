@@ -118,11 +118,11 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     # Define roles at class level
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('progress_report', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("progress_report", "create")
     end
 
     def self.allowed_create_own_roles
-      @allowed_create_own_roles ||= Permissions.roles_with_permission('progress_report', 'create_own')
+      @allowed_create_own_roles ||= Permissions.roles_with_permission("progress_report", "create_own")
     end
 
     def self.all_roles
@@ -134,7 +134,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
 
     def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('progress_report', 'modify_is_archive')
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("progress_report", "modify_is_archive")
     end
 
     def self.forbidden_modify_archive_roles
@@ -300,11 +300,11 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     # Define roles at class level
     def self.allowed_update_roles
-      @allowed_update_roles ||= Permissions.roles_with_permission('progress_report', 'update')
+      @allowed_update_roles ||= Permissions.roles_with_permission("progress_report", "update")
     end
 
     def self.allowed_update_own_roles
-      @allowed_update_own_roles ||= Permissions.roles_with_permission('progress_report', 'update_own')
+      @allowed_update_own_roles ||= Permissions.roles_with_permission("progress_report", "update_own")
     end
 
     def self.all_roles
@@ -316,7 +316,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
 
     def self.allowed_update_archived_roles
-      @allowed_update_archived_roles ||= Permissions.roles_with_permission('progress_report', 'update_archived')
+      @allowed_update_archived_roles ||= Permissions.roles_with_permission("progress_report", "update_archived")
     end
 
     def self.forbidden_update_archived_roles
@@ -371,7 +371,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user_draft_report,
-                progress_report: { title: "test update", description: "test update" }
+                progress_report: {title: "test update", description: "test update"}
               }
               expect(response).to be_ok
             end
@@ -381,7 +381,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user_draft_report,
-                progress_report: { draft: false, title: "test update", description: "test update" }
+                progress_report: {draft: false, title: "test update", description: "test update"}
               }
               expect(response).to be_forbidden
             end
@@ -391,7 +391,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: user_published_report,
-                progress_report: { title: "test update", description: "test update" }
+                progress_report: {title: "test update", description: "test update"}
               }
               expect(response).to be_forbidden
             end
@@ -401,7 +401,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
               response = put :update, format: :json, params: {
                 id: other_draft_report,
-                progress_report: { title: "test update", description: "test update" }
+                progress_report: {title: "test update", description: "test update"}
               }
               expect(response).to be_forbidden
             end
@@ -447,7 +447,7 @@ RSpec.describe ProgressReportsController, type: :controller do
           sign_in contributor
           response = put :update, format: :json, params: {
             id: archived_draft,
-            progress_report: { title: "test update", description: "test update" }
+            progress_report: {title: "test update", description: "test update"}
           }
           expect(response).to be_forbidden
         end
@@ -475,7 +475,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        progress_report_get = get :show, params: { id: progress_report }, format: :json
+        progress_report_get = get :show, params: {id: progress_report}, format: :json
         json = JSON.parse(progress_report_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
@@ -533,7 +533,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         sign_in admin
         put :update, format: :json, params: {
           id: progress_report,
-          progress_report: { title: "" }
+          progress_report: {title: ""}
         }
         expect(response).to have_http_status(422)
       end
@@ -542,7 +542,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
   describe "Delete destroy" do
     let(:progress_report) { FactoryBot.create(:progress_report) }
-    subject { delete :destroy, format: :json, params: { id: progress_report } }
+    subject { delete :destroy, format: :json, params: {id: progress_report} }
 
     context "when not signed in" do
       it "does not allow deleting a progress_report" do

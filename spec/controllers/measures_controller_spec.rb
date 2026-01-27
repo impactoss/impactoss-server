@@ -153,7 +153,7 @@ RSpec.describe MeasuresController, type: :controller do
 
     # Define roles once at the top of the describe block
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('measure', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("measure", "create")
     end
 
     def self.all_roles
@@ -165,7 +165,7 @@ RSpec.describe MeasuresController, type: :controller do
     end
 
     def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('measure', 'modify_is_archive')
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("measure", "modify_is_archive")
     end
 
     def self.forbidden_modify_archive_roles
@@ -280,7 +280,7 @@ RSpec.describe MeasuresController, type: :controller do
 
     # Define roles at class level
     def self.allowed_update_roles
-      @allowed_update_roles ||= Permissions.roles_with_permission('measure', 'update')
+      @allowed_update_roles ||= Permissions.roles_with_permission("measure", "update")
     end
 
     def self.all_roles
@@ -292,7 +292,7 @@ RSpec.describe MeasuresController, type: :controller do
     end
 
     def self.allowed_update_archived_roles
-      @allowed_update_archived_roles ||= Permissions.roles_with_permission('measure', 'update_archived')
+      @allowed_update_archived_roles ||= Permissions.roles_with_permission("measure", "update_archived")
     end
 
     def self.forbidden_update_archived_roles
@@ -333,7 +333,7 @@ RSpec.describe MeasuresController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        measure_get = get :show, params: { id: measure }, format: :json
+        measure_get = get :show, params: {id: measure}, format: :json
         json = JSON.parse(measure_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
@@ -391,7 +391,7 @@ RSpec.describe MeasuresController, type: :controller do
         sign_in admin
         put :update, format: :json, params: {
           id: measure,
-          measure: { title: "" }
+          measure: {title: ""}
         }
         expect(response).to have_http_status(422)
       end
@@ -432,11 +432,11 @@ RSpec.describe MeasuresController, type: :controller do
 
   describe "Delete destroy" do
     let(:measure) { FactoryBot.create(:measure) }
-    subject { delete :destroy, format: :json, params: { id: measure } }
+    subject { delete :destroy, format: :json, params: {id: measure} }
 
     # Define roles at class level
     def self.allowed_destroy_roles
-      @allowed_destroy_roles ||= Permissions.roles_with_permission('measure', 'destroy')
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("measure", "destroy")
     end
 
     def self.all_roles
@@ -531,15 +531,15 @@ RSpec.describe MeasuresController, type: :controller do
   end
   describe "Scope permission system tests: measures" do
     include_examples "filtered scope permission system",
-      'measure', :draft, 'view_draft', true
+      "measure", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      'measure', :is_archive, 'view_archived', true
+      "measure", :is_archive, "view_archived", true
 
     include_examples "show with scope permission system",
-      'measure', :draft, 'view_draft', true
+      "measure", :draft, "view_draft", true
 
     include_examples "show with scope permission system",
-      'measure', :is_archive, 'view_archived', true
+      "measure", :is_archive, "view_archived", true
   end
 end

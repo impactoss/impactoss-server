@@ -12,7 +12,7 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
 
   describe "Get show" do
     let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject { get :show, params: { id: recommendation_recommendation }, format: :json }
+    subject { get :show, params: {id: recommendation_recommendation}, format: :json }
 
     context "when not signed in" do
       it { expect(subject).to be_ok }
@@ -39,7 +39,7 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
 
     # Define roles at class level - falls back to application permissions
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('recommendation_recommendation', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("recommendation_recommendation", "create")
     end
 
     def self.all_roles
@@ -101,11 +101,11 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
 
   describe "Delete destroy" do
     let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject { delete :destroy, format: :json, params: { id: recommendation_recommendation } }
+    subject { delete :destroy, format: :json, params: {id: recommendation_recommendation} }
 
     # Define roles at class level - falls back to application permissions
     def self.allowed_destroy_roles
-      @allowed_destroy_roles ||= Permissions.roles_with_permission('recommendation_recommendation', 'destroy')
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("recommendation_recommendation", "destroy")
     end
 
     def self.all_roles
@@ -147,7 +147,7 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
       end
 
       context "when the recommendation_recommendation does not exist" do
-        let(:recommendation_recommendation) { { id: -1 } }
+        let(:recommendation_recommendation) { {id: -1} }
 
         it "returns the same response as a successful deletion" do
           admin = FactoryBot.create(:user, :admin)

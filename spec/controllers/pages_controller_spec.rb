@@ -108,7 +108,7 @@ RSpec.describe PagesController, type: :controller do
 
     # Define roles once at the top of the describe block
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('page', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("page", "create")
     end
 
     def self.all_roles
@@ -120,7 +120,7 @@ RSpec.describe PagesController, type: :controller do
     end
 
     def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('page', 'modify_is_archive')
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("page", "modify_is_archive")
     end
 
     def self.forbidden_modify_archive_roles
@@ -233,7 +233,7 @@ RSpec.describe PagesController, type: :controller do
 
     # Define roles at class level
     def self.allowed_update_roles
-      @allowed_update_roles ||= Permissions.roles_with_permission('page', 'update')
+      @allowed_update_roles ||= Permissions.roles_with_permission("page", "update")
     end
 
     def self.all_roles
@@ -278,7 +278,7 @@ RSpec.describe PagesController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        page_get = get :show, params: { id: page }, format: :json
+        page_get = get :show, params: {id: page}, format: :json
         json = JSON.parse(page_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
@@ -367,51 +367,53 @@ RSpec.describe PagesController, type: :controller do
 
   describe "Permission system tests: pages" do
     include_examples "permission system",
-      'page',
+      "page",
       :create,
       :post,
-      -> { {
-        page: {
-          title: "test",
-          content: "test"
+      -> {
+        {
+          page: {
+            title: "test",
+            content: "test"
+          }
         }
-      } }
+      }
 
     include_examples "permission system",
-     'page',
-     :update,
-     :put,
-     -> {
-       page = FactoryBot.create(:page)
-       {
-         id: page.id,
-         page: {
-           title: "updated",
-           content: "updated"
-         }
-       }
-     }
+      "page",
+      :update,
+      :put,
+      -> {
+        page = FactoryBot.create(:page)
+        {
+          id: page.id,
+          page: {
+            title: "updated",
+            content: "updated"
+          }
+        }
+      }
 
-   include_examples "permission system",
-     'page',
-     :destroy,
-     :delete,
-     -> {
-       page = FactoryBot.create(:page)
-       { id: page.id }
-     }
+    include_examples "permission system",
+      "page",
+      :destroy,
+      :delete,
+      -> {
+        page = FactoryBot.create(:page)
+        {id: page.id}
+      }
   end
   describe "Scope permission system tests: pages" do
     include_examples "filtered scope permission system",
-      'page', :draft, 'view_draft', true
+      "page", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      'page', :is_archive, 'view_archived', true
+      "page", :is_archive, "view_archived", true
 
     include_examples "show with scope permission system",
-      'page', :draft, 'view_draft', true
+      "page", :draft, "view_draft", true
 
     include_examples "show with scope permission system",
-      'page', :is_archive, 'view_archived', true
+      "page", :is_archive, "view_archived", true
   end
 end

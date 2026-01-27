@@ -165,7 +165,7 @@ RSpec.describe RecommendationsController, type: :controller do
 
     # Define roles once at the top of the describe block
     def self.allowed_create_roles
-      @allowed_create_roles ||= Permissions.roles_with_permission('recommendation', 'create')
+      @allowed_create_roles ||= Permissions.roles_with_permission("recommendation", "create")
     end
 
     def self.all_roles
@@ -177,7 +177,7 @@ RSpec.describe RecommendationsController, type: :controller do
     end
 
     def self.allowed_modify_archive_roles
-      @allowed_modify_archive_roles ||= Permissions.roles_with_permission('recommendation', 'modify_is_archive')
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("recommendation", "modify_is_archive")
     end
 
     def self.forbidden_modify_archive_roles
@@ -289,7 +289,7 @@ RSpec.describe RecommendationsController, type: :controller do
 
     # Define roles at class level
     def self.allowed_update_roles
-      @allowed_update_roles ||= Permissions.roles_with_permission('recommendation', 'update')
+      @allowed_update_roles ||= Permissions.roles_with_permission("recommendation", "update")
     end
 
     def self.all_roles
@@ -301,7 +301,7 @@ RSpec.describe RecommendationsController, type: :controller do
     end
 
     def self.allowed_update_archived_roles
-      @allowed_update_archived_roles ||= Permissions.roles_with_permission('recommendation', 'update_archived')
+      @allowed_update_archived_roles ||= Permissions.roles_with_permission("recommendation", "update_archived")
     end
 
     def self.forbidden_update_archived_roles
@@ -342,7 +342,7 @@ RSpec.describe RecommendationsController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        recommendation_get = get :show, params: { id: recommendation }, format: :json
+        recommendation_get = get :show, params: {id: recommendation}, format: :json
         json = JSON.parse(recommendation_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
@@ -400,7 +400,7 @@ RSpec.describe RecommendationsController, type: :controller do
         sign_in admin
         put :update, format: :json, params: {
           id: recommendation,
-          recommendation: { title: "" }
+          recommendation: {title: ""}
         }
         expect(response).to have_http_status(422)
       end
@@ -441,11 +441,11 @@ RSpec.describe RecommendationsController, type: :controller do
 
   describe "Delete destroy" do
     let(:recommendation) { FactoryBot.create(:recommendation) }
-    subject { delete :destroy, format: :json, params: { id: recommendation } }
+    subject { delete :destroy, format: :json, params: {id: recommendation} }
 
     # Define roles at class level
     def self.allowed_destroy_roles
-      @allowed_destroy_roles ||= Permissions.roles_with_permission('recommendation', 'destroy')
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("recommendation", "destroy")
     end
 
     def self.all_roles
@@ -500,52 +500,54 @@ RSpec.describe RecommendationsController, type: :controller do
 
   describe "Permission system tests: recommendations" do
     include_examples "permission system",
-      'recommendation',
+      "recommendation",
       :create,
       :post,
-      -> { {
-        recommendation: {
-          title: "test",
-          description: "test",
-          reference: "test-#{SecureRandom.hex(4)}" # Unique reference
+      -> {
+        {
+          recommendation: {
+            title: "test",
+            description: "test",
+            reference: "test-#{SecureRandom.hex(4)}" # Unique reference
+          }
         }
-      } }
+      }
 
     include_examples "permission system",
-     'recommendation',
-     :update,
-     :put,
-     -> {
-       recommendation = FactoryBot.create(:recommendation)
-       {
-         id: recommendation.id,
-         recommendation: {
-           title: "updated",
-           description: "updated"
-         }
-       }
-     }
+      "recommendation",
+      :update,
+      :put,
+      -> {
+        recommendation = FactoryBot.create(:recommendation)
+        {
+          id: recommendation.id,
+          recommendation: {
+            title: "updated",
+            description: "updated"
+          }
+        }
+      }
 
-   include_examples "permission system",
-     'recommendation',
-     :destroy,
-     :delete,
-     -> {
-       recommendation = FactoryBot.create(:recommendation)
-       { id: recommendation.id }
-     }
+    include_examples "permission system",
+      "recommendation",
+      :destroy,
+      :delete,
+      -> {
+        recommendation = FactoryBot.create(:recommendation)
+        {id: recommendation.id}
+      }
   end
   describe "Scope permission system tests: recommendations" do
     include_examples "filtered scope permission system",
-      'recommendation', :draft, 'view_draft', true
+      "recommendation", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      'recommendation', :is_archive, 'view_archived', true
+      "recommendation", :is_archive, "view_archived", true
 
     include_examples "show with scope permission system",
-      'recommendation', :draft, 'view_draft', true
+      "recommendation", :draft, "view_draft", true
 
     include_examples "show with scope permission system",
-      'recommendation', :is_archive, 'view_archived', true
+      "recommendation", :is_archive, "view_archived", true
   end
 end

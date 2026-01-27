@@ -83,13 +83,31 @@ end
 # Scope permission tests - Index with filtering
 RSpec.shared_examples "filtered scope permission system" do |model_name, field_name, permission_name, field_value|
   describe "#{model_name} #{permission_name} scope permission system" do
-    let!(:normal_record) { FactoryBot.create(model_name.to_sym) }
-    let!(:filtered_record) { FactoryBot.create(model_name.to_sym, field_name => field_value) }
+    let!(:normal_record) {
+      # Normal record = published (not draft, not archived)
+      attrs = {}
+      attrs[:draft] = false
+      attrs[:is_archive] = false if field_name != :is_archive
+      FactoryBot.create(model_name.to_sym, **attrs)
+    }
+    let!(:filtered_record) {
+      # Filtered record should ONLY have the field we're testing set to true
+      # All other visibility fields should be false (maximally visible except for the one we're testing)
+      attrs = {field_name => field_value}
 
+      # Set other visibility fields to false
+      if field_name == :draft
+        attrs[:is_archive] = false
+      elsif field_name == :is_archive
+        attrs[:draft] = false
+      end
+
+      FactoryBot.create(model_name.to_sym, **attrs)
+    }
     [
-      { config: ['admin'], description: "admin-only" },
-      { config: ['contributor'], description: "all roles" },
-      { config: [], description: "no roles" }
+      {config: ["admin"], description: "admin-only"},
+      {config: ["contributor"], description: "all roles"},
+      {config: [], description: "no roles"}
     ].each do |test_case|
       context "when #{permission_name} configured as #{test_case[:description]}" do
         before do
@@ -104,7 +122,7 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
             .and_return(test_case[:config])
 
           # Also stub other scope permissions
-          scope_permissions = ['view_draft', 'view_archived'].reject { |p| p == permission_name.to_s }
+          scope_permissions = ["view_draft", "view_archived"].reject { |p| p == permission_name.to_s }
           scope_permissions.each do |perm|
             allow(Permissions).to receive(:allowed_for)
               .with(model_name, perm)
@@ -117,7 +135,6 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
 
         it "filters records correctly based on permission" do
           min_level = test_case[:config].map { |r| Permissions::ROLE_HIERARCHY[r] }.compact.min
-
           Permissions::ROLE_HIERARCHY.each do |role, level|
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
@@ -158,22 +175,22 @@ RSpec.shared_examples "all or nothing scope permission system" do |model_name, p
     let!(:record) { FactoryBot.create(model_name.to_sym) }
 
     [
-      { config: ['admin'], description: "admin-only" },
-      { config: ['contributor'], description: "all roles" },
-      { config: [], description: "no roles" }
+      {config: ["admin"], description: "admin-only"},
+      {config: ["contributor"], description: "all roles"},
+      {config: [], description: "no roles"}
     ].each do |test_case|
       context "when #{permission_name} configured as #{test_case[:description]}" do
         before do
-           allow(Permissions).to receive(:allowed_for).and_call_original
+          allow(Permissions).to receive(:allowed_for).and_call_original
 
-           # Stub for both string and symbol versions
-           allow(Permissions).to receive(:allowed_for)
-             .with(model_name, permission_name)
-             .and_return(test_case[:config])
-           allow(Permissions).to receive(:allowed_for)
-             .with(model_name, permission_name.to_sym)
-             .and_return(test_case[:config])
-         end
+          # Stub for both string and symbol versions
+          allow(Permissions).to receive(:allowed_for)
+            .with(model_name, permission_name)
+            .and_return(test_case[:config])
+          allow(Permissions).to receive(:allowed_for)
+            .with(model_name, permission_name.to_sym)
+            .and_return(test_case[:config])
+        end
 
         it "enforces all-or-nothing visibility based on permission" do
           min_level = test_case[:config].map { |r| Permissions::ROLE_HIERARCHY[r] }.compact.min
@@ -210,13 +227,31 @@ end
 # Scope permission tests - Show with filtering
 RSpec.shared_examples "show with scope permission system" do |model_name, field_name, permission_name, field_value|
   describe "#{model_name} show #{permission_name} permission system" do
-    let!(:normal_record) { FactoryBot.create(model_name.to_sym) }
-    let!(:filtered_record) { FactoryBot.create(model_name.to_sym, field_name => field_value) }
+    let!(:normal_record) {
+      # Normal record = published (not draft, not archived)
+      attrs = {}
+      attrs[:draft] = false
+      attrs[:is_archive] = false if field_name != :is_archive
+      FactoryBot.create(model_name.to_sym, **attrs)
+    }
+    let!(:filtered_record) {
+      # Filtered record should ONLY have the field we're testing set to true
+      # All other visibility fields should be false (maximally visible except for the one we're testing)
+      attrs = {field_name => field_value}
 
+      # Set other visibility fields to false
+      if field_name == :draft
+        attrs[:is_archive] = false
+      elsif field_name == :is_archive
+        attrs[:draft] = false
+      end
+
+      FactoryBot.create(model_name.to_sym, **attrs)
+    }
     [
-      { config: ['admin'], description: "admin-only" },
-      { config: ['contributor'], description: "all roles" },
-      { config: [], description: "no roles" }
+      {config: ["admin"], description: "admin-only"},
+      {config: ["contributor"], description: "all roles"},
+      {config: [], description: "no roles"}
     ].each do |test_case|
       context "when #{permission_name} configured as #{test_case[:description]}" do
         before do
@@ -229,7 +264,7 @@ RSpec.shared_examples "show with scope permission system" do |model_name, field_
             .with(model_name, permission_name.to_sym)
             .and_return(test_case[:config])
 
-          scope_permissions = ['view_draft', 'view_archived'].reject { |p| p == permission_name.to_s }
+          scope_permissions = ["view_draft", "view_archived"].reject { |p| p == permission_name.to_s }
           scope_permissions.each do |perm|
             allow(Permissions).to receive(:allowed_for)
               .with(model_name, perm)
@@ -245,7 +280,7 @@ RSpec.shared_examples "show with scope permission system" do |model_name, field_
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
 
-            get :show, params: { id: normal_record.id }, format: :json
+            get :show, params: {id: normal_record.id}, format: :json
             expect(response).to be_ok,
               "#{role} should see normal records"
           end
@@ -258,7 +293,7 @@ RSpec.shared_examples "show with scope permission system" do |model_name, field_
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
 
-            get :show, params: { id: filtered_record.id }, format: :json
+            get :show, params: {id: filtered_record.id}, format: :json
 
             if min_level && level >= min_level
               expect(response).to be_ok,
@@ -271,12 +306,12 @@ RSpec.shared_examples "show with scope permission system" do |model_name, field_
         end
 
         it "public users cannot view filtered records" do
-          get :show, params: { id: filtered_record.id }, format: :json
+          get :show, params: {id: filtered_record.id}, format: :json
           expect(response).to be_not_found
         end
 
         it "public users can view normal records" do
-          get :show, params: { id: normal_record.id }, format: :json
+          get :show, params: {id: normal_record.id}, format: :json
           expect(response).to be_ok
         end
       end
