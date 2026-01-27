@@ -9,7 +9,7 @@ RSpec.describe DueDatesController, type: :controller do
 
     # Define roles at class level
     def self.allowed_view_all_roles
-      @allowed_view_all_roles ||= Permissions.roles_with_permission('due_date', 'view_all')
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("due_date", "view_all")
     end
 
     def self.all_roles

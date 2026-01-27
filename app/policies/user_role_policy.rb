@@ -8,6 +8,7 @@ class UserRolePolicy < ApplicationPolicy
     # Others can only see their own user_roles
     @record.user_id == @user.id
   end
+
   def update?
     false
   end

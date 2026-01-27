@@ -18,11 +18,11 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     # Define roles at class level
     def self.allowed_view_archived_roles
-      @allowed_view_archived_roles ||= Permissions.roles_with_permission('progress_report', 'view_archived')
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission("progress_report", "view_archived")
     end
 
     def self.allowed_view_draft_roles
-      @allowed_view_draft_roles ||= Permissions.roles_with_permission('progress_report', 'view_draft')
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission("progress_report", "view_draft")
     end
 
     def self.all_roles
@@ -456,7 +456,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
             # If role can view archived, they see it but get forbidden
             # Otherwise they can't see it at all (not_found due to scope)
-            allowed_view_archived = Permissions.roles_with_permission('progress_report', 'view_archived')
+            allowed_view_archived = Permissions.roles_with_permission("progress_report", "view_archived")
             if allowed_view_archived.include?(role)
               expect(response).to be_forbidden
             else
@@ -475,11 +475,11 @@ RSpec.describe ProgressReportsController, type: :controller do
             sign_in user
             response = put :update, format: :json, params: {
               id: archived_draft,
-              progress_report: { title: "test update", description: "test update" }
+              progress_report: {title: "test update", description: "test update"}
             }
 
             # Check view_archived permission for expected response
-            allowed_view_archived = Permissions.roles_with_permission('progress_report', 'view_archived')
+            allowed_view_archived = Permissions.roles_with_permission("progress_report", "view_archived")
             if allowed_view_archived.include?(role)
               expect(response).to be_forbidden  # Sees it but blocked by archived check
             else

@@ -9,7 +9,7 @@ RSpec.describe UserRolesController, type: :controller do
 
     # Define roles at class level
     def self.allowed_view_all_roles
-      @allowed_view_all_roles ||= Permissions.roles_with_permission('user_role', 'view_all')
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("user_role", "view_all")
     end
 
     def self.all_roles
@@ -65,12 +65,12 @@ RSpec.describe UserRolesController, type: :controller do
     let(:target_user_role) { target_user.user_roles.first }
 
     subject {
-      get :show, params: { id: target_user_role.id }, format: :json
+      get :show, params: {id: target_user_role.id}, format: :json
     }
 
     # Define roles at class level
     def self.allowed_view_all_roles
-      @allowed_view_all_roles ||= Permissions.roles_with_permission('user_role', 'view_all')
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("user_role", "view_all")
     end
 
     def self.all_roles
@@ -97,7 +97,7 @@ RSpec.describe UserRolesController, type: :controller do
           user = FactoryBot.create(:user, role.to_sym)
           sign_in user
 
-          response = get :show, params: { id: user.user_roles.first.id }, format: :json
+          response = get :show, params: {id: user.user_roles.first.id}, format: :json
           json = JSON.parse(response.body)
           expect(json.dig("data", "id").to_i).to eq(user.user_roles.first.id)
         end
@@ -111,7 +111,7 @@ RSpec.describe UserRolesController, type: :controller do
           # Access directly at class level, not via self.class
           can_view = allowed_view_all_roles.include?(role)
 
-          it "#{can_view ? 'can' : 'cannot'} see it" do
+          it "#{can_view ? "can" : "cannot"} see it" do
             sign_in user
 
             if self.class.allowed_view_all_roles.include?(role)

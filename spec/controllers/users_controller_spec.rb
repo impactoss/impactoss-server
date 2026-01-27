@@ -6,11 +6,11 @@ RSpec.describe UsersController, type: :controller do
 
     # Define roles at class level
     def self.allowed_view_all_roles
-      @allowed_view_all_roles ||= Permissions.roles_with_permission('user', 'view_all')
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("user", "view_all")
     end
 
     def self.allowed_show_email_roles
-      @allowed_show_email_roles ||= Permissions.roles_with_permission('user', 'show_email')
+      @allowed_show_email_roles ||= Permissions.roles_with_permission("user", "show_email")
     end
 
     def self.all_roles
@@ -82,15 +82,15 @@ RSpec.describe UsersController, type: :controller do
 
   describe "Get show" do
     let(:target_user) { FactoryBot.create(:user, :contributor) }
-    subject { get :show, params: { id: target_user.id }, format: :json }
+    subject { get :show, params: {id: target_user.id}, format: :json }
 
     # Define roles at class level
     def self.allowed_view_all_roles
-      @allowed_view_all_roles ||= Permissions.roles_with_permission('user', 'view_all')
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("user", "view_all")
     end
 
     def self.allowed_show_email_roles
-      @allowed_show_email_roles ||= Permissions.roles_with_permission('user', 'show_email')
+      @allowed_show_email_roles ||= Permissions.roles_with_permission("user", "show_email")
     end
 
     def self.all_roles
@@ -113,7 +113,7 @@ RSpec.describe UsersController, type: :controller do
 
       it "guest can see themselves" do
         sign_in guest
-        response = get :show, params: { id: guest.id }, format: :json
+        response = get :show, params: {id: guest.id}, format: :json
         json = JSON.parse(response.body)
         expect(json.dig("data", "id").to_i).to eq(guest.id)
         expect(json.dig("data", "attributes", "email")).to eq(guest.email)
@@ -126,7 +126,7 @@ RSpec.describe UsersController, type: :controller do
           user = FactoryBot.create(:user, role.to_sym)
           sign_in user
 
-          response = get :show, params: { id: user.id }, format: :json
+          response = get :show, params: {id: user.id}, format: :json
           json = JSON.parse(response.body)
           expect(json.dig("data", "id").to_i).to eq(user.id)
           expect(json.dig("data", "attributes", "email")).to eq(user.email)
@@ -142,7 +142,7 @@ RSpec.describe UsersController, type: :controller do
           # Compute at class level
           can_view = allowed_view_all_roles.include?(role)
 
-          it "#{can_view ? 'can' : 'cannot'} see it" do
+          it "#{can_view ? "can" : "cannot"} see it" do
             sign_in user
 
             if self.class.allowed_view_all_roles.include?(role)

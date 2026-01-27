@@ -15,11 +15,11 @@ RSpec.describe CategoriesController, type: :controller do
 
     # Define roles at class level
     def self.allowed_view_archived_roles
-      @allowed_view_archived_roles ||= Permissions.roles_with_permission('category', 'view_archived')
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission("category", "view_archived")
     end
 
     def self.allowed_view_draft_roles
-      @allowed_view_draft_roles ||= Permissions.roles_with_permission('category', 'view_draft')
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission("category", "view_draft")
     end
 
     def self.all_roles
