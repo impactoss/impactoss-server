@@ -18,6 +18,47 @@ RSpec.describe Indicator, type: :model do
   it { is_expected.to have_many :recommendations }
   it { is_expected.to belong_to(:manager).optional }
 
+  context "Sub-relation validations" do
+    let(:indicator) { FactoryBot.create(:indicator) }
+
+    # Define allowed roles at class level
+    def self.allowed_assign_roles
+      @allowed_assign_roles ||= Permissions.roles_with_permission('indicator', 'assign_as_responsible')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_assign_roles
+      @forbidden_assign_roles ||= all_roles - allowed_assign_roles
+    end
+
+    it "does not allow guest users (no roles) to be assigned as manager" do
+      user = FactoryBot.create(:user)
+      indicator.manager_id = user.id
+      expect { indicator.save! }.to raise_exception(/must have one of these roles/)
+    end
+
+    allowed_assign_roles.each do |role|
+      it "allows #{role} users to be assigned as manager" do
+        user = FactoryBot.create(:user, role.to_sym)
+        expect {
+          indicator.manager_id = user.id
+          indicator.save!
+        }.to change { indicator.reload.manager_id }.from(nil).to(user.id)
+      end
+    end
+
+    forbidden_assign_roles.each do |role|
+      it "does not allow #{role} users to be assigned as manager" do
+        user = FactoryBot.create(:user, role.to_sym)
+        indicator.manager_id = user.id
+        expect { indicator.save! }.to raise_exception(/must have one of these roles/)
+      end
+    end
+  end
+
   context "due_date field validations" do
     let!(:indicator_with_repeat) { FactoryBot.create(:indicator, :with_repeat) }
     let!(:indicator_without_repeat) { FactoryBot.create(:indicator, :without_repeat) }

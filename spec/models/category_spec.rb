@@ -11,36 +11,43 @@ RSpec.describe Category, type: :model do
   it { is_expected.to have_many :categories }
 
   context "Sub-relation validations" do
-    it "will not allow guest users to be assigned" do
-      category = FactoryBot.create(:category)
+    let(:category) { FactoryBot.create(:category) }
+
+    # Define allowed roles at class level
+    def self.allowed_assign_roles
+      @allowed_assign_roles ||= Permissions.roles_with_permission('category', 'assign_as_responsible')
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_assign_roles
+      @forbidden_assign_roles ||= all_roles - allowed_assign_roles
+    end
+
+    it "does not allow guest users (no roles) to be assigned as manager" do
       user = FactoryBot.create(:user)
       category.manager_id = user.id
       expect { category.save! }.to raise_exception(/must have one of these roles/)
     end
 
-    it "will not allow contributor users to be assigned" do
-      category = FactoryBot.create(:category)
-      user = FactoryBot.create(:user, :contributor)
-      category.manager_id = user.id
-      expect { category.save! }.to raise_exception(/must have one of these roles/)
+    allowed_assign_roles.each do |role|
+      it "allows #{role} users to be assigned as manager" do
+        user = FactoryBot.create(:user, role.to_sym)
+        expect {
+          category.manager_id = user.id
+          category.save!
+        }.to change { category.reload.manager_id }.from(nil).to(user.id)
+      end
     end
 
-    it "will allow manager users to be assigned" do
-      category = FactoryBot.create(:category)
-      user = FactoryBot.create(:user, :manager)
-      expect {
+    forbidden_assign_roles.each do |role|
+      it "does not allow #{role} users to be assigned as manager" do
+        user = FactoryBot.create(:user, role.to_sym)
         category.manager_id = user.id
-        category.save!
-      }.to change { category.reload.manager_id }.from(nil).to(user.id)
-    end
-
-    it "will allow admin users to be assigned" do
-      category = FactoryBot.create(:category)
-      user = FactoryBot.create(:user, :admin)
-      expect {
-        category.manager_id = user.id
-        category.save!
-      }.to change { category.reload.manager_id }.from(nil).to(user.id)
+        expect { category.save! }.to raise_exception(/must have one of these roles/)
+      end
     end
 
     it "Should update parent_id with correct taxonomy relation" do
