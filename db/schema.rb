@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_28_145900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -150,6 +150,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.boolean "is_archive", default: false, null: false
     t.index ["draft"], name: "index_measures_on_draft"
     t.index ["reference"], name: "index_measures_on_reference", unique: true
+  end
+
+  create_table "old_passwords", force: :cascade do |t|
+    t.string "encrypted_password", null: false
+    t.string "password_archivable_type", null: false
+    t.integer "password_archivable_id", null: false
+    t.datetime "created_at"
+    t.index ["password_archivable_type", "password_archivable_id"], name: "index_password_archivable"
   end
 
   create_table "pages", id: :serial, force: :cascade do |t|
@@ -320,6 +328,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.integer "created_by_id"
     t.datetime "relationship_updated_at"
     t.bigint "relationship_updated_by_id"
+    t.integer "failed_attempts", default: 0, null: false
+    t.datetime "locked_at"
+    t.datetime "password_changed_at"
+    t.datetime "confirmed_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

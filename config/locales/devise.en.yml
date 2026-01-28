@@ -16,17 +16,18 @@ en:
       already_authenticated: "You are already signed in."
       inactive: "Your account is not activated yet."
       invalid: "Invalid %{authentication_keys} or password."
-      locked: "Your account is locked."
+      locked: "Your account has been locked for 5 minutes due to too many failed attempts."
       last_attempt: "You have one more attempt before your account is locked."
       not_found_in_database: "Invalid %{authentication_keys} or password."
       timeout: "Your session expired. Please sign in again to continue."
       unauthenticated: "You need to sign in or sign up before continuing."
       unconfirmed: "You have to confirm your email address before continuing."
+      password_expired: "Your password has expired. Please update your password to continue."
     mailer:
       confirmation_instructions:
         subject: "Confirmation instructions"
         confirm_link_msg: "You can confirm your account email through the link below:"
-        confirm_account_link: "Confirm my account"        
+        confirm_account_link: "Confirm my account"
       reset_password_instructions:
         subject: "Reset password instructions"
         request_reset_link_msg: "Someone has requested a link to change your password. You can do this through the link below."
@@ -35,9 +36,9 @@ en:
         no_changes_msg: "Your password won't change until you access the link above and create a new one."
       unlock_instructions:
         subject: "Unlock instructions"
-        account_lock_msg: "Your account has been locked due to an excessive number of unsuccessful sign in attempts."
+        account_lock_msg: "Your account has been locked for 5 minutes due to too many failed login attempts."
         unlock_link_msg: "Click the link below to unlock your account:"
-        unlock_link: "Unlock my account"        
+        unlock_link: "Unlock my account"
       password_change:
         subject: "Password Changed"
     omniauth_callbacks:

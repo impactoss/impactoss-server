@@ -12,7 +12,9 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    false
+    return true if @record.id == @user.id
+    return true if @user.role?("admin")
+    @user.role?("manager") && !(@record.role?("admin") || @record.role?("manager"))
   end
 
   def destroy?
@@ -20,7 +22,12 @@ class UserPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:email, :password, :password_confirmation, :name]
+    [
+      :name,
+      :password,
+      :password_confirmation,
+      (:email if @record.new_record?)
+    ].compact
   end
 
   def show_email?

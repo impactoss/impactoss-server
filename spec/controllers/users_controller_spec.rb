@@ -251,7 +251,7 @@ RSpec.describe UsersController, type: :controller do
       put :update,
         format: :json,
         params: {
-          id: contributor.id, user: {email: "test@co.nz", password: "testtest", name: "Sam"}
+          id: contributor.id, user: {name: "Sam"}
         }
     end
 
@@ -274,39 +274,91 @@ RSpec.describe UsersController, type: :controller do
         expect(subject).to be_not_found
       end
 
-      it "will not allow a user to update themselves" do
+      it "will allow a user to update themselves" do
         sign_in contributor
-        expect(subject).to be_forbidden
+        expect(subject).to be_ok
+        json = JSON.parse(subject.body)
+        expect(json["data"]["id"].to_i).to eq(contributor.id)
+        expect(json["data"]["attributes"]["name"]).to eq "Sam"
       end
 
-      it "will not allow a an manager to update themself, contributors, and guests" do
+      it "will allow a manager to update themself, contributors, and guests" do
         sign_in manager
-        expect(subject).to be_forbidden
+        expect(subject).to be_ok
+        json = JSON.parse(subject.body)
+        expect(json["data"]["id"].to_i).to eq(contributor.id)
+        expect(json["data"]["attributes"]["name"]).to eq "Sam"
+
         subject2 = put :update,
           format: :json,
-          params: {
-            id: guest.id, user: {email: "test@co.guest.nz", password: "testtest", name: "Sam"}
-          }
+          params: {id: guest.id, user: {name: "Sam"}}
+        expect(subject2).to be_ok
+        json = JSON.parse(subject2.body)
+        expect(json["data"]["id"].to_i).to eq(guest.id)
+        expect(json["data"]["attributes"]["name"]).to eq "Sam"
+      end
+
+      it "will not allow a manager to update another manager or admin" do
+        sign_in manager
+        subject2 = put :update,
+          format: :json,
+          params: {id: manager2.id, user: {name: "Sam"}}
+        expect(subject2).to be_forbidden
+
+        subject2 = put :update,
+          format: :json,
+          params: {id: admin.id, user: {name: "Sam"}}
         expect(subject2).to be_forbidden
       end
-      it "will not allow a an manager to another manager or admin" do
-        sign_in manager
-        subject2 = put :update,
-          format: :json,
-          params: {
-            id: manager2.id, user: {email: "test@co.guest.nz", password: "testtest", name: "Sam"}
-          }
-        expect(subject2).to be_forbidden
-        subject2 = put :update,
-          format: :json,
-          params: {
-            id: admin.id, user: {email: "test@co.guest.nz", password: "testtest", name: "Sam"}
-          }
-        expect(subject2).to be_forbidden
-      end
-      it "will not allow an admin to update any user" do
+
+      it "will allow an admin to update any user" do
         sign_in admin
-        expect(subject).to be_forbidden
+        expect(subject).to be_ok
+        json = JSON.parse(subject.body)
+        expect(json["data"]["id"].to_i).to eq(contributor.id)
+        expect(json["data"]["attributes"]["name"]).to eq "Sam"
+      end
+
+      context "email update" do
+        let(:new_email) { "new.email@example.com" }
+
+        subject do
+          put :update,
+            format: :json,
+            params: {id: target_user.id, user: {email: new_email, name: "New Name"}}
+        end
+
+        context "as non-admin user" do
+          let(:user) { FactoryBot.create(:user) }
+          let(:target_user) { user }  # Updating own profile
+
+          before { sign_in user }
+
+          it "does not update email" do
+            expect(subject).to be_ok
+            json = JSON.parse(subject.body)
+            # Email remains unchanged
+            expect(json.dig("data", "attributes", "email")).not_to eq(new_email)
+            expect(target_user.reload.email).not_to eq(new_email)
+            # Name should update though
+            expect(target_user.reload.name).to eq("New Name")
+          end
+        end
+
+        context "as admin user" do
+          let(:user) { FactoryBot.create(:user, :admin) }
+          let(:target_user) { FactoryBot.create(:user) }
+
+          before { sign_in user }
+
+          it "does not update email either (per security policy)" do
+            # NO ONE can change email at current config
+            expect(subject).to be_ok
+            json = JSON.parse(subject.body)
+            expect(json.dig("data", "attributes", "email")).not_to eq(new_email)
+            expect(target_user.reload.email).not_to eq(new_email)
+          end
+        end
       end
     end
   end
