@@ -49,7 +49,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
       # Test each role's visibility based on permissions
       all_roles.each do |role|
-        context "#{role}" do
+        context role.to_s do
           let(:user) { FactoryBot.create(:user, role.to_sym) }
 
           it "sees appropriate progress_reports based on permissions" do

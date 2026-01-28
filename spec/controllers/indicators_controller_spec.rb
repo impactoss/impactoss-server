@@ -50,7 +50,7 @@ RSpec.describe IndicatorsController, type: :controller do
 
       # Test each role's visibility based on permissions
       all_roles.each do |role|
-        context "#{role}" do
+        context role.to_s do
           let(:user) { FactoryBot.create(:user, role.to_sym) }
 
           it "sees appropriate indicators based on permissions" do

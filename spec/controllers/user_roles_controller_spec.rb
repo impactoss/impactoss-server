@@ -39,7 +39,7 @@ RSpec.describe UserRolesController, type: :controller do
 
       # Test each role's visibility based on view_all permission
       all_roles.each do |role|
-        context "#{role}" do
+        context role.to_s do
           let(:user) { FactoryBot.create(:user, role.to_sym) }
 
           it "sees appropriate user_roles based on permissions" do
