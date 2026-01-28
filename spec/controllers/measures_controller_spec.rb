@@ -12,9 +12,9 @@ RSpec.describe MeasuresController, type: :controller do
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:measure) { FactoryBot.create(:measure, reference: "Published Measure") }
-    let!(:archived_measure) { FactoryBot.create(:measure, is_archive: true, reference: "Archived Measure") }
-    let!(:draft_measure) { FactoryBot.create(:measure, draft: true, reference: "Draft Measure") }
+    let!(:measure) { FactoryBot.create(:measure, :published, reference: "Published Measure") }
+    let!(:archived_measure) { FactoryBot.create(:measure, :published, :is_archive, reference: "Archived Measure") }
+    let!(:draft_measure) { FactoryBot.create(:measure, :draft, reference: "Draft Measure") }
 
     # Define roles at class level
     def self.allowed_view_archived_roles
@@ -85,12 +85,12 @@ RSpec.describe MeasuresController, type: :controller do
     end
 
     context "filters" do
-      let(:category) { FactoryBot.create(:category) }
-      let(:measure_different_category) { FactoryBot.create(:measure) }
-      let(:recommendation) { FactoryBot.create(:recommendation) }
-      let(:measure_different_recommendation) { FactoryBot.create(:measure) }
-      let(:indicator) { FactoryBot.create(:indicator) }
-      let(:measure_different_indicator) { FactoryBot.create(:measure) }
+      let(:category) { FactoryBot.create(:category, :published) }
+      let(:measure_different_category) { FactoryBot.create(:measure, :published) }
+      let(:recommendation) { FactoryBot.create(:recommendation, :published) }
+      let(:measure_different_recommendation) { FactoryBot.create(:measure, :published) }
+      let(:indicator) { FactoryBot.create(:indicator, :published) }
+      let(:measure_different_indicator) { FactoryBot.create(:measure, :published) }
 
       it "filters from category" do
         measure_different_category.categories << category
@@ -125,9 +125,9 @@ RSpec.describe MeasuresController, type: :controller do
   end
 
   describe "Get show" do
-    let(:measure) { FactoryBot.create(:measure, reference: "Published Measure") }
-    let(:archived_measure) { FactoryBot.create(:measure, draft: true, reference: "Archived Measure") }
-    let(:draft_measure) { FactoryBot.create(:measure, draft: true, reference: "Draft Measure") }
+    let(:measure) { FactoryBot.create(:measure, :published, reference: "Published Measure") }
+    let(:archived_measure) { FactoryBot.create(:measure, :is_archive, reference: "Archived Measure") }
+    let(:draft_measure) { FactoryBot.create(:measure, :draft, reference: "Draft Measure") }
 
     def show(subject_measure)
       get :show, params: {id: subject_measure}, format: :json
@@ -154,8 +154,8 @@ RSpec.describe MeasuresController, type: :controller do
   end
 
   describe "Post create" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
-    let(:category) { FactoryBot.create(:category) }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published) }
+    let(:category) { FactoryBot.create(:category, :published) }
     let(:params) {
       {
         measure: {
@@ -179,6 +179,14 @@ RSpec.describe MeasuresController, type: :controller do
 
     def self.forbidden_create_roles
       @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("measure", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -211,7 +219,7 @@ RSpec.describe MeasuresController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:params_with_archive) {
           {
             measure: {
@@ -238,6 +246,49 @@ RSpec.describe MeasuresController, type: :controller do
         end
       end
 
+      context "modify draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            measure: {
+              description: "test",
+              reference: "test reference",
+              target_date: Date.today,
+              title: "test",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       if allowed_create_roles.any?
         it "records what user created the measure", versioning: true do
           expect(PaperTrail).to be_enabled
@@ -261,7 +312,7 @@ RSpec.describe MeasuresController, type: :controller do
   end
 
   describe "PUT update" do
-    let(:measure) { FactoryBot.create(:measure) }
+    let(:measure) { FactoryBot.create(:measure, :published) }
     let(:params) {
       {
         id: measure,
@@ -302,6 +353,14 @@ RSpec.describe MeasuresController, type: :controller do
 
     def self.forbidden_modify_archive_roles
       @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("measure", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -401,8 +460,8 @@ RSpec.describe MeasuresController, type: :controller do
         expect(response).to have_http_status(422)
       end
 
-      context "is_archive attribute" do
-        let(:measure) { FactoryBot.create(:measure) }
+      context "modify is_archive attribute" do
+        let(:measure) { FactoryBot.create(:measure, :published) }
         let(:params_with_archive) {
           {
             id: measure,
@@ -445,8 +504,50 @@ RSpec.describe MeasuresController, type: :controller do
         end
       end
 
+      context "modify draft attribute" do
+        let(:measure) { FactoryBot.create(:measure, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: measure,
+            measure: {
+              title: "test update",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       context "when is_archive: true" do
-        let(:archived_measure) { FactoryBot.create(:measure, :is_archive) }
+        let(:archived_measure) { FactoryBot.create(:measure, :published, :is_archive) }
         let(:archived_params) {
           {
             id: archived_measure,
@@ -488,7 +589,7 @@ RSpec.describe MeasuresController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:measure) { FactoryBot.create(:measure) }
+    let(:measure) { FactoryBot.create(:measure, :published) }
     subject { delete :destroy, format: :json, params: {id: measure} }
 
     # Define roles at class level
@@ -567,7 +668,7 @@ RSpec.describe MeasuresController, type: :controller do
       :update,
       :put,
       -> {
-        measure = FactoryBot.create(:measure)
+        measure = FactoryBot.create(:measure, :published)
         {
           id: measure.id,
           measure: {
@@ -582,7 +683,7 @@ RSpec.describe MeasuresController, type: :controller do
       :destroy,
       :delete,
       -> {
-        measure = FactoryBot.create(:measure)
+        measure = FactoryBot.create(:measure, :published)
         {id: measure.id}
       }
   end

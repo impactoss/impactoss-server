@@ -12,9 +12,9 @@ RSpec.describe IndicatorsController, type: :controller do
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:indicator) { FactoryBot.create(:indicator, reference: "Published Indicator") }
-    let!(:archived_indicator) { FactoryBot.create(:indicator, is_archive: true, reference: "Archived Indicator") }
-    let!(:draft_indicator) { FactoryBot.create(:indicator, draft: true, reference: "Draft Indicator") }
+    let!(:indicator) { FactoryBot.create(:indicator, :published, reference: "Published Indicator") }
+    let!(:archived_indicator) { FactoryBot.create(:indicator, :published, :is_archive, reference: "Archived Indicator") }
+    let!(:draft_indicator) { FactoryBot.create(:indicator, :draft, reference: "Draft Indicator") }
 
     # Define roles at class level
     def self.allowed_view_archived_roles
@@ -89,25 +89,25 @@ RSpec.describe IndicatorsController, type: :controller do
       end
 
       context "when current_only=true" do
-        let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
-        let!(:non_current_recommendation) { FactoryBot.create(:recommendation) }
-        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation) }
+        let!(:current_category) { FactoryBot.create(:category, :published, :has_date, taxonomy: reporting_cycle_taxonomy) }
+        let!(:non_current_recommendation) { FactoryBot.create(:recommendation, :published) }
+        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation, :published) }
         let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
-        let!(:recommendation) { FactoryBot.create(:recommendation) }
+        let!(:recommendation) { FactoryBot.create(:recommendation, :published) }
         let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
         let!(:non_current_recommendation_measure) do
           FactoryBot.create(:recommendation_measure, measure: non_current_measure, recommendation: non_current_recommendation)
         end
-        let!(:non_current_measure) { FactoryBot.create(:measure) }
-        let!(:non_current_indicator) { FactoryBot.create(:indicator, reference: "Non-Current Indicator") }
+        let!(:non_current_measure) { FactoryBot.create(:measure, :published) }
+        let!(:non_current_indicator) { FactoryBot.create(:indicator, :published, reference: "Non-Current Indicator") }
         let!(:non_current_measure_indicator) do
           FactoryBot.create(:measure_indicator, measure: non_current_measure, indicator: non_current_indicator)
         end
 
         before do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
-          parent_category = FactoryBot.create(:category, taxonomy: parent_taxonomy)
-          non_current_category = FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
+          parent_category = FactoryBot.create(:category, :published, taxonomy: parent_taxonomy)
+          non_current_category = FactoryBot.create(:category, :published, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
           current_category.category = parent_category
           recommendation.categories = [parent_category, current_category]
           non_reporting_cycle_recommendation.categories = [parent_category]
@@ -130,8 +130,8 @@ RSpec.describe IndicatorsController, type: :controller do
     end
 
     context "filters" do
-      let(:measure) { FactoryBot.create(:measure) }
-      let(:indicator_different_measure) { FactoryBot.create(:indicator) }
+      let(:measure) { FactoryBot.create(:measure, :published) }
+      let(:indicator_different_measure) { FactoryBot.create(:indicator, :published) }
 
       it "filters from measures" do
         indicator_different_measure.measures << measure
@@ -146,9 +146,9 @@ RSpec.describe IndicatorsController, type: :controller do
   end
 
   describe "Get show" do
-    let(:indicator) { FactoryBot.create(:indicator, reference: "Published Indicator") }
-    let(:archived_indicator) { FactoryBot.create(:indicator, is_archive: true, reference: "Archived Indicator") }
-    let(:draft_indicator) { FactoryBot.create(:indicator, draft: true, reference: "Draft Indicator") }
+    let(:indicator) { FactoryBot.create(:indicator, :published, reference: "Published Indicator") }
+    let(:archived_indicator) { FactoryBot.create(:indicator, :published, :is_archive, reference: "Archived Indicator") }
+    let(:draft_indicator) { FactoryBot.create(:indicator, :draft, reference: "Draft Indicator") }
 
     def show(subject_indicator)
       get :show, params: {id: subject_indicator}, format: :json
@@ -175,7 +175,7 @@ RSpec.describe IndicatorsController, type: :controller do
   end
 
   describe "Post create" do
-    let(:measure) { FactoryBot.create(:measure) }
+    let(:measure) { FactoryBot.create(:measure, :published) }
     let(:params) {
       {
         indicator: {
@@ -199,6 +199,14 @@ RSpec.describe IndicatorsController, type: :controller do
 
     def self.forbidden_create_roles
       @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("indicator", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -231,15 +239,15 @@ RSpec.describe IndicatorsController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:params_with_archive) {
           {
             indicator: {
               description: "test",
-              is_archive: true,
               reference: "test reference",
               target_date: "today",
-              title: "test"
+              title: "test",
+              is_archive: true
             }
           }
         }
@@ -255,6 +263,49 @@ RSpec.describe IndicatorsController, type: :controller do
           expect(response).to be_created
           # is_archive is always filtered on create, regardless of permissions
           expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+        end
+      end
+
+      context "modify draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            indicator: {
+              description: "test",
+              reference: "test reference",
+              target_date: "today",
+              title: "test",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
         end
       end
 
@@ -282,7 +333,7 @@ RSpec.describe IndicatorsController, type: :controller do
   end
 
   describe "PUT update" do
-    let!(:indicator) { FactoryBot.create(:indicator) }
+    let!(:indicator) { FactoryBot.create(:indicator, :published) }
     let(:params) {
       {
         id: indicator,
@@ -317,6 +368,14 @@ RSpec.describe IndicatorsController, type: :controller do
       @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
     end
 
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("indicator", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
+    end
+
     context "when not signed in" do
       it "does not allow updating an indicator" do
         expect(subject).to be_unauthorized
@@ -347,8 +406,8 @@ RSpec.describe IndicatorsController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
-        let(:indicator) { FactoryBot.create(:indicator) }
+      context "modify is_archive attribute" do
+        let(:indicator) { FactoryBot.create(:indicator, :published) }
         let(:params_with_archive) {
           {
             id: indicator,
@@ -385,6 +444,48 @@ RSpec.describe IndicatorsController, type: :controller do
             expect(response).to be_ok
             # is_archive filtered by permitted_attributes, remains false
             expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
+      end
+
+      context "modify draft attribute" do
+        let(:indicator) { FactoryBot.create(:indicator, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: indicator,
+            indicator: {
+              title: "test update",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
           end
         end
       end
@@ -459,7 +560,7 @@ RSpec.describe IndicatorsController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:indicator) { FactoryBot.create(:indicator, :published) }
     subject { delete :destroy, format: :json, params: {id: indicator} }
 
     # Define roles at class level
@@ -537,7 +638,7 @@ RSpec.describe IndicatorsController, type: :controller do
       :update,
       :put,
       -> {
-        indicator = FactoryBot.create(:indicator)
+        indicator = FactoryBot.create(:indicator, :published)
         {
           id: indicator.id,
           indicator: {
@@ -552,7 +653,7 @@ RSpec.describe IndicatorsController, type: :controller do
       :destroy,
       :delete,
       -> {
-        indicator = FactoryBot.create(:indicator)
+        indicator = FactoryBot.create(:indicator, :published)
         {id: indicator.id}
       }
   end

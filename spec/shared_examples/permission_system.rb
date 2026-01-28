@@ -129,6 +129,7 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
         it "filters records correctly based on permission" do
           min_level = test_case[:config].map { |r| Permissions::ROLE_HIERARCHY[r] }.compact.min
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
           # DEBUG
           puts "Normal record: #{normal_record.inspect}"
@@ -137,6 +138,8 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
           puts "Filtered record: #{filtered_record.inspect}"
           puts "Testing field: #{field_name}"
 >>>>>>> 1c35cd6 (make publishing role dependent)
+=======
+>>>>>>> f9ba6a8 (make publishing (draft attribute) role dependent (continued), also configure SG permissions)
           Permissions::ROLE_HIERARCHY.each do |role, level|
             user = FactoryBot.create(:user, role.to_sym)
             sign_in user
@@ -144,8 +147,6 @@ RSpec.shared_examples "filtered scope permission system" do |model_name, field_n
             get :index, format: :json
             json = JSON.parse(response.body)
             ids = json["data"].map { |d| d["id"].to_i }
-            # DEBUG
-            puts "#{role}: sees IDs #{ids}, normal_record.id=#{normal_record.id}, filtered_record.id=#{filtered_record.id}"
 
             expect(ids).to include(normal_record.id),
               "#{role} should see normal records"

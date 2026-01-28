@@ -12,9 +12,9 @@ RSpec.describe RecommendationsController, type: :controller do
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:recommendation) { FactoryBot.create(:recommendation, reference: "Published Recommendation") }
-    let!(:archived_recommendation) { FactoryBot.create(:recommendation, is_archive: true, reference: "Archived Recommendation") }
-    let!(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true, reference: "Draft Recommendation") }
+    let!(:recommendation) { FactoryBot.create(:recommendation, :published, reference: "Published Recommendation") }
+    let!(:archived_recommendation) { FactoryBot.create(:recommendation, :published, :is_archive, reference: "Archived Recommendation") }
+    let!(:draft_recommendation) { FactoryBot.create(:recommendation, :draft, reference: "Draft Recommendation") }
 
     # Define roles at class level
     def self.allowed_view_archived_roles
@@ -87,15 +87,15 @@ RSpec.describe RecommendationsController, type: :controller do
       context "when current_only=true" do
         let!(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
         let!(:reporting_cycle_taxonomy) { FactoryBot.create(:taxonomy, title: "reporting_cycle", has_date: true, taxonomy: parent_taxonomy) }
-        let!(:current_category) { FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy) }
-        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation, reference: "Non-Reporting-Cycle Recommendation") }
-        let!(:non_current_recommendation) { FactoryBot.create(:recommendation, reference: "Non-Current Recommendation") }
+        let!(:current_category) { FactoryBot.create(:category, :published, :has_date, taxonomy: reporting_cycle_taxonomy) }
+        let!(:non_reporting_cycle_recommendation) { FactoryBot.create(:recommendation, :published, reference: "Non-Reporting-Cycle Recommendation") }
+        let!(:non_current_recommendation) { FactoryBot.create(:recommendation, :published, reference: "Non-Current Recommendation") }
         let(:admin) { FactoryBot.create(:user, :admin) }
 
         before do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
-          parent_category = FactoryBot.create(:category, taxonomy: parent_taxonomy)
-          non_current_category = FactoryBot.create(:category, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
+          parent_category = FactoryBot.create(:category, :published, taxonomy: parent_taxonomy)
+          non_current_category = FactoryBot.create(:category, :published, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
           current_category.category = parent_category
           recommendation.categories = [parent_category, current_category]
           non_reporting_cycle_recommendation.categories = [parent_category]
@@ -118,10 +118,10 @@ RSpec.describe RecommendationsController, type: :controller do
     end
 
     context "filters" do
-      let(:category) { FactoryBot.create(:category) }
-      let(:recommendation_different_category) { FactoryBot.create(:recommendation) }
-      let(:measure) { FactoryBot.create(:measure) }
-      let(:recommendation_different_measure) { FactoryBot.create(:recommendation) }
+      let(:category) { FactoryBot.create(:category, :published) }
+      let(:recommendation_different_category) { FactoryBot.create(:recommendation, :published) }
+      let(:measure) { FactoryBot.create(:measure, :published) }
+      let(:recommendation_different_measure) { FactoryBot.create(:recommendation, :published) }
 
       it "filters from category" do
         recommendation_different_category.categories << category
@@ -142,9 +142,9 @@ RSpec.describe RecommendationsController, type: :controller do
   end
 
   describe "Get show" do
-    let(:recommendation) { FactoryBot.create(:recommendation, reference: "Published Recommendation") }
-    let(:archived_recommendation) { FactoryBot.create(:recommendation, is_archive: true, reference: "Archived Recommendation") }
-    let(:draft_recommendation) { FactoryBot.create(:recommendation, draft: true, reference: "Draft Recommendation") }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published, reference: "Published Recommendation") }
+    let(:archived_recommendation) { FactoryBot.create(:recommendation, :published, :is_archive, reference: "Archived Recommendation") }
+    let(:draft_recommendation) { FactoryBot.create(:recommendation, :draft, reference: "Draft Recommendation") }
 
     def show(subject_recommendation)
       get :show, params: {id: subject_recommendation}, format: :json
@@ -171,7 +171,7 @@ RSpec.describe RecommendationsController, type: :controller do
   end
 
   describe "Post create" do
-    let(:category) { FactoryBot.create(:category) }
+    let(:category) { FactoryBot.create(:category, :published) }
     let(:params) {
       {
         recommendation: {
@@ -193,6 +193,14 @@ RSpec.describe RecommendationsController, type: :controller do
 
     def self.forbidden_create_roles
       @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("recommendation", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -225,7 +233,7 @@ RSpec.describe RecommendationsController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:params_with_archive) {
           {
             recommendation: {
@@ -250,6 +258,47 @@ RSpec.describe RecommendationsController, type: :controller do
         end
       end
 
+      context "modify draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            recommendation: {
+              title: "test",
+              reference: "1",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       it "records what user created the recommendation", versioning: true do
         expect(PaperTrail).to be_enabled
         admin = FactoryBot.create(:user, :admin)
@@ -270,7 +319,7 @@ RSpec.describe RecommendationsController, type: :controller do
   end
 
   describe "PUT update" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published) }
     let(:params) {
       {
         id: recommendation,
@@ -312,6 +361,14 @@ RSpec.describe RecommendationsController, type: :controller do
       @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
     end
 
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("recommendation", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
+    end
+
     context "when not signed in" do
       it "does not allow updating a recommendation" do
         expect(subject).to be_unauthorized
@@ -342,8 +399,8 @@ RSpec.describe RecommendationsController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
-        let(:recommendation) { FactoryBot.create(:recommendation) }
+      context "modify is_archive attribute" do
+        let(:recommendation) { FactoryBot.create(:recommendation, :published) }
         let(:params_with_archive) {
           {
             id: recommendation,
@@ -380,6 +437,48 @@ RSpec.describe RecommendationsController, type: :controller do
             expect(response).to be_ok
             # is_archive filtered by permitted_attributes, remains false
             expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
+      end
+
+      context "modify draft attribute" do
+        let(:recommendation) { FactoryBot.create(:recommendation, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: recommendation,
+            recommendation: {
+              title: "test update",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
           end
         end
       end
@@ -452,7 +551,7 @@ RSpec.describe RecommendationsController, type: :controller do
       end
 
       context "when is_archive: true" do
-        let(:archived_recommendation) { FactoryBot.create(:recommendation, :is_archive) }
+        let(:archived_recommendation) { FactoryBot.create(:recommendation, :published, :is_archive) }
         let(:archived_params) {
           {
             id: archived_recommendation,
@@ -494,7 +593,7 @@ RSpec.describe RecommendationsController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published) }
     subject { delete :destroy, format: :json, params: {id: recommendation} }
 
     # Define roles at class level
@@ -572,7 +671,7 @@ RSpec.describe RecommendationsController, type: :controller do
       :update,
       :put,
       -> {
-        recommendation = FactoryBot.create(:recommendation)
+        recommendation = FactoryBot.create(:recommendation, :published)
         {
           id: recommendation.id,
           recommendation: {
@@ -587,7 +686,7 @@ RSpec.describe RecommendationsController, type: :controller do
       :destroy,
       :delete,
       -> {
-        recommendation = FactoryBot.create(:recommendation)
+        recommendation = FactoryBot.create(:recommendation, :published)
         {id: recommendation.id}
       }
   end

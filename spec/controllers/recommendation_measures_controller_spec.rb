@@ -25,8 +25,8 @@ RSpec.describe RecommendationMeasuresController, type: :controller do
   end
 
   describe "Post create" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
-    let(:measure) { FactoryBot.create(:measure) }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published) }
+    let(:measure) { FactoryBot.create(:measure, :published) }
     let(:params) {
       {
         recommendation_measure: {

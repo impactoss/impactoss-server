@@ -26,7 +26,7 @@ RSpec.describe UserCategoriesController, type: :controller do
 
   describe "Post create" do
     let(:user) { FactoryBot.create(:user) }
-    let(:category) { FactoryBot.create(:category) }
+    let(:category) { FactoryBot.create(:category, :published) }
     let(:params) {
       {
         user_category: {

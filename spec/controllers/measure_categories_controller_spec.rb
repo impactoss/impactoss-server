@@ -25,7 +25,7 @@ RSpec.describe MeasureCategoriesController, type: :controller do
   end
 
   describe "Post create" do
-    let(:measure) { FactoryBot.create(:measure) }
+    let(:measure) { FactoryBot.create(:measure, :published) }
     let(:category) { FactoryBot.create(:category) }
     let(:params) {
       {

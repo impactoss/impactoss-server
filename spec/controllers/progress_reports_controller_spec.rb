@@ -12,9 +12,9 @@ RSpec.describe ProgressReportsController, type: :controller do
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:progress_report) { FactoryBot.create(:progress_report, title: "Published Progress Report") }
-    let!(:archived_progress_report) { FactoryBot.create(:progress_report, is_archive: true, title: "Archived Progress Report") }
-    let!(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true, title: "Draft Progress Report") }
+    let!(:progress_report) { FactoryBot.create(:progress_report, :published, title: "Published Progress Report") }
+    let!(:archived_progress_report) { FactoryBot.create(:progress_report, :published, :is_archive, title: "Archived Progress Report") }
+    let!(:draft_progress_report) { FactoryBot.create(:progress_report, :draft, title: "Draft Progress Report") }
 
     # Define roles at class level
     def self.allowed_view_archived_roles
@@ -87,9 +87,9 @@ RSpec.describe ProgressReportsController, type: :controller do
   end
 
   describe "Get show" do
-    let(:progress_report) { FactoryBot.create(:progress_report, title: "Published Progress Report") }
-    let(:archived_progress_report) { FactoryBot.create(:progress_report, is_archive: true, title: "Archived Progress Report") }
-    let(:draft_progress_report) { FactoryBot.create(:progress_report, draft: true, title: "Draft Progress Report") }
+    let(:progress_report) { FactoryBot.create(:progress_report, :published, title: "Published Progress Report") }
+    let(:archived_progress_report) { FactoryBot.create(:progress_report, :published, :is_archive, title: "Archived Progress Report") }
+    let(:draft_progress_report) { FactoryBot.create(:progress_report, :draft, title: "Draft Progress Report") }
 
     def show(subject_progress_report)
       get :show, params: {
@@ -119,7 +119,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
   describe "Post create" do
     let(:due_date) { FactoryBot.create(:due_date) }
-    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:indicator) { FactoryBot.create(:indicator, :published) }
     let(:params) {
       {
         progress_report: {
@@ -149,6 +149,14 @@ RSpec.describe ProgressReportsController, type: :controller do
 
     def self.forbidden_create_roles
       @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("progress_report", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
@@ -188,7 +196,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
           context "for #{role}" do
             let(:user) { FactoryBot.create(:user, role.to_sym) }
-            let(:user_indicator) { FactoryBot.create(:indicator, manager: user) }
+            let(:user_indicator) { FactoryBot.create(:indicator, :published, manager: user) }
 
             it "does not allow creating a non-draft progress_report for their own indicator" do
               sign_in user
@@ -232,7 +240,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:params_with_archive) {
           {
             progress_report: {
@@ -261,6 +269,51 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
+      context "modify draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            progress_report: {
+              indicator_id: indicator.id,
+              due_date_id: due_date.id,
+              title: "test title",
+              description: "test desc",
+              document_url: "test_url",
+              document_public: true,
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       if allowed_create_roles.any?
         it "records what user created the progress_report", versioning: true do
           expect(PaperTrail).to be_enabled
@@ -285,9 +338,9 @@ RSpec.describe ProgressReportsController, type: :controller do
   end
 
   describe "PUT update" do
-    let(:progress_report) { FactoryBot.create(:progress_report) }
+    let(:progress_report) { FactoryBot.create(:progress_report, :published) }
     let(:due_date) { FactoryBot.create(:due_date) }
-    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:indicator) { FactoryBot.create(:indicator, :published) }
     let(:params) {
       {
         id: progress_report,
@@ -332,6 +385,14 @@ RSpec.describe ProgressReportsController, type: :controller do
       @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
     end
 
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("progress_report", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
+    end
+
     context "when not signed in" do
       it "does not allow updating a progress_report" do
         expect(subject).to be_unauthorized
@@ -369,11 +430,11 @@ RSpec.describe ProgressReportsController, type: :controller do
 
           context "for #{role}" do
             let(:user) { FactoryBot.create(:user, role.to_sym) }
-            let(:user_indicator) { FactoryBot.create(:indicator, manager: user) }
-            let(:other_indicator) { FactoryBot.create(:indicator) }
-            let(:user_draft_report) { FactoryBot.create(:progress_report, draft: true, indicator: user_indicator) }
-            let(:user_published_report) { FactoryBot.create(:progress_report, draft: false, indicator: user_indicator) }
-            let(:other_draft_report) { FactoryBot.create(:progress_report, draft: true, indicator: other_indicator) }
+            let(:user_indicator) { FactoryBot.create(:indicator, :published, manager: user) }
+            let(:other_indicator) { FactoryBot.create(:indicator, :published) }
+            let(:user_draft_report) { FactoryBot.create(:progress_report, :draft, indicator: user_indicator) }
+            let(:user_published_report) { FactoryBot.create(:progress_report, :published, indicator: user_indicator) }
+            let(:other_draft_report) { FactoryBot.create(:progress_report, :draft, indicator: other_indicator) }
 
             it "allows updating their own draft progress_report" do
               sign_in user
@@ -418,8 +479,8 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
-        let(:progress_report) { FactoryBot.create(:progress_report) }
+      context "modify is_archive attribute" do
+        let(:progress_report) { FactoryBot.create(:progress_report, :published) }
         let(:params_with_archive) {
           {
             id: progress_report,
@@ -460,8 +521,50 @@ RSpec.describe ProgressReportsController, type: :controller do
         end
       end
 
+      context "modify draft attribute" do
+        let(:progress_report) { FactoryBot.create(:progress_report, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: progress_report,
+            progress_report: {
+              title: "test update",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       context "when is_archive: true" do
-        let(:archived_report) { FactoryBot.create(:progress_report, :is_archive) }
+        let(:archived_report) { FactoryBot.create(:progress_report, :published, :is_archive) }
         let(:archived_params) {
           {
             id: archived_report,
@@ -502,8 +605,8 @@ RSpec.describe ProgressReportsController, type: :controller do
         (allowed_update_own_roles - allowed_update_archived_roles).each do |role|
           it "does not allow #{role} to update their own archived draft (archived check takes precedence)" do
             user = FactoryBot.create(:user, role.to_sym)
-            user_indicator = FactoryBot.create(:indicator, manager: user)
-            archived_draft = FactoryBot.create(:progress_report, draft: true, is_archive: true, indicator: user_indicator)
+            user_indicator = FactoryBot.create(:indicator, :published, manager: user)
+            archived_draft = FactoryBot.create(:progress_report, :draft, :is_archive, indicator: user_indicator)
 
             sign_in user
             response = put :update, format: :json, params: {
@@ -524,7 +627,7 @@ RSpec.describe ProgressReportsController, type: :controller do
 
       it "does not allow the indicator_id to be updated" do
         admin = FactoryBot.create(:user, :admin)
-        new_indicator = FactoryBot.create(:indicator)
+        new_indicator = FactoryBot.create(:indicator, :published)
         sign_in admin
 
         put :update, format: :json, params: {
@@ -610,7 +713,7 @@ RSpec.describe ProgressReportsController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:progress_report) { FactoryBot.create(:progress_report) }
+    let(:progress_report) { FactoryBot.create(:progress_report, :published) }
     subject { delete :destroy, format: :json, params: {id: progress_report} }
 
     context "when not signed in" do

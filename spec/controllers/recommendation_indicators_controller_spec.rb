@@ -25,8 +25,8 @@ RSpec.describe RecommendationIndicatorsController, type: :controller do
   end
 
   describe "Post create" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
-    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published) }
+    let(:indicator) { FactoryBot.create(:indicator, :published) }
     let(:params) {
       {
         recommendation_indicator: {

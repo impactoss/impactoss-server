@@ -25,8 +25,8 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
   end
 
   describe "Post create" do
-    let(:measure) { FactoryBot.create(:measure) }
-    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:measure) { FactoryBot.create(:measure, :published) }
+    let(:indicator) { FactoryBot.create(:indicator, :published) }
     let(:params) {
       {
         measure_indicator: {

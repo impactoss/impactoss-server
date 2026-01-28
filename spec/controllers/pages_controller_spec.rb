@@ -7,9 +7,9 @@ RSpec.describe PagesController, type: :controller do
   end
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:page) { FactoryBot.create(:page, title: "Published Page") }
-    let!(:archived_page) { FactoryBot.create(:page, is_archive: true, title: "Archived Page") }
-    let!(:draft_page) { FactoryBot.create(:page, draft: true, title: "Draft Page") }
+    let!(:page) { FactoryBot.create(:page, :published, title: "Published Page") }
+    let!(:archived_page) { FactoryBot.create(:page, :is_archive, title: "Archived Page") }
+    let!(:draft_page) { FactoryBot.create(:page, :draft, title: "Draft Page") }
 
     # Define roles at class level
     def self.allowed_view_archived_roles
@@ -82,9 +82,9 @@ RSpec.describe PagesController, type: :controller do
   end
 
   describe "Get show" do
-    let(:page) { FactoryBot.create(:page, title: "Published Page") }
-    let(:archived_page) { FactoryBot.create(:page, is_archive: true, title: "Archived Page") }
-    let(:draft_page) { FactoryBot.create(:page, draft: true, title: "Draft Page") }
+    let(:page) { FactoryBot.create(:page, :published, title: "Published Page") }
+    let(:archived_page) { FactoryBot.create(:page, :is_archive, title: "Archived Page") }
+    let(:draft_page) { FactoryBot.create(:page, :draft, title: "Draft Page") }
 
     def show(subject_page)
       get :show, params: {id: subject_page}, format: :json
@@ -136,6 +136,14 @@ RSpec.describe PagesController, type: :controller do
       @forbidden_create_roles ||= all_roles - allowed_create_roles
     end
 
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("page", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
+    end
+
     context "when not signed in" do
       it "does not allow creating a page" do
         expect(subject).to be_unauthorized
@@ -166,7 +174,7 @@ RSpec.describe PagesController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:params_with_archive) {
           {
             page: {
@@ -192,6 +200,48 @@ RSpec.describe PagesController, type: :controller do
         end
       end
 
+      context "modify draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            page: {
+              title: "test",
+              content: "bla",
+              menu_title: "test",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
       it "records what user created the page", versioning: true do
         expect(PaperTrail).to be_enabled
         admin = FactoryBot.create(:user, :admin)
@@ -212,7 +262,7 @@ RSpec.describe PagesController, type: :controller do
   end
 
   describe "PUT update" do
-    let(:page) { FactoryBot.create(:page) }
+    let(:page) { FactoryBot.create(:page, :published) }
     let(:params) {
       {
         id: page,
@@ -246,6 +296,14 @@ RSpec.describe PagesController, type: :controller do
       @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
     end
 
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("page", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
+    end
+
     context "when not signed in" do
       it "does not allow updating a page" do
         expect(subject).to be_unauthorized
@@ -276,8 +334,8 @@ RSpec.describe PagesController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
-        let(:page) { FactoryBot.create(:page) }
+      context "modify is_archive attribute" do
+        let(:page) { FactoryBot.create(:page, :published) }
         let(:params_with_archive) {
           {
             id: page,
@@ -316,6 +374,48 @@ RSpec.describe PagesController, type: :controller do
             expect(response).to be_ok
             # is_archive filtered by permitted_attributes, remains false
             expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
+      end
+
+      context "modify draft attribute" do
+        let(:page) { FactoryBot.create(:page, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: page,
+            page: {
+              title: "test update",
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
           end
         end
       end
@@ -380,7 +480,7 @@ RSpec.describe PagesController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:page) { FactoryBot.create(:page) }
+    let(:page) { FactoryBot.create(:page, :published) }
     subject { delete :destroy, format: :json, params: {id: page} }
 
     context "when not signed in" do
@@ -430,7 +530,7 @@ RSpec.describe PagesController, type: :controller do
       :update,
       :put,
       -> {
-        page = FactoryBot.create(:page)
+        page = FactoryBot.create(:page, :published)
         {
           id: page.id,
           page: {
@@ -445,7 +545,7 @@ RSpec.describe PagesController, type: :controller do
       :destroy,
       :delete,
       -> {
-        page = FactoryBot.create(:page)
+        page = FactoryBot.create(:page, :published)
         {id: page.id}
       }
   end

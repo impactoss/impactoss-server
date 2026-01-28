@@ -10,7 +10,7 @@ RSpec.describe CategoriesController, type: :controller do
     subject { get :index, format: :json }
 
     let(:category) { FactoryBot.create(:category, :published) } # published
-    let(:archived_category) { FactoryBot.create(:category, :published, is_archive: true) }
+    let(:archived_category) { FactoryBot.create(:category, :published, :is_archive) }
     let(:draft_category) { FactoryBot.create(:category, :draft) }
 
     # Define roles at class level
@@ -83,7 +83,7 @@ RSpec.describe CategoriesController, type: :controller do
 
   describe "Get show" do
     let!(:category) { FactoryBot.create(:category, :published, reference: "Published Category") }
-    let!(:archived_category) { FactoryBot.create(:category, :published, is_archive: true, reference: "Archived Category") }
+    let!(:archived_category) { FactoryBot.create(:category, :published, :is_archive, reference: "Archived Category") }
     let!(:draft_category) { FactoryBot.create(:category, :draft, reference: "Draft Category") }
 
     def show(subject_category)
@@ -179,7 +179,7 @@ RSpec.describe CategoriesController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:params_with_archive) {
           {
             category: {
@@ -207,7 +207,7 @@ RSpec.describe CategoriesController, type: :controller do
         end
       end
 
-      context "draft attribute" do
+      context "modify draft attribute" do
         let(:params_with_draft_false) {
           {
             category: {
@@ -407,7 +407,7 @@ RSpec.describe CategoriesController, type: :controller do
         end
       end
 
-      context "is_archive attribute" do
+      context "modify is_archive attribute" do
         let(:category) { FactoryBot.create(:category, :published) }
         let(:params_with_archive) {
           {
@@ -449,7 +449,7 @@ RSpec.describe CategoriesController, type: :controller do
         end
       end
 
-      context "draft attribute" do
+      context "modify draft attribute" do
         let(:category) { FactoryBot.create(:category, :draft) }
         let(:params_with_draft_false) {
           {

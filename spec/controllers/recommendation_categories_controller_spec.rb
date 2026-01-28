@@ -25,8 +25,8 @@ RSpec.describe RecommendationCategoriesController, type: :controller do
   end
 
   describe "Post create" do
-    let(:recommendation) { FactoryBot.create(:recommendation) }
-    let(:category) { FactoryBot.create(:category) }
+    let(:recommendation) { FactoryBot.create(:recommendation, :published) }
+    let(:category) { FactoryBot.create(:category, :published) }
     let(:params) {
       {
         recommendation_category: {
