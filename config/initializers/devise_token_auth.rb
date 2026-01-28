@@ -54,5 +54,5 @@ Rails.application.config.after_initialize do
   User.devise_modules.delete(:confirmable)
 
   # Also remove from Devise's list of modules
-  Devise.mappings[:user].modules.delete(:confirmable) if Devise.mappings[:user]
+  Devise.mappings[:user]&.modules&.delete(:confirmable)
 end
