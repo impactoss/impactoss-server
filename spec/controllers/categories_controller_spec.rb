@@ -8,12 +8,35 @@ RSpec.describe CategoriesController, type: :controller do
 
   describe "Get index" do
     subject { get :index, format: :json }
-    let!(:category) { FactoryBot.create(:category, reference: "Published Category") }
-    let!(:archived_category) { FactoryBot.create(:category, is_archive: true, reference: "Archived Category") }
-    let!(:draft_category) { FactoryBot.create(:category, draft: true, reference: "Draft Category") }
+
+    let(:category) { FactoryBot.create(:category, :published) } # published
+    let(:archived_category) { FactoryBot.create(:category, :published, :is_archive) }
+    let(:draft_category) { FactoryBot.create(:category, :draft) }
+
+    # Define roles at class level
+    def self.allowed_view_archived_roles
+      @allowed_view_archived_roles ||= Permissions.roles_with_permission("category", "view_archived")
+    end
+
+    def self.allowed_view_draft_roles
+      @allowed_view_draft_roles ||= Permissions.roles_with_permission("category", "view_draft")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    before do
+      # Create all categories before each test
+      category
+      archived_category
+      draft_category
+    end
 
     context "when not signed in" do
-      it { expect(subject).to be_ok }
+      it "is expected to be ok" do
+        expect(subject).to be_ok
+      end
 
       it "will see only published categories (no archived or drafts)" do
         json = JSON.parse(subject.body)
@@ -23,8 +46,6 @@ RSpec.describe CategoriesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
       it "guest will see only published categories (no archived or draft)" do
         sign_in guest
@@ -32,45 +53,38 @@ RSpec.describe CategoriesController, type: :controller do
         expect(json["data"]).to match_array([serialized(category)])
       end
 
-      it "contributor will see all categories" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(category),
-          serialized(archived_category),
-          serialized(draft_category)
-        ])
-      end
+      # Test each role's visibility based on permissions
+      all_roles.each do |role|
+        context role.to_s do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all categories" do
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"]).to match_array([
-          serialized(category),
-          serialized(archived_category),
-          serialized(draft_category)
-        ])
-      end
+          it "sees appropriate categories based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
 
-      context "when include_archive=false" do
-        subject { get :index, format: :json, params: {include_archive: false} }
+            expected_categories = [category] # Everyone sees published
 
-        it "will not show is_archived items" do
-          sign_in manager
-          json = JSON.parse(subject.body)
-          expect(json["data"]).to match_array([
-            serialized(category),
-            serialized(draft_category)
-          ])
+            # Add archived if role has view_archived permission - use self.class to access class method
+            if self.class.allowed_view_archived_roles.include?(role)
+              expected_categories << archived_category
+            end
+
+            # Add draft if role has view_draft permission - use self.class to access class method
+            if self.class.allowed_view_draft_roles.include?(role)
+              expected_categories << draft_category
+            end
+
+            expect(json["data"]).to match_array(expected_categories.map { |cat| serialized(cat) })
+          end
         end
       end
     end
   end
 
   describe "Get show" do
-    let!(:category) { FactoryBot.create(:category, reference: "Published Category") }
-    let!(:archived_category) { FactoryBot.create(:category, is_archive: true, reference: "Archived Category") }
-    let!(:draft_category) { FactoryBot.create(:category, draft: true, reference: "Draft Category") }
+    let!(:category) { FactoryBot.create(:category, :published, reference: "Published Category") }
+    let!(:archived_category) { FactoryBot.create(:category, :published, :is_archive, reference: "Archived Category") }
+    let!(:draft_category) { FactoryBot.create(:category, :draft, reference: "Draft Category") }
 
     def show(subject_category)
       get :show, params: {
@@ -100,52 +114,73 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe "Post create" do
-    context "when not signed in" do
-      it "not allow creating a category" do
-        post :create, format: :json, params: {
-          category: {title: "test", description: "test", target_date: "today"}
+    let(:taxonomy) { FactoryBot.create(:taxonomy) }
+    let(:params) {
+      {
+        category: {
+          title: "test",
+          short_title: "bla",
+          description: "test",
+          target_date: "today",
+          taxonomy_id: taxonomy.id
         }
-        expect(response).to be_unauthorized
+      }
+    }
+    subject { post :create, format: :json, params: params }
+
+    # Define roles once at the top of the describe block
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission("category", "create")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("category", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
+    end
+
+    context "when not signed in" do
+      it "does not allow creating a category" do
+        expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
-      let(:taxonomy) { FactoryBot.create(:taxonomy) }
-      let(:params) {
-        {
-          category: {
-            title: "test",
-            short_title: "bla",
-            description: "test",
-            target_date: "today",
-            taxonomy_id: taxonomy.id
-          }
-        }
-      }
 
-      subject { post :create, format: :json, params: }
-
-      it "will not allow a guest to create a category" do
+      it "does not allow a guest (no roles) to create a category" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a manager to create a category" do
-        sign_in manager
-        expect(subject).to be_forbidden
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create a category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_created
+        end
       end
 
-      it "will not allow a contributor to create a category" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create a category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      context "is_archive" do
-        let(:params) {
+      context "modify is_archive attribute" do
+        let(:params_with_archive) {
           {
             category: {
               title: "test",
@@ -158,21 +193,74 @@ RSpec.describe CategoriesController, type: :controller do
           }
         }
 
-        it "can be set by admin" do
-          sign_in admin
-          expect(subject).to be_created
-          expect(JSON.parse(subject.body).dig("data", "attributes", "is_archive")).to eq true
+        it "cannot be set on create (always defaults to false)" do
+          # Test with any role that can create
+          skip "No role can create categories" if self.class.allowed_create_roles.empty?
+
+          user = FactoryBot.create(:user, self.class.allowed_create_roles.first.to_sym)
+          sign_in user
+
+          response = post :create, format: :json, params: params_with_archive
+          expect(response).to be_created
+          # is_archive is always filtered on create, regardless of permissions
+          expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
         end
       end
 
-      it "will record what user created the category", versioning: true do
+      context "modify draft attribute" do
+        let(:params_with_draft_false) {
+          {
+            category: {
+              title: "test",
+              short_title: "bla",
+              description: "test",
+              target_date: "today",
+              taxonomy_id: taxonomy.id,
+              draft: false
+            }
+          }
+        }
+
+        allowed_modify_draft_roles.each do |role|
+          it "can be set to false (published) by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be set to false by #{role} (stays true/draft)" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't create at all
+            next unless self.class.allowed_create_roles.include?(role)
+
+            response = post :create, format: :json, params: params_with_draft_false
+            expect(response).to be_created
+            # draft filtered by permitted_attributes, defaults to true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
+      end
+
+      it "records what user created the category", versioning: true do
         expect(PaperTrail).to be_enabled
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
 
-      it "will return an error if params are incorrect" do
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         post :create, format: :json, params: {
           category: {description: "desc only", taxonomy_id: 999}
@@ -182,119 +270,290 @@ RSpec.describe CategoriesController, type: :controller do
     end
   end
 
-  describe "PUT update" do
-    let(:category) { FactoryBot.create(:category) }
-    subject do
-      put :update,
-        format: :json,
-        params: {
-          id: category,
-          category: {title: "test update", description: "test update", target_date: "today update"}
+  describe "Put update" do
+    let(:category) { FactoryBot.create(:category, :published) }
+    let(:params) {
+      {
+        id: category,
+        category: {
+          title: "test update",
+          description: "test update",
+          target_date: "today update"
         }
+      }
+    }
+    subject { put :update, format: :json, params: params }
+
+    # Define roles at class level
+    def self.allowed_update_roles
+      @allowed_update_roles ||= Permissions.roles_with_permission("category", "update")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_update_roles
+      @forbidden_update_roles ||= all_roles - allowed_update_roles
+    end
+
+    def self.allowed_modify_manager_id_roles
+      @allowed_modify_manager_id_roles ||= Permissions.roles_with_permission("category", "modify_manager_id")
+    end
+
+    def self.forbidden_modify_manager_id_roles
+      @forbidden_modify_manager_id_roles ||= all_roles - allowed_modify_manager_id_roles
+    end
+
+    def self.allowed_modify_archive_roles
+      @allowed_modify_archive_roles ||= Permissions.roles_with_permission("category", "modify_is_archive")
+    end
+
+    def self.forbidden_modify_archive_roles
+      @forbidden_modify_archive_roles ||= all_roles - allowed_modify_archive_roles
+    end
+
+    def self.allowed_modify_draft_roles
+      @allowed_modify_draft_roles ||= Permissions.roles_with_permission("category", "modify_draft")
+    end
+
+    def self.forbidden_modify_draft_roles
+      @forbidden_modify_draft_roles ||= all_roles - allowed_modify_draft_roles
     end
 
     context "when not signed in" do
-      it "not allow updating a category" do
+      it "does not allow updating a category" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
-      let(:admin) { FactoryBot.create(:user, :admin) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
 
-      it "will not allow a guest to update a category" do
+      it "does not allow a guest (no roles) to update a category" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a manager to update a category" do
-        sign_in manager
-        expect(subject).to be_forbidden
+      allowed_update_roles.each do |role|
+        it "allows #{role} to update a category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_ok
+        end
       end
 
-      it "will not allow a manager to update manager_id" do
-        sign_in manager
-        expect {
-          put :update,
-            format: :json,
-            params: {
-              id: category,
-              category: {manager_id: manager.id}
+      forbidden_update_roles.each do |role|
+        it "does not allow #{role} to update a category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
+      end
+
+      context "manager_id attribute" do
+        # Get the minimum role that can be assigned as manager
+        def self.allowed_assign_roles
+          @allowed_assign_roles ||= Permissions.roles_with_permission("category", "assign_as_responsible")
+        end
+
+        # Create a user with the minimum assignable role
+        let(:assignable_user) {
+          min_role = self.class.allowed_assign_roles.first
+          FactoryBot.create(:user, min_role.to_sym)
+        }
+
+        allowed_modify_manager_id_roles.each do |role|
+          it "allows #{role} to update manager_id" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            expect {
+              put :update,
+                format: :json,
+                params: {
+                  id: category,
+                  category: {manager_id: assignable_user.id}
+                }
+            }.to change { category.reload.manager_id }.to(assignable_user.id)
+
+            expect(response).to be_ok
+          end
+        end
+
+        forbidden_modify_manager_id_roles.each do |role|
+          it "does not allow #{role} to update manager_id" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            expect {
+              put :update,
+                format: :json,
+                params: {
+                  id: category,
+                  category: {manager_id: assignable_user.id}
+                }
+            }.not_to change { category.reload.manager_id }
+
+            # Rails silently filters unpermitted attributes - returns OK but ignores the attribute
+            expect(response).to be_ok
+          end
+        end
+      end
+
+      context "modify is_archive attribute" do
+        let(:category) { FactoryBot.create(:category, :published) }
+        let(:params_with_archive) {
+          {
+            id: category,
+            category: {
+              title: "test update",
+              is_archive: true
             }
-        }.not_to change { category.reload.manager_id }
+          }
+        }
 
-        expect(response).to be_forbidden
+        allowed_modify_archive_roles.each do |role|
+          it "can be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_archive
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq true
+          end
+        end
+
+        forbidden_modify_archive_roles.each do |role|
+          it "cannot be set by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_archive
+            expect(response).to be_ok
+            # is_archive filtered by permitted_attributes, remains false
+            expect(JSON.parse(response.body).dig("data", "attributes", "is_archive")).to eq false
+          end
+        end
       end
 
-      it "will allow an admin to update manager_id" do
-        sign_in admin
-        expect {
-          put :update,
-            format: :json,
-            params: {
-              id: category,
-              category: {manager_id: manager.id}
+      context "modify draft attribute" do
+        let(:category) { FactoryBot.create(:category, :draft) }
+        let(:params_with_draft_false) {
+          {
+            id: category,
+            category: {
+              title: "test update",
+              draft: false
             }
-        }.to change { category.reload.manager_id }.to(manager.id)
+          }
+        }
 
-        expect(response).to be_ok
+        allowed_modify_draft_roles.each do |role|
+          it "can be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq false
+          end
+        end
+
+        forbidden_modify_draft_roles.each do |role|
+          it "cannot be changed by #{role}" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+
+            # Skip if this role can't update at all
+            next unless self.class.allowed_update_roles.include?(role)
+
+            response = put :update, format: :json, params: params_with_draft_false
+            expect(response).to be_ok
+            # draft filtered by permitted_attributes, remains true
+            expect(JSON.parse(response.body).dig("data", "attributes", "draft")).to eq true
+          end
+        end
       end
 
-      it "will not allow a contributor to update a category" do
-        sign_in contributor
-        expect(subject).to be_forbidden
-      end
-
-      it "will reject an update where the last_updated_at is older than updated_at in the database" do
+      it "rejects an update where last_updated_at is older than updated_at in the database" do
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
-        category_get = get :show, params: {
-          id: category
-        }, format: :json
+
+        category_get = get :show, params: {id: category}, format: :json
         json = JSON.parse(category_get.body)
         current_update_at = json.dig("data", "attributes", "updated_at")
 
         Timecop.travel(Time.new + 15.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
             params: {
               id: category,
-              category: {title: "test update", description: "test updateeee", target_date: "today update", updated_at: current_update_at}
+              category: {
+                title: "test update",
+                description: "test updateeee",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
             }
-          expect(subject).to be_ok
+          expect(response).to be_ok
         end
+
         Timecop.travel(Time.new + 5.days) do
-          subject = put :update,
+          response = put :update,
             format: :json,
             params: {
               id: category,
-              category: {title: "test update", description: "test updatebbbb", target_date: "today update", updated_at: current_update_at}
+              category: {
+                title: "test update",
+                description: "test updatebbbb",
+                target_date: "today update",
+                updated_at: current_update_at
+              }
             }
-          expect(subject).to_not be_ok
+          expect(response).to_not be_ok
         end
       end
 
-      it "will record what user updated the category", versioning: true do
+      it "records what user updated the category", versioning: true do
         expect(PaperTrail).to be_enabled
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq admin.id
       end
 
-      it "will return the latest updated_by", versioning: true do
+      it "returns the latest updated_by", versioning: true do
         expect(PaperTrail).to be_enabled
+        guest = FactoryBot.create(:user)
+        admin = FactoryBot.create(:user, :admin)
         category.versions.first.update_column(:whodunnit, guest.id)
         sign_in admin
         json = JSON.parse(subject.body)
         expect(json.dig("data", "attributes", "updated_by_id").to_i).to eq(admin.id)
       end
 
-      it "will return an error if params are incorrect" do
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
         sign_in admin
         put :update, format: :json, params: {
-          id: category, category: {taxonomy_id: 999}
+          id: category,
+          category: {taxonomy_id: 999}
         }
         expect(response).to have_http_status(422)
       end
@@ -302,43 +561,117 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:category) { FactoryBot.create(:category) }
+    let(:category) { FactoryBot.create(:category, :published) }
     subject {
-      delete :destroy, format: :json, params: {
-        id: category
-      }
+      delete :destroy, format: :json, params: {id: category}
     }
 
+    # Define roles at class level
+    def self.allowed_destroy_roles
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("category", "destroy")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_destroy_roles
+      @forbidden_destroy_roles ||= all_roles - allowed_destroy_roles
+    end
+
     context "when not signed in" do
-      it "not allow deleting a category" do
+      it "does not allow deleting a category" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
 
-      it "will not allow a guest to delete a category" do
+      it "does not allow a guest (no roles) to delete a category" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to delete a category" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      if allowed_destroy_roles.any?
+        allowed_destroy_roles.each do |role|
+          it "allows #{role} to delete a category" do
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_no_content
+          end
+        end
+      else
+        it "is disabled for all roles" do
+          self.class.all_roles.each do |role|  # Use self.class here
+            user = FactoryBot.create(:user, role.to_sym)
+            sign_in user
+            expect(subject).to be_forbidden
+          end
+        end
       end
 
-      it "will not allow a manager to delete a category" do
-        sign_in manager
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow an admin to delete a category" do
-        sign_in manager
-        expect(subject).to be_forbidden
+      forbidden_destroy_roles.each do |role|
+        it "does not allow #{role} to delete a category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
+  end
+
+  describe "Permission system tests: categories" do
+    include_examples "permission system",
+      "category",
+      :create,
+      :post,
+      -> {
+        {
+          category: {
+            title: "test",
+            description: "test",
+            reference: "test-#{SecureRandom.hex(4)}", # Unique reference
+            date: Date.today
+          }
+        }
+      }
+
+    include_examples "permission system",
+      "category",
+      :update,
+      :put,
+      -> {
+        category = FactoryBot.create(:category, :published)
+        {
+          id: category.id,
+          category: {
+            title: "updated",
+            description: "updated"
+          }
+        }
+      }
+
+    include_examples "permission system",
+      "category",
+      :destroy,
+      :delete,
+      -> {
+        category = FactoryBot.create(:category, :published)
+        {id: category.id}
+      }
+  end
+  describe "Scope permission system tests: categories" do
+    include_examples "filtered scope permission system",
+      "category", :draft, "view_draft", true
+
+    include_examples "filtered scope permission system",
+      "category", :is_archive, "view_archived", true
+
+    include_examples "show with scope permission system",
+      "category", :draft, "view_draft", true
+
+    include_examples "show with scope permission system",
+      "category", :is_archive, "view_archived", true
   end
 end

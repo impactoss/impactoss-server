@@ -6,19 +6,19 @@ RSpec.describe DueDateMailer, type: :mailer do
   let(:overdue_date) { Date.new(2019, 12, 25) }
 
   describe "due" do
-    let(:manager) { FactoryBot.create(:user) }
-    let(:due_date) { FactoryBot.create(:due_date, due_date: future_date, manager: manager) }
+    let(:admin) { FactoryBot.create(:user, :admin) }
+    let(:due_date) { FactoryBot.create(:due_date, due_date: future_date, manager: admin) }
     let(:mail) { DueDateMailer.due(due_date) }
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t("due_date_mailer.due.subject"))
-      expect(mail.to).to eq([manager.email])
+      expect(mail.to).to eq([admin.email])
       expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
-      expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
+      expect(mail.text_part.body).to match(admin.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(admin.name))
     end
 
     it "mentions the indicator title" do
@@ -33,19 +33,19 @@ RSpec.describe DueDateMailer, type: :mailer do
   end
 
   describe "overdue" do
-    let(:manager) { FactoryBot.create(:user) }
-    let(:due_date) { FactoryBot.create(:due_date, due_date: overdue_date, manager: manager) }
+    let(:admin) { FactoryBot.create(:user, :admin) }
+    let(:due_date) { FactoryBot.create(:due_date, due_date: overdue_date, manager: admin) }
     let(:mail) { DueDateMailer.overdue(due_date) }
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t("due_date_mailer.overdue.subject"))
-      expect(mail.to).to eq([manager.email])
+      expect(mail.to).to eq([admin.email])
       expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
-      expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
+      expect(mail.text_part.body).to match(admin.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(admin.name))
     end
 
     it "mentions the indicator title" do
@@ -60,20 +60,20 @@ RSpec.describe DueDateMailer, type: :mailer do
   end
 
   describe "category due" do
-    let(:manager) { FactoryBot.create(:user, :manager) }
+    let(:admin) { FactoryBot.create(:user, :admin) }
     let(:due_date) { FactoryBot.create(:due_date, due_date: future_date) }
-    let(:category) { FactoryBot.create(:category, manager: manager) }
+    let(:category) { FactoryBot.create(:category, manager: admin) }
     let(:mail) { DueDateMailer.category_due(due_date, category) }
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t("due_date_mailer.category_due.subject"))
-      expect(mail.to).to eq([manager.email])
+      expect(mail.to).to eq([admin.email])
       expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
-      expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
+      expect(mail.text_part.body).to match(admin.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(admin.name))
     end
 
     it "mentions the indicator title" do
@@ -88,20 +88,20 @@ RSpec.describe DueDateMailer, type: :mailer do
   end
 
   describe "category over due" do
-    let(:manager) { FactoryBot.create(:user, :manager) }
+    let(:admin) { FactoryBot.create(:user, :admin) }
     let(:due_date) { FactoryBot.create(:due_date, due_date: overdue_date) }
-    let(:category) { FactoryBot.create(:category, manager: manager) }
+    let(:category) { FactoryBot.create(:category, manager: admin) }
     let(:mail) { DueDateMailer.category_overdue(due_date, category) }
 
     it "renders the headers" do
       expect(mail.subject).to eq(I18n.t("due_date_mailer.category_overdue.subject"))
-      expect(mail.to).to eq([manager.email])
+      expect(mail.to).to eq([admin.email])
       expect(mail.from).to eq(["no-reply@mail.impactoss.org"])
     end
 
     it "mentions the managers name" do
-      expect(mail.text_part.body).to match(manager.name)
-      expect(mail.html_part.body).to match(CGI.escapeHTML(manager.name))
+      expect(mail.text_part.body).to match(admin.name)
+      expect(mail.html_part.body).to match(CGI.escapeHTML(admin.name))
     end
 
     it "mentions the indicator title" do

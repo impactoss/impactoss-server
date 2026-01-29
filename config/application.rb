@@ -2,6 +2,7 @@
 
 require_relative "boot"
 require_relative "features"
+require_relative "permissions"
 
 require "rails/all"
 

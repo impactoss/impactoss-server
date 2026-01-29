@@ -4,23 +4,34 @@ RSpec.describe UsersController, type: :controller do
   describe "Get index" do
     subject { get :index, format: :json }
 
+    # Define roles at class level
+    def self.allowed_view_all_roles
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("user", "view_all")
+    end
+
+    def self.allowed_show_email_roles
+      @allowed_show_email_roles ||= Permissions.roles_with_permission("user", "show_email")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    # Create sample users before tests
+    before do
+      Permissions::ROLE_HIERARCHY.keys.each do |role_name|
+        2.times { FactoryBot.create(:user, role_name.to_sym) }
+      end
+    end
+
     context "when not signed in" do
       it { expect(subject).to be_unauthorized }
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:manager2) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:contributor2) { FactoryBot.create(:user, :contributor) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
-      let(:admin2) { FactoryBot.create(:user, :admin) }
 
-      it "shows only themselves for guests" do
-        contributor2
-        manager
-        admin
+      it "guest (no roles) sees only themselves" do
         sign_in guest
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(1)
@@ -29,334 +40,303 @@ RSpec.describe UsersController, type: :controller do
         expect(json["data"][0]["attributes"]["domain"]).to eq(guest.domain)
       end
 
-      it "shows only themselves for contributors" do
-        contributor
-        contributor2
-        manager
-        manager2
-        admin
-        admin2
-        guest
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
-        expect(json["data"][0]["id"]).to eq(contributor.id.to_s)
-        expect(json["data"][0]["attributes"]["email"]).to eq(contributor.email)
-      end
+      # Test each role's visibility based on view_all permission
+      all_roles.each do |role|
+        context role.to_s do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "shows all users for managers, with only the manager's email" do
-        contributor
-        contributor2
-        manager
-        manager2
-        admin
-        admin2
-        guest
-        sign_in manager
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(7)
+          it "sees appropriate users based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
 
-        contributor_data = json["data"].find { |d| d["id"] == contributor.id.to_s }
-        expect(contributor_data["attributes"]["email"]).to be_nil
-        expect(contributor_data["attributes"]["domain"]).to eq(contributor.domain)
+            if self.class.allowed_view_all_roles.include?(role)
+              # Can see all users (2 per role type + the test user)
+              expected_count = (Permissions::ROLE_HIERARCHY.keys.length * 2) + 1
+              expect(json["data"].length).to eq(expected_count)
 
-        contributor2_data = json["data"].find { |d| d["id"] == contributor2.id.to_s }
-        expect(contributor2_data["attributes"]["email"]).to be_nil
-        expect(contributor2_data["attributes"]["domain"]).to eq(contributor2.domain)
+              # Check email visibility
+              user_data = json["data"].find { |d| d["id"] == user.id.to_s }
+              expect(user_data["attributes"]["email"]).to eq(user.email) # Always see own email
 
-        manager_data = json["data"].find { |d| d["id"] == manager.id.to_s }
-        expect(manager_data["attributes"]["email"]).to eq(manager.email)
-        expect(manager_data["attributes"]["domain"]).to eq(manager.domain)
-
-        manager2_data = json["data"].find { |d| d["id"] == manager2.id.to_s }
-        expect(manager2_data["attributes"]["email"]).to be_nil
-        expect(manager2_data["attributes"]["domain"]).to eq(manager2.domain)
-
-        admin_data = json["data"].find { |d| d["id"] == admin.id.to_s }
-        expect(admin_data["attributes"]["email"]).to be_nil
-        expect(admin_data["attributes"]["domain"]).to eq(admin.domain)
-
-        admin2_data = json["data"].find { |d| d["id"] == admin2.id.to_s }
-        expect(admin2_data["attributes"]["email"]).to be_nil
-        expect(admin2_data["attributes"]["domain"]).to eq(admin2.domain)
-
-        guest_data = json["data"].find { |d| d["id"] == guest.id.to_s }
-        expect(guest_data["attributes"]["email"]).to be_nil
-        expect(guest_data["attributes"]["domain"]).to eq(guest.domain)
-      end
-
-      it "shows all users for admin, including all email addresses" do
-        contributor
-        contributor2
-        manager
-        manager2
-        admin2
-        guest
-        sign_in admin
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(7)
-
-        contributor_data = json["data"].find { |d| d["id"] == contributor.id.to_s }
-        expect(contributor_data["attributes"]["email"]).to eq(contributor.email)
-        expect(contributor_data["attributes"]["domain"]).to eq(contributor.domain)
-
-        contributor2_data = json["data"].find { |d| d["id"] == contributor2.id.to_s }
-        expect(contributor2_data["attributes"]["email"]).to eq(contributor2.email)
-        expect(contributor2_data["attributes"]["domain"]).to eq(contributor2.domain)
-
-        manager_data = json["data"].find { |d| d["id"] == manager.id.to_s }
-        expect(manager_data["attributes"]["email"]).to eq(manager.email)
-        expect(manager_data["attributes"]["domain"]).to eq(manager.domain)
-
-        manager2_data = json["data"].find { |d| d["id"] == manager2.id.to_s }
-        expect(manager2_data["attributes"]["email"]).to eq(manager2.email)
-        expect(manager2_data["attributes"]["domain"]).to eq(manager2.domain)
-
-        admin_data = json["data"].find { |d| d["id"] == admin.id.to_s }
-        expect(admin_data["attributes"]["email"]).to eq(admin.email)
-        expect(admin_data["attributes"]["domain"]).to eq(admin.domain)
-
-        admin2_data = json["data"].find { |d| d["id"] == admin2.id.to_s }
-        expect(admin2_data["attributes"]["email"]).to eq(admin2.email)
-        expect(admin2_data["attributes"]["domain"]).to eq(admin2.domain)
-
-        guest_data = json["data"].find { |d| d["id"] == guest.id.to_s }
-        expect(guest_data["attributes"]["email"]).to eq(guest.email)
-        expect(guest_data["attributes"]["domain"]).to eq(guest.domain)
+              # Check another user's email visibility
+              other_user_data = json["data"].find { |d| d["id"] != user.id.to_s }
+              if self.class.allowed_show_email_roles.include?(role)
+                # Can see all emails
+                expect(other_user_data["attributes"]["email"]).not_to be_nil
+              else
+                # Cannot see other users' emails
+                expect(other_user_data["attributes"]["email"]).to be_nil
+                expect(other_user_data["attributes"]["domain"]).not_to be_nil # But can see domain
+              end
+            else
+              # Can only see themselves
+              expect(json["data"].length).to eq(1)
+              expect(json["data"][0]["id"]).to eq(user.id.to_s)
+              expect(json["data"][0]["attributes"]["email"]).to eq(user.email)
+            end
+          end
+        end
       end
     end
   end
 
   describe "Get show" do
-    let(:user_role) { FactoryBot.create(:user_role) }
-    subject {
-      get :show, params: {
-        id: user_role
-      }, format: :json
-    }
+    let(:target_user) { FactoryBot.create(:user, :contributor) }
+    subject { get :show, params: {id: target_user.id}, format: :json }
+
+    # Define roles at class level
+    def self.allowed_view_all_roles
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("user", "view_all")
+    end
+
+    def self.allowed_show_email_roles
+      @allowed_show_email_roles ||= Permissions.roles_with_permission("user", "show_email")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
 
     context "when not signed in" do
-      it "does not show the user_role" do
+      it "does not show the user" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
 
-      subject {
-        get :show, params: {
-          id: contributor.id
-        }, format: :json
-      }
-
-      it "shows no user for guest" do
+      it "guest (no roles) cannot see other users" do
         sign_in guest
         expect(subject).to be_not_found
       end
-      it "shows user, including email and domain, for contributor" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq(contributor.email)
-        expect(json.dig("data", "attributes", "domain")).to eq(contributor.domain)
+
+      it "guest can see themselves" do
+        sign_in guest
+        response = get :show, params: {id: guest.id}, format: :json
+        json = JSON.parse(response.body)
+        expect(json.dig("data", "id").to_i).to eq(guest.id)
+        expect(json.dig("data", "attributes", "email")).to eq(guest.email)
+        expect(json.dig("data", "attributes", "domain")).to eq(guest.domain)
       end
 
-      it "won't show other user for contributor" do
-        sign_in contributor
-        subject_manager = get :show, params: {
-          id: manager.id
-        }, format: :json
-        expect(subject_manager).to be_not_found
+      # Test viewing their own profile (should work for all roles)
+      all_roles.each do |role|
+        it "#{role} can view their own profile with email" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+
+          response = get :show, params: {id: user.id}, format: :json
+          json = JSON.parse(response.body)
+          expect(json.dig("data", "id").to_i).to eq(user.id)
+          expect(json.dig("data", "attributes", "email")).to eq(user.email)
+          expect(json.dig("data", "attributes", "domain")).to eq(user.domain)
+        end
       end
 
-      it "shows user, including email and domain, for manager" do
-        sign_in manager
-        subject_manager = get :show, params: {
-          id: manager.id
-        }, format: :json
-        json = JSON.parse(subject_manager.body)
-        expect(json.dig("data", "id").to_i).to eq(manager.id)
-        expect(json.dig("data", "attributes", "email")).to eq(manager.email)
-        expect(json.dig("data", "attributes", "domain")).to eq(manager.domain)
-      end
+      # Test viewing another user's profile (depends on view_all and show_email)
+      all_roles.each do |role|
+        context "#{role} viewing another user's profile" do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "only shows contributor's email domain for manager" do
-        sign_in manager
-        subject_contributor = get :show, params: {
-          id: contributor.id
-        }, format: :json
-        json = JSON.parse(subject_contributor.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "domain")).to eq(contributor.domain)
-        expect(json.dig("data", "attributes", "email")).to be_nil
-      end
+          # Compute at class level
+          can_view = allowed_view_all_roles.include?(role)
 
-      it "only shows admin's email domain for manager" do
-        sign_in manager
-        subject_admin = get :show, params: {
-          id: admin.id
-        }, format: :json
-        json = JSON.parse(subject_admin.body)
-        expect(json.dig("data", "id").to_i).to eq(admin.id)
-        expect(json.dig("data", "attributes", "domain")).to eq(admin.domain)
-        expect(json.dig("data", "attributes", "email")).to be_nil
-      end
+          it "#{can_view ? "can" : "cannot"} see it" do
+            sign_in user
 
-      it "shows email for manager when viewing themselves" do
-        sign_in manager
-        subject_manager = get :show, params: {
-          id: manager.id
-        }, format: :json
-        json = JSON.parse(subject_manager.body)
-        expect(json.dig("data", "id").to_i).to eq(manager.id)
-        expect(json.dig("data", "attributes", "domain")).to eq(manager.domain)
-        expect(json.dig("data", "attributes", "email")).to eq(manager.email)
-      end
+            if self.class.allowed_view_all_roles.include?(role)
+              json = JSON.parse(subject.body)
+              expect(json.dig("data", "id").to_i).to eq(target_user.id)
+              expect(json.dig("data", "attributes", "domain")).to eq(target_user.domain)
 
-      it "shows user, including email and domain, for admin when viewing themselves" do
-        sign_in admin
-        subject_manager = get :show, params: {
-          id: admin.id
-        }, format: :json
-        json = JSON.parse(subject_manager.body)
-        expect(json.dig("data", "id").to_i).to eq(admin.id)
-        expect(json.dig("data", "attributes", "email")).to eq(admin.email)
-        expect(json.dig("data", "attributes", "domain")).to eq(admin.domain)
-      end
-
-      it "shows contributor user, including email and domain, for admin" do
-        sign_in admin
-        subject_contributor = get :show, params: {
-          id: contributor.id
-        }, format: :json
-        json = JSON.parse(subject_contributor.body)
-        expect(json.dig("data", "id").to_i).to eq(contributor.id)
-        expect(json.dig("data", "attributes", "email")).to eq(contributor.email)
-        expect(json.dig("data", "attributes", "domain")).to eq(contributor.domain)
+              # Check email visibility
+              if self.class.allowed_show_email_roles.include?(role)
+                expect(json.dig("data", "attributes", "email")).to eq(target_user.email)
+              else
+                expect(json.dig("data", "attributes", "email")).to be_nil
+              end
+            else
+              expect(subject).to be_not_found
+            end
+          end
+        end
       end
     end
   end
 
   describe "PUT update" do
-    let(:guest) { FactoryBot.create(:user, :contributor) }
-    let(:contributor) { FactoryBot.create(:user, :contributor) }
-    let(:manager) { FactoryBot.create(:user, :contributor) }
-    let(:contributor2) { FactoryBot.create(:user, :contributor) }
-    let(:admin) { FactoryBot.create(:user, :admin) }
-    subject do
-      put :update,
-        format: :json,
-        params: {
-          id: contributor.id, user: {name: "Sam"}
-        }
+    let(:target_user) { FactoryBot.create(:user, :contributor) }
+    let(:params) {
+      {
+        id: target_user.id,
+        user: {name: "Sam"}
+      }
+    }
+    subject { put :update, format: :json, params: params }
+
+    # Define roles at class level
+    def self.update_self_permission
+      @update_self_permission ||= Permissions.allowed_for("user", "update_self")
+    end
+
+    def self.update_self_enabled_for_all?
+      update_self_permission == true
+    end
+
+    def self.update_self_disabled?
+      update_self_permission == false ||
+        update_self_permission.nil? ||
+        (update_self_permission.is_a?(Array) && update_self_permission.empty?)
+    end
+
+    def self.update_self_roles
+      return [] unless update_self_permission.is_a?(Array)
+      update_self_permission
+    end
+
+    def self.allowed_update_any_roles
+      @allowed_update_any_roles ||= Permissions.roles_with_permission("user", "update_any")
+    end
+
+    def self.allowed_update_lower_roles
+      @allowed_update_lower_roles ||= Permissions.roles_with_permission("user", "update_lower")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
     end
 
     context "when not signed in" do
-      it "not allow updating a user" do
+      it "does not allow updating a user" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:manager2) { FactoryBot.create(:user, :manager) }
-      let(:admin) { FactoryBot.create(:user, :admin) }
 
-      it "will not allow a user to update another user" do
-        sign_in guest
-        expect(subject).to be_not_found
-      end
+      context "updating self" do
+        if update_self_enabled_for_all?
+          it "allows any user (including guests) to update themselves" do
+            user = FactoryBot.create(:user)
+            sign_in user
 
-      it "will allow a user to update themselves" do
-        sign_in contributor
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(contributor.id)
-        expect(json["data"]["attributes"]["name"]).to eq "Sam"
-      end
+            response = put :update, format: :json, params: {
+              id: user.id,
+              user: {name: "Updated Name"}
+            }
+            expect(response).to be_ok
+          end
 
-      it "will allow a manager to update themself, contributors, and guests" do
-        sign_in manager
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(contributor.id)
-        expect(json["data"]["attributes"]["name"]).to eq "Sam"
+          all_roles.each do |role|
+            it "allows #{role} to update themselves" do
+              user = FactoryBot.create(:user, role.to_sym)
+              sign_in user
 
-        subject2 = put :update,
-          format: :json,
-          params: {id: guest.id, user: {name: "Sam"}}
-        expect(subject2).to be_ok
-        json = JSON.parse(subject2.body)
-        expect(json["data"]["id"].to_i).to eq(guest.id)
-        expect(json["data"]["attributes"]["name"]).to eq "Sam"
-      end
+              response = put :update, format: :json, params: {
+                id: user.id,
+                user: {name: "Updated Name"}
+              }
+              expect(response).to be_ok
+            end
+          end
+        elsif update_self_disabled?
+          it "is disabled for all users (e.g., Azure auth handles user updates)" do
+            # Test guest
+            sign_in guest
+            response = put :update, format: :json, params: {
+              id: guest.id,
+              user: {name: "Updated Name"}
+            }
+            expect(response).to be_forbidden
 
-      it "will not allow a manager to update another manager or admin" do
-        sign_in manager
-        subject2 = put :update,
-          format: :json,
-          params: {id: manager2.id, user: {name: "Sam"}}
-        expect(subject2).to be_forbidden
+            # Test all roles
+            all_roles.each do |role|
+              user = FactoryBot.create(:user, role.to_sym)
+              sign_in user
 
-        subject2 = put :update,
-          format: :json,
-          params: {id: admin.id, user: {name: "Sam"}}
-        expect(subject2).to be_forbidden
-      end
+              response = put :update, format: :json, params: {
+                id: user.id,
+                user: {name: "Updated Name"}
+              }
+              expect(response).to be_forbidden
+            end
+          end
+        elsif update_self_roles.any?
+          # Specific roles can update themselves
+          update_self_roles.each do |role|
+            it "allows #{role} to update themselves" do
+              user = FactoryBot.create(:user, role.to_sym)
+              sign_in user
 
-      it "will allow an admin to update any user" do
-        sign_in admin
-        expect(subject).to be_ok
-        json = JSON.parse(subject.body)
-        expect(json["data"]["id"].to_i).to eq(contributor.id)
-        expect(json["data"]["attributes"]["name"]).to eq "Sam"
-      end
+              response = put :update, format: :json, params: {
+                id: user.id,
+                user: {name: "Updated Name"}
+              }
+              expect(response).to be_ok
+            end
+          end
 
-      context "email update" do
-        let(:new_email) { "new.email@example.com" }
+          # Roles not in the list cannot update themselves
+          forbidden_self_update_roles = all_roles - update_self_roles
+          forbidden_self_update_roles.each do |role|
+            it "does not allow #{role} to update themselves" do
+              user = FactoryBot.create(:user, role.to_sym)
+              sign_in user
 
-        subject do
-          put :update,
-            format: :json,
-            params: {id: target_user.id, user: {email: new_email, name: "New Name"}}
-        end
+              response = put :update, format: :json, params: {
+                id: user.id,
+                user: {name: "Updated Name"}
+              }
+              expect(response).to be_forbidden
+            end
+          end
 
-        context "as non-admin user" do
-          let(:user) { FactoryBot.create(:user) }
-          let(:target_user) { user }  # Updating own profile
+          it "does not allow a guest (no roles) to update themselves" do
+            sign_in guest
 
-          before { sign_in user }
-
-          it "does not update email" do
-            expect(subject).to be_ok
-            json = JSON.parse(subject.body)
-            # Email remains unchanged
-            expect(json.dig("data", "attributes", "email")).not_to eq(new_email)
-            expect(target_user.reload.email).not_to eq(new_email)
-            # Name should update though
-            expect(target_user.reload.name).to eq("New Name")
+            response = put :update, format: :json, params: {
+              id: guest.id,
+              user: {name: "Updated Name"}
+            }
+            expect(response).to be_forbidden
           end
         end
+      end
 
-        context "as admin user" do
-          let(:user) { FactoryBot.create(:user, :admin) }
-          let(:target_user) { FactoryBot.create(:user) }
+      context "change email attribute" do
+        def self.update_email_enabled?
+          Permissions.allowed_for("user", "update_email") == true
+        end
 
-          before { sign_in user }
+        if update_email_enabled?
+          it "allows email updates when enabled" do
+            admin = FactoryBot.create(:user, :admin)
+            sign_in admin
 
-          it "does not update email either (per security policy)" do
-            # NO ONE can change email at current config
-            expect(subject).to be_ok
-            json = JSON.parse(subject.body)
-            expect(json.dig("data", "attributes", "email")).not_to eq(new_email)
-            expect(target_user.reload.email).not_to eq(new_email)
+            response = put :update, format: :json, params: {
+              id: admin.id,
+              user: {email: "new@example.com", name: "New Name"}
+            }
+
+            expect(response).to be_ok
+            expect(admin.reload.email).to eq("new@example.com")
+          end
+        else
+          it "blocks email updates when disabled (even for admin)" do
+            admin = FactoryBot.create(:user, :admin)
+            sign_in admin
+
+            original_email = admin.email
+            response = put :update, format: :json, params: {
+              id: admin.id,
+              user: {email: "new@example.com", name: "New Name"}
+            }
+
+            expect(response).to be_ok
+            expect(admin.reload.email).to eq(original_email)
+            expect(admin.reload.name).to eq("New Name")
           end
         end
       end
@@ -364,51 +344,38 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe "Delete destroy" do
-    let(:guest) { FactoryBot.create(:user) }
-    let(:manager_role) { FactoryBot.create(:role, :manager) }
-    let(:manager) { FactoryBot.create(:user, roles: [manager_role]) }
-    let(:contributor_role) { FactoryBot.create(:role, :contributor) }
-    let(:contributor_role2) { FactoryBot.create(:role, :contributor) }
-    let(:contributor) { FactoryBot.create(:user, roles: [contributor_role]) }
-    let(:contributor2) { FactoryBot.create(:user, roles: [contributor_role2]) }
-    let(:admin_role) { FactoryBot.create(:role, :admin) }
-    let(:admin) { FactoryBot.create(:user, roles: [admin_role]) }
-
-    subject {
-      delete :destroy, format: :json, params: {
-        id: guest
-      }
-    }
+    let(:target_user) { FactoryBot.create(:user, :contributor) }
+    subject { delete :destroy, format: :json, params: {id: target_user} }
 
     context "when not signed in" do
-      it "not allow deleting a user_role" do
+      it "does not allow deleting a user" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
-      it "will not allow a user to delete another user" do
+      let(:guest) { FactoryBot.create(:user) }
+
+      it "does not allow a guest (no roles) to delete another user" do
         sign_in guest
-        subject = delete :destroy, format: :json, params: {
-          id: manager.id
-        }
         expect(subject).to be_not_found
       end
 
-      it "will not allow a user to delete themselves" do
-        sign_in contributor
-        subject = delete :destroy, format: :json, params: {
-          id: contributor.id
-        }
-        expect(subject).to be_forbidden
+      it "does not allow any user to delete themselves" do
+        user = FactoryBot.create(:user, :contributor)
+        sign_in user
+
+        response = delete :destroy, format: :json, params: {id: user.id}
+        expect(response).to be_forbidden
       end
 
-      it "will not allow an admin to delete another user" do
-        sign_in admin
-        subject = delete :destroy, format: :json, params: {
-          id: manager.id
-        }
-        expect(subject).to be_forbidden
+      # User deletion is blocked in policy
+      it "is blocked for all roles (users cannot be deleted)" do
+        Permissions::ROLE_HIERARCHY.keys.each do |role|
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
   end

@@ -30,8 +30,31 @@ class User < VersionedRecord
   # Track date of password change for expiry feature
   before_update :set_password_changed_at, if: :saved_change_to_encrypted_password?
 
-  def role?(role)
-    roles.where(name: role).any?
+  def has_any_role?(role_names)
+    return false if roles.empty?
+
+    role_names.any? do |role_name|
+      if Permissions::ROLE_HIERARCHY.key?(role_name)
+        role?(role_name)
+      else
+        roles.exists?(name: role_name)
+      end
+    end
+  end
+
+  def role?(role_name)
+    # For hierarchical roles, check level
+    if Permissions::ROLE_HIERARCHY.key?(role_name)
+      required_level = Permissions::ROLE_HIERARCHY[role_name]
+
+      roles.any? do |user_role|
+        user_level = Permissions::ROLE_HIERARCHY[user_role.name]
+        user_level && user_level >= required_level
+      end
+    else
+      # For non-hierarchical roles (or roles not in hierarchy), check exact match
+      roles.exists?(name: role_name)
+    end
   end
 
   def domain
