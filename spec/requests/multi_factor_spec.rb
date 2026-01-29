@@ -3,11 +3,13 @@
 require "rails_helper"
 
 RSpec.describe "Multi-Factor Authentication API", type: :request do
-  let(:user) { FactoryBot.create(:user, :with_multi_factor_email) }
+  let(:user) { FactoryBot.create(:user) }
   let(:temp_token) { SecureRandom.urlsafe_base64(32) }
   let(:valid_otp_code) { user.generate_and_send_multi_factor_email! }
 
   before do
+    # Enable MFA globally for these tests
+    allow(Rails.application.config).to receive(:enable_mfa).and_return(true)
     Rails.cache.write("otp_temp_token:#{temp_token}", user.id, expires_in: 5.minutes)
   end
 

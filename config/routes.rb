@@ -22,12 +22,7 @@ Rails.application.routes.draw do
 
   resources :categories
   resources :recommendations
-  resources :users do
-    member do
-      post :enable_mfa
-      post :disable_mfa
-    end
-  end
+  resources :users
   resources :roles
   resources :pages
   resources :bookmarks

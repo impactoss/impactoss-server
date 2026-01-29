@@ -5,7 +5,7 @@ require "rails_helper"
 
 RSpec.describe UserMailer, type: :mailer do
   describe "multi_factor_email" do
-    let(:user) { FactoryBot.create(:user, :with_multi_factor_email) }
+    let(:user) { FactoryBot.create(:user) }
     let(:otp_code) { "123456" }
     let(:mail) { UserMailer.multi_factor_email(user, otp_code) }
 

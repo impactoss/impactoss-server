@@ -61,13 +61,13 @@ class SessionsController < DeviseTokenAuth::SessionsController
     end
 
     if @resource && valid_params?(field, q_value) && @resource.valid_password?(resource_params[:password])
-      # Password is valid - check if MFA is enabled
-      if @resource.multi_factor_email_code_enabled?
+      # Password is valid - check if MFA is enabled globally
+      if Rails.application.config.enable_mfa
         @resource.generate_and_send_multi_factor_email!
         temp_token = SecureRandom.urlsafe_base64(32)
         Rails.cache.write("otp_temp_token:#{temp_token}", @resource.id, expires_in: 5.minutes)
 
-        render json: {otp_required: true, temp_token: temp_token, message: "Multi-factor code sent to your email"}, status: :accepted
+        render json: {otp_required: true, temp_token:, message: "Multi-factor code sent to your email"}, status: :accepted
       else
         super
       end

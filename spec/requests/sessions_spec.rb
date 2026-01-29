@@ -7,8 +7,10 @@ RSpec.describe "Sessions API", type: :request do
     let(:password) { "password123" }
     let(:user) { FactoryBot.create(:user, password: password, password_confirmation: password) }
 
-    context "when user has MFA enabled" do
-      let(:user) { FactoryBot.create(:user, :with_multi_factor_email, password: password, password_confirmation: password) }
+    context "when MFA is enabled globally" do
+      before do
+        allow(Rails.application.config).to receive(:enable_mfa).and_return(true)
+      end
 
       it "returns accepted status" do
         post "/auth/sign_in", params: {email: user.email, password: password}, as: :json
@@ -39,7 +41,11 @@ RSpec.describe "Sessions API", type: :request do
       end
     end
 
-    context "when user does not have MFA enabled" do
+    context "when MFA is disabled globally" do
+      before do
+        allow(Rails.application.config).to receive(:enable_mfa).and_return(false)
+      end
+
       it "returns success status" do
         post "/auth/sign_in", params: {email: user.email, password: password}, as: :json
         expect(response).to have_http_status(:success)

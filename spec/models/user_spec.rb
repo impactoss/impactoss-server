@@ -37,7 +37,7 @@ RSpec.describe User, type: :model do
   end
 
   describe "multi-factor authentication" do
-    let(:user) { FactoryBot.create(:user, :with_multi_factor_email) }
+    let(:user) { FactoryBot.create(:user) }
 
     describe "#generate_and_send_multi_factor_email!" do
       it "generates a 6-digit OTP code" do

@@ -19,9 +19,4 @@ FactoryBot.define do
   trait :contributor do
     roles { [create(:role, :contributor)] }
   end
-
-  trait :with_multi_factor_email do
-    multi_factor_email_code_enabled { true }
-    otp_required_for_login { true }
-  end
 end
