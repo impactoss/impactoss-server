@@ -69,7 +69,7 @@ class User < VersionedRecord
   def generate_and_send_multi_factor_email!
     six_digit_string = SecureRandom.random_number(10**6).to_s.rjust(6, "0")
     update_columns(
-      multi_factor_email_code: BCrypt::Password.create(six_digit_string),
+      multi_factor_email_code: BCrypt::Password.create(six_digit_string, cost: Devise.stretches),
       multi_factor_email_code_sent_at: DateTime.current
     )
     UserMailer.multi_factor_email(self, six_digit_string).deliver_now
