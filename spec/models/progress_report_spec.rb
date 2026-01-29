@@ -19,12 +19,13 @@ RSpec.describe ProgressReport, type: :model do
           taxonomy: FactoryBot.create(:taxonomy, taxonomy: parent.taxonomy))
       }
     end
-    let(:manager_category) { FactoryBot.create(:category, manager:) }
+    # manager = the user assigned as manager of a category (using admin role for config-independence)
+    let(:manager) { FactoryBot.create(:user, :admin) }
+    let(:manager_category) { FactoryBot.create(:category, manager: manager) }
     let(:measure) { FactoryBot.create(:measure) }
     let(:recommendation) { FactoryBot.create(:recommendation) }
-    let(:guest) { FactoryBot.create(:user) }
-    let(:manager) { FactoryBot.create(:user, :manager) }
-    let(:contributor) { FactoryBot.create(:user, :contributor) }
+    # contributor = the user who is contributor of an indicator (using admin role for config-independence)
+    let(:contributor) { FactoryBot.create(:user, :admin) }
     let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
 
     before do

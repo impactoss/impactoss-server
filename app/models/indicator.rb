@@ -4,6 +4,7 @@ class Indicator < VersionedRecord
   validates :frequency_months, presence: true, if: :repeat?
   validates :reference, presence: true, uniqueness: true
   validate :end_date_after_start_date, if: :end_date?
+  validate :responsible_has_required_role, if: :manager_id_changed?
 
   after_create :build_due_dates
   after_update :regenerate_due_dates
@@ -52,5 +53,14 @@ class Indicator < VersionedRecord
     due_dates.future_with_no_progress_reports.destroy_all
     build_due_dates
     true
+  end
+
+  def responsible_has_required_role
+    return if manager_id.nil?
+
+    allowed_roles = Permissions.allowed_for("indicator", "assign_as_responsible")
+    return if manager.has_any_role?(allowed_roles)
+
+    errors.add(:manager_id, "must have one of these roles: #{allowed_roles.join(", ")}")
   end
 end

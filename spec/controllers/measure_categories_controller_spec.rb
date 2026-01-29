@@ -2,10 +2,6 @@ require "rails_helper"
 require "json"
 
 RSpec.describe MeasureCategoriesController, type: :controller do
-  before do
-    skip "Feature disabled" unless Features.enabled?(:measures)
-  end
-
   describe "Get index" do
     subject { get :index, format: :json }
 
@@ -29,62 +25,76 @@ RSpec.describe MeasureCategoriesController, type: :controller do
   end
 
   describe "Post create" do
-    context "when not signed in" do
-      it "not allow creating a measure_category" do
-        post :create, format: :json, params: {
-          measure_category: {measure_id: 1, category_id: 1}
+    let(:measure) { FactoryBot.create(:measure, :published) }
+    let(:category) { FactoryBot.create(:category) }
+    let(:params) {
+      {
+        measure_category: {
+          measure_id: measure.id,
+          category_id: category.id
         }
-        expect(response).to be_unauthorized
+      }
+    }
+    subject { post :create, format: :json, params: params }
+
+    # Define roles at class level - falls back to application permissions
+    def self.allowed_create_roles
+      @allowed_create_roles ||= Permissions.roles_with_permission("measure_category", "create")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_create_roles
+      @forbidden_create_roles ||= all_roles - allowed_create_roles
+    end
+
+    context "when not signed in" do
+      it "does not allow creating a measure_category" do
+        expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:measure) { FactoryBot.create(:measure) }
-      let(:category) { FactoryBot.create(:category) }
 
-      subject do
-        post :create,
-          format: :json,
-          params: {
-
-            measure_category: {
-              measure_id: measure.id,
-              category_id: category.id
-            }
-          }
-      end
-
-      it "will not allow a guest to create a measure_category" do
+      it "does not allow a guest (no roles) to create a measure_category" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to create a measure_category" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_create_roles.each do |role|
+        it "allows #{role} to create a measure_category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_created
+        end
       end
 
-      it "will allow a manager to create a measure_category" do
-        sign_in user
-        expect(subject).to be_created
+      forbidden_create_roles.each do |role|
+        it "does not allow #{role} to create a measure_category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
-      it "will return an error if params are incorrect" do
-        sign_in user
+      it "returns an error if params are incorrect" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         post :create, format: :json, params: {
           measure_category: {description: "desc only", taxonomy_id: 999}
         }
         expect(response).to have_http_status(422)
       end
 
-      it "will record what manager created the measure category", versioning: true do
+      it "records what user created the measure_category", versioning: true do
         expect(PaperTrail).to be_enabled
-        sign_in user
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
         json = JSON.parse(subject.body)
-        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq user.id
+        expect(json.dig("data", "attributes", "created_by_id").to_i).to eq admin.id
       end
     end
   end
@@ -93,39 +103,55 @@ RSpec.describe MeasureCategoriesController, type: :controller do
     let(:measure_category) { FactoryBot.create(:measure_category) }
     subject { delete :destroy, format: :json, params: {id: measure_category} }
 
+    # Define roles at class level - falls back to application permissions
+    def self.allowed_destroy_roles
+      @allowed_destroy_roles ||= Permissions.roles_with_permission("measure_category", "destroy")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
+    def self.forbidden_destroy_roles
+      @forbidden_destroy_roles ||= all_roles - allowed_destroy_roles
+    end
+
     context "when not signed in" do
-      it "not allow deleting a measure_category" do
+      it "does not allow deleting a measure_category" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:manager) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to delete a measure_category" do
+      it "does not allow a guest (no roles) to delete a measure_category" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to delete a measure_category" do
-        sign_in contributor
-        expect(subject).to be_forbidden
+      allowed_destroy_roles.each do |role|
+        it "allows #{role} to delete a measure_category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_no_content
+        end
       end
 
-      it "will allow a manager to delete a measure_category" do
-        sign_in manager
-        expect(subject).to be_no_content
+      forbidden_destroy_roles.each do |role|
+        it "does not allow #{role} to delete a measure_category" do
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
 
       context "when the measure_category does not exist" do
-        let(:measure_category) do
-          {id: -1}
-        end
+        let(:measure_category) { {id: -1} }
 
         it "returns the same response as a successful deletion" do
-          sign_in manager
+          admin = FactoryBot.create(:user, :admin)
+          sign_in admin
           expect(subject).to be_no_content
         end
       end

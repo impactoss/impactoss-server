@@ -45,8 +45,8 @@ Rails.application.routes.draw do
   resources :measure_categories, only: [:index, :show, :create, :destroy] if Features.enabled?(:measures)
   resources :measure_indicators, only: [:index, :show, :create, :destroy] if Features.enabled?(:measures) && Features.enabled?(:indicators)
   resources :recommendation_measures, only: [:index, :show, :create, :destroy] if Features.enabled?(:measures)
-  resources :recommendation_recommendations, only: [:index, :show, :create, :destroy]
   resources :recommendation_indicators, only: [:index, :show, :create, :destroy] if Features.enabled?(:indicators)
+  resources :recommendation_recommendations, only: [:index, :show, :create, :destroy]
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

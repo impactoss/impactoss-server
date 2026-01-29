@@ -2,31 +2,22 @@
 
 class RecommendationPolicy < ApplicationPolicy
   def permitted_attributes
-    [
+    attrs = [
       :title,
-      :draft,
       :accepted,
       :response,
       :reference,
       :description,
       :framework_id,
-      :support_level,
-      (:is_archive if @user.role?("admin"))
+      :support_level
     ]
+
+    attrs << :is_archive if !@record.new_record? && @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :draft if @user.has_any_role?(allowed_roles_for(:modify_draft))
+
+    attrs.compact
   end
 
-  def destroy?
-    false
-  end
-
-  def update?
-    super && (@user.role?("admin") || !@record.is_archive?)
-  end
-
-  class Scope < Scope
-    def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false, is_archive: false)
-    end
-  end
+  # create?, update?, destroy? inherited from ApplicationPolicy
+  # Scope inherited from ApplicationPolicy (handles draft/archive filtering)
 end

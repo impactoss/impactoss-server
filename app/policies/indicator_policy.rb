@@ -2,32 +2,20 @@
 
 class IndicatorPolicy < ApplicationPolicy
   def permitted_attributes
-    [
+    attrs = [
       :description,
-      :draft,
       :end_date,
       :frequency_months,
       :manager_id,
       :reference,
       :repeat,
       :start_date,
-      :title,
-      (:is_archive if @user.role?("admin"))
-    ].compact
-  end
+      :title
+    ]
 
-  def destroy?
-    false
-  end
+    attrs << :is_archive if !@record.new_record? && @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :draft if @user.has_any_role?(allowed_roles_for(:modify_draft))
 
-  def update?
-    super && (@user.role?("admin") || !@record.is_archive?)
-  end
-
-  class Scope < Scope
-    def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false, is_archive: false)
-    end
+    attrs.compact
   end
 end

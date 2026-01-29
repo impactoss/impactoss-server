@@ -2,17 +2,22 @@ require "rails_helper"
 require "json"
 
 RSpec.describe DueDatesController, type: :controller do
-  before do
-    skip "Feature disabled" unless Features.enabled?(:progress_reports)
-  end
-
   describe "Get index" do
     subject { get :index, format: :json }
     let!(:due_date) { FactoryBot.create(:due_date) }
     let!(:draft_due_date) { FactoryBot.create(:due_date, draft: true) }
 
+    # Define roles at class level
+    def self.allowed_view_all_roles
+      @allowed_view_all_roles ||= Permissions.roles_with_permission("due_date", "view_all")
+    end
+
+    def self.all_roles
+      @all_roles ||= Permissions::ROLE_HIERARCHY.keys
+    end
+
     context "when not signed in" do
-      it "no due dates are shown" do
+      it "no due_dates are shown" do
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(0)
       end
@@ -20,25 +25,31 @@ RSpec.describe DueDatesController, type: :controller do
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:user) { FactoryBot.create(:user, :manager) }
 
-      it "guest will not see any due_dates" do
+      it "guest (no roles) will not see any due_dates" do
         sign_in guest
         json = JSON.parse(subject.body)
         expect(json["data"].length).to eq(0)
       end
 
-      it "contributor will see all due_dates" do
-        sign_in contributor
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
-      end
+      # Test each role's visibility based on view_all permission
+      all_roles.each do |role|
+        context role.to_s do
+          let(:user) { FactoryBot.create(:user, role.to_sym) }
 
-      it "manager will see all due_dates" do
-        sign_in user
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(2)
+          it "sees appropriate due_dates based on permissions" do
+            sign_in user
+            json = JSON.parse(subject.body)
+
+            if self.class.allowed_view_all_roles.include?(role)
+              # Can see all due dates
+              expect(json["data"].length).to eq(2)
+            else
+              # Cannot see any due dates
+              expect(json["data"].length).to eq(0)
+            end
+          end
+        end
       end
     end
   end
@@ -59,97 +70,73 @@ RSpec.describe DueDatesController, type: :controller do
   end
 
   describe "Post create" do
+    let(:indicator) { FactoryBot.create(:indicator) }
+    let(:params) {
+      {
+        due_date: {
+          due_date: Time.zone.today.to_s,
+          indicator_id: indicator.id
+        }
+      }
+    }
+    subject { post :create, format: :json, params: params }
+
     context "when not signed in" do
-      it "not allow creating a due_date" do
-        post :create, format: :json, params: {due_date: {due_date: Time.zone.today.to_s}}
-        expect(response).to be_unauthorized
+      it "does not allow creating a due_date" do
+        expect(subject).to be_unauthorized
       end
     end
 
     context "when signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:indicator) { FactoryBot.create(:indicator) }
-      let(:contributor_indicator) { FactoryBot.create(:indicator, manager: contributor) }
 
-      subject(:with_contributor) do
-        post :create,
-          format: :json,
-          params: {
-            due_date: {
-              due_date: Time.zone.today.to_s,
-              indicator_id: contributor_indicator.id
-            }
-          }
-      end
-
-      subject(:without_contributor) do
-        post :create,
-          format: :json,
-          params: {
-            due_date: {
-              due_date: Time.zone.today.to_s,
-              indicator_id: indicator.id
-            }
-          }
-      end
-
-      it "will not allow a guest to create a due_date" do
+      it "does not allow a guest (no roles) to create a due_date" do
         sign_in guest
         expect(subject).to be_forbidden
       end
 
-      it "will not allow a contributor to create a due_date for a indicator they are not a manager for" do
-        sign_in contributor
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow a contributor to create a due_date for a indicator they are a manager for" do
-        sign_in contributor
-        expect(with_contributor).to be_forbidden
-      end
-
-      it "will not allow a manager to create a due_date" do
-        sign_in user
-        expect(subject).to be_forbidden
+      # Due dates are auto-generated - all roles are forbidden from creating them
+      it "is blocked for all roles (due dates are auto-generated)" do
+        Permissions::ROLE_HIERARCHY.keys.each do |role|
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
   end
 
   describe "PUT update" do
     let(:due_date) { FactoryBot.create(:due_date) }
-    subject do
-      put :update,
-        format: :json,
-        params: {id: due_date,
-                 due_date: {due_date: 1.year.ago.to_s}}
-    end
+    let(:params) {
+      {
+        id: due_date,
+        due_date: {due_date: 1.year.ago.to_s}
+      }
+    }
+    subject { put :update, format: :json, params: params }
 
     context "when not signed in" do
-      it "not allow updating a due_date" do
+      it "does not allow updating a due_date" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user, :manager) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
 
-      it "will not allow a guest to update a due_date" do
+      it "does not allow a guest (no roles) to update a due_date" do
         sign_in guest
         expect(subject).to be_not_found
       end
 
-      it "will not allow a contributor to update a due_date" do
-        sign_in contributor
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow a manager to update a due_date" do
-        sign_in user
-        expect(subject).to be_forbidden
+      # Due dates are auto-generated - all roles are forbidden from updating them
+      it "is blocked for all roles (due dates are auto-generated)" do
+        Permissions::ROLE_HIERARCHY.keys.each do |role|
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
   end
@@ -159,30 +146,32 @@ RSpec.describe DueDatesController, type: :controller do
     subject { delete :destroy, format: :json, params: {id: due_date} }
 
     context "when not signed in" do
-      it "not allow deleting a due_date" do
+      it "does not allow deleting a due_date" do
         expect(subject).to be_unauthorized
       end
     end
 
     context "when user signed in" do
       let(:guest) { FactoryBot.create(:user) }
-      let(:contributor) { FactoryBot.create(:user, :contributor) }
-      let(:user) { FactoryBot.create(:user, :manager) }
 
-      it "will not allow a guest to delete a due_date" do
+      it "does not allow a guest (no roles) to delete a due_date" do
         sign_in guest
         expect(subject).to be_not_found
       end
 
-      it "will not allow a contributor to delete a due_date" do
-        sign_in contributor
-        expect(subject).to be_forbidden
-      end
-
-      it "will not allow a manager to delete a due_date" do
-        sign_in user
-        expect(subject).to be_forbidden
+      # Due dates are auto-generated - all roles are forbidden from deleting them
+      it "is blocked for all roles (due dates are auto-generated)" do
+        Permissions::ROLE_HIERARCHY.keys.each do |role|
+          user = FactoryBot.create(:user, role.to_sym)
+          sign_in user
+          expect(subject).to be_forbidden
+        end
       end
     end
+  end
+
+  describe "Scope permission system tests" do
+    include_examples "all or nothing scope permission system",
+      "due_date", "view_all"
   end
 end
