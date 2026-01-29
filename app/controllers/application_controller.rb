@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def devise_or_devise_token_auth_controller?
-    devise_controller? || self.class.ancestors.any? { |a| a.to_s.start_with?("DeviseTokenAuth::") }
+    devise_controller? || self.class.name.start_with?("DeviseTokenAuth::")
   end
 
   def serialize(target, serializer:)
