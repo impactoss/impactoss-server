@@ -10,6 +10,14 @@ FactoryBot.define do
       is_archive { true }
     end
 
+    trait :draft do
+      draft { true }
+    end
+
+    trait :published do
+      draft { false }
+    end
+
     trait :without_measure do
       measures { [] }
     end

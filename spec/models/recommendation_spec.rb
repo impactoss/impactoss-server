@@ -24,7 +24,7 @@ RSpec.describe Recommendation, type: :model do
   it { is_expected.to belong_to(:framework).optional }
 
   context "is_current" do
-    let(:category) { FactoryBot.create(:category) }
+    let(:category) { FactoryBot.create(:category, :published) }
     let(:recommendation) { FactoryBot.create(:recommendation) }
 
     before do

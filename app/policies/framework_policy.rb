@@ -11,10 +11,6 @@ class FrameworkPolicy < ApplicationPolicy
     false
   end
 
-  def permitted_attributes
-    [:title, :short_title, :description, :has_indicators, :has_measures, :has_response]
-  end
-
   class Scope < Scope
     def resolve
       scope.all

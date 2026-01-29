@@ -2,18 +2,35 @@
 
 class ProgressReportPolicy < ApplicationPolicy
   def permitted_attributes
-    [
-      :indicator_id, :due_date_id, :title, :description, :document_url, :document_public, :draft,
-      (:is_archive if @user.role?("admin")),
-      indicator_attributes: [:id, :title, :description, :draft],
-      due_date_attributes: [:id, :due_date, :indicator_id, :draft]
-    ].compact
+    attrs = [
+      :indicator_id,
+      :due_date_id,
+      :title,
+      :description,
+      :document_url,
+      :document_public
+    ]
+
+    attrs << :is_archive if !@record.new_record? && @user.has_any_role?(allowed_roles_for(:modify_is_archive))
+    attrs << :draft if @user.has_any_role?(allowed_roles_for(:modify_draft))
+
+    attrs.compact
   end
 
   def create?
-    return true if @user.role?("admin") || @user.role?("manager")
+    return true if @user.has_any_role?(allowed_roles_for(:create))
 
-    @user.role?("contributor") && @record.draft? && @record.manager == @user
+    # Contributors can create their own reports
+    if @user.has_any_role?(allowed_roles_for(:create_own_draft)) &&
+        @record.manager == @user
+
+      # Must be draft unless they have modify_draft permission
+      return false if !@record.draft? && !@user.has_any_role?(allowed_roles_for(:modify_draft))
+
+      return true
+    end
+
+    false
   end
 
   def destroy?
@@ -21,15 +38,20 @@ class ProgressReportPolicy < ApplicationPolicy
   end
 
   def update?
-    return false if @record.is_archive? && !@user.role?("admin")
+    # Can't update archived unless specifically allowed
+    return false if @record.try(:is_archive) &&
+      !@user.has_any_role?(allowed_roles_for(:update_archived))
 
-    super || (@user.role?("contributor") && @record.draft? && !@record.draft_changed? && @record.manager == @user)
-  end
+    # Standard update permission
+    return true if @user.has_any_role?(allowed_roles_for(:update))
 
-  class Scope < Scope
-    def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.where(draft: false, is_archive: false)
-    end
+    # Contributors can update their own draft reports (if draft status unchanged)
+    @user.has_any_role?(allowed_roles_for(:update_own_draft)) &&
+      @record.draft? &&
+      !@record.draft_changed? &&
+      @record.manager == @user
+
+    # Can change draft status only if they have modify_draft permission
+    false if @record.draft_changed? && !@user.has_any_role?(allowed_roles_for(:modify_draft))
   end
 end

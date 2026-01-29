@@ -2,33 +2,32 @@
 
 class DueDatePolicy < ApplicationPolicy
   def permitted_attributes
-    [:due_date,
-      :indicator_id,
-      :draft,
-      measure_indicators_attributes: [:measure_id,
-        measure_attributes: [:id, :title, :description, :target_date, :draft]]]
+    [:due_date, :indicator_id, :draft]
   end
 
   def show?
-    super || @user.role?("contributor")
+    @user.has_any_role?(allowed_roles_for(:show))
   end
 
   def create?
-    false
+    false  # Due dates are auto-generated from indicator settings
   end
 
   def update?
-    false
+    false  # Due dates are auto-generated, not manually edited
   end
 
   def destroy?
-    false
+    false  # Due dates are auto-generated, not manually deleted
   end
 
   class Scope < Scope
     def resolve
-      return scope.all if @user.role?("admin") || @user.role?("manager") || @user.role?("contributor")
-      scope.none
+      if @user.has_any_role?(allowed_roles_for_scope(:view_all))
+        scope.all
+      else
+        scope.none  # Public can't see due dates
+      end
     end
   end
 end

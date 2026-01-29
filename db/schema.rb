@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_27_183001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,7 +33,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.integer "taxonomy_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "draft", default: false
+    t.boolean "draft", default: true
     t.integer "manager_id"
     t.string "reference"
     t.boolean "user_only"
@@ -94,7 +94,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "draft", default: false
+    t.boolean "draft", default: true
     t.integer "manager_id"
     t.integer "frequency_months"
     t.date "start_date"
@@ -138,7 +138,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.text "target_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "draft", default: false
+    t.boolean "draft", default: true
     t.text "outcome"
     t.text "indicator_summary"
     t.text "target_date_comment"
@@ -156,7 +156,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.string "title", null: false
     t.text "content"
     t.string "menu_title"
-    t.boolean "draft", default: false
+    t.boolean "draft", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "order"
@@ -173,7 +173,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.text "description"
     t.string "document_url"
     t.boolean "document_public"
-    t.boolean "draft"
+    t.boolean "draft", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "updated_by_id"
@@ -231,7 +231,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_162158) do
     t.text "title", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "draft", default: false
+    t.boolean "draft", default: true
     t.boolean "accepted"
     t.text "response"
     t.text "reference", null: false
