@@ -12,7 +12,7 @@ class UserPolicy < ApplicationPolicy
       return true if update_self_permission == true
 
       # If false or empty array, disabled
-      return false if update_self_permission == false || update_self_permission.nil? || update_self_permission.empty?
+      return false if update_self_permission == false || update_self_permission.blank?
 
       # If array of roles, check if user has required role
       return @user.has_any_role?(update_self_permission) if update_self_permission.is_a?(Array)
