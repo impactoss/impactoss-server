@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     at: "auth",
     controllers: {
       sessions: "sessions",
+      registrations: "registrations",
       omniauth_callbacks: "impact_omniauth_callbacks"
     }
 
@@ -21,7 +22,12 @@ Rails.application.routes.draw do
 
   resources :categories
   resources :recommendations
-  resources :users
+  resources :users do
+    member do
+      post :enable_mfa
+      post :disable_mfa
+    end
+  end
   resources :roles
   resources :pages
   resources :bookmarks

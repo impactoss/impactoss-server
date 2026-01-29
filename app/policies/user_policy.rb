@@ -19,6 +19,14 @@ class UserPolicy < ApplicationPolicy
     false
   end
 
+  def enable_mfa?
+    @record.id == @user.id
+  end
+
+  def disable_mfa?
+    @record.id == @user.id
+  end
+
   def permitted_attributes
     [:email, :password, :password_confirmation, :name]
   end

@@ -39,6 +39,48 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
+  # POST /users/:id/enable_mfa
+  def enable_mfa
+    @user = User.find(params[:id])
+    authorize @user, :enable_mfa?
+
+    # Require password confirmation for security
+    unless params[:password].present? && @user.valid_password?(params[:password])
+      return render json: {errors: ["Current password is required to enable MFA"]}, status: :unauthorized
+    end
+
+    if @user.update(
+      multi_factor_email_code_enabled: true,
+      otp_required_for_login: true
+    )
+      render json: serialize(@user), status: :ok
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
+  end
+
+  # POST /users/:id/disable_mfa
+  def disable_mfa
+    @user = User.find(params[:id])
+    authorize @user, :disable_mfa?
+
+    # Require password confirmation for security
+    unless params[:password].present? && @user.valid_password?(params[:password])
+      return render json: {errors: ["Current password is required to disable MFA"]}, status: :unauthorized
+    end
+
+    if @user.update(
+      multi_factor_email_code_enabled: false,
+      otp_required_for_login: false,
+      multi_factor_email_code: nil,
+      multi_factor_email_code_sent_at: nil
+    )
+      render json: serialize(@user), status: :ok
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def base_object
