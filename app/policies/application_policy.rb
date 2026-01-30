@@ -73,7 +73,7 @@ class ApplicationPolicy
 
     def allowed_roles_for_scope(action)
       policy_key = @scope.model_name.singular
-      Permissions.allowed_for(policy_key, action)
+      ::Permissions.allowed_for(policy_key, action)
     end
   end
 end

@@ -459,8 +459,8 @@ GEM
     zeitwerk (2.7.2)
 
 PLATFORMS
-  arm64-darwin-23
   arm64-darwin-24
+  arm64-darwin-25
   x86_64-linux
 
 DEPENDENCIES
@@ -514,4 +514,4 @@ RUBY VERSION
    ruby 3.3.7p123
 
 BUNDLED WITH
-   2.6.6
+   4.0.4
