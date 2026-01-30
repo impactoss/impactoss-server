@@ -82,7 +82,10 @@ class SessionsController < DeviseTokenAuth::SessionsController
     end
 
     if @resource && valid_params?(field, q_value) && @resource.valid_password?(resource_params[:password])
-      # STEP 3: MFA FLOW - Password is valid, check if MFA is enabled
+      # Password is valid - reset failed attempts
+      @resource.update_column(:failed_attempts, 0) if @resource.failed_attempts > 0
+
+      # STEP 3: MFA FLOW - check if MFA is enabled
       if Rails.application.config.enable_mfa
         @resource.generate_and_send_multi_factor_email!
         temp_token = SecureRandom.urlsafe_base64(32)
@@ -90,11 +93,20 @@ class SessionsController < DeviseTokenAuth::SessionsController
 
         render json: {otp_required: true, temp_token:, message: "Multi-factor code sent to your email"}, status: :accepted
       else
-        # No MFA - complete normal sign-in
         super
       end
     else
-      # Invalid credentials
+      # Invalid credentials - increment failed attempts
+      if @resource
+        new_attempts = (@resource.failed_attempts || 0) + 1
+
+        if new_attempts >= Devise.maximum_attempts
+          @resource.lock_access!
+        else
+          @resource.update_column(:failed_attempts, new_attempts)
+        end
+      end
+
       render_create_error_bad_credentials
     end
   end

@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe "Sessions API", type: :request do
   describe "POST /auth/sign_in" do
-    let(:password) { "password123" }
+    let(:password) { "SecurePassword123!" }
     let(:user) { FactoryBot.create(:user, password: password, password_confirmation: password) }
 
     context "when MFA is enabled globally" do
