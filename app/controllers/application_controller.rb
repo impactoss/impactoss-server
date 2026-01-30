@@ -10,9 +10,9 @@ class ApplicationController < ActionController::Base
 
   layout :layout_by_resource
 
-  before_action :authenticate_user!, only: [:create, :update, :destroy], unless: :devise_controller?
-  after_action :verify_authorized, except: [:index], unless: :devise_controller?
-  after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
+  before_action :authenticate_user!, only: [:create, :update, :destroy], unless: :devise_or_devise_token_auth_controller?
+  after_action :verify_authorized, except: [:index], unless: :devise_or_devise_token_auth_controller?
+  after_action :verify_policy_scoped, only: :index, unless: :devise_or_devise_token_auth_controller?
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -24,6 +24,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def devise_or_devise_token_auth_controller?
+    devise_controller? || self.class.name.start_with?("DeviseTokenAuth::")
+  end
 
   def serialize(target, serializer:)
     serializer.new(target).serializable_hash.to_json

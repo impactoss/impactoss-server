@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  # Multi-factor authentication endpoints - must come before devise mount
+  post "auth/verify_multi_factor", to: "multi_factor#verify"
+  post "auth/resend_multi_factor", to: "multi_factor#resend"
+
   mount_devise_token_auth_for "User",
     at: "auth",
     controllers: {
       sessions: "sessions",
+      registrations: "registrations",
       omniauth_callbacks: "impact_omniauth_callbacks"
     }
 
