@@ -65,7 +65,7 @@ class SessionsController < DeviseTokenAuth::SessionsController
     end
 
     # Check 2: Expired passwords must be reset
-    if user&.password_expired?
+    if user&.password_changed_at && user.password_expired?
       return render json: {
         error: I18n.t("devise.failure.password_expired"),
         reason: "password_expired"
