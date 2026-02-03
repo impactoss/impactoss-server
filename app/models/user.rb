@@ -30,6 +30,20 @@ class User < VersionedRecord
   # Track date of password change for expiry feature
   before_update :set_password_changed_at, if: :saved_change_to_encrypted_password?
 
+  # Override Devise's confirmable methods to disable email confirmation
+  # DeviseTokenAuth 1.2.5+ appears to use confirmable even when disabled
+  def confirmed?
+    true # All users are always "confirmed"
+  end
+
+  def confirmation_required?
+    false # Never require confirmation
+  end
+
+  def active_for_authentication?
+    super # Use default behavior (doesn't check confirmation)
+  end
+
   def has_any_role?(role_names)
     return false if roles.empty?
 
