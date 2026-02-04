@@ -9,7 +9,8 @@ RSpec.describe "Sessions API", type: :request do
 
     context "when MFA is enabled globally" do
       before do
-        allow(Rails.application.config).to receive(:enable_mfa).and_return(true)
+        allow(Rails.application.config).to receive(:require_mfa).and_return(true)
+        allow(Rails.application.config).to receive(:mfa_methods).and_return([:email_otp])
       end
 
       it "returns accepted status" do
@@ -43,7 +44,7 @@ RSpec.describe "Sessions API", type: :request do
 
     context "when MFA is disabled globally" do
       before do
-        allow(Rails.application.config).to receive(:enable_mfa).and_return(false)
+        allow(Rails.application.config).to receive(:require_mfa).and_return(false)
       end
 
       it "returns success status" do

@@ -5,6 +5,13 @@ Rails.application.routes.draw do
   post "auth/verify_multi_factor", to: "multi_factor#verify"
   post "auth/resend_multi_factor", to: "multi_factor#resend"
 
+  # TOTP authentication endpoints
+  post "auth/totp/setup", to: "totp#setup"
+  post "auth/totp/enable", to: "totp#enable"
+  post "auth/totp/disable", to: "totp#disable"
+  post "auth/totp/backup_codes/regenerate", to: "totp#regenerate_backup_codes"
+  get "auth/totp/backup_codes/count", to: "totp#backup_codes_count"
+
   mount_devise_token_auth_for "User",
     at: "auth",
     controllers: {
