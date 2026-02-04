@@ -17,7 +17,7 @@ class SecurePasswordValidator < ActiveModel::EachValidator
       record.errors.add(attribute, "must include at least one digit")
     end
 
-    # password must inlude non-alphanumeric characters (like !, $, #, -, &)
+    # password must include non-alphanumeric characters (like !, $, #, -, &)
     unless /[^A-Za-z0-9]/.match?(value)
       record.errors.add(attribute, "must include at least one special character")
     end
