@@ -21,8 +21,8 @@ RSpec.describe User, type: :model do
 
   it "is invalid without a matching password" do
     subject.assign_attributes(
-      password: "abc123",
-      password_confirmation: "abc"
+      password: "SecurePassword123!",
+      password_confirmation: "DifferentPassword123!"
     )
 
     expect(subject).not_to be_valid

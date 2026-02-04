@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     controllers: {
       sessions: "sessions",
       registrations: "registrations",
+      passwords: "passwords",
       omniauth_callbacks: "impact_omniauth_callbacks"
     }
 

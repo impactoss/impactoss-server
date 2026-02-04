@@ -1,4 +1,5 @@
 DeviseTokenAuth.setup do |config|
+  config.send_confirmation_email = false
   # By default the authorization headers will change after each request. The
   # client is responsible for keeping track of the changing tokens. Change
   # this to false to prevent the Authorization header from changing after
@@ -45,4 +46,15 @@ DeviseTokenAuth.setup do |config|
   # If, however, you wish to integrate with legacy Devise authentication, you can
   # do so by enabling this flag. NOTE: This feature is highly experimental!
   # config.enable_standard_devise_support = false
+end
+
+# WORKAROUND: devise_token_auth 1.2.5+ (required for Rails 8) auto-adds :confirmable
+# We have the required DB columns (confirmed_at, confirmation_token, confirmation_sent_at)
+# but we don't use email confirmation - our MFA flow already verifies email ownership.
+# This prevents Devise from triggering unwanted confirmation emails.
+Rails.application.config.after_initialize do
+  User.devise_modules.delete(:confirmable)
+
+  # Also remove from Devise's list of modules
+  Devise.mappings[:user]&.modules&.delete(:confirmable)
 end

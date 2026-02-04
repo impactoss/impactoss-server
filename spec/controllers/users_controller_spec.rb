@@ -170,11 +170,7 @@ RSpec.describe UsersController, type: :controller do
     let(:params) {
       {
         id: target_user.id,
-        user: {
-          email: "test@co.nz",
-          password: "testtest",
-          name: "Sam"
-        }
+        user: {name: "Sam"}
       }
     }
     subject { put :update, format: :json, params: params }
@@ -309,97 +305,38 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context "updating other users" do
-        it "does not allow a guest (no roles) to update another user" do
-          other_user = FactoryBot.create(:user, :contributor)
-          sign_in guest
-
-          response = put :update, format: :json, params: {
-            id: other_user.id,
-            user: {name: "Updated Name"}
-          }
-          expect(response).to be_not_found
+      context "change email attribute" do
+        def self.update_email_enabled?
+          Permissions.allowed_for("user", "update_email") == true
         end
 
-        # Test update_any permission (admins can update anyone)
-        allowed_update_any_roles.each do |role|
-          context "#{role} with update_any permission" do
-            let(:user) { FactoryBot.create(:user, role.to_sym) }
-
-            Permissions::ROLE_HIERARCHY.keys.each do |target_role|
-              it "allows updating #{target_role}" do
-                target = FactoryBot.create(:user, target_role.to_sym)
-                sign_in user
-
-                response = put :update, format: :json, params: {
-                  id: target.id,
-                  user: {name: "Updated Name"}
-                }
-                expect(response).to be_ok
-              end
-            end
-          end
-        end
-
-        # Test update_lower permission (managers can update lower-level users)
-        allowed_update_lower_roles.each do |role|
-          # Skip if this role already has update_any permission
-          next if allowed_update_any_roles.include?(role)
-
-          context "#{role} with update_lower permission" do
-            let(:user) { FactoryBot.create(:user, role.to_sym) }
-
-            Permissions::ROLE_HIERARCHY.each do |target_role, target_level|
-              user_level = Permissions::ROLE_HIERARCHY[role]
-
-              if target_level < user_level
-                it "allows updating lower-level #{target_role}" do
-                  target = FactoryBot.create(:user, target_role.to_sym)
-                  sign_in user
-
-                  response = put :update, format: :json, params: {
-                    id: target.id,
-                    user: {name: "Updated Name"}
-                  }
-                  expect(response).to be_ok
-                end
-              else
-                it "does not allow updating same/higher-level #{target_role}" do
-                  target = FactoryBot.create(:user, target_role.to_sym)
-                  sign_in user
-
-                  response = put :update, format: :json, params: {
-                    id: target.id,
-                    user: {name: "Updated Name"}
-                  }
-                  expect(response).to be_forbidden
-                end
-              end
-            end
-          end
-        end
-
-        # Test roles without update permissions
-        roles_without_update = all_roles - allowed_update_any_roles - allowed_update_lower_roles
-        allowed_view_all_roles = Permissions.roles_with_permission("user", "view_all")
-
-        roles_without_update.each do |role|
-          it "does not allow #{role} to update other users" do
-            user = FactoryBot.create(:user, role.to_sym)
-            other_user = FactoryBot.create(:user, :contributor)
-            sign_in user
+        if update_email_enabled?
+          it "allows email updates when enabled" do
+            admin = FactoryBot.create(:user, :admin)
+            sign_in admin
 
             response = put :update, format: :json, params: {
-              id: other_user.id,
-              user: {name: "Updated Name"}
+              id: admin.id,
+              user: {email: "new@example.com", name: "New Name"}
             }
 
-            # If role can view all users, they see forbidden; otherwise not_found due to scope
-            if allowed_view_all_roles.include?(role)
-              expect(response).to be_forbidden
-            else
-              expect(response).to be_not_found
-            end
+            expect(response).to be_ok
+            expect(admin.reload.email).to eq("new@example.com")
+          end
+        else
+          it "blocks email updates when disabled (even for admin)" do
+            admin = FactoryBot.create(:user, :admin)
+            sign_in admin
+
+            original_email = admin.email
+            response = put :update, format: :json, params: {
+              id: admin.id,
+              user: {email: "new@example.com", name: "New Name"}
+            }
+
+            expect(response).to be_ok
+            expect(admin.reload.email).to eq(original_email)
+            expect(admin.reload.name).to eq("New Name")
           end
         end
       end

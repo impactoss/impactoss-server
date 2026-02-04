@@ -4,8 +4,10 @@ FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
     name { Faker::Name.name }
-    password { "password" }
-    password_confirmation { password }
+    password { "SecurePassword123!" }
+    password_confirmation { "SecurePassword123!" }
+    password_changed_at { Time.current }
+    confirmed_at { Time.current }  # Auto-confirm for tests
   end
 
   trait :admin do

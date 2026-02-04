@@ -36,7 +36,16 @@ class UserPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:email, :password, :password_confirmation, :name]
+    attrs = [
+      :name,
+      :password,
+      :password_confirmation
+    ]
+
+    # Email always allowed on creation, for updates depending on config
+    attrs << :email if @record.new_record? || allowed_roles_for(:update_email) == true
+
+    attrs.compact
   end
 
   def show_email?

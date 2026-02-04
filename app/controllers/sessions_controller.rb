@@ -1,14 +1,21 @@
 # frozen_string_literal: true
 
 ##
-# Custom sessions controller that adds multi-factor authentication support.
+# Custom sessions controller
+# - with password security checks.
+# - adds multi-factor authentication support.
+#
+# NOTE: This will be merged with branch feature/two-factor-authentication later.
+# Security checks here will run BEFORE the 2FA flow.
 #
 # Extends DeviseTokenAuth::SessionsController to intercept the sign-in flow
 # and require OTP verification when MFA is enabled for a user.
 class SessionsController < DeviseTokenAuth::SessionsController
+  # these skips likely technically redundant - TODO: review after merge
   skip_before_action :authenticate_user!, raise: false
   skip_after_action :verify_authorized, raise: false
   skip_after_action :verify_policy_scoped, raise: false
+
   ##
   # Handles user sign-in with optional multi-factor authentication.
   #
@@ -45,13 +52,27 @@ class SessionsController < DeviseTokenAuth::SessionsController
   # @example Response (no MFA)
   #   HTTP 200 OK
   #   Headers:
-  #     access-token: "xyz789..."
-  #     client: "client_id"
-  #     uid: "user@example.com"
-  #   Body:
-  #     { "data": { "id": 1, "email": "user@example.com", ... } }
+  #     access-token: "xyz789..."# frozen_string_literal: true
   def create
-    # Authenticate user by email/password first
+    # STEP 1: SECURITY CHECKS - Run before password validation
+    user = User.find_by(email: resource_params[:email])
+
+    # Check 1: Locked accounts cannot sign in
+    if user&.access_locked?
+      return render json: {
+        error: I18n.t("devise.failure.locked")
+      }, status: :unauthorized
+    end
+
+    # Check 2: Expired passwords must be reset
+    if user&.password_changed_at && user.password_expired?
+      return render json: {
+        error: I18n.t("devise.failure.password_expired"),
+        reason: "password_expired"
+      }, status: :unauthorized
+    end
+
+    # STEP 2: AUTHENTICATE - Validate email/password
     field = (resource_params.keys.map(&:to_sym) & resource_class.authentication_keys).first
 
     @resource = nil
@@ -61,7 +82,10 @@ class SessionsController < DeviseTokenAuth::SessionsController
     end
 
     if @resource && valid_params?(field, q_value) && @resource.valid_password?(resource_params[:password])
-      # Password is valid - check if MFA is enabled globally
+      # Password is valid - reset failed attempts
+      @resource.update_column(:failed_attempts, 0) if @resource.failed_attempts > 0
+
+      # STEP 3: MFA FLOW - check if MFA is enabled
       if Rails.application.config.enable_mfa
         @resource.generate_and_send_multi_factor_email!
         temp_token = SecureRandom.urlsafe_base64(32)
@@ -72,9 +96,42 @@ class SessionsController < DeviseTokenAuth::SessionsController
         super
       end
     else
-      # Invalid credentials
+      # Invalid credentials - increment failed attempts
+      if @resource
+        new_attempts = (@resource.failed_attempts || 0) + 1
+
+        if new_attempts >= Devise.maximum_attempts
+          @resource.lock_access!
+        else
+          @resource.update_column(:failed_attempts, new_attempts)
+        end
+      end
+
       render_create_error_bad_credentials
     end
+  end
+
+  protected
+
+  # Enhanced error rendering with last-attempt warning
+  def render_create_error_bad_credentials
+    attempted_user = resource_class.find_by(email: resource_params[:email])
+
+    if attempted_user
+      max_attempts = Devise.maximum_attempts || 5
+
+      # Warn on last attempt before lockout
+      if attempted_user.failed_attempts == (max_attempts - 1)
+        Rails.logger.debug "[SessionsController] Last attempt before lock"
+        return render json: {
+          error: I18n.t("devise.failure.last_attempt"),
+          reason: "last_attempt"
+        }, status: :unauthorized
+      end
+    end
+
+    # Default bad credentials error
+    super
   end
 
   private
@@ -94,5 +151,9 @@ class SessionsController < DeviseTokenAuth::SessionsController
 
   def find_resource(field, value)
     @resource = resource_class.dta_find_by(field => value)
+  end
+
+  def resource_params
+    params.permit(:email, :password)
   end
 end

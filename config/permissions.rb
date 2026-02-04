@@ -104,6 +104,7 @@ module Permissions
       "update_self" => true, # true = everyone, false/[] = disabled, ['role'] = specific roles
       "update_any" => ["admin"],
       "update_lower" => ["admin"],
+      "update_email" => false, # boolean: false - disabled; true - allowed, roles specified by update_xxx above
       # 'destroy' => [], blocked in policy
       "show_email" => ["admin"],
       "view_all" => ["manager"]  # managers+ can see all users

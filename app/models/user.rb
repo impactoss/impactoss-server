@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 class User < VersionedRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :trackable, :validatable
   #  :omniauthable
   include DeviseTokenAuth::Concerns::User
+
+  # Include default devise modules with security extensions
+  # :confirmable, :lockable, :timeoutable and :omniauthable
+  # Added: :lockable, :password_expirable, :password_archivable
+  devise :database_authenticatable, :registerable,
+    :recoverable, :rememberable, :trackable, :validatable,
+    :lockable, :password_expirable, :password_archivable
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -20,6 +23,26 @@ class User < VersionedRecord
 
   validates :email, presence: true
   validates :name, presence: true
+
+  # secure password validation
+  validates :password, secure_password: true, if: :password_required?
+
+  # Track date of password change for expiry feature
+  before_update :set_password_changed_at, if: :saved_change_to_encrypted_password?
+
+  # Override Devise's confirmable methods to disable email confirmation
+  # DeviseTokenAuth 1.2.5+ appears to use confirmable even when disabled
+  def confirmed?
+    true # All users are always "confirmed"
+  end
+
+  def confirmation_required?
+    false # Never require confirmation
+  end
+
+  def active_for_authentication?
+    super # Use default behavior (doesn't check confirmation)
+  end
 
   def has_any_role?(role_names)
     return false if roles.empty?
@@ -107,5 +130,12 @@ class User < VersionedRecord
 
     delay = DateTime.current.to_i - multi_factor_email_code_sent_at.to_i
     delay > 10.minutes.to_i
+  end
+
+  private
+
+  # Set timestamp when password changes
+  def set_password_changed_at
+    self.password_changed_at = Time.current
   end
 end
