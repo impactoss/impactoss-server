@@ -18,8 +18,12 @@ class User < VersionedRecord
   has_many :user_categories
   has_many :categories, through: :user_categories
   has_many :bookmarks
+  has_many :backup_codes, dependent: :destroy
 
   belongs_to :relationship_updated_by, class_name: "User", required: false
+
+  # Encrypt TOTP secret at rest
+  encrypts :otp_secret, deterministic: false
 
   validates :email, presence: true
   validates :name, presence: true
@@ -130,6 +134,97 @@ class User < VersionedRecord
 
     delay = DateTime.current.to_i - multi_factor_email_code_sent_at.to_i
     delay > 10.minutes.to_i
+  end
+
+  # TOTP authentication methods
+
+  ##
+  # Generates and stores a new TOTP secret for the user.
+  #
+  # @return [String] the base32-encoded secret
+  def generate_totp_secret
+    secret = ROTP::Base32.random
+    update!(otp_secret: secret)
+    secret
+  end
+
+  ##
+  # Returns the TOTP provisioning URI for QR code generation.
+  #
+  # @param issuer [String] the application name (default: "IMPACTOSS")
+  # @return [String] the provisioning URI
+  def totp_provisioning_uri(issuer: "IMPACTOSS")
+    return nil unless otp_secret.present?
+
+    ROTP::TOTP.new(otp_secret, issuer: issuer).provisioning_uri(email)
+  end
+
+  ##
+  # Validates a TOTP code.
+  #
+  # @param code [String] the 6-digit TOTP code
+  # @param drift [Integer] acceptable time drift in seconds (default: 30)
+  # @return [Boolean] true if valid, false otherwise
+  def validate_totp_code(code)
+    return false unless otp_secret.present?
+    return false if code.blank?
+
+    totp = ROTP::TOTP.new(otp_secret)
+    # Allow 30 seconds of drift in either direction
+    totp.verify(code, drift_behind: 30, drift_ahead: 30).present?
+  end
+
+  ##
+  # Checks if TOTP is enabled for this user.
+  #
+  # @return [Boolean] true if TOTP is enabled
+  def totp_enabled?
+    otp_secret.present? && otp_required_for_login
+  end
+
+  ##
+  # Determines the user's MFA method.
+  #
+  # @return [Symbol] :totp, :email_otp, or :none
+  def mfa_method
+    return :totp if totp_enabled?
+    return :email_otp if email_otp_enabled?
+    :none
+  end
+
+  ##
+  # Checks if email OTP is enabled (globally).
+  #
+  # @return [Boolean] true if email OTP is enabled
+  def email_otp_enabled?
+    Rails.application.config.mfa_methods.include?(:email_otp) &&
+      Rails.application.config.require_mfa
+  end
+
+  ##
+  # Checks if MFA is locked due to failed attempts.
+  #
+  # @return [Boolean] true if locked
+  def mfa_locked?
+    mfa_locked_until.present? && mfa_locked_until > Time.current
+  end
+
+  ##
+  # Increments failed MFA attempts and locks if threshold exceeded.
+  #
+  # @param max_attempts [Integer] maximum attempts before locking (default: 5)
+  def increment_mfa_failed_attempts!(max_attempts: 5)
+    increment!(:mfa_failed_attempts)
+
+    if mfa_failed_attempts >= max_attempts
+      update!(mfa_locked_until: 30.minutes.from_now)
+    end
+  end
+
+  ##
+  # Resets MFA failed attempts counter.
+  def reset_mfa_failed_attempts!
+    update!(mfa_failed_attempts: 0, mfa_locked_until: nil)
   end
 
   private

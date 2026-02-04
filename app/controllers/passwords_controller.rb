@@ -3,7 +3,7 @@ class PasswordsController < DeviseTokenAuth::PasswordsController
     trusted_host = URI.parse(ENV["CLIENT_URL"].to_s.strip).host
     redirect_host = begin
       URI.parse(params[:redirect_url]).host
-    rescue
+    rescue URI::InvalidURIError, ArgumentError
       nil
     end
 

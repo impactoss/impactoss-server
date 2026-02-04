@@ -21,8 +21,10 @@ class SessionsController < DeviseTokenAuth::SessionsController
   #
   # When a user with MFA enabled attempts to sign in, this endpoint:
   # 1. Validates email/password credentials
-  # 2. Generates and sends an OTP via email
-  # 3. Returns a temp_token for OTP verification
+  # 2. Detects the user's MFA method (TOTP or email OTP)
+  # 3. For email OTP: generates and sends an OTP via email
+  # 4. For TOTP: prompts for authenticator app code (no email sent)
+  # 5. Returns a temp_token for OTP verification
   #
   # For users without MFA, it proceeds with normal token authentication.
   #
@@ -30,7 +32,7 @@ class SessionsController < DeviseTokenAuth::SessionsController
   # @param email [String] user's email address
   # @param password [String] user's password
   # @return [JSON] either temp_token (MFA) or auth tokens (no MFA)
-  # @status 202 MFA required, OTP sent
+  # @status 202 MFA required, OTP sent or TOTP prompt
   # @status 200 Signed in successfully (no MFA)
   # @status 401 Invalid credentials
   #
@@ -41,12 +43,20 @@ class SessionsController < DeviseTokenAuth::SessionsController
   #     "password": "password123"
   #   }
   #
-  # @example Response (MFA required)
+  # @example Response (Email OTP required)
   #   HTTP 202 Accepted
   #   {
   #     "otp_required": true,
   #     "temp_token": "abc123...",
   #     "message": "Multi-factor code sent to your email"
+  #   }
+  #
+  # @example Response (TOTP required)
+  #   HTTP 202 Accepted
+  #   {
+  #     "otp_required": true,
+  #     "temp_token": "abc123...",
+  #     "message": "Enter code from your authenticator app"
   #   }
   #
   # @example Response (no MFA)
@@ -85,13 +95,29 @@ class SessionsController < DeviseTokenAuth::SessionsController
       # Password is valid - reset failed attempts
       @resource.update_column(:failed_attempts, 0) if @resource.failed_attempts > 0
 
-      # STEP 3: MFA FLOW - check if MFA is enabled
-      if Rails.application.config.enable_mfa
-        @resource.generate_and_send_multi_factor_email!
+      # STEP 3: MFA FLOW - check if MFA is required
+      if Rails.application.config.require_mfa
+        # Generate temp token for MFA verification
         temp_token = SecureRandom.urlsafe_base64(32)
         Rails.cache.write("otp_temp_token:#{temp_token}", @resource.id, expires_in: 5.minutes)
 
-        render json: {otp_required: true, temp_token:, message: "Multi-factor code sent to your email"}, status: :accepted
+        case @resource.mfa_method
+        when :totp
+          # TOTP users use their authenticator app - no email sent
+          render json: {
+            otp_required: true,
+            temp_token:,
+            message: "Enter code from your authenticator app"
+          }, status: :accepted
+        else
+          # Email OTP users and users without MFA get a code via email
+          @resource.generate_and_send_multi_factor_email!
+          render json: {
+            otp_required: true,
+            temp_token:,
+            message: "Multi-factor code sent to your email"
+          }, status: :accepted
+        end
       else
         super
       end

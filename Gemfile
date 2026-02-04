@@ -10,6 +10,8 @@ gem "devise"
 gem "devise-security"
 gem "devise_token_auth", "~> 1.2"
 gem "omniauth-azure-activedirectory-v2", "~> 2.1.0"
+gem "rotp", "~> 6.3" # TOTP authentication
+gem "rqrcode", "~> 2.2" # QR code generation for TOTP
 gem "fog-aws"
 gem "jsonapi-serializer"
 gem "kaminari"

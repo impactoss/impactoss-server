@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_03_230802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "backup_codes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "code_digest", null: false
+    t.datetime "used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code_digest"], name: "index_backup_codes_on_code_digest"
+    t.index ["user_id"], name: "index_backup_codes_on_user_id"
+  end
 
   create_table "bookmarks", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
@@ -338,6 +348,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
     t.datetime "multi_factor_email_code_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmation_sent_at"
+    t.integer "mfa_failed_attempts", default: 0, null: false
+    t.datetime "mfa_locked_until"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -353,6 +365,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "backup_codes", "users"
   add_foreign_key "framework_frameworks", "frameworks"
   add_foreign_key "framework_frameworks", "frameworks", column: "other_framework_id"
   add_foreign_key "framework_taxonomies", "frameworks"

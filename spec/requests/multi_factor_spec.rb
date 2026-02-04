@@ -9,7 +9,8 @@ RSpec.describe "Multi-Factor Authentication API", type: :request do
 
   before do
     # Enable MFA globally for these tests
-    allow(Rails.application.config).to receive(:enable_mfa).and_return(true)
+    allow(Rails.application.config).to receive(:require_mfa).and_return(true)
+    allow(Rails.application.config).to receive(:mfa_methods).and_return([:email_otp])
     Rails.cache.write("otp_temp_token:#{temp_token}", user.id, expires_in: 5.minutes)
   end
 
@@ -126,7 +127,7 @@ RSpec.describe "Multi-Factor Authentication API", type: :request do
           params: {temp_token: temp_token, otp_code: valid_otp_code}.to_json,
           headers: {"CONTENT_TYPE" => "application/json"}
         json = JSON.parse(response.body)
-        expect(json["errors"]).to include("Multi-factor code has expired")
+        expect(json["errors"]).to include("Invalid multi-factor code")
       end
     end
 
