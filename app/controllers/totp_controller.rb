@@ -40,9 +40,9 @@ class TotpController < ApplicationController
     )
 
     render json: {
-      secret: secret,
+      secret:,
       qr_code: svg,
-      provisioning_uri: provisioning_uri
+      provisioning_uri:
     }
   end
 
@@ -91,7 +91,7 @@ class TotpController < ApplicationController
 
     render json: {
       message: "TOTP enabled successfully",
-      backup_codes: backup_codes
+      backup_codes:
     }
   end
 
@@ -149,7 +149,7 @@ class TotpController < ApplicationController
     backup_codes = BackupCode.generate_for_user(current_user)
 
     render json: {
-      backup_codes: backup_codes,
+      backup_codes:,
       message: "Backup codes regenerated successfully"
     }
   end
@@ -166,8 +166,8 @@ class TotpController < ApplicationController
       return render json: {errors: ["TOTP is not enabled for your account"]}, status: :forbidden
     end
 
-    count = BackupCode.remaining_count(current_user)
+    remaining_count = BackupCode.remaining_count(current_user)
 
-    render json: {remaining_count: count}
+    render json: {remaining_count:}
   end
 end

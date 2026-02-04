@@ -106,23 +106,15 @@ class SessionsController < DeviseTokenAuth::SessionsController
           # TOTP users use their authenticator app - no email sent
           render json: {
             otp_required: true,
-            temp_token: temp_token,
+            temp_token:,
             message: "Enter code from your authenticator app"
           }, status: :accepted
-        when :email_otp
-          # Email OTP users get a code via email
-          @resource.generate_and_send_multi_factor_email!
-          render json: {
-            otp_required: true,
-            temp_token: temp_token,
-            message: "Multi-factor code sent to your email"
-          }, status: :accepted
         else
-          # User hasn't set up MFA but it's required - use email OTP as fallback
+          # Email OTP users and users without MFA get a code via email
           @resource.generate_and_send_multi_factor_email!
           render json: {
             otp_required: true,
-            temp_token: temp_token,
+            temp_token:,
             message: "Multi-factor code sent to your email"
           }, status: :accepted
         end
