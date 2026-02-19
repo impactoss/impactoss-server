@@ -8,7 +8,12 @@ class VersionedRecord < ApplicationRecord
 
   def self.inherited(base)
     if base.name == "User"
-      # For User: explicitly whitelist safe fields only
+      sensitive = %w[
+        encrypted_password tokens reset_password_token
+        otp_secret multi_factor_email_code multi_factor_email_code_sent_at
+        confirmation_token
+      ]
+
       base.has_paper_trail(
         only: [
           :id, :email, :name, :provider, :uid,
@@ -23,6 +28,11 @@ class VersionedRecord < ApplicationRecord
           :remember_created_at, :reset_password_sent_at
         ]
       )
+
+      # Strip sensitive data from the serialized object
+      base.define_method(:object_attrs_for_paper_trail) do |attributes|
+        attributes.except(*sensitive)
+      end
     else
       base.has_paper_trail ignore: []
     end
