@@ -13,7 +13,7 @@ class User < VersionedRecord
 
   # PaperTrail: Exclude sensitive fields from version snapshots
   def object_attrs_for_paper_trail(attributes_before_change)
-    super.except(
+    attributes_before_change.except(
       "encrypted_password",
       "tokens",
       "reset_password_token",
