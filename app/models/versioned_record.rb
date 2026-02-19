@@ -7,22 +7,25 @@ class VersionedRecord < ApplicationRecord
   belongs_to :updated_by, class_name: "User", required: false
 
   def self.inherited(base)
-    ignore = case base.name
-    in "User"
-      [
-        :tokens,
-        :updated_at,
-        :encrypted_password,
-        :reset_password_token,
-        :multi_factor_email_code,
-        :otp_secret,
-        :confirmation_token
-      ]
+    if base.name == "User"
+      # For User: explicitly whitelist safe fields only
+      base.has_paper_trail(
+        only: [
+          :id, :email, :name, :provider, :uid,
+          :created_at, :updated_at, :sign_in_count,
+          :current_sign_in_at, :last_sign_in_at,
+          :current_sign_in_ip, :last_sign_in_ip,
+          :updated_by_id, :created_by_id,
+          :relationship_updated_at, :relationship_updated_by_id,
+          :failed_attempts, :locked_at,
+          :password_changed_at, :confirmed_at,
+          :otp_required_for_login, :allow_password_change,
+          :remember_created_at, :reset_password_sent_at
+        ]
+      )
     else
-      []
+      base.has_paper_trail ignore: []
     end
-
-    base.has_paper_trail ignore: ignore
 
     super
   end

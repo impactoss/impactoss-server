@@ -11,21 +11,6 @@ class User < VersionedRecord
     :recoverable, :rememberable, :trackable, :validatable,
     :lockable, :password_expirable, :password_archivable
 
-  # PaperTrail: Exclude sensitive fields from version snapshots
-  def object_attrs_for_paper_trail(attributes_before_change)
-    Rails.logger.info "=== FILTERING PAPERTRAIL ATTRIBUTES ==="
-    filtered = attributes_before_change.except(
-      "encrypted_password",
-      "tokens",
-      "reset_password_token",
-      "multi_factor_email_code",
-      "otp_secret",
-      "confirmation_token"
-    )
-    Rails.logger.info "Filtered keys: #{filtered.keys}"
-    filtered
-  end
-
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :managed_categories, foreign_key: :manager_id, class_name: "Category"

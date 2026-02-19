@@ -11,18 +11,21 @@ RSpec.describe User, type: :model do
   it { is_expected.to have_many :categories }
   it { is_expected.to have_many :managed_indicators }
 
-  it "configures paper_trail to particular fields" do
-    expect(described_class.paper_trail_options).to include(
-      ignore: [
-        "tokens",
-        "updated_at",
-        "encrypted_password",
-        "reset_password_token",
-        "multi_factor_email_code",
-        "otp_secret",
-        "confirmation_token"
-      ]
-    )
+  it "configures paper_trail to exclude sensitive fields" do
+    only_fields = described_class.paper_trail_options[:only]
+
+    # Check that sensitive fields are NOT in the only list
+    expect(only_fields).not_to include("encrypted_password")
+    expect(only_fields).not_to include("tokens")
+    expect(only_fields).not_to include("reset_password_token")
+    expect(only_fields).not_to include("multi_factor_email_code")
+    expect(only_fields).not_to include("otp_secret")
+    expect(only_fields).not_to include("confirmation_token")
+
+    # Check that safe fields ARE in the only list
+    expect(only_fields).to include("email")
+    expect(only_fields).to include("name")
+    expect(only_fields).to include("id")
   end
 
   it "is valid" do
