@@ -8,7 +8,7 @@ class VersionedRecord < ApplicationRecord
 
   def self.inherited(base)
     if base.name == "User"
-      sensitive = %w[
+      sensitive = %i[
         encrypted_password tokens reset_password_token
         otp_secret multi_factor_email_code multi_factor_email_code_sent_at
         confirmation_token
@@ -26,13 +26,9 @@ class VersionedRecord < ApplicationRecord
           :password_changed_at, :confirmed_at,
           :otp_required_for_login, :allow_password_change,
           :remember_created_at, :reset_password_sent_at
-        ]
+        ],
+        skip: sensitive
       )
-
-      # Strip sensitive data from the serialized object
-      base.define_method(:object_attrs_for_paper_trail) do |attributes|
-        attributes.except(*sensitive)
-      end
     else
       base.has_paper_trail ignore: []
     end
