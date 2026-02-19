@@ -9,7 +9,15 @@ class VersionedRecord < ApplicationRecord
   def self.inherited(base)
     ignore = case base.name
     in "User"
-      [:tokens, :updated_at]
+      [
+        :tokens,
+        :updated_at,
+        :encrypted_password,
+        :reset_password_token,
+        :multi_factor_email_code,
+        :otp_secret,
+        :confirmation_token
+      ]
     else
       []
     end

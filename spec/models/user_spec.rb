@@ -12,7 +12,17 @@ RSpec.describe User, type: :model do
   it { is_expected.to have_many :managed_indicators }
 
   it "configures paper_trail to particular fields" do
-    expect(described_class.paper_trail_options).to include(ignore: ["tokens", "updated_at"])
+    expect(described_class.paper_trail_options).to include(
+      ignore: [
+        "tokens",
+        "updated_at",
+        "encrypted_password",
+        "reset_password_token",
+        "multi_factor_email_code",
+        "otp_secret",
+        "confirmation_token"
+      ]
+    )
   end
 
   it "is valid" do
