@@ -13,7 +13,8 @@ class User < VersionedRecord
 
   # PaperTrail: Exclude sensitive fields from version snapshots
   def object_attrs_for_paper_trail(attributes_before_change)
-    attributes_before_change.except(
+    Rails.logger.info "=== FILTERING PAPERTRAIL ATTRIBUTES ==="
+    filtered = attributes_before_change.except(
       "encrypted_password",
       "tokens",
       "reset_password_token",
@@ -21,6 +22,8 @@ class User < VersionedRecord
       "otp_secret",
       "confirmation_token"
     )
+    Rails.logger.info "Filtered keys: #{filtered.keys}"
+    filtered
   end
 
   has_many :user_roles, dependent: :destroy
