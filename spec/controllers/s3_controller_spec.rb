@@ -3,6 +3,9 @@ require "json"
 
 RSpec.describe S3Controller, type: :controller do
   describe "GET sign" do
+    before do
+      skip "S3 not configured" unless ENV["AWS_ACCESS_KEY_ID"].present?
+    end
     let(:object_name) { "test_object" }
     subject { get :sign, format: :json, params: {objectName: object_name} }
 

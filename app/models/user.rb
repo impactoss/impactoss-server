@@ -132,6 +132,19 @@ class User < VersionedRecord
     delay > 10.minutes.to_i
   end
 
+  def token_validation_response
+    as_json(only: %i[
+      id
+      uid
+      email
+      name
+      updated_by_id
+      created_by_id
+      relationship_updated_at
+      relationship_updated_by_id
+    ])
+  end
+
   private
 
   # Set timestamp when password changes
