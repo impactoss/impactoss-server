@@ -1,14 +1,6 @@
 # frozen_string_literal: true
 
 class UserRolePolicy < ApplicationPolicy
-  def show?
-    # Admins/managers can see all (they have view_all)
-    return true if @user.has_any_role?(allowed_roles_for(:view_all))
-
-    # Others can only see their own user_roles
-    @record.user_id == @user.id
-  end
-
   def update?
     false
   end

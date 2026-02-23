@@ -257,41 +257,4 @@ RSpec.describe UsersController, type: :controller do
       end
     end
   end
-
-  describe "Delete destroy" do
-    let(:target_user) { FactoryBot.create(:user, :contributor) }
-    subject { delete :destroy, format: :json, params: {id: target_user} }
-
-    context "when not signed in" do
-      it "does not allow deleting a user" do
-        expect(subject).to be_unauthorized
-      end
-    end
-
-    context "when user signed in" do
-      let(:guest) { FactoryBot.create(:user) }
-
-      it "does not allow a guest (no roles) to delete another user" do
-        sign_in guest
-        expect(subject).to be_not_found
-      end
-
-      it "does not allow any user to delete themselves" do
-        user = FactoryBot.create(:user, :contributor)
-        sign_in user
-
-        response = delete :destroy, format: :json, params: {id: user.id}
-        expect(response).to be_forbidden
-      end
-
-      # User deletion is blocked in policy
-      it "is blocked for all roles (users cannot be deleted)" do
-        Permissions::ROLE_HIERARCHY.keys.each do |role|
-          user = FactoryBot.create(:user, role.to_sym)
-          sign_in user
-          expect(subject).to be_forbidden
-        end
-      end
-    end
-  end
 end

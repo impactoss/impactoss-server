@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class RecommendationsController < ApplicationController
-  before_action :set_and_authorize_recommendation, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_recommendation, only: [:update, :destroy]
 
   # GET /recommendations
   def index
@@ -9,11 +9,6 @@ class RecommendationsController < ApplicationController
     authorize @recommendations
 
     render json: serialize(@recommendations)
-  end
-
-  # GET /recommendations/1
-  def show
-    render json: serialize(@recommendation)
   end
 
   # POST /recommendations

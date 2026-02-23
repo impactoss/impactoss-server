@@ -1,7 +1,6 @@
 class BookmarksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_and_authorize_bookmark, only: [:update, :destroy]
-  skip_after_action :verify_authorized, only: [:show]
 
   def forbidden
     render json: {error: "Forbidden"}, status: 403
@@ -15,13 +14,6 @@ class BookmarksController < ApplicationController
     authorize @bookmarks
 
     render json: serialize(@bookmarks)
-  end
-
-  # GET /bookmarks/[id]
-  def show
-    policy_scope(base_object)
-
-    forbidden
   end
 
   # POST /bookmarks

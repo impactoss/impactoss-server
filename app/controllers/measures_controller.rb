@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MeasuresController < ApplicationController
-  before_action :set_and_authorize_measure, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_measure, only: [:update, :destroy]
 
   # GET /measures
   def index
@@ -9,11 +9,6 @@ class MeasuresController < ApplicationController
     authorize @measures
 
     render json: serialize(@measures)
-  end
-
-  # GET /measures/1
-  def show
-    render json: serialize(@measure)
   end
 
   # POST /measures

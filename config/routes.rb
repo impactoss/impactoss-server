@@ -24,29 +24,32 @@ Rails.application.routes.draw do
   get "s3/sign" if ENV["AWS_ACCESS_KEY_ID"].present?
   # get "features", to: "features#index"
 
-  resources :taxonomies, only: [:index, :create, :update, :destroy]
-  resources :categories, only: [:index, :create, :update, :destroy]
-  resources :recommendations, only: [:index, :create, :update, :destroy]
-  resources :users, only: [:index, :create, :update, :destroy]
-  resources :roles, only: [:index, :create, :update, :destroy]
-  resources :pages, only: [:index, :create, :update, :destroy]
-  resources :bookmarks, only: [:index, :create, :update, :destroy]
+  # index only: set up on server
+  resources :due_dates, only: [:index] if Features.enabled?(:progress_reports)
   resources :frameworks, only: [:index]
-  resources :user_roles, only: [:index, :create, :destroy]
-  resources :recommendation_categories, only: [:index, :create, :destroy]
-  resources :user_categories, only: [:index, :create, :destroy]
-  resources :framework_frameworks, only: [:index]
+  # resources :framework_frameworks, only: [:index] not currently used
   resources :framework_taxonomies, only: [:index]
-
-  resources :measures, only: [:index, :create, :update, :destroy] if Features.enabled?(:measures)
+  resources :roles, only: [:index]
+  resources :taxonomies, only: [:index]
+  # full CRUD
+  resources :bookmarks, only: [:index, :create, :update, :destroy]
+  resources :categories, only: [:index, :create, :update, :destroy]
   resources :indicators, only: [:index, :create, :update, :destroy] if Features.enabled?(:indicators)
+  resources :measures, only: [:index, :create, :update, :destroy] if Features.enabled?(:measures)
+  resources :pages, only: [:index, :create, :update, :destroy]
   resources :progress_reports, only: [:index, :create, :update, :destroy] if Features.enabled?(:progress_reports)
-  resources :due_dates, only: [:index, :create, :update, :destroy] if Features.enabled?(:progress_reports)
+  resources :recommendations, only: [:index, :create, :update, :destroy]
+  # users: only indes and update. creation ohnly via registration /auth
+  resources :users, only: [:index, :update]
+  # CRD only - joins are only created or deleted, never changed
   resources :measure_categories, only: [:index, :create, :destroy] if Features.enabled?(:measures)
   resources :measure_indicators, only: [:index, :create, :destroy] if Features.enabled?(:measures) && Features.enabled?(:indicators)
-  resources :recommendation_measures, only: [:index, :create, :destroy] if Features.enabled?(:measures)
+  resources :recommendation_categories, only: [:index, :create, :destroy]
   resources :recommendation_indicators, only: [:index, :create, :destroy] if Features.enabled?(:indicators)
-  resources :recommendation_recommendations, only: [:index, :create, :destroy]
+  resources :recommendation_measures, only: [:index, :create, :destroy] if Features.enabled?(:measures)
+  resources :user_roles, only: [:index, :create, :destroy]
+  resources :user_categories, only: [:index, :create, :destroy] if Features.enabled?(:progress_reports)
+  # resources :recommendation_recommendations, only: [:index, :create, :destroy]
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

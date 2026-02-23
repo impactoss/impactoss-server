@@ -1,7 +1,7 @@
 require "swagger_helper"
 
 RSpec.describe "Authentication API", type: :request do
-  let(:user) { FactoryBot.create(:user, :admin, password: "StrongPassword123!", password_confirmation: "StrongPassword123!") }
+  let(:user) { FactoryBot.create(:user, :admin, password: "Xk9#mP2$vL5!", password_confirmation: "Xk9#mP2$vL5!") }
 
   def auth_headers_for(user)
     user.create_new_auth_token
@@ -33,7 +33,7 @@ RSpec.describe "Authentication API", type: :request do
         before { Rails.application.config.enable_mfa = false }
         after { Rails.application.config.enable_mfa = ENV["IMPACTOSS_REQUIRE_MFA"].present? }
 
-        let(:credentials) { {email: user.email, password: "StrongPassword123!"} }
+        let(:credentials) { {email: user.email, password: "Xk9#mP2$vL5!"} }
 
         run_test! do |response|
           expect(response.headers["access-token"]).to be_present
@@ -46,7 +46,7 @@ RSpec.describe "Authentication API", type: :request do
         before { Rails.application.config.enable_mfa = true }
         after { Rails.application.config.enable_mfa = ENV["IMPACTOSS_REQUIRE_MFA"].present? }
 
-        let(:credentials) { {email: user.email, password: "StrongPassword123!"} }
+        let(:credentials) { {email: user.email, password: "Xk9#mP2$vL5!"} }
 
         run_test! do |response|
           json = JSON.parse(response.body)
@@ -169,7 +169,7 @@ RSpec.describe "Authentication API", type: :request do
         let(:"access-token") { auth["access-token"] }
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
-        let(:password_update) { {password: "StrongPassword1234!", password_confirmation: "StrongPassword1234!"} }
+        let(:password_update) { {password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
 
         run_test!
       end
@@ -179,7 +179,7 @@ RSpec.describe "Authentication API", type: :request do
         let(:"access-token") { auth["access-token"] }
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
-        let(:password_update) { {password: "StrongPassword1234!", password_confirmation: "StrongPassword123x!"} }
+        let(:password_update) { {password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL5x!"} }
 
         run_test!
       end

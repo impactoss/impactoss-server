@@ -1,5 +1,5 @@
 class IndicatorsController < ApplicationController
-  before_action :set_and_authorize_indicator, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_indicator, only: [:update, :destroy]
 
   # GET /indicators
   def index
@@ -7,11 +7,6 @@ class IndicatorsController < ApplicationController
     authorize @indicators
 
     render json: serialize(@indicators)
-  end
-
-  # GET /indicators/1
-  def show
-    render json: serialize(@indicator)
   end
 
   # POST /indicators

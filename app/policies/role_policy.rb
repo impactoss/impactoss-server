@@ -1,8 +1,4 @@
 class RolePolicy < ApplicationPolicy
-  def show?
-    true
-  end
-
   def create?
     false
   end

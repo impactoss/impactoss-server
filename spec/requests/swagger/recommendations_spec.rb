@@ -2,26 +2,31 @@
 
 require "swagger_helper"
 
-RSpec.describe "Categories API", type: :request do
+RSpec.describe "Recommendations API", type: :request do
   include_context "swagger auth helpers"
 
-  CATEGORY_CREATE_ROLES = Permissions.roles_with_permission("category", "create")
-  CATEGORY_UPDATE_ROLES = Permissions.roles_with_permission("category", "update")
-  CATEGORY_DESTROY_ROLES = Permissions.roles_with_permission("category", "destroy")
+  RECOMMENDATION_CREATE_ROLES = Permissions.roles_with_permission("recommendation", "create")
+  RECOMMENDATION_UPDATE_ROLES = Permissions.roles_with_permission("recommendation", "update")
+  RECOMMENDATION_DESTROY_ROLES = Permissions.roles_with_permission("recommendation", "destroy")
 
   # ──────────────────────────────────────────────
-  # GET /categories
+  # GET /recommendations
   # ──────────────────────────────────────────────
-  path "/categories" do
-    get "List categories" do
-      tags "Categories"
+  path "/recommendations" do
+    get "List recommendations" do
+      tags "Recommendations"
       produces "application/json"
 
-      response "200", "returns published categories" do
+      parameter name: :category_id, in: :query, type: :integer, required: false, description: "Filter by category"
+      parameter name: :measure_id, in: :query, type: :integer, required: false, description: "Filter by measure"
+      parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
+      parameter name: :current_only, in: :query, type: :string, required: false, description: "Set to 'true' for current only"
+
+      response "200", "returns published recommendations" do
         before do
-          FactoryBot.create(:category, :published)
-          FactoryBot.create(:category, :draft)
-          FactoryBot.create(:category, :published, :is_archive)
+          FactoryBot.create(:recommendation, :published)
+          FactoryBot.create(:recommendation, :draft)
+          FactoryBot.create(:recommendation, :published, :is_archive)
         end
 
         run_test! do |response|
@@ -32,51 +37,46 @@ RSpec.describe "Categories API", type: :request do
     end
 
     # ──────────────────────────────────────────────
-    # POST /categories
+    # POST /recommendations
     # ──────────────────────────────────────────────
-    post "Create a category" do
-      tags "Categories"
+    post "Create a recommendation" do
+      tags "Recommendations"
       consumes "application/json"
       produces "application/json"
       security [{access_token: [], client: [], uid: []}]
 
-      parameter name: :category, in: :body, schema: {
+      parameter name: :recommendation, in: :body, schema: {
         type: :object,
         properties: {
-          category: {
+          recommendation: {
             type: :object,
             properties: {
               title: {type: :string},
-              short_title: {type: :string},
               description: {type: :string},
-              target_date: {type: :string},
-              taxonomy_id: {type: :integer},
+              reference: {type: :string},
               draft: {type: :boolean}
             },
-            required: %w[title taxonomy_id]
+            required: %w[title reference]
           }
         }
       }
 
-      let(:taxonomy) { FactoryBot.create(:taxonomy) }
-      let(:category) {
+      let(:recommendation) {
         {
-          category: {
-            title: "New Category",
-            short_title: "New",
-            description: "A test category",
-            target_date: "2026-12-31",
-            taxonomy_id: taxonomy.id
+          recommendation: {
+            title: "New Recommendation",
+            description: "A test recommendation",
+            reference: "REC-001"
           }
         }
       }
 
       include_examples "swagger 401"
 
-      if CATEGORY_CREATE_ROLES.any?
-        lowest = CATEGORY_CREATE_ROLES.min_by { |r| Permissions::ROLE_HIERARCHY[r] }
+      if RECOMMENDATION_CREATE_ROLES.any?
+        lowest = RECOMMENDATION_CREATE_ROLES.min_by { |r| Permissions::ROLE_HIERARCHY[r] }
 
-        response "201", "category created (requires #{lowest}+)" do
+        response "201", "recommendation created (requires #{lowest}+)" do
           let(:auth) { auth_headers_for(send(lowest)) }
           let(:"access-token") { auth["access-token"] }
           let(:client) { auth["client"] }
@@ -92,63 +92,58 @@ RSpec.describe "Categories API", type: :request do
           let(:"access-token") { auth["access-token"] }
           let(:client) { auth["client"] }
           let(:uid) { auth["uid"] }
-          let(:category) {
-            {category: {description: "missing title", taxonomy_id: 999}}
+          let(:recommendation) {
+            {recommendation: {description: "missing title"}}
           }
 
           run_test!
         end
       else
-        include_examples "swagger 403 disabled", "category", "creation"
+        include_examples "swagger 403 disabled", "recommendation", "creation"
       end
     end
   end
 
   # ──────────────────────────────────────────────
-  # PUT /categories/:id + DELETE /categories/:id
+  # PUT /recommendations/:id + DELETE /recommendations/:id
   # ──────────────────────────────────────────────
-  path "/categories/{id}" do
-    parameter name: :id, in: :path, type: :integer, description: "Category ID"
+  path "/recommendations/{id}" do
+    parameter name: :id, in: :path, type: :integer, description: "Recommendation ID"
 
-    # ──────────────────────────────────────────────
-    # PUT /categories/:id
-    # ──────────────────────────────────────────────
-    put "Update a category" do
-      tags "Categories"
+    put "Update a recommendation" do
+      tags "Recommendations"
       consumes "application/json"
       produces "application/json"
       security [{access_token: [], client: [], uid: []}]
 
-      parameter name: :category, in: :body, schema: {
+      parameter name: :recommendation, in: :body, schema: {
         type: :object,
         properties: {
-          category: {
+          recommendation: {
             type: :object,
             properties: {
               title: {type: :string},
-              short_title: {type: :string},
               description: {type: :string},
-              target_date: {type: :string},
+              reference: {type: :string},
               draft: {type: :boolean},
-              is_archive: {type: :boolean},
-              manager_id: {type: :integer}
+              is_archive: {type: :boolean}
             }
           }
         }
       }
 
-      let(:existing_category) { FactoryBot.create(:category, :published) }
-      let(:id) { existing_category.id }
-      let(:category) {
-        {category: {title: "Updated Title", description: "Updated description"}}
+      let(:existing_recommendation) { FactoryBot.create(:recommendation, :published) }
+      let(:id) { existing_recommendation.id }
+      let(:recommendation) {
+        {recommendation: {title: "Updated Title", description: "Updated description"}}
       }
 
       include_examples "swagger 401"
 
-      if CATEGORY_UPDATE_ROLES.any?
-        lowest = CATEGORY_UPDATE_ROLES.min_by { |r| Permissions::ROLE_HIERARCHY[r] }
+      if RECOMMENDATION_UPDATE_ROLES.any?
+        lowest = RECOMMENDATION_UPDATE_ROLES.min_by { |r| Permissions::ROLE_HIERARCHY[r] }
 
-        response "200", "category updated (requires #{lowest}+)" do
+        response "200", "recommendation updated (requires #{lowest}+)" do
           let(:auth) { auth_headers_for(send(lowest)) }
           let(:"access-token") { auth["access-token"] }
           let(:client) { auth["client"] }
@@ -164,32 +159,29 @@ RSpec.describe "Categories API", type: :request do
           let(:"access-token") { auth["access-token"] }
           let(:client) { auth["client"] }
           let(:uid) { auth["uid"] }
-          let(:category) {
-            {category: {taxonomy_id: 999}}
+          let(:recommendation) {
+            {recommendation: {title: ""}}
           }
 
           run_test!
         end
       else
-        include_examples "swagger 403 disabled", "category", "update"
+        include_examples "swagger 403 disabled", "recommendation", "update"
       end
     end
 
-    # ──────────────────────────────────────────────
-    # DELETE /categories/:id
-    # ──────────────────────────────────────────────
-    delete "Delete a category" do
-      tags "Categories"
+    delete "Delete a recommendation" do
+      tags "Recommendations"
       security [{access_token: [], client: [], uid: []}]
 
-      let(:id) { FactoryBot.create(:category, :published).id }
+      let(:id) { FactoryBot.create(:recommendation, :published).id }
 
       include_examples "swagger 401"
 
-      if CATEGORY_DESTROY_ROLES.any?
-        lowest = CATEGORY_DESTROY_ROLES.min_by { |r| Permissions::ROLE_HIERARCHY[r] }
+      if RECOMMENDATION_DESTROY_ROLES.any?
+        lowest = RECOMMENDATION_DESTROY_ROLES.min_by { |r| Permissions::ROLE_HIERARCHY[r] }
 
-        response "204", "category deleted (requires #{lowest}+)" do
+        response "204", "recommendation deleted (requires #{lowest}+)" do
           let(:auth) { auth_headers_for(send(lowest)) }
           let(:"access-token") { auth["access-token"] }
           let(:client) { auth["client"] }
@@ -200,7 +192,7 @@ RSpec.describe "Categories API", type: :request do
 
         include_examples "swagger 403 forbidden"
       else
-        include_examples "swagger 403 disabled", "category", "deletion"
+        include_examples "swagger 403 disabled", "recommendation", "deletion"
       end
     end
   end
