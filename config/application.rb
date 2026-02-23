@@ -4,7 +4,12 @@ require_relative "boot"
 require_relative "features"
 require_relative "permissions"
 
-require "rails/all"
+require "active_record/railtie"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_view/railtie"
+require "active_job/railtie"
+require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -28,6 +33,10 @@ module HumanRightsNationalReporting
     config.time_zone = "Edinburgh"
     config.active_record.default_timezone = :local
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.api_only = true
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore
 
     config.middleware.insert_before 0, Rack::Cors do
       if ENV["ALLOWED_ORIGIN_S3"]
