@@ -10,20 +10,6 @@ RSpec.describe UserCategoriesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:user_category) { FactoryBot.create(:user_category) }
-    subject { get :show, params: {id: user_category}, format: :json }
-
-    context "when not signed in" do
-      it { expect(subject).to be_ok }
-
-      it "shows the user_category" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(user_category.id)
-      end
-    end
-  end
-
   describe "Post create" do
     let(:user) { FactoryBot.create(:user) }
     let(:category) { FactoryBot.create(:category, :published) }

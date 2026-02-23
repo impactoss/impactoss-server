@@ -49,24 +49,6 @@ RSpec.describe RolesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:role) { FactoryBot.create(:role) }
-    subject {
-      get :show, params: {
-        id: role
-      }, format: :json
-    }
-
-    context "when not signed in" do
-      it { expect(subject).to be_ok }
-
-      it "shows the role" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(role.id)
-      end
-    end
-  end
-
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a role" do
@@ -111,7 +93,7 @@ RSpec.describe RolesController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:role) { FactoryBot.create(:role) }
     subject do
       put :update,

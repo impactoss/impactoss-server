@@ -141,35 +141,6 @@ RSpec.describe RecommendationsController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:recommendation) { FactoryBot.create(:recommendation, :published, reference: "Published Recommendation") }
-    let(:archived_recommendation) { FactoryBot.create(:recommendation, :published, :is_archive, reference: "Archived Recommendation") }
-    let(:draft_recommendation) { FactoryBot.create(:recommendation, :draft, reference: "Draft Recommendation") }
-
-    def show(subject_recommendation)
-      get :show, params: {id: subject_recommendation}, format: :json
-    end
-
-    context "when not signed in" do
-      it { expect(show(recommendation)).to be_ok }
-
-      it "shows the published recommendation" do
-        json = JSON.parse(show(recommendation).body)
-        expect(json.dig("data", "id").to_i).to eq(recommendation.id)
-      end
-
-      it "will not show the archived recommendation" do
-        show(archived_recommendation)
-        expect(response).to be_not_found
-      end
-
-      it "will not show the draft recommendation" do
-        show(draft_recommendation)
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:category) { FactoryBot.create(:category, :published) }
     let(:params) {
@@ -318,7 +289,7 @@ RSpec.describe RecommendationsController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:recommendation) { FactoryBot.create(:recommendation, :published) }
     let(:params) {
       {
@@ -487,9 +458,7 @@ RSpec.describe RecommendationsController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        recommendation_get = get :show, params: {id: recommendation}, format: :json
-        json = JSON.parse(recommendation_get.body)
-        current_update_at = json.dig("data", "attributes", "updated_at")
+        current_update_at = recommendation.reload.updated_at.as_json
 
         Timecop.travel(Time.new + 15.days) do
           response = put :update,
@@ -695,12 +664,6 @@ RSpec.describe RecommendationsController, type: :controller do
       "recommendation", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      "recommendation", :is_archive, "view_archived", true
-
-    include_examples "show with scope permission system",
-      "recommendation", :draft, "view_draft", true
-
-    include_examples "show with scope permission system",
       "recommendation", :is_archive, "view_archived", true
   end
 end

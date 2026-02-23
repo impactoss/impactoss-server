@@ -20,6 +20,8 @@ gem "puma", "~> 6.6"
 gem "pundit"
 gem "rack-cors", require: "rack/cors"
 gem "rails", "~> 8.0.2"
+gem "rswag-api"
+gem "rswag-ui"
 gem "secure_headers", ">= 7.1.0"
 gem "with_advisory_lock"
 
@@ -50,6 +52,7 @@ group :development, :test do
   gem "faker"
   gem "i18n-tasks", "~> 0.9.6"
   gem "rspec-rails"
+  gem "rswag-specs"
 end
 
 group :test do

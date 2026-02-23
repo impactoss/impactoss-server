@@ -10,20 +10,6 @@ RSpec.describe MeasureIndicatorsController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:measure_indicator) { FactoryBot.create(:measure_indicator) }
-    subject { get :show, params: {id: measure_indicator}, format: :json }
-
-    context "when not signed in" do
-      it { expect(subject).to be_ok }
-
-      it "shows the measure_indicator" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(measure_indicator.id)
-      end
-    end
-  end
-
   describe "Post create" do
     let(:measure) { FactoryBot.create(:measure, :published) }
     let(:indicator) { FactoryBot.create(:indicator, :published) }

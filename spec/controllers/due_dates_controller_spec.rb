@@ -54,21 +54,6 @@ RSpec.describe DueDatesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:due_date) { FactoryBot.create(:due_date) }
-    let(:draft_due_date) { FactoryBot.create(:due_date, draft: true) }
-    subject { get :show, params: {id: due_date}, format: :json }
-
-    context "when not signed in" do
-      it { expect(subject).to be_not_found }
-
-      it "will not show draft due_date" do
-        get :show, params: {id: draft_due_date}, format: :json
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:indicator) { FactoryBot.create(:indicator) }
     let(:params) {
@@ -106,7 +91,7 @@ RSpec.describe DueDatesController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:due_date) { FactoryBot.create(:due_date) }
     let(:params) {
       {

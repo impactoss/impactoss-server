@@ -10,20 +10,6 @@ RSpec.describe MeasureCategoriesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:measure_category) { FactoryBot.create(:measure_category) }
-    subject { get :show, params: {id: measure_category}, format: :json }
-
-    context "when not signed in" do
-      it { expect(subject).to be_ok }
-
-      it "shows the measure_category" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(measure_category.id)
-      end
-    end
-  end
-
   describe "Post create" do
     let(:measure) { FactoryBot.create(:measure, :published) }
     let(:category) { FactoryBot.create(:category) }

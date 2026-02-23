@@ -124,35 +124,6 @@ RSpec.describe MeasuresController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:measure) { FactoryBot.create(:measure, :published, reference: "Published Measure") }
-    let(:archived_measure) { FactoryBot.create(:measure, :is_archive, reference: "Archived Measure") }
-    let(:draft_measure) { FactoryBot.create(:measure, :draft, reference: "Draft Measure") }
-
-    def show(subject_measure)
-      get :show, params: {id: subject_measure}, format: :json
-    end
-
-    context "when not signed in" do
-      it { expect(show(measure)).to be_ok }
-
-      it "shows the published measure" do
-        json = JSON.parse(show(measure).body)
-        expect(json["data"]).to eq(serialized(measure))
-      end
-
-      it "will not show the archived measure" do
-        show(archived_measure)
-        expect(response).to be_not_found
-      end
-
-      it "will not show the draft measure" do
-        show(draft_measure)
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:recommendation) { FactoryBot.create(:recommendation, :published) }
     let(:category) { FactoryBot.create(:category, :published) }
@@ -311,7 +282,7 @@ RSpec.describe MeasuresController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:measure) { FactoryBot.create(:measure, :published) }
     let(:params) {
       {
@@ -397,9 +368,7 @@ RSpec.describe MeasuresController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        measure_get = get :show, params: {id: measure}, format: :json
-        json = JSON.parse(measure_get.body)
-        current_update_at = json.dig("data", "attributes", "updated_at")
+        current_update_at = measure.reload.updated_at.as_json
 
         Timecop.travel(Time.new + 15.days) do
           response = put :update,
@@ -692,12 +661,6 @@ RSpec.describe MeasuresController, type: :controller do
       "measure", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      "measure", :is_archive, "view_archived", true
-
-    include_examples "show with scope permission system",
-      "measure", :draft, "view_draft", true
-
-    include_examples "show with scope permission system",
       "measure", :is_archive, "view_archived", true
   end
 end

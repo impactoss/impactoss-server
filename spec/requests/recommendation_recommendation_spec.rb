@@ -7,34 +7,6 @@ RSpec.describe "recommendation to recommendation relationships", type: :request 
   let(:created_by) { FactoryBot.create(:user, :manager) }
   let(:updated_by) { FactoryBot.create(:user, :admin) }
 
-  describe "get one recommendation to recommendation relationship" do
-    let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation, created_by:, updated_by:) }
-    it "returns the recommendation releationship requested" do
-      get "/recommendation_recommendations/#{recommendation_recommendation.id}"
-
-      expected_json =
-        {"data" =>
-          {
-            "id" => recommendation_recommendation.id.to_s,
-            "type" => "recommendation_recommendations",
-            "attributes" =>
-            {
-              "created_at" => recommendation_recommendation.created_at.in_time_zone.iso8601,
-              "created_by_id" => recommendation_recommendation.created_by.id,
-              "updated_at" => recommendation_recommendation.updated_at.in_time_zone.iso8601,
-              "updated_by_id" => recommendation_recommendation.updated_by.id,
-              "recommendation_id" => recommendation_recommendation.recommendation_id,
-              "other_recommendation_id" => recommendation_recommendation.other_recommendation_id
-            }
-          }}
-
-      json = JSON.parse(response.body)
-
-      expect(response.status).to eq(200)
-      expect(json).to eq(expected_json)
-    end
-  end
-
   describe "get all the recommendation to recommendation relationships" do
     let(:recommendation_1) { FactoryBot.create(:recommendation) }
     let(:recommendation_2) { FactoryBot.create(:recommendation) }

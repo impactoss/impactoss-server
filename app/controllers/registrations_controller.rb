@@ -42,4 +42,8 @@ class RegistrationsController < DeviseTokenAuth::RegistrationsController
       end
     end
   end
+
+  def destroy
+    render json: {error: "Account deletion is not available"}, status: :forbidden
+  end
 end

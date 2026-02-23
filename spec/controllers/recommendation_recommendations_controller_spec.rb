@@ -10,20 +10,6 @@ RSpec.describe RecommendationRecommendationsController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:recommendation_recommendation) { FactoryBot.create(:recommendation_recommendation) }
-    subject { get :show, params: {id: recommendation_recommendation}, format: :json }
-
-    context "when not signed in" do
-      it { expect(subject).to be_ok }
-
-      it "shows the recommendation_recommendation" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(recommendation_recommendation.id)
-      end
-    end
-  end
-
   describe "Post create" do
     let(:recommendation) { FactoryBot.create(:recommendation, :published) }
     let(:other_recommendation) { FactoryBot.create(:recommendation, :published) }

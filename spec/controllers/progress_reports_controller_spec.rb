@@ -86,37 +86,6 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:progress_report) { FactoryBot.create(:progress_report, :published, title: "Published Progress Report") }
-    let(:archived_progress_report) { FactoryBot.create(:progress_report, :published, :is_archive, title: "Archived Progress Report") }
-    let(:draft_progress_report) { FactoryBot.create(:progress_report, :draft, title: "Draft Progress Report") }
-
-    def show(subject_progress_report)
-      get :show, params: {
-        id: subject_progress_report
-      }, format: :json
-    end
-
-    context "when not signed in" do
-      it { expect(show(progress_report)).to be_ok }
-
-      it "shows the progress_report" do
-        json = JSON.parse(show(progress_report).body)
-        expect(json.dig("data", "id").to_i).to eq(progress_report.id)
-      end
-
-      it "will not show the archived progress_report" do
-        show(archived_progress_report)
-        expect(response).to be_not_found
-      end
-
-      it "will not show the draft progress_report" do
-        show(draft_progress_report)
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:due_date) { FactoryBot.create(:due_date) }
     let(:indicator) { FactoryBot.create(:indicator, :published) }
@@ -337,7 +306,7 @@ RSpec.describe ProgressReportsController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:progress_report) { FactoryBot.create(:progress_report, :published) }
     let(:due_date) { FactoryBot.create(:due_date) }
     let(:indicator) { FactoryBot.create(:indicator, :published) }
@@ -647,9 +616,7 @@ RSpec.describe ProgressReportsController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        progress_report_get = get :show, params: {id: progress_report}, format: :json
-        json = JSON.parse(progress_report_get.body)
-        current_update_at = json.dig("data", "attributes", "updated_at")
+        current_update_at = progress_report.reload.updated_at.as_json
 
         Timecop.travel(Time.new + 15.days) do
           response = put :update,

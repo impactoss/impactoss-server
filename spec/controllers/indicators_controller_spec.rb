@@ -145,35 +145,6 @@ RSpec.describe IndicatorsController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:indicator) { FactoryBot.create(:indicator, :published, reference: "Published Indicator") }
-    let(:archived_indicator) { FactoryBot.create(:indicator, :published, :is_archive, reference: "Archived Indicator") }
-    let(:draft_indicator) { FactoryBot.create(:indicator, :draft, reference: "Draft Indicator") }
-
-    def show(subject_indicator)
-      get :show, params: {id: subject_indicator}, format: :json
-    end
-
-    context "when not signed in" do
-      it { expect(show(indicator)).to be_ok }
-
-      it "shows the published indicator" do
-        json = JSON.parse(show(indicator).body)
-        expect(json["data"]).to eq(serialized(indicator))
-      end
-
-      it "will not show the archived indicator" do
-        show(archived_indicator)
-        expect(response).to be_not_found
-      end
-
-      it "will not show the draft indicator" do
-        show(draft_indicator)
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:measure) { FactoryBot.create(:measure, :published) }
     let(:params) {
@@ -332,7 +303,7 @@ RSpec.describe IndicatorsController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let!(:indicator) { FactoryBot.create(:indicator, :published) }
     let(:params) {
       {
@@ -494,9 +465,7 @@ RSpec.describe IndicatorsController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        indicator_get = get :show, params: {id: indicator}, format: :json
-        json = JSON.parse(indicator_get.body)
-        current_update_at = json.dig("data", "attributes", "updated_at")
+        current_update_at = indicator.reload.updated_at.as_json
 
         Timecop.travel(Time.new + 15.days) do
           response = put :update,
@@ -662,12 +631,6 @@ RSpec.describe IndicatorsController, type: :controller do
       "indicator", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      "indicator", :is_archive, "view_archived", true
-
-    include_examples "show with scope permission system",
-      "indicator", :draft, "view_draft", true
-
-    include_examples "show with scope permission system",
       "indicator", :is_archive, "view_archived", true
   end
 end

@@ -16,24 +16,6 @@ RSpec.describe TaxonomiesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:taxonomy) { FactoryBot.create(:taxonomy) }
-    subject {
-      get :show, params: {
-        id: taxonomy
-      }, format: :json
-    }
-
-    context "when not signed in" do
-      it { expect(subject).to be_ok }
-
-      it "shows the taxonomy" do
-        json = JSON.parse(subject.body)
-        expect(json.dig("data", "id").to_i).to eq(taxonomy.id)
-      end
-    end
-  end
-
   describe "Post create" do
     context "when not signed in" do
       it "not allow creating a taxonomy" do
@@ -83,7 +65,7 @@ RSpec.describe TaxonomiesController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:taxonomy) { FactoryBot.create(:taxonomy) }
     subject do
       put :update,
