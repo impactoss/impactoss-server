@@ -2,12 +2,12 @@
 
 require "swagger_helper"
 
+PAGE_CREATE_ROLES = Permissions.roles_with_permission("page", "create")
+PAGE_UPDATE_ROLES = Permissions.roles_with_permission("page", "update")
+PAGE_DESTROY_ROLES = Permissions.roles_with_permission("page", "destroy")
+
 RSpec.describe "Pages API", type: :request do
   include_context "swagger auth helpers"
-
-  PAGE_CREATE_ROLES = Permissions.roles_with_permission("page", "create")
-  PAGE_UPDATE_ROLES = Permissions.roles_with_permission("page", "update")
-  PAGE_DESTROY_ROLES = Permissions.roles_with_permission("page", "destroy")
 
   # ──────────────────────────────────────────────
   # GET /pages

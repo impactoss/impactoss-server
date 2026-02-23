@@ -2,13 +2,13 @@
 
 require "swagger_helper"
 
+MEASURE_CREATE_ROLES = Permissions.roles_with_permission("measure", "create")
+MEASURE_UDPATE_ROLES = Permissions.roles_with_permission("measure", "update")
+MEASURE_DESTROY_ROLES = Permissions.roles_with_permission("measure", "destroy")
+
 if Features.enabled?(:measures)
   RSpec.describe "Measures API", type: :request do
     include_context "swagger auth helpers"
-
-    MEASURE_CREATE_ROLES = Permissions.roles_with_permission("measure", "create")
-    MEASURE_UDPATE_ROLES = Permissions.roles_with_permission("measure", "update")
-    MEASURE_DESTROY_ROLES = Permissions.roles_with_permission("measure", "destroy")
 
     # ──────────────────────────────────────────────
     # GET /measures

@@ -2,13 +2,13 @@
 
 require "swagger_helper"
 
+REPORTS_CREATE_ROLES = Permissions.roles_with_permission("progress_report", "create")
+REPORTS_UPDATE_ROLES = Permissions.roles_with_permission("progress_report", "update")
+REPORTS_DESTROY_ROLES = Permissions.roles_with_permission("progress_report", "destroy")
+
 if Features.enabled?(:progress_reports)
   RSpec.describe "Progress Reports API", type: :request do
     include_context "swagger auth helpers"
-
-    REPORTS_CREATE_ROLES = Permissions.roles_with_permission("progress_report", "create")
-    REPORTS_UPDATE_ROLES = Permissions.roles_with_permission("progress_report", "update")
-    REPORTS_DESTROY_ROLES = Permissions.roles_with_permission("progress_report", "destroy")
 
     # ──────────────────────────────────────────────
     # GET /progress_reports

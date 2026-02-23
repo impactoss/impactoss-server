@@ -2,12 +2,12 @@
 
 require "swagger_helper"
 
+CATEGORY_CREATE_ROLES = Permissions.roles_with_permission("category", "create")
+CATEGORY_UPDATE_ROLES = Permissions.roles_with_permission("category", "update")
+CATEGORY_DESTROY_ROLES = Permissions.roles_with_permission("category", "destroy")
+
 RSpec.describe "Categories API", type: :request do
   include_context "swagger auth helpers"
-
-  CATEGORY_CREATE_ROLES = Permissions.roles_with_permission("category", "create")
-  CATEGORY_UPDATE_ROLES = Permissions.roles_with_permission("category", "update")
-  CATEGORY_DESTROY_ROLES = Permissions.roles_with_permission("category", "destroy")
 
   # ──────────────────────────────────────────────
   # GET /categories

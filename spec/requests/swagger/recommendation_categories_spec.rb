@@ -2,11 +2,11 @@
 
 require "swagger_helper"
 
+RECOMMENDATION_CATEGORY_CREATE_ROLES = Permissions.roles_with_permission("recommendation_category", "create")
+RECOMMENDATION_CATEGORY_DESTROY_ROLES = Permissions.roles_with_permission("recommendation_category", "destroy")
+
 RSpec.describe "Recommendation Categories API", type: :request do
   include_context "swagger auth helpers"
-
-  RECOMMENDATION_CATEGORY_CREATE_ROLES = Permissions.roles_with_permission("recommendation_category", "create")
-  RECOMMENDATION_CATEGORY_DESTROY_ROLES = Permissions.roles_with_permission("recommendation_category", "destroy")
 
   # ──────────────────────────────────────────────
   # GET /recommendation_categories

@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require "swagger_helper"
+
+INDICATOR_PAGE_CREATE_ROLES = Permissions.roles_with_permission("indicator", "create")
+INDICATOR_UDPATE_ROLES = Permissions.roles_with_permission("indicator", "update")
+INDICATOR_DESTROY_ROLES = Permissions.roles_with_permission("indicator", "destroy")
+
 if Features.enabled?(:indicators)
   RSpec.describe "Indicators API", type: :request do
     include_context "swagger auth helpers"
-
-    INDICATOR_PAGE_CREATE_ROLES = Permissions.roles_with_permission("indicator", "create")
-    INDICATOR_UDPATE_ROLES = Permissions.roles_with_permission("indicator", "update")
-    INDICATOR_DESTROY_ROLES = Permissions.roles_with_permission("indicator", "destroy")
 
     # ──────────────────────────────────────────────
     # GET /indicators

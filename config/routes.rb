@@ -27,7 +27,7 @@ Rails.application.routes.draw do
   # index only: set up on server
   resources :due_dates, only: [:index] if Features.enabled?(:progress_reports)
   resources :frameworks, only: [:index]
-  # resources :framework_frameworks, only: [:index] not currently used
+  resources :framework_frameworks, only: [:index] if Features.enabled?(:framework_parents)
   resources :framework_taxonomies, only: [:index]
   resources :roles, only: [:index]
   resources :taxonomies, only: [:index]
@@ -49,7 +49,7 @@ Rails.application.routes.draw do
   resources :recommendation_measures, only: [:index, :create, :destroy] if Features.enabled?(:measures)
   resources :user_roles, only: [:index, :create, :destroy]
   resources :user_categories, only: [:index, :create, :destroy] if Features.enabled?(:progress_reports)
-  # resources :recommendation_recommendations, only: [:index, :create, :destroy]
+  resources :recommendation_recommendations, only: [:index, :create, :destroy] if Features.enabled?(:recommendation_parents)
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
