@@ -18,8 +18,10 @@ Rails.application.routes.draw do
     skip: [:omniauth_callbacks, :registrations]
 
   # Manually define registration routes without destroy
-  post "auth", to: "registrations#create", as: :user_registration
-  put "auth", to: "registrations#update", as: :update_user_registration
+  devise_scope :user do
+    post "auth", to: "registrations#create", as: :user_registration
+    put "auth", to: "registrations#update", as: :update_user_registration
+  end
 
   get "s3/sign" if ENV["AWS_ACCESS_KEY_ID"].present?
   # get "features", to: "features#index"
@@ -39,7 +41,7 @@ Rails.application.routes.draw do
   resources :pages, only: [:index, :create, :update, :destroy]
   resources :progress_reports, only: [:index, :create, :update, :destroy] if Features.enabled?(:progress_reports)
   resources :recommendations, only: [:index, :create, :update, :destroy]
-  # users: only indes and update. creation ohnly via registration /auth
+  # users: only index and update. creation ohnly via registration /auth
   resources :users, only: [:index, :update]
   # CRD only - joins are only created or deleted, never changed
   resources :measure_categories, only: [:index, :create, :destroy] if Features.enabled?(:measures)
