@@ -17,10 +17,18 @@ RSpec.describe "Recommendations API", type: :request do
       tags "Recommendations"
       produces "application/json"
 
-      parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
-      parameter name: :current_only, in: :query, type: :string, required: false, description: "Set to 'true' for current only"
+      parameter name: :include_archive,
+        in: :query,
+        type: :string,
+        required: false,
+        description: "Set to 'false' to exclude archived (applicable for authorised roles only)"
+      parameter name: :current_only,
+        in: :query,
+        type: :string,
+        required: false,
+        description: "Set to 'true' for current only"
 
-      response "200", "returns published recommendations" do
+      response "200", "returns recommendations (draft and archived only visible to authorised roles)" do
         before do
           FactoryBot.create(:recommendation, :published)
           FactoryBot.create(:recommendation, :draft)

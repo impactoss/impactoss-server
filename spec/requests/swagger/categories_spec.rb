@@ -17,7 +17,13 @@ RSpec.describe "Categories API", type: :request do
       tags "Categories"
       produces "application/json"
 
-      response "200", "returns published categories" do
+      parameter name: :include_archive,
+        in: :query,
+        type: :string,
+        required: false,
+        description: "Set to 'false' to exclude archived (applicable for authorised roles only)"
+
+      response "200", "returns categories (draft and archived only visible to authorised roles)" do
         before do
           FactoryBot.create(:category, :published)
           FactoryBot.create(:category, :draft)

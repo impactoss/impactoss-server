@@ -17,9 +17,13 @@ RSpec.describe "Pages API", type: :request do
       tags "Pages"
       produces "application/json"
 
-      parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
+      parameter name: :include_archive,
+        in: :query,
+        type: :string,
+        required: false,
+        description: "Set to 'false' to exclude archived (applicable for authorised roles only)"
 
-      response "200", "returns published pages" do
+      response "200", "returns pages (draft and archived only visible to authorised roles)" do
         before do
           FactoryBot.create(:page, :published)
           FactoryBot.create(:page, :draft)

@@ -21,7 +21,7 @@ if Features.enabled?(:progress_reports)
         parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
         parameter name: :current_only, in: :query, type: :string, required: false, description: "Set to 'true' for current only"
 
-        response "200", "returns published progress reports" do
+        response "200", "returns progress reports (draft and archived only visible to authorised roles)" do
           before do
             FactoryBot.create(:progress_report, :published)
             FactoryBot.create(:progress_report, :draft)

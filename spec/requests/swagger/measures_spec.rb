@@ -18,10 +18,19 @@ if Features.enabled?(:measures)
         tags "Measures"
         produces "application/json"
 
-        parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
-        parameter name: :current_only, in: :query, type: :string, required: false, description: "Set to 'true' for current only"
+        parameter name: :include_archive,
+          in: :query,
+          type: :string,
+          required: false,
+          description: "Set to 'false' to exclude archived (applicable for authorised roles only)"
 
-        response "200", "returns published measures" do
+        parameter name: :current_only,
+          in: :query,
+          type: :string,
+          required: false,
+          description: "Set to 'true' for current only"
+
+        response "200", "returns measures (draft and archived only visible to authorised roles)" do
           before do
             FactoryBot.create(:measure, :published)
             FactoryBot.create(:measure, :draft)
