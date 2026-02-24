@@ -66,25 +66,13 @@ RSpec.describe "Users API", type: :request do
         let(:user) { {user: {name: "Updated"}} }
       end
 
-      response "200", "user updates own profile" do
+      response "200", "user updates (admins update any user, others own profile only)" do
         let(:auth) { auth_headers_for(admin) }
         let(:"access-token") { auth["access-token"] }
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
         let(:id) { admin.id }
         let(:user) { {user: {name: "Updated Name"}} }
-
-        run_test!
-      end
-
-      response "200", "admin updates another user" do
-        let(:target_user) { FactoryBot.create(:user) }
-        let(:auth) { auth_headers_for(admin) }
-        let(:"access-token") { auth["access-token"] }
-        let(:client) { auth["client"] }
-        let(:uid) { auth["uid"] }
-        let(:id) { target_user.id }
-        let(:user) { {user: {name: "Admin Updated"}} }
 
         run_test!
       end
