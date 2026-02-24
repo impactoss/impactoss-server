@@ -116,29 +116,6 @@ RSpec.describe RecommendationsController, type: :controller do
         end
       end
     end
-
-    context "filters" do
-      let(:category) { FactoryBot.create(:category, :published) }
-      let(:recommendation_different_category) { FactoryBot.create(:recommendation, :published) }
-      let(:measure) { FactoryBot.create(:measure, :published) }
-      let(:recommendation_different_measure) { FactoryBot.create(:recommendation, :published) }
-
-      it "filters from category" do
-        recommendation_different_category.categories << category
-        subject = get :index, params: {category_id: category.id}, format: :json
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
-        expect(json["data"][0]["id"]).to eq(recommendation_different_category.id.to_s)
-      end
-
-      it "filters from measure" do
-        recommendation_different_measure.measures << measure
-        subject = get :index, params: {measure_id: measure.id}, format: :json
-        json = JSON.parse(subject.body)
-        expect(json["data"].length).to eq(1)
-        expect(json["data"][0]["id"]).to eq(recommendation_different_measure.id.to_s)
-      end
-    end
   end
 
   describe "Post create" do

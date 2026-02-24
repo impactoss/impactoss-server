@@ -18,7 +18,6 @@ if Features.enabled?(:indicators)
         tags "Indicators"
         produces "application/json"
 
-        parameter name: :measure_id, in: :query, type: :integer, required: false, description: "Filter by measure"
         parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
         parameter name: :current_only, in: :query, type: :string, required: false, description: "Set to 'true' for current only"
 

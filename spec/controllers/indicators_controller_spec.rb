@@ -129,21 +129,6 @@ if Features.enabled?(:indicators)
           end
         end
       end
-
-      context "filters" do
-        let(:measure) { FactoryBot.create(:measure, :published) }
-        let(:indicator_different_measure) { FactoryBot.create(:indicator, :published) }
-
-        it "filters from measures" do
-          indicator_different_measure.measures << measure
-          subject = get :index, params: {
-            measure_id: measure.id
-          }, format: :json
-          json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(1)
-          expect(json["data"][0]["id"]).to eq(indicator_different_measure.id.to_s)
-        end
-      end
     end
 
     describe "Post create" do

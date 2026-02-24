@@ -84,45 +84,6 @@ if Features.enabled?(:measures)
           end
         end
       end
-
-      context "filters" do
-        let(:category) { FactoryBot.create(:category, :published) }
-        let(:measure_different_category) { FactoryBot.create(:measure, :published) }
-        let(:recommendation) { FactoryBot.create(:recommendation, :published) }
-        let(:measure_different_recommendation) { FactoryBot.create(:measure, :published) }
-        let(:indicator) { FactoryBot.create(:indicator, :published) }
-        let(:measure_different_indicator) { FactoryBot.create(:measure, :published) }
-
-        it "filters from category" do
-          measure_different_category.categories << category
-          subject = get :index, params: {
-            category_id: category.id
-          }, format: :json
-          json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(1)
-          expect(json["data"][0]["id"]).to eq(measure_different_category.id.to_s)
-        end
-
-        it "filters from recommendation" do
-          measure_different_recommendation.recommendations << recommendation
-          subject = get :index, params: {
-            recommendation_id: recommendation.id
-          }, format: :json
-          json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(1)
-          expect(json["data"][0]["id"]).to eq(measure_different_recommendation.id.to_s)
-        end
-
-        it "filters from indicator" do
-          measure_different_indicator.indicators << indicator
-          subject = get :index, params: {
-            indicator_id: indicator.id
-          }, format: :json
-          json = JSON.parse(subject.body)
-          expect(json["data"].length).to eq(1)
-          expect(json["data"][0]["id"]).to eq(measure_different_indicator.id.to_s)
-        end
-      end
     end
 
     describe "Post create" do

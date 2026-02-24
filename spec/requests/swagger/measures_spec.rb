@@ -18,9 +18,6 @@ if Features.enabled?(:measures)
         tags "Measures"
         produces "application/json"
 
-        parameter name: :category_id, in: :query, type: :integer, required: false, description: "Filter by category"
-        parameter name: :recommendation_id, in: :query, type: :integer, required: false, description: "Filter by recommendation"
-        parameter name: :indicator_id, in: :query, type: :integer, required: false, description: "Filter by indicator"
         parameter name: :include_archive, in: :query, type: :string, required: false, description: "Set to 'false' to exclude archived"
         parameter name: :current_only, in: :query, type: :string, required: false, description: "Set to 'true' for current only"
 

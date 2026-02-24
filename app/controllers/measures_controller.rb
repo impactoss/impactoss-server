@@ -43,15 +43,7 @@ class MeasuresController < ApplicationController
   private
 
   def base_object
-    records = if params[:category_id]
-      Category.find(params[:category_id]).measures
-    elsif params[:recommendation_id]
-      Recommendation.find(params[:recommendation_id]).measures
-    elsif params[:indicator_id]
-      Indicator.find(params[:indicator_id]).measures
-    else
-      Measure
-    end
+    records = Measure
 
     records = records.where(is_archive: false) if params[:include_archive] == "false"
     records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
