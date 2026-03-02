@@ -1,5 +1,0 @@
-<% if resource.errors.any? %>
-  <div class="callout warning">
-    <%= resource.errors.full_messages.map { |msg| content_tag(:p, msg) }.join.html_safe %>
-  </div>
-<% end %>
