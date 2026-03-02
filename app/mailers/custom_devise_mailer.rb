@@ -10,6 +10,6 @@ class CustomDeviseMailer < Devise::Mailer
   protected
 
   def headers_for(action, opts = {})
-    super.except("email", "provider", "redirect-url", "client-config")
+    super.except(:email, :provider, :redirect_url, :client_config)
   end
 end
