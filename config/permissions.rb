@@ -60,7 +60,6 @@ module Permissions
 
     "due_date" => {
       # create/update/destroy blocked in policy - due dates are auto-generated
-      "show" => ["manager"],
       "view_all" => ["manager"]
     },
 

@@ -1,6 +1,5 @@
 class MeasureCategoriesController < ApplicationController
-  before_action :set_and_authorize_measure_category, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_measure_category, only: [:destroy]
 
   # GET /measure_categories
   def index
@@ -8,11 +7,6 @@ class MeasureCategoriesController < ApplicationController
     authorize @measure_categories
 
     render json: serialize(@measure_categories)
-  end
-
-  # GET /measure_categories/1
-  def show
-    render json: serialize(@measure_category)
   end
 
   # POST /measure_categories
@@ -31,10 +25,6 @@ class MeasureCategoriesController < ApplicationController
   # DELETE /measure_categories/1
   def destroy
     @measure_category.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

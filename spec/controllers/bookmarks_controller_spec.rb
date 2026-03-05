@@ -27,29 +27,6 @@ RSpec.describe BookmarksController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:bookmark) { FactoryBot.create(:bookmark) }
-    let(:user) { FactoryBot.create(:user, bookmarks: [bookmark]) }
-
-    subject {
-      get :show, params: {
-        id: bookmark["id"]
-      }, format: :json
-    }
-
-    context "when not signed in" do
-      it { expect(subject).to be_unauthorized }
-    end
-
-    context "when signed in" do
-      it "is forbidden" do
-        sign_in user
-
-        expect(subject).to have_http_status(403)
-      end
-    end
-  end
-
   describe "Post create" do
     let(:user) { FactoryBot.create(:user) }
 

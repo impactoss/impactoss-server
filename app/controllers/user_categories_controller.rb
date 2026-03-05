@@ -1,6 +1,5 @@
 class UserCategoriesController < ApplicationController
-  before_action :set_and_authorize_user_category, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_user_category, only: [:destroy]
 
   # GET /user_categories
   def index
@@ -8,11 +7,6 @@ class UserCategoriesController < ApplicationController
     authorize @user_categories
 
     render json: serialize(@user_categories)
-  end
-
-  # GET /user_categories/1
-  def show
-    render json: serialize(@user_category)
   end
 
   # POST /user_categories
@@ -31,10 +25,6 @@ class UserCategoriesController < ApplicationController
   # DELETE /user_categories/1
   def destroy
     @user_category.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

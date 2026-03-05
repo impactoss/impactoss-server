@@ -24,10 +24,6 @@ class ApplicationPolicy
     true
   end
 
-  def show?
-    true
-  end
-
   def destroy?
     allowed = allowed_roles_for(:destroy)
     return false if allowed.empty?

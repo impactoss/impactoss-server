@@ -81,38 +81,6 @@ RSpec.describe CategoriesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let!(:category) { FactoryBot.create(:category, :published, reference: "Published Category") }
-    let!(:archived_category) { FactoryBot.create(:category, :published, :is_archive, reference: "Archived Category") }
-    let!(:draft_category) { FactoryBot.create(:category, :draft, reference: "Draft Category") }
-
-    def show(subject_category)
-      get :show, params: {
-        id: subject_category
-      }, format: :json
-    end
-
-    context "when not signed in" do
-      it { expect(show(category)).to be_ok }
-
-      it "shows the published category" do
-        show(category)
-        json = JSON.parse(response.body)
-        expect(json["data"]).to eq(serialized(category))
-      end
-
-      it "will not show archived category" do
-        show(archived_category)
-        expect(response).to be_not_found
-      end
-
-      it "will not show draft category" do
-        show(draft_category)
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:taxonomy) { FactoryBot.create(:taxonomy) }
     let(:params) {
@@ -495,9 +463,7 @@ RSpec.describe CategoriesController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        category_get = get :show, params: {id: category}, format: :json
-        json = JSON.parse(category_get.body)
-        current_update_at = json.dig("data", "attributes", "updated_at")
+        current_update_at = category.reload.updated_at.as_json
 
         Timecop.travel(Time.new + 15.days) do
           response = put :update,
@@ -666,12 +632,6 @@ RSpec.describe CategoriesController, type: :controller do
       "category", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      "category", :is_archive, "view_archived", true
-
-    include_examples "show with scope permission system",
-      "category", :draft, "view_draft", true
-
-    include_examples "show with scope permission system",
       "category", :is_archive, "view_archived", true
   end
 end

@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
-  include ActionController::Cookies
   include DeviseTokenAuth::Concerns::SetUserByToken
   include Pundit::Authorization
   rescue_from StandardError, with: :handle_error_in_json_format
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-  before_action :authenticate_user!, only: [:create, :update, :destroy], unless: :devise_or_devise_token_auth_controller?
+  before_action :authenticate_user!, unless: :skip_authentication?
   after_action :verify_authorized, except: [:index], unless: :devise_or_devise_token_auth_controller?
   after_action :verify_policy_scoped, only: :index, unless: :devise_or_devise_token_auth_controller?
 
@@ -31,15 +30,18 @@ class ApplicationController < ActionController::API
   end
 
   rescue_from ActiveRecord::RecordNotFound do |e|
+    return if performed?
     render json: {error: e.message}, status: :not_found
   end
 
   rescue_from ActiveRecord::RecordInvalid do |invalid|
+    return if performed?
     render json: {error: invalid.record.errors},
       status: :unprocessable_entity
   end
 
   rescue_from ActionController::ParameterMissing do |e|
+    return if performed?
     render json: {error: e.message}, status: :unprocessable_entity
   end
 
@@ -47,7 +49,10 @@ class ApplicationController < ActionController::API
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
   end
 
-  private def handle_error_in_json_format(exception)
+  private
+
+  def handle_error_in_json_format(exception)
+    return if performed?
     status = case exception
     when ActiveRecord::RecordNotFound then :not_found
     when ActionController::ParameterMissing then :bad_request
@@ -71,7 +76,12 @@ class ApplicationController < ActionController::API
     end
   end
 
-  private def user_not_authorized
+  def user_not_authorized
+    return if performed?
     render json: {error: "not authorized"}, status: 403
+  end
+
+  def skip_authentication?
+    devise_or_devise_token_auth_controller? || action_name == "index"
   end
 end

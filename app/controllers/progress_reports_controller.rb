@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ProgressReportsController < ApplicationController
-  before_action :set_and_authorize_progress_report, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_progress_report, only: [:update, :destroy]
 
   # GET /progress_reports
   def index
@@ -9,11 +9,6 @@ class ProgressReportsController < ApplicationController
     authorize @progress_reports
 
     render json: serialize(@progress_reports)
-  end
-
-  # GET /progress_reports/1
-  def show
-    render json: serialize(@progress_report)
   end
 
   # POST /progress_reports

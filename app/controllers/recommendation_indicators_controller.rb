@@ -1,16 +1,11 @@
 class RecommendationIndicatorsController < ApplicationController
-  before_action :set_and_authorize_recommendation_indicator, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_recommendation_indicator, only: [:destroy]
 
   def index
     @recommendation_indicators = policy_scope(base_object).order(created_at: :desc).page(params[:page])
     authorize @recommendation_indicators
 
     render json: serialize(@recommendation_indicators)
-  end
-
-  def show
-    render json: serialize(@recommendation_indicator)
   end
 
   def create
@@ -27,10 +22,6 @@ class RecommendationIndicatorsController < ApplicationController
 
   def destroy
     @recommendation_indicator.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

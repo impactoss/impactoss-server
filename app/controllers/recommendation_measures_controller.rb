@@ -1,6 +1,5 @@
 class RecommendationMeasuresController < ApplicationController
-  before_action :set_and_authorize_recommendation_measure, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_recommendation_measure, only: [:destroy]
 
   # GET /recommendation_measures
   def index
@@ -8,11 +7,6 @@ class RecommendationMeasuresController < ApplicationController
     authorize @recommendation_measures
 
     render json: serialize(@recommendation_measures)
-  end
-
-  # GET /recommendation_measures/1
-  def show
-    render json: serialize(@recommendation_measure)
   end
 
   # POST /recommendation_measures
@@ -31,10 +25,6 @@ class RecommendationMeasuresController < ApplicationController
   # DELETE /recommendation_measures/1
   def destroy
     @recommendation_measure.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private
