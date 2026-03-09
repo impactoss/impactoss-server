@@ -61,3 +61,5 @@ Rails.application.config.after_initialize do
   # Also remove from Devise's list of modules
   Devise.mappings[:user]&.modules&.delete(:confirmable)
 end
+
+Devise.mailer = "CustomDeviseMailer"

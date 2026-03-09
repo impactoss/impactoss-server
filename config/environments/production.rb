@@ -92,6 +92,11 @@ Rails.application.configure do
       protocol: ENV.fetch("ACTION_MAILER_PROTOCOL", "https")
     }
     config.action_mailer.asset_host = ENV.fetch("ACTION_MAILER_ASSET_HOST", "https://impactoss.org")
+    if ENV.fetch("SES_CONFIGURATION_SET", nil)
+      config.action_mailer.default_options = {
+        "X-SES-CONFIGURATION-SET" => ENV.fetch("SES_CONFIGURATION_SET")
+      }
+    end
   else
     config.action_mailer.perform_deliveries = false
     config.action_mailer.raise_delivery_errors = false
