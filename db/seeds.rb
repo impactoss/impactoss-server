@@ -30,6 +30,7 @@ class Seeds
     Page.new(title: "Disclaimer", menu_title: "Disclaimer").save!
     Page.new(title: "Privacy", menu_title: "Privacy").save!
     Page.new(title: "Accessibility statement", menu_title: "Accessibility").save!
+    Page.new(title: "Terms of acceptable use", menu_title: "Terms of acceptable use").save!
     Page.new(title: "About the Human Rights Tracker", menu_title: "About").save!
 
     # set up frameworks
@@ -78,7 +79,7 @@ class Seeds
     # 3. National taxonomy
     theme = Taxonomy.create!(
       framework: hr,
-      title: "Human rights theme",
+      title: "Theme",
       tags_measures: true,
       tags_users: false,
       allow_multiple: true,
@@ -191,36 +192,7 @@ class Seeds
     # progress.categories.create!(title: "Completed", reference: "3")
 
     # Human Rights Bodies http://www.ohchr.org/EN/HRBodies/Pages/HumanRightsBodies.aspx
-    icescr = body.categories.create!(
-      title: "International Covenant on Economic, Social and Cultural Rights",
-      short_title: "ICESCR"
-    )
-    cycle.categories.create!(
-      title: "International Covenant on Economic, Social and Cultural Rights 2025",
-      short_title: "ICESCR-2025",
-      reference: "ICESCR-2025",
-      category: icescr
-    )
-    iccpr = body.categories.create!(
-      title: "International Covenant on Civil and Political Rights",
-      short_title: "ICCPR"
-    )
-    cycle.categories.create!(
-      title: "International Covenant on Civil and Political Rights 2024",
-      short_title: "ICCPR-2024",
-      reference: "ICCPR-2024",
-      category: iccpr
-    )
-    cat = body.categories.create!(
-      title: "Convention against Torture and Other Cruel, Inhuman or Degrading Treatment",
-      short_title: "CAT"
-    )
-    cycle.categories.create!(
-      title: "Convention against Torture and Other Cruel, Inhuman or Degrading Treatment 2019",
-      short_title: "CAT-2019",
-      reference: "CAT-2019",
-      category: cat
-    )
+    # CRC
     crc = body.categories.create!(
       title: "Convention on the Rights of the Child",
       short_title: "CRC"
@@ -229,8 +201,12 @@ class Seeds
       title: "Convention on the Rights of the Child 2023",
       short_title: "CRC-2023",
       reference: "CRC-2023",
-      category: crc
+      category: crc,
+      url: "https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CRC%2FC%2FGBR%2FCO%2F6-7&Lang=en",
+      date: "2023-06-22"
     )
+
+    # CRPD
     crpd = body.categories.create!(
       title: "Convention on the Rights of Persons with Disabilities",
       short_title: "CRPD"
@@ -239,8 +215,12 @@ class Seeds
       title: "Convention on the Rights of Persons with Disabilities 2017",
       short_title: "CRPD-2017",
       reference: "CRPD-2017",
-      category: crpd
+      category: crpd,
+      url: "https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CRPD%2FC%2FGBR%2FCO%2F1&Lang=en",
+      date: "2017-10-03"
     )
+
+    # CEDAW
     cedaw = body.categories.create!(
       title: "Convention on the Elimination of All Forms of Discrimination against Women",
       short_title: "CEDAW"
@@ -249,8 +229,12 @@ class Seeds
       title: "Convention on the Elimination of All Forms of Discrimination against Women 2019",
       short_title: "CEDAW-2019",
       reference: "CEDAW-2019",
-      category: cedaw
+      category: cedaw,
+      url: "https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CEDAW%2FC%2FGBR%2FCO%2F8&Lang=en",
+      date: "2019-03-14"
     )
+
+    # CERD
     cerd = body.categories.create!(
       title: "International Convention on the Elimination of All Forms of Racial Discrimination",
       short_title: "CERD"
@@ -259,7 +243,37 @@ class Seeds
       title: "International Convention on the Elimination of All Forms of Racial Discrimination 2024",
       short_title: "CERD-2024",
       reference: "CERD-2024",
-      category: cerd
+      category: cerd,
+      url: "https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CERD%2FC%2FGBR%2FCO%2F24-26&Lang=en",
+      date: "2024-09-24"
+    )
+
+    # ICESCR
+    icescr = body.categories.create!(
+      title: "International Covenant on Economic, Social and Cultural Rights",
+      short_title: "ICESCR"
+    )
+    cycle.categories.create!(
+      title: "International Covenant on Economic, Social and Cultural Rights 2025",
+      short_title: "ICESCR-2025",
+      reference: "ICESCR-2025",
+      category: icescr,
+      url: "https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=E%2FC.12%2FGBR%2FCO%2F7&Lang=en",
+      date: "2025-12-03"
+    )
+
+    # ICCPR
+    iccpr = body.categories.create!(
+      title: "International Covenant on Civil and Political Rights",
+      short_title: "ICCPR"
+    )
+    cycle.categories.create!(
+      title: "International Covenant on Civil and Political Rights 2024",
+      short_title: "ICCPR-2024",
+      reference: "ICCPR-2024",
+      category: iccpr,
+      url: "https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CCPR%2FC%2FGBR%2FCO%2F8&Lang=en",
+      date: "2024-05-03"
     )
     # Agencies
     # org.categories.create!(
@@ -267,234 +281,398 @@ class Seeds
     #   short_title: "MoJ"
     # )
 
-    # Human Rights Themes
+    # Themes
     theme.categories.create!(
-      title: "General measures of implementation",
-      short_title: "General"
+      title: "General measures (Implementation and monitoring)",
+      short_title: "General measures"
     )
     theme.categories.create!(
-      title: "Health",
+      title: "Equality and inclusion",
+      short_title: "Equality/Inclusion"
+    )
+    theme.categories.create!(
+      title: "Fair work, business and economy",
+      short_title: "Fair work/business"
+    )
+    theme.categories.create!(
+      title: "Health and social care",
       short_title: "Health"
-    )
-    theme.categories.create!(
-      title: "Education",
-      short_title: "Education"
-    )
-    theme.categories.create!(
-      title: "Work",
-      short_title: "Work"
     )
     theme.categories.create!(
       title: "Living standards",
       short_title: "Living standards"
     )
     theme.categories.create!(
-      title: "Justice, liberty and personal security",
-      short_title: "Justice"
+      title: "Education",
+      short_title: "Education"
     )
     theme.categories.create!(
-      title: "Participation",
-      short_title: "Participation"
+      title: "Justice",
+      short_title: "Justice"
     )
 
     # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
+    # Issues
     issue.categories.create!(
-      title: "Data collection and recording",
-      short_title: "Data"
+      title: "Access to culture",
+      short_title: "Culture (access)"
     )
     issue.categories.create!(
-      title: "Equality and human rights legal framework",
-      short_title: "Legal"
-    )
-    issue.categories.create!(
-      title: "Human rights education, trainings and awareness raising",
-      short_title: "HR Education"
-    )
-    issue.categories.create!(
-      title: "Institutional, policy and economic frameworks",
-      short_title: "IPE frameworks"
-    )
-    issue.categories.create!(
-      title: "International cooperation, including with human rights mechanisms",
-      short_title: "Intl. cooperation"
+      title: "Access to education",
+      short_title: "Education (access)"
     )
     issue.categories.create!(
       title: "Access to healthcare",
-      short_title: "Healthcare"
+      short_title: "Healthcare (access)"
     )
     issue.categories.create!(
-      title: "Health outcomes and experience in the healthcare system",
-      short_title: "Health outcomes"
+      title: "Access to justice",
+      short_title: "Justice (access)"
     )
     issue.categories.create!(
-      title: "Mental health",
-      short_title: "Mental health"
+      title: "Access to public funds",
+      short_title: "Public funds (access)"
     )
     issue.categories.create!(
-      title: "Reproductive and sexual health",
-      short_title: "Reproductive health"
+      title: "Access to sports",
+      short_title: "Sports (access)"
     )
     issue.categories.create!(
-      title: "Educational attainment",
-      short_title: "Education attainment"
+      title: "Accessibility",
+      short_title: "Accessibility"
     )
     issue.categories.create!(
-      title: "Harassment and bullying in schools",
-      short_title: "Harassment in schools"
+      title: "Age of criminal responsibility",
+      short_title: "Age criminal resp."
     )
     issue.categories.create!(
-      title: "Inclusive education",
-      short_title: "Inclusive education"
+      title: "Alcohol and drugs",
+      short_title: "Alcohol/drugs"
     )
     issue.categories.create!(
-      title: "School exclusions and managing 'challenging behaviour'",
-      short_title: "School exclusions"
+      title: "Allocation of resources",
+      short_title: "Resources"
     )
     issue.categories.create!(
-      title: "Access to employment",
-      short_title: "Employment access"
+      title: "Armed forces",
+      short_title: "Armed forces"
     )
     issue.categories.create!(
-      title: "Human trafficking and modern slavery",
-      short_title: "Trafficking"
+      title: "Artificial intelligence",
+      short_title: "AI"
     )
     issue.categories.create!(
-      title: "Just and fair conditions at work",
-      short_title: "Work conditions"
+      title: "Asylum",
+      short_title: "Asylum"
     )
     issue.categories.create!(
-      title: "Occupational segregation",
-      short_title: "Occupational segregation"
+      title: "Best interest of the child",
+      short_title: "Best interest"
     )
     issue.categories.create!(
-      title: "Adequate standard of living and poverty",
-      short_title: "Living standards"
+      title: "Bullying and harassment",
+      short_title: "Bullying"
     )
     issue.categories.create!(
-      title: "Housing",
-      short_title: "Housing"
+      title: "Business and human rights",
+      short_title: "Business"
     )
     issue.categories.create!(
-      title: "Social care",
-      short_title: "Social care"
+      title: "Childcare",
+      short_title: "Childcare"
     )
     issue.categories.create!(
-      title: "Social security (welfare benefits)",
-      short_title: "Social security"
+      title: "Climate Change",
+      short_title: "Climate Change"
     )
     issue.categories.create!(
-      title: "Access to justice, including fair trials",
-      short_title: "Access to justice"
+      title: "Conditions of detention",
+      short_title: "Detention"
     )
     issue.categories.create!(
       title: "Counter-terrorism",
       short_title: "Counter-terrorism"
     )
     issue.categories.create!(
-      title: "Criminal justice institutions",
-      short_title: "Criminal justice"
+      title: "COVID-19",
+      short_title: "COVID-19"
     )
     issue.categories.create!(
-      title: "Hate crime and hate speech",
-      short_title: "Hate crime & speech"
+      title: "Cultural diversity",
+      short_title: "Cultural"
     )
     issue.categories.create!(
-      title: "Human rights abuses abroad",
-      short_title: "HR abuses abroad"
+      title: "Data",
+      short_title: "Data"
     )
     issue.categories.create!(
-      title: "Immigration",
-      short_title: "Immigration"
+      title: "Death by suicide",
+      short_title: "Suicide"
     )
     issue.categories.create!(
-      title: "Mental health detention",
-      short_title: "Mental health detention"
+      title: "Diet, nutrition and healthy weight",
+      short_title: "Diet/healthy weight"
+    )
+    issue.categories.create!(
+      title: "Digital access, skills and safety",
+      short_title: "Digital"
+    )
+    issue.categories.create!(
+      title: "Discrimination",
+      short_title: "Discrimination"
+    )
+    issue.categories.create!(
+      title: "Educational attainment",
+      short_title: "Educational attainment"
+    )
+    issue.categories.create!(
+      title: "Environment",
+      short_title: "Environment"
+    )
+    issue.categories.create!(
+      title: "Exclusions from school",
+      short_title: "Exclusions"
+    )
+    issue.categories.create!(
+      title: "Fair Work",
+      short_title: "Fair Work"
+    )
+    issue.categories.create!(
+      title: "Freedom from violence and abuse",
+      short_title: "Violence"
+    )
+    issue.categories.create!(
+      title: "Freedom of opinion and expression",
+      short_title: "Expression"
+    )
+    issue.categories.create!(
+      title: "Freedom of religion and belief",
+      short_title: "Religion/belief"
+    )
+    issue.categories.create!(
+      title: "Housing",
+      short_title: "Housing"
+    )
+    issue.categories.create!(
+      title: "Human Rights capability",
+      short_title: "HR capability"
+    )
+    issue.categories.create!(
+      title: "Human trafficking and exploitation",
+      short_title: "Human trafficking"
+    )
+    issue.categories.create!(
+      title: "Humanitarian emergencies",
+      short_title: "Emergencies"
+    )
+    issue.categories.create!(
+      title: "Impact Assessments",
+      short_title: "Impact Assessments"
+    )
+    issue.categories.create!(
+      title: "Incorporation",
+      short_title: "Incorporation"
+    )
+    issue.categories.create!(
+      title: "International Treaty Reporting",
+      short_title: "Reporting"
+    )
+    issue.categories.create!(
+      title: "Legal Aid",
+      short_title: "Legal Aid"
+    )
+    issue.categories.create!(
+      title: "Leisure, recreation and play",
+      short_title: "Leisure"
+    )
+    issue.categories.create!(
+      title: "Maternity",
+      short_title: "Maternity"
+    )
+    issue.categories.create!(
+      title: "Media",
+      short_title: "Media"
+    )
+    issue.categories.create!(
+      title: "Mental Health",
+      short_title: "Mental Health"
+    )
+    issue.categories.create!(
+      title: "Migration and residence",
+      short_title: "Migration"
+    )
+    issue.categories.create!(
+      title: "Mortality",
+      short_title: "Mortality"
+    )
+    issue.categories.create!(
+      title: "National Human Rights Institution (NHRI)",
+      short_title: "NHRI"
+    )
+    issue.categories.create!(
+      title: "Peaceful assembly",
+      short_title: "Assembly"
+    )
+    issue.categories.create!(
+      title: "Pensions",
+      short_title: "Pension"
+    )
+    issue.categories.create!(
+      title: "Policies and Strategic Frameworks",
+      short_title: "Frameworks"
     )
     issue.categories.create!(
       title: "Policing",
       short_title: "Policing"
     )
     issue.categories.create!(
-      title: "Violence against women and girls",
-      short_title: "Violence against women & girls"
+      title: "Poverty",
+      short_title: "Poverty"
     )
     issue.categories.create!(
-      title: "Violence, abuse and neglect, and child sexual exploitation",
-      short_title: "Child abuse & neglect"
+      title: "Prisons",
+      short_title: "Prisons"
     )
     issue.categories.create!(
-      title: "Youth justice",
-      short_title: "Youth justice"
+      title: "Private life and privacy",
+      short_title: "Privacy"
     )
     issue.categories.create!(
-      title: "Family life, and rest, leisure and cultural activities",
+      title: "Public Sector Equality Duty",
+      short_title: "PSED"
+    )
+    issue.categories.create!(
+      title: "Racial profiling",
+      short_title: "Racial profiling"
+    )
+    issue.categories.create!(
+      title: "Representation and participation",
+      short_title: "Representation"
+    )
+    issue.categories.create!(
+      title: "Reproductive healthcare",
+      short_title: "Reproductive"
+    )
+    issue.categories.create!(
+      title: "Respect for family life and parenting",
       short_title: "Family life"
     )
     issue.categories.create!(
-      title: "Independent living",
-      short_title: "Independent living"
+      title: "Restraint",
+      short_title: "Restraint"
     )
     issue.categories.create!(
-      title: "Political and civic participation",
-      short_title: "Political participation"
+      title: "Sex and gender equality",
+      short_title: "Sex/gender equality"
     )
     issue.categories.create!(
-      title: "Privacy",
-      short_title: "Privacy"
+      title: "Sexual exploitation and prostitution",
+      short_title: "SE/Prostitution"
+    )
+    issue.categories.create!(
+      title: "Sexual orientation",
+      short_title: "Sexual orientation"
+    )
+    issue.categories.create!(
+      title: "Social care",
+      short_title: "Social care"
+    )
+    issue.categories.create!(
+      title: "Social Security",
+      short_title: "Social Security"
+    )
+    issue.categories.create!(
+      title: "Stop-and-search",
+      short_title: "Stop-and-search"
+    )
+    issue.categories.create!(
+      title: "Support to victims & witnesses",
+      short_title: "Victims/witnesses"
+    )
+    issue.categories.create!(
+      title: "Tax",
+      short_title: "Tax"
+    )
+    issue.categories.create!(
+      title: "Trade and investment",
+      short_title: "Trade"
     )
 
     # Affected Persons (http://uhri.ohchr.org/search/annotations)
+    # Groups
     group.categories.create!(
-      title: "Age (children)",
-      short_title: "Children"
+      title: "Adversely racialised communities",
+      short_title: "Race"
     )
     group.categories.create!(
-      title: "Age (older people)",
+      title: "Care experience",
+      short_title: "Care experience"
+    )
+    group.categories.create!(
+      title: "Carers",
+      short_title: "Carers"
+    )
+    group.categories.create!(
+      title: "Children and young people",
+      short_title: "Children/young people"
+    )
+    group.categories.create!(
+      title: "Disabled people",
+      short_title: "Disability",
+      description: "A physical or mental impairment with a substantial, long-term effect on day to day activities including long term health conditions, sensory loss, learning disabilities, neurodivergence, mental health conditions, and those diagnosed with progressive conditions (e.g. HIV, cancer, multiple sclerosis)"
+    )
+    group.categories.create!(
+      title: "Faith communities",
+      short_title: "Faith"
+    )
+    group.categories.create!(
+      title: "Gypsy/Travellers",
+      short_title: "Gypsy/Travellers"
+    )
+    group.categories.create!(
+      title: "Island communities",
+      short_title: "Island"
+    )
+    group.categories.create!(
+      title: "LGBTQI+",
+      short_title: "LGBTQI+"
+    )
+    group.categories.create!(
+      title: "Migrants",
+      short_title: "Migrants"
+    )
+    group.categories.create!(
+      title: "New Scots",
+      short_title: "New Scots",
+      description: "Forced migrants, including refugees, people seeking asylum, Hong Kong British Nationals (Overseas) and people who are or may become stateless and in need of international protection."
+    )
+    group.categories.create!(
+      title: "Older people",
       short_title: "Older people"
     )
     group.categories.create!(
-      title: "Disability",
-      short_title: "Disability"
+      title: "People affected by poverty",
+      short_title: "Poverty-affected"
     )
     group.categories.create!(
-      title: "Gender reassignment",
-      short_title: "Gender reassignment"
+      title: "People deprived of liberty",
+      short_title: "Liberty"
     )
     group.categories.create!(
-      title: "Intersex",
-      short_title: "Intersex"
+      title: "Rural communities",
+      short_title: "Rural"
     )
     group.categories.create!(
-      title: "Marriage and civil partnership",
-      short_title: "Marriage & partnership"
+      title: "Women and girls",
+      short_title: "Women and girls"
     )
     group.categories.create!(
-      title: "Migration background / status",
-      short_title: "Migration"
+      title: "People affected by substance use",
+      short_title: "Substance use"
     )
     group.categories.create!(
-      title: "Pregnancy and maternity",
-      short_title: "Maternity"
-    )
-    group.categories.create!(
-      title: "Race and ethnicity",
-      short_title: "Race & ethnicity"
-    )
-    group.categories.create!(
-      title: "Religion or belief",
-      short_title: "Religion/belief"
-    )
-    group.categories.create!(
-      title: "Sex (female)",
-      short_title: "Sex (female)"
-    )
-    group.categories.create!(
-      title: "Sex (male)",
-      short_title: "Sex (male)"
-    )
-    group.categories.create!(
-      title: "Sexual orientation",
-      short_title: "Sexual orientation"
+      title: "Victims of human trafficking and exploitation",
+      short_title: "Victims of trafficking"
     )
   end
 
