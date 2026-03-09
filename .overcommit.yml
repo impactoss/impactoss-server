@@ -25,9 +25,11 @@ PreCommit:
     exclude:
       - '**/db/structure.sql'  # Ignore trailing whitespace in generated files
       - '**/*.svg'
-  RuboCop:
+  StandardRB:
     enabled: true
-    command: ['bundle', 'exec', 'rubocop']
+    # command: ['bundle', 'exec', 'standardrb', '--fix']
+    command: ['bundle', 'exec', 'standardrb']
+    quiet: false
   JsHint:
     enabled: true
     exclude:

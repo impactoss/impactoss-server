@@ -1,5 +1,5 @@
 class IndicatorsController < ApplicationController
-  before_action :set_and_authorize_indicator, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_indicator, only: [:update, :destroy]
 
   # GET /indicators
   def index
@@ -7,11 +7,6 @@ class IndicatorsController < ApplicationController
     authorize @indicators
 
     render json: serialize(@indicators)
-  end
-
-  # GET /indicators/1
-  def show
-    render json: serialize(@indicator)
   end
 
   # POST /indicators
@@ -47,11 +42,7 @@ class IndicatorsController < ApplicationController
   private
 
   def base_object
-    records = if params[:measure_id]
-      Measure.find(params[:measure_id]).indicators
-    else
-      Indicator
-    end
+    records = Indicator
 
     records = records.where(is_archive: false) if params[:include_archive] == "false"
     records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"

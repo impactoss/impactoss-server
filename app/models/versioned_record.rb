@@ -7,14 +7,31 @@ class VersionedRecord < ApplicationRecord
   belongs_to :updated_by, class_name: "User", required: false
 
   def self.inherited(base)
-    ignore = case base.name
-    in "User"
-      [:tokens, :updated_at]
-    else
-      []
-    end
+    if base.name == "User"
+      sensitive = %i[
+        encrypted_password tokens reset_password_token
+        otp_secret multi_factor_email_code multi_factor_email_code_sent_at
+        confirmation_token
+      ]
 
-    base.has_paper_trail ignore: ignore
+      base.has_paper_trail(
+        only: [
+          :id, :email, :name, :provider, :uid,
+          :created_at, :updated_at, :sign_in_count,
+          :current_sign_in_at, :last_sign_in_at,
+          :current_sign_in_ip, :last_sign_in_ip,
+          :updated_by_id, :created_by_id,
+          :relationship_updated_at, :relationship_updated_by_id,
+          :failed_attempts, :locked_at,
+          :password_changed_at, :confirmed_at,
+          :otp_required_for_login, :allow_password_change,
+          :remember_created_at, :reset_password_sent_at
+        ],
+        skip: sensitive
+      )
+    else
+      base.has_paper_trail ignore: []
+    end
 
     super
   end

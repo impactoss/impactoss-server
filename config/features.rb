@@ -7,6 +7,8 @@ module Features
   FEATURES = {
     measures: ENV.fetch("FEATURE_MEASURES", "true") == "true",
     indicators: ENV.fetch("FEATURE_INDICATORS", "true") == "true",
-    progress_reports: ENV.fetch("FEATURE_REPORTS", "true") == "true"
+    progress_reports: ENV.fetch("FEATURE_REPORTS", "true") == "true",
+    recommendation_parents: ENV.fetch("FEATURE_RECOMMENDATION_PARENTS", "true") == "true",
+    framework_parents: ENV.fetch("FEATURE_FRAMEWORK_PARENTS", "true") == "true"
   }.freeze
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MeasuresController < ApplicationController
-  before_action :set_and_authorize_measure, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_measure, only: [:update, :destroy]
 
   # GET /measures
   def index
@@ -9,11 +9,6 @@ class MeasuresController < ApplicationController
     authorize @measures
 
     render json: serialize(@measures)
-  end
-
-  # GET /measures/1
-  def show
-    render json: serialize(@measure)
   end
 
   # POST /measures
@@ -48,15 +43,7 @@ class MeasuresController < ApplicationController
   private
 
   def base_object
-    records = if params[:category_id]
-      Category.find(params[:category_id]).measures
-    elsif params[:recommendation_id]
-      Recommendation.find(params[:recommendation_id]).measures
-    elsif params[:indicator_id]
-      Indicator.find(params[:indicator_id]).measures
-    else
-      Measure
-    end
+    records = Measure
 
     records = records.where(is_archive: false) if params[:include_archive] == "false"
     records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"

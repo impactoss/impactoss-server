@@ -1,6 +1,5 @@
 class RecommendationCategoriesController < ApplicationController
-  before_action :set_and_authorize_recommendation_category, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_recommendation_category, only: [:destroy]
 
   # GET /recommendation_categories
   def index
@@ -8,11 +7,6 @@ class RecommendationCategoriesController < ApplicationController
     authorize @recommendation_categories
 
     render json: serialize(@recommendation_categories)
-  end
-
-  # GET /recommendation_categories/1
-  def show
-    render json: serialize(@recommendation_category)
   end
 
   # POST /recommendation_categories
@@ -31,10 +25,6 @@ class RecommendationCategoriesController < ApplicationController
   # DELETE /recommendation_categories/1
   def destroy
     @recommendation_category.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

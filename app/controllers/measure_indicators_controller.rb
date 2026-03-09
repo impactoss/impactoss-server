@@ -1,6 +1,5 @@
 class MeasureIndicatorsController < ApplicationController
-  before_action :set_and_authorize_measure_indicator, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_measure_indicator, only: [:destroy]
 
   # GET /measure_indicators
   def index
@@ -8,11 +7,6 @@ class MeasureIndicatorsController < ApplicationController
     authorize @measure_indicators
 
     render json: serialize(@measure_indicators)
-  end
-
-  # GET /measure_indicators/1
-  def show
-    render json: serialize(@measure_indicator)
   end
 
   # POST /measure_indicators
@@ -31,10 +25,6 @@ class MeasureIndicatorsController < ApplicationController
   # DELETE /measure_indicators/1
   def destroy
     @measure_indicator.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

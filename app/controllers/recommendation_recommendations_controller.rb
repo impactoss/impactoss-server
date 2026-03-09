@@ -1,9 +1,5 @@
 class RecommendationRecommendationsController < ApplicationController
-  before_action :set_and_authorize_recommendation_recommendation, only: [:show, :destroy]
-
-  def show
-    render json: serialize(@recommendation_recommendation)
-  end
+  before_action :set_and_authorize_recommendation_recommendation, only: [:destroy]
 
   def index
     @recommendation_recommendations = policy_scope(base_object).all
@@ -25,10 +21,6 @@ class RecommendationRecommendationsController < ApplicationController
 
   def destroy
     @recommendation_recommendation.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

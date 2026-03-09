@@ -1,6 +1,5 @@
 class UserRolesController < ApplicationController
-  before_action :set_and_authorize_user_role, only: [:show, :destroy]
-  skip_before_action :authenticate_user!, only: [:update]
+  before_action :set_and_authorize_user_role, only: [:destroy]
 
   # GET /user_roles
   def index
@@ -8,11 +7,6 @@ class UserRolesController < ApplicationController
     authorize @user_roles
 
     render json: serialize(@user_roles)
-  end
-
-  # GET /@user_roles/1
-  def show
-    render json: serialize(@user_role)
   end
 
   # POST /user_roles
@@ -31,10 +25,6 @@ class UserRolesController < ApplicationController
   # DELETE /user_roles/1
   def destroy
     @user_role.destroy
-  end
-
-  def update
-    head :not_implemented
   end
 
   private

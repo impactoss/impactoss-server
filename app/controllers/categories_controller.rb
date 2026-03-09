@@ -1,5 +1,5 @@
 class CategoriesController < ApplicationController
-  before_action :set_and_authorize_category, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_category, only: [:update, :destroy]
 
   # GET /categories
   def index
@@ -7,11 +7,6 @@ class CategoriesController < ApplicationController
     authorize @categories
 
     render json: serialize(@categories)
-  end
-
-  # GET /categories/1
-  def show
-    render json: serialize(@category)
   end
 
   # POST /categories

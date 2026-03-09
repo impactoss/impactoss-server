@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  before_action :set_and_authorize_page, only: [:show, :update, :destroy]
+  before_action :set_and_authorize_page, only: [:update, :destroy]
 
   # GET /pages
   def index
@@ -7,11 +7,6 @@ class PagesController < ApplicationController
     authorize @pages
 
     render json: serialize(@pages)
-  end
-
-  # GET /pages/1
-  def show
-    render json: serialize(@page)
   end
 
   # POST /pages

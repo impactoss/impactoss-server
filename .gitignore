@@ -16,6 +16,9 @@
 # Ignore test reports
 /coverage
 
+# Swagger generated docs
+/swagger
+
 # Ignore results of `rake assets:precompile`.
 /public/assets/
 /public/uploads/

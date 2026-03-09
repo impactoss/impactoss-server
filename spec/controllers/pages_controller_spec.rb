@@ -81,35 +81,6 @@ RSpec.describe PagesController, type: :controller do
     end
   end
 
-  describe "Get show" do
-    let(:page) { FactoryBot.create(:page, :published, title: "Published Page") }
-    let(:archived_page) { FactoryBot.create(:page, :is_archive, title: "Archived Page") }
-    let(:draft_page) { FactoryBot.create(:page, :draft, title: "Draft Page") }
-
-    def show(subject_page)
-      get :show, params: {id: subject_page}, format: :json
-    end
-
-    context "when not signed in" do
-      it { expect(show(page)).to be_ok }
-
-      it "shows the published page" do
-        json = JSON.parse(show(page).body)
-        expect(json.dig("data", "id").to_i).to eq(page.id)
-      end
-
-      it "will not show the archived page" do
-        show(archived_page)
-        expect(response).to be_not_found
-      end
-
-      it "will not show the draft page" do
-        show(draft_page)
-        expect(response).to be_not_found
-      end
-    end
-  end
-
   describe "Post create" do
     let(:taxonomy) { FactoryBot.create(:taxonomy) }
     let(:params) {
@@ -261,7 +232,7 @@ RSpec.describe PagesController, type: :controller do
     end
   end
 
-  describe "PUT update" do
+  describe "Put update" do
     let(:page) { FactoryBot.create(:page, :published) }
     let(:params) {
       {
@@ -424,9 +395,7 @@ RSpec.describe PagesController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
 
-        page_get = get :show, params: {id: page}, format: :json
-        json = JSON.parse(page_get.body)
-        current_update_at = json.dig("data", "attributes", "updated_at")
+        current_update_at = page.reload.updated_at.as_json
 
         Timecop.travel(Time.new + 15.days) do
           response = put :update,
@@ -554,12 +523,6 @@ RSpec.describe PagesController, type: :controller do
       "page", :draft, "view_draft", true
 
     include_examples "filtered scope permission system",
-      "page", :is_archive, "view_archived", true
-
-    include_examples "show with scope permission system",
-      "page", :draft, "view_draft", true
-
-    include_examples "show with scope permission system",
       "page", :is_archive, "view_archived", true
   end
 end

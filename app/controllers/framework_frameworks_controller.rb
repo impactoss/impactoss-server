@@ -1,30 +1,9 @@
 class FrameworkFrameworksController < ApplicationController
-  # GET /framework_frameworks/:id
-  def show
-    @framework_framework = policy_scope(base_object).find(params[:id])
-    authorize @framework_framework
-    render json: serialize(@framework_framework)
-  end
-
   def index
     @framework_frameworks = policy_scope(base_object).all
     authorize @framework_frameworks
     render json: serialize(@framework_frameworks)
   end
-
-  def create
-    head :not_implemented
-  end
-
-  def update
-    head :not_implemented
-  end
-
-  def destroy
-    head :not_implemented
-  end
-
-  private
 
   def base_object
     FrameworkFramework
