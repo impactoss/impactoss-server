@@ -288,7 +288,7 @@ class Seeds
     )
     theme.categories.create!(
       title: "Equality and inclusion",
-      short_title: "Equality/Inclusion"
+      short_title: "Equality/inclusion"
     )
     theme.categories.create!(
       title: "Fair work, business and economy",
@@ -309,6 +309,10 @@ class Seeds
     theme.categories.create!(
       title: "Justice",
       short_title: "Justice"
+    )
+    theme.categories.create!(
+      title: "Communities and culture",
+      short_title: "Communities/culture"
     )
 
     # Human Rights Issues (level 2 http://uhri.ohchr.org/search/guide)
@@ -382,8 +386,8 @@ class Seeds
       short_title: "Childcare"
     )
     issue.categories.create!(
-      title: "Climate Change",
-      short_title: "Climate Change"
+      title: "Climate change",
+      short_title: "Climate change"
     )
     issue.categories.create!(
       title: "Conditions of detention",
@@ -434,8 +438,8 @@ class Seeds
       short_title: "Exclusions"
     )
     issue.categories.create!(
-      title: "Fair Work",
-      short_title: "Fair Work"
+      title: "Fair work",
+      short_title: "Fair work"
     )
     issue.categories.create!(
       title: "Freedom from violence and abuse",
@@ -466,8 +470,8 @@ class Seeds
       short_title: "Emergencies"
     )
     issue.categories.create!(
-      title: "Impact Assessments",
-      short_title: "Impact Assessments"
+      title: "Impact assessments",
+      short_title: "Impact assessments"
     )
     issue.categories.create!(
       title: "Incorporation",
@@ -478,8 +482,8 @@ class Seeds
       short_title: "Reporting"
     )
     issue.categories.create!(
-      title: "Legal Aid",
-      short_title: "Legal Aid"
+      title: "Legal aid",
+      short_title: "Legal aid"
     )
     issue.categories.create!(
       title: "Leisure, recreation and play",
@@ -494,8 +498,8 @@ class Seeds
       short_title: "Media"
     )
     issue.categories.create!(
-      title: "Mental Health",
-      short_title: "Mental Health"
+      title: "Mental health",
+      short_title: "Mental health"
     )
     issue.categories.create!(
       title: "Migration and residence",
@@ -515,7 +519,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Pensions",
-      short_title: "Pension"
+      short_title: "Pensions"
     )
     issue.categories.create!(
       title: "Policies and Strategic Frameworks",
@@ -567,7 +571,7 @@ class Seeds
     )
     issue.categories.create!(
       title: "Sexual exploitation and prostitution",
-      short_title: "SE/Prostitution"
+      short_title: "SE/prostitution"
     )
     issue.categories.create!(
       title: "Sexual orientation",
@@ -578,8 +582,8 @@ class Seeds
       short_title: "Social care"
     )
     issue.categories.create!(
-      title: "Social Security",
-      short_title: "Social Security"
+      title: "Social security",
+      short_title: "Social security"
     )
     issue.categories.create!(
       title: "Stop-and-search",
@@ -596,6 +600,10 @@ class Seeds
     issue.categories.create!(
       title: "Trade and investment",
       short_title: "Trade"
+    )
+    issue.categories.create!(
+      title: "Hate crime",
+      short_title: "Hate crime"
     )
 
     # Affected Persons (http://uhri.ohchr.org/search/annotations)
