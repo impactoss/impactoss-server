@@ -49,7 +49,7 @@ module HumanRightsNationalReporting
       end
 
       allow do
-        origins ENV.fetch("CLIENT_URL", "http://localhost:3000").chomp("/")
+        origins ENV.fetch("CLIENT_URL", "http://localhost:3000").chomp("/"), /\Ahttp:\/\/localhost(:\d+)?\z/
         resource "*",
           headers: :any,
           methods: :any,
