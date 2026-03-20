@@ -171,6 +171,11 @@ RSpec.describe "Authentication API", type: :request do
         let(:uid) { auth["uid"] }
         let(:password_update) { {password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
 
+        before do
+          auth
+          user.update_columns(allow_password_change: true, reset_password_sent_at: Time.current)
+        end
+
         run_test!
       end
 
@@ -180,6 +185,36 @@ RSpec.describe "Authentication API", type: :request do
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
         let(:password_update) { {password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL5x!"} }
+
+        before do
+          auth
+          user.update_columns(allow_password_change: true, reset_password_sent_at: Time.current)
+        end
+
+        run_test!
+      end
+
+      response "403", "password change not permitted without reset flow" do
+        let(:auth) { auth_headers_for(user) }
+        let(:"access-token") { auth["access-token"] }
+        let(:client) { auth["client"] }
+        let(:uid) { auth["uid"] }
+        let(:password_update) { {password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
+
+        run_test!
+      end
+
+      response "403", "password change expired" do
+        let(:auth) { auth_headers_for(user) }
+        let(:"access-token") { auth["access-token"] }
+        let(:client) { auth["client"] }
+        let(:uid) { auth["uid"] }
+        let(:password_update) { {password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
+
+        before do
+          auth
+          user.update_columns(allow_password_change: true, reset_password_sent_at: 2.hours.ago)
+        end
 
         run_test!
       end
