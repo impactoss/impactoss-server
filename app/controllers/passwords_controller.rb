@@ -17,6 +17,7 @@ class PasswordsController < DeviseTokenAuth::PasswordsController
   end
 
   def update
+    @resource = set_user_by_token
     unless @resource&.allow_password_change &&
         @resource.reset_password_sent_at.present? &&
         @resource.reset_password_sent_at > Devise.reset_password_within.ago
