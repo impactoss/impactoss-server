@@ -15,4 +15,13 @@ class PasswordsController < DeviseTokenAuth::PasswordsController
       raise ActionController::BadRequest.new("Unsafe redirect_url: #{params[:redirect_url]}")
     end
   end
+
+  def update
+    unless @resource&.allow_password_change &&
+        @resource.reset_password_sent_at.present? &&
+        @resource.reset_password_sent_at > Devise.reset_password_within.ago
+      return render json: {success: false, errors: ["Password change not permitted or expired."]}, status: :forbidden
+    end
+    super
+  end
 end
