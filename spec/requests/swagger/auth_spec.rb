@@ -125,6 +125,7 @@ RSpec.describe "Authentication API", type: :request do
   # ──────────────────────────────────────────────
   path "/auth/password" do
     post "Request password reset" do
+      description "Forgotten password flow: sends a password reset link to the user's email. No authentication required."
       tags "Authentication"
       consumes "application/json"
       produces "application/json"
@@ -150,6 +151,7 @@ RSpec.describe "Authentication API", type: :request do
     end
 
     put "Reset password" do
+      description "Forgotten password flow: sets a new password. Requires allow_password_change to be enabled via the password reset link, must be completed within the reset expiry window."
       tags "Authentication"
       consumes "application/json"
       produces "application/json"
@@ -215,6 +217,58 @@ RSpec.describe "Authentication API", type: :request do
           auth
           user.update_columns(allow_password_change: true, reset_password_sent_at: 2.hours.ago)
         end
+
+        run_test!
+      end
+    end
+  end
+
+  # ──────────────────────────────────────────────
+  # PUT /auth
+  # ──────────────────────────────────────────────
+  path "/auth" do
+    put "Update password (authenticated)" do
+      description "Changes password for the currently logged-in user. Requires current password."
+      tags "Authentication"
+      consumes "application/json"
+      produces "application/json"
+      security [{access_token: [], client: [], uid: []}]
+
+      parameter name: :account_update, in: :body, schema: {
+        type: :object,
+        properties: {
+          current_password: {type: :string},
+          password: {type: :string},
+          password_confirmation: {type: :string}
+        },
+        required: %w[current_password password password_confirmation]
+      }
+
+      response "200", "password updated" do
+        let(:auth) { auth_headers_for(user) }
+        let(:"access-token") { auth["access-token"] }
+        let(:client) { auth["client"] }
+        let(:uid) { auth["uid"] }
+        let(:account_update) { {current_password: "Xk9#mP2$vL5!", password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
+
+        run_test!
+      end
+
+      response "422", "current password is invalid" do
+        let(:auth) { auth_headers_for(user) }
+        let(:"access-token") { auth["access-token"] }
+        let(:client) { auth["client"] }
+        let(:uid) { auth["uid"] }
+        let(:account_update) { {current_password: "wrongpassword", password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
+
+        run_test!
+      end
+
+      response "404", "not authenticated" do
+        let(:"access-token") { "invalid" }
+        let(:client) { "invalid" }
+        let(:uid) { "invalid" }
+        let(:account_update) { {current_password: "Xk9#mP2$vL5!", password: "Xk9#mP2$vL54!", password_confirmation: "Xk9#mP2$vL54!"} }
 
         run_test!
       end
