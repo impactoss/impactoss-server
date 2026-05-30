@@ -4,7 +4,7 @@ source "https://rubygems.org"
 ruby file: ".ruby-version"
 
 gem "batch_api"
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.22"
 gem "clockwork"
 gem "devise"
 gem "devise-security"
