@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_11_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -285,6 +285,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
     t.index ["framework_id"], name: "index_taxonomies_on_framework_id"
   end
 
+  create_table "token_activities", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "client_id", null: false
+    t.datetime "last_activity_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "client_id"], name: "index_token_activities_on_user_and_client", unique: true
+    t.index ["user_id"], name: "index_token_activities_on_user_id"
+  end
+
   create_table "user_categories", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "category_id"
@@ -372,6 +382,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
   add_foreign_key "recommendations", "frameworks"
   add_foreign_key "recommendations", "users", column: "relationship_updated_by_id"
   add_foreign_key "taxonomies", "frameworks"
+  add_foreign_key "token_activities", "users", on_delete: :cascade
   add_foreign_key "user_categories", "users", column: "updated_by_id"
   add_foreign_key "users", "users", column: "relationship_updated_by_id"
 end

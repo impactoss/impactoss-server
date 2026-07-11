@@ -25,6 +25,7 @@ class User < VersionedRecord
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
+  has_many :token_activities, dependent: :destroy
   has_many :managed_categories, foreign_key: :manager_id, class_name: "Category"
   has_many :managed_indicators, foreign_key: :manager_id, class_name: "Indicator"
   has_many :user_categories
@@ -41,6 +42,13 @@ class User < VersionedRecord
 
   # Track date of password change for expiry feature
   before_update :set_password_changed_at, if: :saved_change_to_encrypted_password?
+
+  # Keep the per-token activity store in step with the tokens hash. Runs inside
+  # the same transaction as token issuance/eviction, so it covers every path a
+  # token appears or disappears - login, sign-out, password-reset pruning
+  # (remove_tokens_after_password_reset) and max_number_of_devices eviction
+  # (clean_old_tokens) - in one seam instead of hooking each mutation site.
+  after_save :reconcile_token_activities
 
   # Override Devise's confirmable methods to disable email confirmation
   # DeviseTokenAuth 1.2.5+ appears to use confirmable even when disabled
@@ -162,5 +170,18 @@ class User < VersionedRecord
   # Set timestamp when password changes
   def set_password_changed_at
     self.password_changed_at = Time.current
+  end
+
+  # Delete activity rows for tokens that no longer exist, and create rows for
+  # newly-issued tokens (seeded to "now" so a fresh login starts its window).
+  # Existing rows are left untouched - only the heartbeat bumps last_activity_at.
+  def reconcile_token_activities
+    client_ids = (tokens || {}).keys
+    token_activities.where.not(client_id: client_ids).delete_all
+
+    existing = token_activities.where(client_id: client_ids).pluck(:client_id)
+    (client_ids - existing).each do |client_id|
+      token_activities.create!(client_id:, last_activity_at: Time.current)
+    end
   end
 end
