@@ -144,7 +144,7 @@ RSpec.describe "Authentication API", type: :request do
         run_test!
       end
 
-      response "404", "email not found" do
+      response "200", "email not found returns neutral success (no user enumeration)" do
         let(:password_reset) { {email: "nobody@example.com", redirect_url: ENV.fetch("CLIENT_URL", "http://localhost:3000")} }
         run_test!
       end
