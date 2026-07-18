@@ -1,4 +1,5 @@
 class UserRolesController < ApplicationController
+  before_action :require_current_password!, only: [:create, :destroy]
   before_action :set_and_authorize_user_role, only: [:destroy]
 
   # GET /user_roles

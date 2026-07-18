@@ -84,4 +84,17 @@ class ApplicationController < ActionController::API
   def skip_authentication?
     devise_or_devise_token_auth_controller? || action_name == "index"
   end
+
+  # Re-authentication gate for sensitive actions. The client always sends
+  # current_password on these requests, so this only rejects direct API calls
+  # (e.g. a hijacked session attempting a sensitive change).
+  def require_current_password!
+    password = params[:current_password]
+    unless password.present? && current_user&.valid_password?(password)
+      render json: {
+        status: "error",
+        errors: {current_password: ["is incorrect or missing"]}
+      }, status: :unauthorized
+    end
+  end
 end
