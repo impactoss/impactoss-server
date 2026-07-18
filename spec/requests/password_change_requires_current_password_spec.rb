@@ -33,6 +33,22 @@ RSpec.describe "In-app password change requires current password", type: :reques
     expect(user.reload.valid_password?(new_password)).to be(false)
   end
 
+  it "rejects a password change with an incorrect current_password" do
+    headers = sign_in_headers
+
+    put "/auth",
+      params: {
+        current_password: "WrongPassword999!",
+        password: new_password,
+        password_confirmation: new_password
+      },
+      headers: headers, as: :json
+
+    expect(response).to have_http_status(422)
+    expect(user.reload.valid_password?(current_password)).to be(true)
+    expect(user.reload.valid_password?(new_password)).to be(false)
+  end
+
   it "allows a password change with the correct current_password" do
     headers = sign_in_headers
 
