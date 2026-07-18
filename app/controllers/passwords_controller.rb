@@ -25,4 +25,15 @@ class PasswordsController < DeviseTokenAuth::PasswordsController
     end
     super
   end
+
+  # Stock DTA raises ActionController::RoutingError on an invalid or expired
+  # reset token, which surfaces as a 500 in this API-only app. Redirect the
+  # browser to the client's link-expired page instead, so a dead link lands on a
+  # real page rather than an error.
+  def render_edit_error
+    redirect_to(
+      File.join(ENV.fetch("CLIENT_URL"), ENV.fetch("CLIENT_RESET_LINK_INVALID_PATH", "not-found")),
+      allow_other_host: true
+    )
+  end
 end
