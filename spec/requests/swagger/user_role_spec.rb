@@ -43,6 +43,7 @@ RSpec.describe "User Roles API", type: :request do
       parameter name: :user_role, in: :body, schema: {
         type: :object,
         properties: {
+          current_password: {type: :string},
           user_role: {
             type: :object,
             properties: {
@@ -72,6 +73,15 @@ RSpec.describe "User Roles API", type: :request do
         let(:"access-token") { auth["access-token"] }
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
+        let(:user_role) {
+          {
+            current_password: "SecurePassword123!",
+            user_role: {
+              user_id: target_user.id,
+              role_id: contributor_role.id
+            }
+          }
+        }
 
         run_test!
       end
@@ -84,7 +94,7 @@ RSpec.describe "User Roles API", type: :request do
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
         let(:user_role) {
-          {user_role: {user_id: nil, role_id: nil}}
+          {current_password: "SecurePassword123!", user_role: {user_id: nil, role_id: nil}}
         }
 
         run_test!
@@ -101,6 +111,11 @@ RSpec.describe "User Roles API", type: :request do
     delete "Delete a user role" do
       tags "User Roles"
       security [{access_token: [], client: [], uid: []}]
+      # current_password is sent in the request body by the client; documented as a
+      # query param here only because the rswag/rack-test harness doesn't send DELETE
+      # bodies. The controller reads params[:current_password] from either source.
+      parameter name: :current_password, in: :query, required: false, type: :string,
+        description: "Current password for re-authentication. The client sends this in the request body; documented as a query parameter here due to a test-harness limitation with DELETE bodies. The server reads it from either."
 
       include_examples "swagger 401" do
         let(:id) { FactoryBot.create(:user, :contributor).user_roles.first.id }
@@ -112,6 +127,7 @@ RSpec.describe "User Roles API", type: :request do
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
         let(:id) { FactoryBot.create(:user, :contributor).user_roles.first.id }
+        let(:current_password) { "SecurePassword123!" }
 
         run_test!
       end

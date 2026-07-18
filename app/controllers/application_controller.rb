@@ -90,11 +90,12 @@ class ApplicationController < ActionController::API
   # (e.g. a hijacked session attempting a sensitive change).
   def require_current_password!
     password = params[:current_password]
-    unless password.present? && current_user&.valid_password?(password)
-      render json: {
-        status: "error",
-        errors: {current_password: ["is incorrect or missing"]}
-      }, status: :unauthorized
-    end
+    return true if password.present? && current_user&.valid_password?(password)
+
+    render json: {
+      status: "error",
+      errors: {current_password: ["is incorrect or missing"]}
+    }, status: :unauthorized
+    false
   end
 end

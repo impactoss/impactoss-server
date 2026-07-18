@@ -1,6 +1,6 @@
 class UserRolesController < ApplicationController
-  before_action :require_current_password!, only: [:create, :destroy]
   before_action :set_and_authorize_user_role, only: [:destroy]
+  before_action :require_current_password!, only: [:destroy]
 
   # GET /user_roles
   def index
@@ -15,6 +15,7 @@ class UserRolesController < ApplicationController
     @user_role = UserRole.new
     @user_role.assign_attributes(permitted_attributes(@user_role))
     authorize @user_role
+    return unless require_current_password!
 
     if @user_role.save
       render json: serialize(@user_role), status: :created, location: @user_role
