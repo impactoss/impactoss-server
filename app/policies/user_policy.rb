@@ -41,7 +41,7 @@ class UserPolicy < ApplicationPolicy
     # Email always allowed on creation, for updates depending on config
     attrs << :email if allowed_roles_for(:update_email) == true
 
-    attrs.compact
+    attrs
   end
 
   def show_email?
