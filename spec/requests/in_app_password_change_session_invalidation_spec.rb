@@ -86,13 +86,13 @@ RSpec.describe "In-app password change session invalidation", type: :request do
   # That holds today because nothing else in the request saves @resource
   # (update_auth_header is skipped on this controller). Pinned here because a
   # future callback that does save would silently sign every other device out on
-  # a mistyped current password. 
+  # a mistyped current password.
   it "does not invalidate other sessions when the change is rejected" do
     changing_session = sign_in_and_capture_headers
     other_session = sign_in_and_capture_headers
 
     put "/auth", params: {current_password: "wrong", password: new_password,
-      password_confirmation: new_password}, headers: changing_session, as: :json
+                          password_confirmation: new_password}, headers: changing_session, as: :json
     expect(response).to have_http_status(:unprocessable_content)
 
     get "/bookmarks", headers: other_session, as: :json
