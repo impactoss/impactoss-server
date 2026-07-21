@@ -56,6 +56,7 @@ class ApplicationController < ActionController::API
     status = case exception
     when ActiveRecord::RecordNotFound then :not_found
     when ActionController::ParameterMissing then :bad_request
+    when ActionDispatch::Http::Parameters::ParseError then :bad_request
     when Pundit::NotAuthorizedError then :forbidden
     else :internal_server_error
     end
