@@ -32,7 +32,7 @@ class PasswordsController < DeviseTokenAuth::PasswordsController
   # real page rather than an error.
   def render_edit_error
     redirect_to(
-      File.join(ENV.fetch("CLIENT_URL"), ENV.fetch("CLIENT_RESET_LINK_INVALID_PATH", "not-found")),
+      File.join(ENV.fetch("CLIENT_URL", "https://undefined.client.url"), ENV.fetch("CLIENT_RESET_LINK_INVALID_PATH", "not-found")),
       allow_other_host: true
     )
   end
