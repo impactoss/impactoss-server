@@ -49,6 +49,17 @@ DeviseTokenAuth.setup do |config|
 
   # IMPORTANT: Disable bypass_sign_in for API-only mode (no sessions)
   config.bypass_sign_in = false
+
+  # When a user's password changes, drop all of their auth tokens except the one
+  # on the request that made the change, invalidating every other active session.
+  # Addresses pentest finding 3.2.1-C: without this, stock DTA leaves other tokens
+  # in place, so a hijacked session survives a legitimate password reset.
+  #
+  # Trigger is any encrypted_password change, not only the forgot-password flow —
+  # an in-app change or the password_expirable forced change clears other sessions
+  # too. The retained token is the newest by expiry, which in the reset flow is the
+  # session that completed the change.
+  config.remove_tokens_after_password_reset = true
 end
 
 # WORKAROUND: devise_token_auth 1.2.5+ (required for Rails 8) auto-adds :confirmable
