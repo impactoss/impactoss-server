@@ -40,7 +40,11 @@ en:
         unlock_link_msg: "Click the link below to unlock your account:"
         unlock_link: "Unlock my account"
       password_change:
-        subject: "Password Changed"
+        subject: "Password changed"
+        password_changed_msg: "We're contacting you to confirm that your password has been changed."
+        no_change_warning_msg: >
+          If you did not make this change, your account may be compromised. Please
+          reset your password immediately and contact your administrator.
     omniauth_callbacks:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."
