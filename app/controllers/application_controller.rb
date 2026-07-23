@@ -94,7 +94,7 @@ class ApplicationController < ActionController::API
   # Warden after_set_user hook, which does not fire on this path.
   #
   def require_current_password!
-    password = params[:current_password]
+    password = request.request_parameters[:current_password]
 
     if password.present? &&
         current_user&.valid_for_authentication? { current_user.valid_password?(password) }

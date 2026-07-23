@@ -111,25 +111,20 @@ RSpec.describe "User Roles API", type: :request do
     delete "Delete a user role" do
       tags "User Roles"
       security [{access_token: [], client: [], uid: []}]
-      # current_password is sent in the request body by the client; documented as a
-      # query param here only because the rswag/rack-test harness doesn't send DELETE
-      # bodies. The controller reads params[:current_password] from either source.
-      parameter name: :current_password, in: :query, required: false, type: :string,
-        description: "Current password for re-authentication. The client sends this in the request body; documented as a query parameter here due to a test-harness limitation with DELETE bodies. The server reads it from either."
+
+      # No 204 example: rswag does not send a request body on DELETE, so the
+      # re-authentication gate rejects it. Success path is covered in
+      # spec/requests/user_roles_require_current_password_spec.rb.
+      parameter name: :user_role, in: :body, schema: {
+        type: :object,
+        properties: {
+          current_password: {type: :string}
+        },
+        required: ["current_password"]
+      }
 
       include_examples "swagger 401" do
         let(:id) { FactoryBot.create(:user, :contributor).user_roles.first.id }
-      end
-
-      response "204", "admin removes a role" do
-        let(:auth) { auth_headers_for(admin) }
-        let(:"access-token") { auth["access-token"] }
-        let(:client) { auth["client"] }
-        let(:uid) { auth["uid"] }
-        let(:id) { FactoryBot.create(:user, :contributor).user_roles.first.id }
-        let(:current_password) { "SecurePassword123!" }
-
-        run_test!
       end
 
       include_examples "swagger 403 forbidden" do
