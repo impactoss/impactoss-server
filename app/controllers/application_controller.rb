@@ -85,12 +85,24 @@ class ApplicationController < ActionController::API
     devise_or_devise_token_auth_controller? || action_name == "index"
   end
 
-  # Re-authentication gate for sensitive actions. The client always sends
-  # current_password on these requests, so this only rejects direct API calls
-  # (e.g. a hijacked session attempting a sensitive change).
+  # Re-authentication gate for sensitive actions (role and email changes).
+  # Routed through Devise's valid_for_authentication? so failures count toward
+  # :lockable - a bare valid_password? here would be an unthrottled password
+  # oracle, usable even while the account is locked out of sign-in.
+  #
+  # Success resets failed_attempts explicitly: Devise normally does that in a
+  # Warden after_set_user hook, which does not fire on this path.
+  #
   def require_current_password!
     password = params[:current_password]
-    return true if password.present? && current_user&.valid_password?(password)
+
+    if password.present? &&
+        current_user&.valid_for_authentication? { current_user.valid_password?(password) }
+      if current_user.failed_attempts.to_i.positive?
+        current_user.update_column(:failed_attempts, 0)
+      end
+      return true
+    end
 
     render json: {
       status: "error",
