@@ -42,13 +42,21 @@ RSpec.describe "Current password gate throttling", type: :request do
     expect(admin.reload.failed_attempts).to eq(1)
   end
 
+  it "rejects a wrong current_password without locking below the threshold" do
+    (Devise.maximum_attempts - 1).times { attempt("WrongPassword999!") }
+
+    expect(response).to have_http_status(401)
+    expect(admin.reload.failed_attempts).to eq(Devise.maximum_attempts - 1)
+    expect(admin.reload).not_to be_access_locked
+  end
+
   it "locks the account after maximum_attempts" do
     Devise.maximum_attempts.times { attempt("WrongPassword999!") }
 
     expect(admin.reload).to be_access_locked
   end
 
-  it "rejects a correct current_password while locked" do
+  it "rejects a request from a locked account" do
     admin.lock_access!
 
     expect { attempt(password) }.not_to change(UserRole, :count)
