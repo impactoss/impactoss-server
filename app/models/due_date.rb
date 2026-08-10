@@ -21,7 +21,7 @@ class DueDate < VersionedRecord
   def self.send_due_emails
     DueDate.are_due.each do |due_date|
       DueDateMailer.due(due_date).deliver_now
-    rescue StandardError => e
+    rescue => e
       Rails.logger.error("Due email failed for indicator #{due_date.indicator_id}: #{e.message}")
     end
   end
@@ -29,7 +29,7 @@ class DueDate < VersionedRecord
   def self.send_overdue_emails
     DueDate.are_overdue.each do |due_date|
       DueDateMailer.overdue(due_date).deliver_now
-    rescue StandardError => e
+    rescue => e
       Rails.logger.error("Overdue email failed for indicator #{due_date.indicator_id}: #{e.message}")
     end
   end
