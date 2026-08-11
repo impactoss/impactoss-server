@@ -95,12 +95,20 @@ class Category < VersionedRecord
   def send_due_emails
     due_dates.are_due.each do |due_date|
       DueDateMailer.category_due(due_date, self).deliver_now
+    rescue => e
+      Rails.logger.error(
+        "Category due email failed for category #{id}, indicator #{due_date.indicator_id}: #{e.message}"
+      )
     end
   end
 
   def send_overdue_emails
     due_dates.are_overdue.each do |due_date|
       DueDateMailer.category_overdue(due_date, self).deliver_now
+    rescue => e
+      Rails.logger.error(
+        "Category overdue email failed for category #{id}, indicator #{due_date.indicator_id}: #{e.message}"
+      )
     end
   end
 end
