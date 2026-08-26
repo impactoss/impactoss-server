@@ -18,7 +18,7 @@ class RecommendationCategoriesController < ApplicationController
     if @recommendation_category.save_with_cleanup
       render json: serialize(@recommendation_category), status: :created, location: @recommendation_category
     else
-      render json: @recommendation_category.errors, status: :unprocessable_entity
+      render_connection_create_errors(@recommendation_category)
     end
   end
 

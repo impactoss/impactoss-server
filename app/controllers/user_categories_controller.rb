@@ -18,7 +18,7 @@ class UserCategoriesController < ApplicationController
     if @user_category.save_with_cleanup
       render json: serialize(@user_category), status: :created, location: @user_category
     else
-      render json: @user_category.errors, status: :unprocessable_entity
+      render_connection_create_errors(@user_category)
     end
   end
 

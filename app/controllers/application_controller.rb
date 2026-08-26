@@ -49,6 +49,14 @@ class ApplicationController < ActionController::API
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
   end
 
+  def render_connection_create_errors(record)
+    if record.errors.any? { |error| error.type == :taken }
+      render json: {relationship: ["already exists"]}, status: :unprocessable_entity
+    else
+      render json: record.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def handle_error_in_json_format(exception)

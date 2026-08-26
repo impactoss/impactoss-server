@@ -18,7 +18,7 @@ class MeasureCategoriesController < ApplicationController
     if @measure_category.save_with_cleanup
       render json: serialize(@measure_category), status: :created, location: @measure_category
     else
-      render json: @measure_category.errors, status: :unprocessable_entity
+      render_connection_create_errors(@measure_category)
     end
   end
 
