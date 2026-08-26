@@ -206,6 +206,22 @@ RSpec.describe UserRolesController, type: :controller do
         expect(response).to have_http_status(422)
       end
 
+      it "returns a generic error when the role is already assigned" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        target_user = FactoryBot.create(:user, roles: [contributor_role])
+
+        response = post :create, format: :json, params: {
+          current_password: current_password,
+          user_role: {
+            user_id: target_user.id,
+            role_id: contributor_role.id
+          }
+        }
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)).to eq({"relationship" => ["already exists"]})
+      end
+
       it "records what user created the user_role", versioning: true do
         expect(PaperTrail).to be_enabled
         admin = FactoryBot.create(:user, :admin)

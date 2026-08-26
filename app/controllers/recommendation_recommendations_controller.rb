@@ -15,7 +15,7 @@ class RecommendationRecommendationsController < ApplicationController
     if @recommendation_recommendation.save
       render json: serialize(@recommendation_recommendation), status: :created, location: @recommendation_recommendation
     else
-      render json: @recommendation_recommendation.errors, status: :unprocessable_entity
+      render_connection_create_errors(@recommendation_recommendation)
     end
   end
 

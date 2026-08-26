@@ -20,7 +20,7 @@ class UserRolesController < ApplicationController
     if @user_role.save
       render json: serialize(@user_role), status: :created, location: @user_role
     else
-      render json: @user_role.errors, status: :unprocessable_entity
+      render_connection_create_errors(@user_role)
     end
   end
 
