@@ -47,11 +47,19 @@ class Category < VersionedRecord
         (category.present? &&
           (category.categories.published.length == 1 ||
             (date.present? &&
-              category.categories.published.order(date: :desc).first == self
+              category.categories.published.order(newest_first).first == self
             )
           )
         )
       )
+  end
+
+  # Undated siblings sort last so they cannot displace a dated one, and id
+  # breaks ties so that exactly one sibling wins a shared date rather than
+  # leaving it to the plan.
+  def newest_first
+    date = Category.arel_table[:date]
+    [date.desc.nulls_last, Category.arel_table[:id].desc]
   end
 
   def responsible_has_required_role
