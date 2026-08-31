@@ -31,7 +31,7 @@ class TokenActivity < ApplicationRecord
     last_activity_at < self.class.inactivity_timeout.ago
   end
 
-  def coalesced?
+  def stale_for_heartbeat?
     last_activity_at < self.class.coalesce_window.ago
   end
 end
