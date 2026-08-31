@@ -186,8 +186,19 @@ class User < VersionedRecord
     token_activities.where.not(client_id: client_ids).delete_all
 
     existing = token_activities.where(client_id: client_ids).pluck(:client_id)
-    (client_ids - existing).each do |client_id|
-      token_activities.create!(client_id:, last_activity_at: Time.current)
-    end
+    missing = client_ids - existing
+    return if missing.empty?
+
+    now = Time.current
+    # insert_all + unique_by, rather than create! per row, so two concurrent
+    # saves that both see the same missing client_id (e.g. two requests racing
+    # to create the same token's row) don't collide on the unique index and
+    # roll back the outer save. Belt-and-braces: the real safeguard against a
+    # missing row is TokenActivityEnforcement#expire_current_token! keeping
+    # tokens and activity rows in sync when a token is killed.
+    token_activities.insert_all(
+      missing.map { |client_id| {client_id:, last_activity_at: now, created_at: now, updated_at: now} },
+      unique_by: :index_token_activities_on_user_and_client
+    )
   end
 end
