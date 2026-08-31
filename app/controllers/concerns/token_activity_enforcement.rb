@@ -24,6 +24,11 @@ module TokenActivityEnforcement
   def enforce_activity_timeout?
     # Only guard genuinely authenticated requests. Sign-in/sign-out run through
     # SessionsController and must not be blocked by an already-expired session.
+    #
+    # current_token_client.present? fails OPEN if it's ever false, but DTA's
+    # set_user_by_token defaults client to "default" whenever none is
+    # supplied, on the same path that sets current_user - so it should always
+    # be present here.
     current_user.present? &&
       current_token_client.present? &&
       !is_a?(DeviseTokenAuth::SessionsController)
