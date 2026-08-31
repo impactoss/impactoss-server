@@ -48,7 +48,13 @@ class User < VersionedRecord
   # token appears or disappears - login, sign-out, password-reset pruning
   # (remove_tokens_after_password_reset) and max_number_of_devices eviction
   # (clean_old_tokens) - in one seam instead of hooking each mutation site.
-  after_save :reconcile_token_activities
+  #
+  # saved_change_to_tokens? guards against running on every save - DTA mutates
+  # the tokens hash in place rather than reassigning it, and t.json's
+  # ActiveRecord::Type::Json#changed_in_place? still detects that. Depends on
+  # rotation staying off: a live change_headers_on_each_request would make
+  # tokens change (and this fire) on every request again.
+  after_save :reconcile_token_activities, if: :saved_change_to_tokens?
 
   # Override Devise's confirmable methods to disable email confirmation
   # DeviseTokenAuth 1.2.5+ appears to use confirmable even when disabled
