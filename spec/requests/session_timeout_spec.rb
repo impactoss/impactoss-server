@@ -70,6 +70,31 @@ RSpec.describe "Session inactivity timeout", type: :request do
       get "/bookmarks", headers:, as: :json
       expect(response).to have_http_status(:unauthorized)
     end
+
+    it "drops the token from users.tokens on expiry, not just the activity row" do
+      headers = sign_in_headers
+      user.token_activities.update_all(last_activity_at: (TokenActivity.inactivity_timeout + 1.minute).ago)
+
+      get "/bookmarks", headers:, as: :json
+      expect(user.reload.tokens.keys).not_to include(headers["client"])
+    end
+
+    it "does not revive an expired session when another sign-in reconciles tokens" do
+      headers = sign_in_headers
+      user.token_activities.update_all(last_activity_at: (TokenActivity.inactivity_timeout + 1.minute).ago)
+
+      get "/bookmarks", headers:, as: :json
+      expect(response).to have_http_status(:unauthorized)
+
+      # A second sign-in changes tokens, which is what actually triggers
+      # User#reconcile_token_activities (guarded by saved_change_to_tokens?).
+      # If the expired client were still in tokens, this would recreate its
+      # activity row with a fresh window.
+      sign_in_headers
+
+      get "/bookmarks", headers:, as: :json
+      expect(response).to have_http_status(:unauthorized)
+    end
   end
 
   describe "heartbeat" do

@@ -6,10 +6,13 @@
 # batch imports fire many concurrent requests, so DTA's native sliding expiry
 # is unavailable. This concern enforces an inactivity timeout instead:
 #
-# * every authenticated request READS (never writes) the presenting token's
-#   activity row and rejects if it is stale or missing (fail closed);
-# * only the client heartbeat (TokenActivitiesController) writes the timestamp,
-#   so batch requests do zero activity writes.
+# * every authenticated request reads the presenting token's activity row and
+#   rejects if it is stale or missing (fail closed); a still-live token never
+#   writes anything, so batch requests do zero activity writes;
+# * only the client heartbeat (TokenActivitiesController) writes the timestamp
+#   for a live token, coalesced so the write rate stays ~1 per token/window;
+# * killing a token removes it from users.tokens too - see
+#   expire_current_token! below - so tokens and activity rows stay in sync.
 #
 # See TokenActivity for the store and the create-at-login invariant.
 module TokenActivityEnforcement
@@ -45,14 +48,35 @@ module TokenActivityEnforcement
 
     # Invariant: a live token always has an activity row (created at issuance).
     # A missing row is a should-never-happen state -> fail closed.
-    return reject_expired_session if activity.nil?
-    return unless activity.stale?
+    return unless activity.nil? || activity.stale?
 
-    # Past the threshold: drop the row so the token is dead by the missing-row
-    # rule on any subsequent request, without writing to users.tokens on the
-    # hot path. The token entry itself is reaped later by token_lifespan.
-    activity.destroy
+    expire_current_token!
     reject_expired_session
+  end
+
+  # A killed token (stale or missing row) must not survive in users.tokens
+  # either - otherwise the next unrelated User#save has
+  # User#reconcile_token_activities (tokens is authoritative there) recreate
+  # the row with a fresh window, reviving the expired session. This is the one
+  # write enforcement performs, and only on this rare token-killing path.
+  #
+  # save!(validate: false): this write only removes a client_id, never touches
+  # user input, and must not turn a 401 into a 422 on an unrelated validation
+  # failure. Transaction: so a raised error can't leave the row deleted but
+  # the token still present, reopening the same divergence.
+  #
+  # Lost-update note: current_user was loaded at authentication, so this save
+  # can drop a token issued concurrently (sign-in, clean_old_tokens) in
+  # between. Self-limiting - once a token is out of tokens, DTA's
+  # set_user_by_token returns nil and later requests 401 before reaching here.
+  def expire_current_token!
+    current_user.transaction do
+      current_user.token_activities.where(client_id: current_token_client).delete_all
+      next unless (current_user.tokens || {}).key?(current_token_client)
+
+      current_user.tokens.delete(current_token_client)
+      current_user.save!(validate: false)
+    end
   end
 
   def reject_expired_session
