@@ -182,4 +182,151 @@ RSpec.describe Category, type: :model do
       end
     end
   end
+
+  describe "#is_current" do
+    # Characterisation tests: these pin down existing behaviour so the
+    # is_current logic can be refactored safely. Each rule below was added by a
+    # specific commit to fix a specific bug - the logic took eight commits to
+    # settle and, until now, had no direct coverage (recommendation_spec stubs
+    # Category#is_current rather than exercising it).
+    #
+    # Shape mirrors production: a treaty category in a parent taxonomy, with
+    # its reporting-cycle categories beneath it in the cycle taxonomy.
+
+    let(:parent_taxonomy) { FactoryBot.create(:taxonomy) }
+    let(:cycle_taxonomy) { FactoryBot.create(:taxonomy, taxonomy: parent_taxonomy) }
+    let(:other_taxonomy) { FactoryBot.create(:taxonomy, taxonomy: parent_taxonomy) }
+    let(:treaty) { FactoryBot.create(:category, taxonomy: parent_taxonomy, draft: false) }
+
+    before do
+      allow(Rails.application.config.x)
+        .to receive(:reporting_cycle_taxonomy_id)
+        .and_return(cycle_taxonomy.id)
+    end
+
+    # A reporting-cycle category beneath `treaty`.
+    def cycle(parent: treaty, taxonomy: cycle_taxonomy, **attrs)
+      FactoryBot.create(:category, taxonomy:, parent_id: parent&.id, **attrs)
+    end
+
+    context "when it is not in the reporting cycle taxonomy" do
+      # Base guard, extracted to has_reporting_cycle_taxonomy? in 1c07069.
+      it "is not current" do
+        category = cycle(taxonomy: other_taxonomy, draft: false, date: Date.new(2024, 1, 1))
+
+        expect(category.is_current).to eq(false)
+      end
+    end
+
+    context "when the cycle category itself is draft" do
+      # 6e631bc: a draft cycle must still count as current, otherwise its
+      # recommendations are treated as non-current and vanish from the UI.
+      it "is current even with no parent and no date" do
+        category = FactoryBot.create(:category, taxonomy: cycle_taxonomy, draft: true)
+
+        expect(category.is_current).to eq(true)
+      end
+
+      it "is current even when a newer published sibling exists" do
+        cycle(draft: false, date: Date.new(2025, 1, 1))
+        category = cycle(draft: true, date: Date.new(2020, 1, 1))
+
+        expect(category.is_current).to eq(true)
+      end
+    end
+
+    context "when the PARENT is draft but the cycle category is published" do
+      # 7043024 "fix (self not parent)": the draft check reads self.draft, so a
+      # draft parent must not make a published child current.
+      it "is not current when it is not the newest published sibling" do
+        draft_treaty = FactoryBot.create(:category, taxonomy: parent_taxonomy, draft: true)
+        cycle(parent: draft_treaty, draft: false, date: Date.new(2025, 1, 1))
+        older = cycle(parent: draft_treaty, draft: false, date: Date.new(2020, 1, 1))
+
+        expect(older.is_current).to eq(false)
+      end
+    end
+
+    context "when a published cycle category has no parent" do
+      # The category.present? guard: with nothing to compare against, a
+      # published cycle category is not current.
+      it "is not current" do
+        category = FactoryBot.create(:category, taxonomy: cycle_taxonomy, draft: false, date: Date.new(2024, 1, 1))
+
+        expect(category.is_current).to eq(false)
+      end
+    end
+
+    context "when it is the only published child" do
+      # 0361984 added the only-child rule and moved date.present? inside the
+      # sibling comparison - "only need to check for date presence when we
+      # compare with siblings". This is the shape of production data today:
+      # one reporting cycle per treaty, so every cycle is current.
+      it "is current with a date" do
+        expect(cycle(draft: false, date: Date.new(2023, 6, 22)).is_current).to eq(true)
+      end
+
+      it "is current without a date" do
+        expect(cycle(draft: false, date: nil).is_current).to eq(true)
+      end
+
+      it "is current when its only siblings are draft" do
+        # f0f147f scoped the sibling lookup to .published.
+        cycle(draft: true, date: Date.new(2025, 1, 1))
+
+        expect(cycle(draft: false, date: nil).is_current).to eq(true)
+      end
+    end
+
+    context "when there are several published siblings" do
+      # The core rule: newest by date wins. This is what fires at the next real
+      # reporting cycle transition, when a treaty gains its second cycle.
+      let!(:newest) { cycle(draft: false, date: Date.new(2025, 1, 1)) }
+      let!(:older) { cycle(draft: false, date: Date.new(2020, 1, 1)) }
+
+      it "is current for the newest by date" do
+        expect(newest.is_current).to eq(true)
+      end
+
+      it "is not current for an older sibling" do
+        expect(older.is_current).to eq(false)
+      end
+
+      it "ignores draft siblings when choosing the newest" do
+        # f0f147f: a draft sibling with a later date must not win.
+        cycle(draft: true, date: Date.new(2030, 1, 1))
+
+        expect(newest.is_current).to eq(true)
+      end
+    end
+
+    context "when a published sibling has no date" do
+      # LATENT BUG, characterised rather than endorsed.
+      #
+      # date.present? guards only the comparison, but the ORDER BY does not
+      # exclude undated siblings - and Postgres sorts NULLs FIRST on DESC. So
+      # an undated published sibling becomes .first, and then:
+      #   * the undated one fails date.present?      -> not current
+      #   * every dated one fails (first == self)    -> not current
+      #
+      # i.e. a single undated cycle makes EVERY cycle under that treaty
+      # non-current, dropping all of the treaty's recommendations out of
+      # current_only. Not live today (every production cycle has a date), but
+      # it fires the moment a cycle is added without one.
+      it "makes the dated sibling non-current too" do
+        dated = cycle(draft: false, date: Date.new(2025, 1, 1))
+        undated = cycle(draft: false, date: nil)
+
+        expect(dated.is_current).to eq(false)
+        expect(undated.is_current).to eq(false)
+      end
+
+      it "leaves none of several undated siblings current" do
+        first = cycle(draft: false, date: nil)
+        second = cycle(draft: false, date: nil)
+
+        expect([first.is_current, second.is_current]).to eq([false, false])
+      end
+    end
+  end
 end
