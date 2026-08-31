@@ -36,6 +36,11 @@ ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers
+
+  # Rails resets CurrentAttributes between requests; nothing resets them
+  # between examples, so a memoised CurrentCycle would leak across the suite.
+  config.before { Current.reset }
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = ["#{::Rails.root}/spec/fixtures"]
 

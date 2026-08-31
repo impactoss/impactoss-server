@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Recommendation < VersionedRecord
+  include ResetsCurrentCycle
+
   has_many :recommendation_measures, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_categories, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_indicators, inverse_of: :recommendation, dependent: :destroy
@@ -37,8 +39,9 @@ class Recommendation < VersionedRecord
   validates :title, presence: true
   validates :reference, presence: true, uniqueness: true
 
+  # Current unless every reporting-cycle category it carries is stale.
+  # Resolved for the whole request at once; see CurrentCycle.
   def is_current
-    categories.none?(&:has_reporting_cycle_taxonomy?) ||
-      categories.any?(&:is_current)
+    Current.cycle.recommendation_current?(id)
   end
 end

@@ -23,51 +23,6 @@ RSpec.describe Recommendation, type: :model do
 
   it { is_expected.to belong_to(:framework).optional }
 
-  context "is_current" do
-    let(:category) { FactoryBot.create(:category, :published) }
-    let(:recommendation) { FactoryBot.create(:recommendation) }
-
-    before do
-      recommendation.categories << category
-
-      allow(category)
-        .to(receive(:has_reporting_cycle_taxonomy?))
-        .and_return(has_reporting_cycle_taxonomy)
-    end
-
-    context "when it has a category that is linked to a reporting cycle" do
-      let(:has_reporting_cycle_taxonomy) { true }
-
-      context "when no category is current" do
-        it "returns false" do
-          expect(recommendation.is_current).to eq(false)
-        end
-      end
-
-      context "when it has a category that is current" do
-        it "returns true" do
-          allow(category).to receive(:is_current).and_return(true)
-
-          expect(recommendation.is_current).to eq(true)
-        end
-      end
-    end
-
-    context "when it has a category that is not linked to a reporting cycle" do
-      let(:has_reporting_cycle_taxonomy) { false }
-
-      it "returns true" do
-        expect(recommendation.is_current).to eq(true)
-      end
-
-      it "returns true even if no category is current" do
-        allow(category).to receive(:is_current).and_return(false)
-
-        expect(recommendation.is_current).to eq(true)
-      end
-    end
-  end
-
   describe "indicators" do
     subject { FactoryBot.create(:recommendation) }
 

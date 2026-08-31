@@ -1,4 +1,6 @@
 class RecommendationMeasure < VersionedRecord
+  include ResetsCurrentCycle
+
   belongs_to :recommendation, inverse_of: :recommendation_measures, optional: true
   belongs_to :measure, inverse_of: :recommendation_measures, optional: true
 

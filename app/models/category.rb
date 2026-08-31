@@ -1,4 +1,6 @@
 class Category < VersionedRecord
+  include ResetsCurrentCycle
+
   belongs_to :taxonomy
   belongs_to :category, class_name: "Category", foreign_key: :parent_id, optional: true
   belongs_to :manager, class_name: "User", foreign_key: :manager_id, optional: true, inverse_of: :categories

@@ -1,4 +1,6 @@
 class MeasureIndicator < VersionedRecord
+  include ResetsCurrentCycle
+
   belongs_to :measure, optional: true
   belongs_to :indicator, optional: true
 

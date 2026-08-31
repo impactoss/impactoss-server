@@ -1,4 +1,6 @@
 class RecommendationCategory < VersionedRecord
+  include ResetsCurrentCycle
+
   belongs_to :recommendation, optional: true
   belongs_to :category, optional: true
 
