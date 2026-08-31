@@ -36,7 +36,11 @@ class CreateTokenActivities < ActiveRecord::Migration[8.0]
     end
 
     select_all("SELECT id, tokens FROM users WHERE tokens IS NOT NULL").each do |row|
-      tokens = JSON.parse(row["tokens"])
+      # select_all returns the raw json string here (no model/attribute-type
+      # context to cast it), but tolerate an already-cast Hash too in case
+      # that ever changes under a different adapter/version.
+      raw_tokens = row["tokens"]
+      tokens = raw_tokens.is_a?(String) ? JSON.parse(raw_tokens) : raw_tokens
       next if tokens.blank?
 
       tokens.each_key do |client_id|
