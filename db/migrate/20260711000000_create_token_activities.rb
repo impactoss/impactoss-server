@@ -17,23 +17,40 @@ class CreateTokenActivities < ActiveRecord::Migration[8.0]
     # not force-expired on deploy: enforcement fails closed on a missing row.
     # Seed with the deploy time rather than each token's own updated_at - an old
     # updated_at would immediately expire an otherwise-active session.
+    #
+    # Reads users.tokens directly and inserts via the connection rather than
+    # going through the User/TokenActivity models, so a replay from scratch
+    # does not depend on either model's current shape (a default scope, a
+    # required column, a rename).
     now = Time.current
+    columns = %w[user_id client_id last_activity_at created_at updated_at]
+    batch_size = 1000
     rows = []
-    User.reset_column_information
-    User.find_each do |user|
-      next if user.tokens.blank?
 
-      user.tokens.each_key do |client_id|
+    flush = lambda do
+      next if rows.empty?
+
+      values = rows.map { |row| "(#{columns.map { |c| quote(row[c]) }.join(", ")})" }.join(", ")
+      execute("INSERT INTO token_activities (#{columns.join(", ")}) VALUES #{values}")
+      rows = []
+    end
+
+    select_all("SELECT id, tokens FROM users WHERE tokens IS NOT NULL").each do |row|
+      tokens = JSON.parse(row["tokens"])
+      next if tokens.blank?
+
+      tokens.each_key do |client_id|
         rows << {
-          user_id: user.id,
-          client_id: client_id,
-          last_activity_at: now,
-          created_at: now,
-          updated_at: now
+          "user_id" => row["id"],
+          "client_id" => client_id,
+          "last_activity_at" => now,
+          "created_at" => now,
+          "updated_at" => now
         }
+        flush.call if rows.size >= batch_size
       end
     end
-    TokenActivity.insert_all(rows) if rows.any?
+    flush.call
   end
 
   def down
