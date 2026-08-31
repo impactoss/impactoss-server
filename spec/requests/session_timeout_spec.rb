@@ -111,7 +111,7 @@ RSpec.describe "Session inactivity timeout", type: :request do
       user.token_activities.update_all(last_activity_at: (TokenActivity.coalesce_window + 1.minute).ago)
 
       post "/auth/activity", headers:, as: :json
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:ok)
       expect(user.token_activities.first.last_activity_at).to be_within(2.seconds).of(Time.current)
     end
 
@@ -121,8 +121,17 @@ RSpec.describe "Session inactivity timeout", type: :request do
       user.token_activities.update_all(last_activity_at: recent)
 
       post "/auth/activity", headers:, as: :json
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:ok)
       expect(user.token_activities.first.last_activity_at).to be_within(1.second).of(recent)
+    end
+
+    it "reports seconds remaining from the existing timestamp when coalesced" do
+      headers = sign_in_headers
+      user.token_activities.update_all(last_activity_at: 30.seconds.ago)
+
+      post "/auth/activity", headers:, as: :json
+      expect(response.parsed_body["seconds_remaining"])
+        .to be_within(5).of((TokenActivity.inactivity_timeout - 30.seconds).to_i)
     end
 
     it "cannot resurrect an already-expired session" do

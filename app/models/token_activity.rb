@@ -34,4 +34,9 @@ class TokenActivity < ApplicationRecord
   def stale_for_heartbeat?
     last_activity_at < self.class.coalesce_window.ago
   end
+
+  # Seconds until this token expires from inactivity, floored at zero.
+  def seconds_remaining(now = Time.current)
+    [(last_activity_at + self.class.inactivity_timeout - now).to_i, 0].max
+  end
 end

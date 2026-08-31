@@ -19,10 +19,14 @@ class TokenActivitiesController < ApplicationController
     activity = current_user.token_activities.find_by(client_id: current_token_client)
 
     # Enforcement guarantees a fresh row here; guard defensively regardless.
-    if activity&.stale_for_heartbeat?
-      activity.update_column(:last_activity_at, Time.current)
+    return head :no_content if activity.nil?
+
+    now = Time.current
+    if activity.stale_for_heartbeat?
+      activity.update_column(:last_activity_at, now)
+      activity.last_activity_at = now
     end
 
-    head :no_content
+    render json: {seconds_remaining: activity.seconds_remaining(now)}
   end
 end
