@@ -20,6 +20,3 @@ jobs:
           bundler-cache: true
 
       - run: bundle exec standardrb
-
-      - if: failure()
-        run: git commit -a --fixup=HEAD --author=. && git push
