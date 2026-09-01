@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_01_220117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
     t.datetime "updated_at", null: false
     t.integer "created_by_id"
     t.bigint "updated_by_id"
+    t.index ["indicator_id"], name: "index_measure_indicators_on_indicator_id"
+    t.index ["measure_id"], name: "index_measure_indicators_on_measure_id"
     t.index ["updated_by_id"], name: "index_measure_indicators_on_updated_by_id"
   end
 
@@ -198,6 +200,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_124846) do
     t.datetime "updated_at", null: false
     t.integer "created_by_id"
     t.bigint "updated_by_id"
+    t.index ["category_id"], name: "index_recommendation_categories_on_category_id"
+    t.index ["recommendation_id"], name: "index_recommendation_categories_on_recommendation_id"
     t.index ["updated_by_id"], name: "index_recommendation_categories_on_updated_by_id"
   end
 
