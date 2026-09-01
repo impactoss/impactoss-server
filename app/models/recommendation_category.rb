@@ -1,6 +1,10 @@
 class RecommendationCategory < VersionedRecord
   include ResetsCurrentCycle
 
+  # The foreign keys ARE the membership - an update to any other column
+  # cannot change which category a recommendation belongs to.
+  after_commit :reset_current_cycle, on: [:create, :destroy]
+
   belongs_to :recommendation, optional: true
   belongs_to :category, optional: true
 
