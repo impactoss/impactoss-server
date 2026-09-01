@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 class Measure < VersionedRecord
-  include ResetsCurrentCycle
+  # No ResetsCurrentCycle here: the resolver never reads a Measure attribute,
+  # only RecommendationMeasure rows (see current_cycle.rb), which invalidate
+  # it on create and on destroy of the join record itself - reassigning
+  # `recommendations=` removes stale join rows via delete_all, which fires
+  # neither, so that path relies on nothing already having warmed the
+  # resolver in the same unit of work.
 
   has_many :recommendation_measures, inverse_of: :measure, dependent: :destroy
   has_many :measure_categories, inverse_of: :measure, dependent: :destroy

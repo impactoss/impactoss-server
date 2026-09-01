@@ -1,6 +1,10 @@
 class RecommendationMeasure < VersionedRecord
   include ResetsCurrentCycle
 
+  # The foreign keys ARE the membership - an update to any other column
+  # cannot change which measure a recommendation belongs to.
+  after_commit :reset_current_cycle, on: [:create, :destroy]
+
   belongs_to :recommendation, inverse_of: :recommendation_measures, optional: true
   belongs_to :measure, inverse_of: :recommendation_measures, optional: true
 
