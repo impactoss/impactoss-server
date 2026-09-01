@@ -12,12 +12,17 @@
 # again to serialise. This resolves the id sets in a fixed number of queries
 # instead, independent of how many records exist.
 #
-# It deliberately does NOT reimplement Category#is_current, whose sibling
-# comparison is NOT scoped to the cycle taxonomy: a treaty may carry children
-# in several sub-taxonomies and all of them compete. It is called exactly as
-# it stands, once per cycle category (a handful) rather than once per
-# recommendation (thousands). Only the trivial "empty? || any?" propagation
-# above it is resolved set-wise.
+# It deliberately does NOT reimplement Category#is_current. Its sibling
+# comparison is not scoped to the cycle taxonomy - has_many :categories is
+# keyed on parent_id alone - so a rewrite that "obviously" scoped it would
+# change an answer nobody has characterised, on a predicate that took eight
+# commits to settle. No current deployment's taxonomy has more than one
+# child under a parent, so the unscoped comparison cannot currently change
+# an outcome, but that is a fact about today's data, not the code, and isn't
+# a safe thing to build a rewrite on. It is called exactly as it stands,
+# once per cycle category (a handful) rather than once per recommendation
+# (thousands). Only the trivial "empty? || any?" propagation above it is
+# resolved set-wise.
 class CurrentCycle
   def recommendation_current?(id)
     !non_current_recommendation_ids.include?(id)
