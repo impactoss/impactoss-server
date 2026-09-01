@@ -1,5 +1,10 @@
 class Indicator < VersionedRecord
-  include ResetsCurrentCycle
+  # No ResetsCurrentCycle here: the resolver never reads an Indicator
+  # attribute, only MeasureIndicator rows (see current_cycle.rb), which
+  # invalidate it on create and on destroy of the join record itself -
+  # reassigning `measures=` removes stale join rows via delete_all, which
+  # fires neither, so that path relies on nothing already having warmed the
+  # resolver in the same unit of work.
 
   validates :title, presence: true
   validates :end_date, presence: true, if: :repeat?
