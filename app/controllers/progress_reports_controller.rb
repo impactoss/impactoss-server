@@ -56,7 +56,16 @@ class ProgressReportsController < ApplicationController
     # Resolved as a set once per request rather than per record; see
     # CurrentCycle. Must stay a relation so ordering, paging and policy_scope
     # still compose.
-    records = records.where.not(indicator_id: Current.cycle.non_current_indicator_ids.to_a) if params[:current_only] == "true"
+    #
+    # Excludes a null indicator_id explicitly rather than relying on
+    # `where.not(indicator_id: stale_ids)` alone: when stale_ids is empty (the
+    # common case - every cycle dated and current) that compiles to `1=1` and
+    # would let a legacy no-indicator row through, disagreeing with
+    # CurrentCycle#indicator_current?(nil), which always says false.
+    if params[:current_only] == "true"
+      records = records.where.not(indicator_id: nil)
+        .where.not(indicator_id: Current.cycle.non_current_indicator_ids.to_a)
+    end
     records
   end
 

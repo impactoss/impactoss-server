@@ -15,8 +15,8 @@
 # It deliberately does NOT reimplement Category#is_current. Its sibling
 # comparison is not scoped to the cycle taxonomy - has_many :categories is
 # keyed on parent_id alone - so a rewrite that "obviously" scoped it would
-# change an answer nobody has characterised, on a predicate that took eight
-# commits to settle. No current deployment's taxonomy has more than one
+# change an answer nobody has characterised, in a comparison that is subtle
+# and easy to get wrong. No current deployment's taxonomy has more than one
 # child under a parent, so the unscoped comparison cannot currently change
 # an outcome, but that is a fact about today's data, not the code, and isn't
 # a safe thing to build a rewrite on. It is called exactly as it stands,
@@ -32,8 +32,14 @@ class CurrentCycle
     !non_current_measure_ids.include?(id)
   end
 
+  # A nil id (a ProgressReport with no indicator) is treated as non-current,
+  # unconditionally - including when stale_ids is empty. The controller's
+  # filter has to exclude a null indicator_id explicitly to agree: plain
+  # `where.not(indicator_id: stale_ids)` compiles to `1=1` when stale_ids is
+  # empty (every cycle dated and current, the common case), which would let a
+  # null indicator_id through. See ProgressReportsController#base_object.
   def indicator_current?(id)
-    !non_current_indicator_ids.include?(id)
+    id.present? && !non_current_indicator_ids.include?(id)
   end
 
   # Recommendations linked to at least one reporting-cycle category, none of

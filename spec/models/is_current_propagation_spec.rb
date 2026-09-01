@@ -159,5 +159,17 @@ RSpec.describe "is_current propagation", type: :model do
 
       expect(FactoryBot.create(:progress_report, indicator:).is_current).to eq(false)
     end
+
+    it "is not current with no indicator" do
+      # indicator_id is validated present at the app level, but the column is
+      # nullable - a legacy row can have none. Must agree with current_only's
+      # own filter, which excludes a null indicator_id regardless of what's
+      # in the non-current set (NULL NOT IN (...) is never true in SQL).
+      indicator = indicator_with(measure_with(recommendation_with(current_cycle)))
+      progress_report = FactoryBot.create(:progress_report, indicator:)
+      progress_report.update_column(:indicator_id, nil)
+
+      expect(progress_report.is_current).to eq(false)
+    end
   end
 end
