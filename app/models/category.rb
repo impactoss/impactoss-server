@@ -18,7 +18,7 @@ class Category < VersionedRecord
   validate :only_manager_and_admin_users_can_be_assigned, if: :manager_id_changed?
 
   scope :draft, -> { where(draft: true) }
-  scope :published, -> { where(draft: false) }
+  scope :published, -> { where(draft: false, is_archive: false) }
 
   def combined_indicator_ids
     (
