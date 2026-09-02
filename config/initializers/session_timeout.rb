@@ -7,7 +7,8 @@
 # off, so these drive the timeout instead of DTA's native sliding expiry.
 Rails.application.config.x.session_timeout.tap do |session_timeout|
   # Reject a token whose last recorded activity is older than this.
-  session_timeout.inactivity = 30.minutes
+  minutes = ENV.fetch("SESSION_INACTIVITY_MINUTES", 30).to_i
+  session_timeout.inactivity = (minutes.positive? ? minutes : 30).minutes
 
   # The heartbeat only rewrites last_activity_at once it is at least this stale,
   # keeping the write rate to ~1 per token per window regardless of ping cadence.
