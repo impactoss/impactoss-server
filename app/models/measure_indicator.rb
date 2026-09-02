@@ -1,4 +1,10 @@
 class MeasureIndicator < VersionedRecord
+  include ResetsCurrentCycle
+
+  # The foreign keys ARE the membership - an update to any other column
+  # cannot change which indicator a measure belongs to.
+  after_commit :reset_current_cycle, on: [:create, :destroy]
+
   belongs_to :measure, optional: true
   belongs_to :indicator, optional: true
 

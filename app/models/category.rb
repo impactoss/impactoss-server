@@ -1,4 +1,15 @@
 class Category < VersionedRecord
+  include ResetsCurrentCycle
+
+  # Only these can change a CurrentCycle answer - see #is_current below and
+  # CurrentCycle's cycle_categories/current_category_ids. Any other update
+  # (title, description, manager...) cannot move which category is current.
+  CURRENT_CYCLE_ATTRIBUTES = %w[draft date parent_id taxonomy_id is_archive].freeze
+
+  after_commit :reset_current_cycle, on: [:create, :destroy]
+  after_commit :reset_current_cycle, on: :update,
+    if: -> { (saved_changes.keys & CURRENT_CYCLE_ATTRIBUTES).any? }
+
   belongs_to :taxonomy
   belongs_to :category, class_name: "Category", foreign_key: :parent_id, optional: true
   belongs_to :manager, class_name: "User", foreign_key: :manager_id, optional: true, inverse_of: :categories

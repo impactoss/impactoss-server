@@ -11,8 +11,9 @@ class ProgressReport < VersionedRecord
 
   validate :indicator_id_must_not_change, if: [:persisted?, :indicator_id_changed?]
 
+  # Follows its indicator, which need not be loaded to answer this.
   def is_current
-    indicator.is_current
+    Current.cycle.indicator_current?(indicator_id)
   end
 
   def self.send_all_updated_emails

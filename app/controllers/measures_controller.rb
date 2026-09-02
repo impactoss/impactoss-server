@@ -46,7 +46,10 @@ class MeasuresController < ApplicationController
     records = Measure
 
     records = records.where(is_archive: false) if params[:include_archive] == "false"
-    records = records.where(id: records.select(&:is_current).map(&:id)) if params[:current_only] == "true"
+    # Resolved as a set once per request rather than per record; see
+    # CurrentCycle. Must stay a relation so ordering, paging and policy_scope
+    # still compose.
+    records = records.where.not(id: Current.cycle.non_current_measure_ids.to_a) if params[:current_only] == "true"
     records
   end
 

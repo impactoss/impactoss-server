@@ -122,6 +122,31 @@ RSpec.describe "is_current propagation", type: :model do
     end
   end
 
+  describe "null foreign keys in the join tables" do
+    # The join models validate both foreign keys, so the app cannot create
+    # these - but the columns are nullable, so legacy or directly written rows
+    # can be. The associations these sets replace skip such a row entirely: it
+    # yields no record, so it must neither make a parent stale nor rescue one.
+    def orphan_link(table, **attrs)
+      table.insert_all([attrs.merge(created_at: Time.current, updated_at: Time.current)])
+    end
+
+    it "does not let an orphaned link make a childless measure stale" do
+      orphan_link(RecommendationCategory, recommendation_id: nil, category_id: stale_cycle.id)
+      measure = measure_with
+      orphan_link(RecommendationMeasure, measure_id: measure.id, recommendation_id: nil)
+
+      expect(measure.is_current).to eq(true)
+    end
+
+    it "does not let an orphaned link rescue a stale measure" do
+      measure = measure_with(recommendation_with(stale_cycle))
+      orphan_link(RecommendationMeasure, measure_id: measure.id, recommendation_id: nil)
+
+      expect(measure.is_current).to eq(false)
+    end
+  end
+
   describe "ProgressReport#is_current" do
     it "follows a current indicator" do
       indicator = indicator_with(measure_with(recommendation_with(current_cycle)))
@@ -133,6 +158,18 @@ RSpec.describe "is_current propagation", type: :model do
       indicator = indicator_with(measure_with(recommendation_with(stale_cycle)))
 
       expect(FactoryBot.create(:progress_report, indicator:).is_current).to eq(false)
+    end
+
+    it "is not current with no indicator" do
+      # indicator_id is validated present at the app level, but the column is
+      # nullable - a legacy row can have none. Must agree with current_only's
+      # own filter, which excludes a null indicator_id regardless of what's
+      # in the non-current set (NULL NOT IN (...) is never true in SQL).
+      indicator = indicator_with(measure_with(recommendation_with(current_cycle)))
+      progress_report = FactoryBot.create(:progress_report, indicator:)
+      progress_report.update_column(:indicator_id, nil)
+
+      expect(progress_report.is_current).to eq(false)
     end
   end
 end
