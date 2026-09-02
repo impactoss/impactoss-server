@@ -18,7 +18,7 @@ class Category < VersionedRecord
   validate :responsible_has_required_role, if: :manager_id_changed?
 
   scope :draft, -> { where(draft: true) }
-  scope :published, -> { where(draft: false) }
+  scope :published, -> { where(draft: false, is_archive: false) }
 
   def combined_indicator_ids
     (
