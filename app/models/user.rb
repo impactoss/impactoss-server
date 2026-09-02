@@ -25,6 +25,7 @@ class User < VersionedRecord
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
+  has_many :token_activities, dependent: :destroy
   has_many :managed_categories, foreign_key: :manager_id, class_name: "Category"
   has_many :managed_indicators, foreign_key: :manager_id, class_name: "Indicator"
   has_many :user_categories
@@ -41,6 +42,19 @@ class User < VersionedRecord
 
   # Track date of password change for expiry feature
   before_update :set_password_changed_at, if: :saved_change_to_encrypted_password?
+
+  # Keep the per-token activity store in step with the tokens hash. Runs inside
+  # the same transaction as token issuance/eviction, so it covers every path a
+  # token appears or disappears - login, sign-out, password-reset pruning
+  # (remove_tokens_after_password_reset) and max_number_of_devices eviction
+  # (clean_old_tokens) - in one seam instead of hooking each mutation site.
+  #
+  # saved_change_to_tokens? guards against running on every save - DTA mutates
+  # the tokens hash in place rather than reassigning it, and t.json's
+  # ActiveRecord::Type::Json#changed_in_place? still detects that. Depends on
+  # rotation staying off: a live change_headers_on_each_request would make
+  # tokens change (and this fire) on every request again.
+  after_save :reconcile_token_activities, if: :saved_change_to_tokens?
 
   # Override Devise's confirmable methods to disable email confirmation
   # DeviseTokenAuth 1.2.5+ appears to use confirmable even when disabled
@@ -162,5 +176,29 @@ class User < VersionedRecord
   # Set timestamp when password changes
   def set_password_changed_at
     self.password_changed_at = Time.current
+  end
+
+  # Delete activity rows for tokens that no longer exist, and create rows for
+  # newly-issued tokens (seeded to "now" so a fresh login starts its window).
+  # Existing rows are left untouched - only the heartbeat bumps last_activity_at.
+  def reconcile_token_activities
+    client_ids = (tokens || {}).keys
+    token_activities.where.not(client_id: client_ids).delete_all
+
+    existing = token_activities.where(client_id: client_ids).pluck(:client_id)
+    missing = client_ids - existing
+    return if missing.empty?
+
+    now = Time.current
+    # insert_all + unique_by, rather than create! per row, so two concurrent
+    # saves that both see the same missing client_id (e.g. two requests racing
+    # to create the same token's row) don't collide on the unique index and
+    # roll back the outer save. Belt-and-braces: the real safeguard against a
+    # missing row is TokenActivityEnforcement#expire_current_token! keeping
+    # tokens and activity rows in sync when a token is killed.
+    token_activities.insert_all(
+      missing.map { |client_id| {client_id:, last_activity_at: now, created_at: now, updated_at: now} },
+      unique_by: :index_token_activities_on_user_and_client
+    )
   end
 end
