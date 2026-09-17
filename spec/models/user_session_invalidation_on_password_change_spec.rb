@@ -82,4 +82,18 @@ RSpec.describe User, "session invalidation on password change", type: :model do
 
     expect(user.tokens.keys).to eq([solo_client])
   end
+
+  # The prune is a before_save; User#reconcile_token_activities is an after_save,
+  # so it sees the already-pruned tokens hash and drops the activity rows for the
+  # invalidated sessions in the same transaction. No wiring specific to the
+  # password-change path is needed - this is the same seam that covers sign-out
+  # and max_number_of_devices eviction.
+  it "prunes the activity rows for the invalidated tokens via reconcile" do
+    seed_two_tokens!
+    expect(user.token_activities.pluck(:client_id)).to match_array([older_client, newer_client])
+
+    change_password!
+
+    expect(user.token_activities.pluck(:client_id)).to match_array([newer_client])
+  end
 end

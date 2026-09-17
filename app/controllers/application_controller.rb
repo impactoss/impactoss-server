@@ -14,6 +14,10 @@ class ApplicationController < ActionController::API
 
   before_action :set_paper_trail_whodunnit
 
+  # Enforce the inactivity timeout. Included AFTER authenticate_user! above so
+  # its before_action runs later in the chain, once @token/current_user are set.
+  include TokenActivityEnforcement
+
   # Allow pundit to authorize a non-logged in user
   def pundit_user
     current_user || User.new
