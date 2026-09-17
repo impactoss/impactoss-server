@@ -357,22 +357,21 @@ RSpec.describe Category, type: :model do
     end
 
     context "when a sibling is archived" do
-      # The published scope filters draft only, so archived siblings still
-      # count. Worth pinning because callers pass include_archive=false, which
-      # makes it tempting to assume the sibling lookup excludes archived
-      # categories. It does not.
-      it "is not current when an archived sibling has a newer date" do
+      # Archiving is a soft delete - an archived sibling must not keep
+      # competing in the only-child count or the ordering, or archiving the
+      # current cycle would leave the live one still non-current.
+      it "is current despite an archived sibling with a newer date" do
         cycle_category = cycle(draft: false, date: Date.new(2023, 1, 1))
         cycle(draft: false, is_archive: true, date: Date.new(2025, 1, 1))
 
-        expect(cycle_category.is_current).to eq(false)
+        expect(cycle_category.is_current).to eq(true)
       end
 
-      it "loses only-child status to an archived sibling" do
+      it "keeps only-child status despite an archived sibling" do
         cycle_category = cycle(draft: false, date: nil)
         cycle(draft: false, is_archive: true, date: nil)
 
-        expect(cycle_category.is_current).to eq(false)
+        expect(cycle_category.is_current).to eq(true)
       end
     end
 
