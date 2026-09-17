@@ -96,7 +96,13 @@ RSpec.describe RecommendationsController, type: :controller do
           allow(Taxonomy).to receive(:current_reporting_cycle_id).and_return(reporting_cycle_taxonomy.id)
           parent_category = FactoryBot.create(:category, :published, taxonomy: parent_taxonomy)
           non_current_category = FactoryBot.create(:category, :published, :has_date, taxonomy: reporting_cycle_taxonomy, date: current_category.date - 1.day)
-          current_category.category = parent_category
+          # Both cycle categories hang off the same parent, so
+          # non_current_category is non-current by LOSING THE DATE COMPARISON
+          # against its sibling. Given no parent it would instead be
+          # non-current via the category.present? guard, and the sibling
+          # comparison would go untested.
+          current_category.update!(category: parent_category)
+          non_current_category.update!(category: parent_category)
           recommendation.categories = [parent_category, current_category]
           non_reporting_cycle_recommendation.categories = [parent_category]
           non_current_recommendation.categories = [non_current_category]
