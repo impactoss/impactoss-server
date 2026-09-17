@@ -294,22 +294,19 @@ RSpec.describe Category, type: :model do
     end
 
     context "when a published sibling has no date" do
-      # LATENT BUG, characterised rather than endorsed.
-      #
-      # date.present? guards only the comparison, but the ORDER BY does not
-      # exclude undated siblings - and Postgres sorts NULLs FIRST on DESC. So
-      # an undated published sibling becomes .first, and then the undated one
-      # fails date.present? while every dated one fails (first == self): a
-      # single undated cycle makes EVERY cycle under that treaty non-current,
-      # dropping all of its recommendations out of current_only.
-      it "makes the dated sibling non-current too" do
+      # Undated siblings sort last, so they cannot displace a dated sibling as
+      # "newest". They stay non-current themselves via the date.present? guard:
+      # with no date there is nothing to rank them by.
+      it "leaves the dated sibling current" do
         dated = cycle(draft: false, date: Date.new(2025, 1, 1))
         undated = cycle(draft: false, date: nil)
 
-        expect(dated.is_current).to eq(false)
+        expect(dated.is_current).to eq(true)
         expect(undated.is_current).to eq(false)
       end
 
+      # With no dates anywhere there is no "newest", and the date.present?
+      # guard keeps every sibling non-current however the rows are ordered.
       it "leaves none of several undated siblings current" do
         first = cycle(draft: false, date: nil)
         second = cycle(draft: false, date: nil)
@@ -348,14 +345,14 @@ RSpec.describe Category, type: :model do
     end
 
     context "when siblings share the same date" do
-      # The ordering has no tie-break, so which sibling wins is left to
-      # Postgres. Exactly one is current, but WHICH is not defined by the code
-      # - asserted as a count so the test does not encode incidental row order.
-      it "leaves exactly one of them current" do
+      # Ties break on id, so the winner is defined rather than left to the
+      # query plan: exactly one sibling is current, and it is the same one on
+      # every call.
+      it "leaves the most recently created one current" do
         first = cycle(draft: false, date: Date.new(2024, 1, 1))
         second = cycle(draft: false, date: Date.new(2024, 1, 1))
 
-        expect([first.is_current, second.is_current].count(true)).to eq(1)
+        expect([first.is_current, second.is_current]).to eq([false, true])
       end
     end
 
