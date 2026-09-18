@@ -14,6 +14,10 @@ class ApplicationController < ActionController::API
 
   before_action :set_paper_trail_whodunnit
 
+  # Enforce the inactivity timeout. Included AFTER authenticate_user! above so
+  # its before_action runs later in the chain, once @token/current_user are set.
+  include TokenActivityEnforcement
+
   # Allow pundit to authorize a non-logged in user
   def pundit_user
     current_user || User.new
@@ -31,7 +35,8 @@ class ApplicationController < ActionController::API
 
   rescue_from ActiveRecord::RecordNotFound do |e|
     return if performed?
-    render json: {error: e.message}, status: :not_found
+    Rails.logger.info "Record not found: #{e.message}"
+    render json: {error: "Resource not found"}, status: :not_found
   end
 
   rescue_from ActiveRecord::RecordInvalid do |invalid|
@@ -49,6 +54,14 @@ class ApplicationController < ActionController::API
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
   end
 
+  def render_connection_create_errors(record)
+    if record.errors.any? { |error| error.type == :taken }
+      render json: {relationship: ["already exists"]}, status: :unprocessable_entity
+    else
+      render json: record.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def handle_error_in_json_format(exception)
@@ -56,12 +69,20 @@ class ApplicationController < ActionController::API
     status = case exception
     when ActiveRecord::RecordNotFound then :not_found
     when ActionController::ParameterMissing then :bad_request
+    when ActionDispatch::Http::Parameters::ParseError then :bad_request
     when Pundit::NotAuthorizedError then :forbidden
     else :internal_server_error
     end
 
-    error_message = exception.message
-    error_message = "Resource not found" if exception.is_a?(ActiveRecord::RecordNotFound)
+    # Only the parse-error message is safe to return: it is a fixed string from
+    # Rails with no request or internal detail in it. Everything else reaching
+    # this handler is an unhandled exception whose message may name internal
+    # classes, tables or paths, so it is logged but not returned.
+    error_message = if exception.is_a?(ActionDispatch::Http::Parameters::ParseError)
+      exception.message
+    else
+      "Something went wrong"
+    end
 
     if Rails.env.test? || Rails.env.development?
       error_details = {
@@ -72,6 +93,7 @@ class ApplicationController < ActionController::API
       Rails.logger.error "API Error: #{error_details.inspect}"
       render json: error_details, status: status
     else
+      Rails.logger.error "API Error: #{exception.class.name}: #{exception.message}"
       render json: {error: error_message}, status: status
     end
   end
@@ -83,5 +105,31 @@ class ApplicationController < ActionController::API
 
   def skip_authentication?
     devise_or_devise_token_auth_controller? || action_name == "index"
+  end
+
+  # Re-authentication gate for sensitive actions (role and email changes).
+  # Routed through Devise's valid_for_authentication? so failures count toward
+  # :lockable - a bare valid_password? here would be an unthrottled password
+  # oracle, usable even while the account is locked out of sign-in.
+  #
+  # Success resets failed_attempts explicitly: Devise normally does that in a
+  # Warden after_set_user hook, which does not fire on this path.
+  #
+  def require_current_password!
+    password = request.request_parameters[:current_password]
+
+    if password.present? &&
+        current_user&.valid_for_authentication? { current_user.valid_password?(password) }
+      if current_user.failed_attempts.to_i.positive?
+        current_user.update_column(:failed_attempts, 0)
+      end
+      return true
+    end
+
+    render json: {
+      status: "error",
+      errors: {current_password: ["is incorrect or missing"]}
+    }, status: :unauthorized
+    false
   end
 end

@@ -76,6 +76,19 @@ if Features.enabled?(:measures) && Features.enabled?(:indicators)
           expect(response).to have_http_status(422)
         end
 
+        it "returns a generic error when the connection already exists" do
+          admin = FactoryBot.create(:user, :admin)
+          sign_in admin
+          FactoryBot.create(
+            :measure_indicator,
+            measure_id: measure.id,
+            indicator_id: indicator.id
+          )
+
+          expect(subject).to have_http_status(422)
+          expect(JSON.parse(subject.body)).to eq({"relationship" => ["already exists"]})
+        end
+
         it "records what user created the measure_indicator", versioning: true do
           expect(PaperTrail).to be_enabled
           admin = FactoryBot.create(:user, :admin)

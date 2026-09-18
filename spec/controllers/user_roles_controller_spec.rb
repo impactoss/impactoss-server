@@ -2,6 +2,8 @@ require "rails_helper"
 require "json"
 
 RSpec.describe UserRolesController, type: :controller do
+  let(:current_password) { "SecurePassword123!" }
+
   describe "Get index" do
     subject { get :index, format: :json }
 
@@ -127,6 +129,7 @@ RSpec.describe UserRolesController, type: :controller do
               sign_in user
 
               response = post :create, format: :json, params: {
+                current_password: current_password,
                 user_role: {
                   user_id: target_user.id,
                   role_id: target_role_record.id
@@ -156,6 +159,7 @@ RSpec.describe UserRolesController, type: :controller do
                 sign_in user
 
                 response = post :create, format: :json, params: {
+                  current_password: current_password,
                   user_role: {
                     user_id: target_user.id,
                     role_id: target_role_record.id
@@ -196,9 +200,26 @@ RSpec.describe UserRolesController, type: :controller do
         admin = FactoryBot.create(:user, :admin)
         sign_in admin
         post :create, format: :json, params: {
+          current_password: current_password,
           user_role: {description: "desc only", taxonomy_id: 999}
         }
         expect(response).to have_http_status(422)
+      end
+
+      it "returns a generic error when the role is already assigned" do
+        admin = FactoryBot.create(:user, :admin)
+        sign_in admin
+        target_user = FactoryBot.create(:user, roles: [contributor_role])
+
+        response = post :create, format: :json, params: {
+          current_password: current_password,
+          user_role: {
+            user_id: target_user.id,
+            role_id: contributor_role.id
+          }
+        }
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)).to eq({"relationship" => ["already exists"]})
       end
 
       it "records what user created the user_role", versioning: true do
@@ -207,6 +228,7 @@ RSpec.describe UserRolesController, type: :controller do
         sign_in admin
 
         response = post :create, format: :json, params: {
+          current_password: current_password,
           user_role: {
             user_id: guest.id,
             role_id: admin_role.id
@@ -262,6 +284,7 @@ RSpec.describe UserRolesController, type: :controller do
               sign_in user
 
               response = delete :destroy, format: :json, params: {
+                current_password: current_password,
                 id: target_user.user_roles.first.id
               }
               expect(response).to be_no_content
@@ -288,6 +311,7 @@ RSpec.describe UserRolesController, type: :controller do
                 sign_in user
 
                 response = delete :destroy, format: :json, params: {
+                  current_password: current_password,
                   id: target_user.user_roles.first.id
                 }
                 expect(response).to be_no_content
