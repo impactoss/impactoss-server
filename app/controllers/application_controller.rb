@@ -35,7 +35,8 @@ class ApplicationController < ActionController::API
 
   rescue_from ActiveRecord::RecordNotFound do |e|
     return if performed?
-    render json: {error: e.message}, status: :not_found
+    Rails.logger.info "Record not found: #{e.message}"
+    render json: {error: "Resource not found"}, status: :not_found
   end
 
   rescue_from ActiveRecord::RecordInvalid do |invalid|
@@ -73,8 +74,15 @@ class ApplicationController < ActionController::API
     else :internal_server_error
     end
 
-    error_message = exception.message
-    error_message = "Resource not found" if exception.is_a?(ActiveRecord::RecordNotFound)
+    # Only the parse-error message is safe to return: it is a fixed string from
+    # Rails with no request or internal detail in it. Everything else reaching
+    # this handler is an unhandled exception whose message may name internal
+    # classes, tables or paths, so it is logged but not returned.
+    error_message = if exception.is_a?(ActionDispatch::Http::Parameters::ParseError)
+      exception.message
+    else
+      "Something went wrong"
+    end
 
     if Rails.env.test? || Rails.env.development?
       error_details = {
@@ -85,6 +93,7 @@ class ApplicationController < ActionController::API
       Rails.logger.error "API Error: #{error_details.inspect}"
       render json: error_details, status: status
     else
+      Rails.logger.error "API Error: #{exception.class.name}: #{exception.message}"
       render json: {error: error_message}, status: status
     end
   end
