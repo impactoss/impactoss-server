@@ -386,6 +386,31 @@ RSpec.describe Category, type: :model do
       end
     end
 
+    context "when the cycle category itself is archived" do
+      # Archived siblings are left out of the only-child count, so without a
+      # guard on self an archived category with one live sibling would read
+      # that sibling's count as its own.
+      it "is not current when it has one live sibling" do
+        archived = cycle(draft: false, is_archive: true, date: nil)
+        cycle(draft: false, date: nil)
+
+        expect(archived.is_current).to eq(false)
+      end
+
+      it "is not current when it would be the newest" do
+        archived = cycle(draft: false, is_archive: true, date: Date.new(2025, 1, 1))
+        cycle(draft: false, date: Date.new(2020, 1, 1))
+
+        expect(archived.is_current).to eq(false)
+      end
+
+      it "is not current even when draft" do
+        archived = cycle(draft: true, is_archive: true, date: Date.new(2025, 1, 1))
+
+        expect(archived.is_current).to eq(false)
+      end
+    end
+
     context "when a sibling is dated in the future" do
       # Newest-wins has no date <= today guard, so a cycle dated years ahead
       # makes every real cycle non-current from the moment it is entered.
