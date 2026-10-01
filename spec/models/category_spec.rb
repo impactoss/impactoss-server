@@ -357,22 +357,57 @@ RSpec.describe Category, type: :model do
     end
 
     context "when a sibling is archived" do
-      # The published scope filters draft only, so archived siblings still
-      # count. Worth pinning because callers pass include_archive=false, which
-      # makes it tempting to assume the sibling lookup excludes archived
-      # categories. It does not.
-      it "is not current when an archived sibling has a newer date" do
+      # Archiving is a soft delete - an archived sibling must not keep
+      # competing in the only-child count or the ordering, or archiving the
+      # current cycle would leave the live one still non-current.
+      it "is current despite an archived sibling with a newer date" do
         cycle_category = cycle(draft: false, date: Date.new(2023, 1, 1))
         cycle(draft: false, is_archive: true, date: Date.new(2025, 1, 1))
 
-        expect(cycle_category.is_current).to eq(false)
+        expect(cycle_category.is_current).to eq(true)
       end
 
-      it "loses only-child status to an archived sibling" do
+      it "keeps only-child status despite an archived sibling" do
         cycle_category = cycle(draft: false, date: nil)
         cycle(draft: false, is_archive: true, date: nil)
 
-        expect(cycle_category.is_current).to eq(false)
+        expect(cycle_category.is_current).to eq(true)
+      end
+
+      it "promotes the runner-up when the current cycle is archived" do
+        newest = cycle(draft: false, date: Date.new(2025, 1, 1))
+        runner_up = cycle(draft: false, date: Date.new(2023, 1, 1))
+
+        expect(runner_up.is_current).to eq(false)
+
+        newest.update!(is_archive: true)
+
+        expect(runner_up.is_current).to eq(true)
+      end
+    end
+
+    context "when the cycle category itself is archived" do
+      # Archived siblings are left out of the only-child count, so without a
+      # guard on self an archived category with one live sibling would read
+      # that sibling's count as its own.
+      it "is not current when it has one live sibling" do
+        archived = cycle(draft: false, is_archive: true, date: nil)
+        cycle(draft: false, date: nil)
+
+        expect(archived.is_current).to eq(false)
+      end
+
+      it "is not current when it would be the newest" do
+        archived = cycle(draft: false, is_archive: true, date: Date.new(2025, 1, 1))
+        cycle(draft: false, date: Date.new(2020, 1, 1))
+
+        expect(archived.is_current).to eq(false)
+      end
+
+      it "is not current even when draft" do
+        archived = cycle(draft: true, is_archive: true, date: Date.new(2025, 1, 1))
+
+        expect(archived.is_current).to eq(false)
       end
     end
 

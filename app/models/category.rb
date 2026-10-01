@@ -43,15 +43,22 @@ class Category < VersionedRecord
 
   def is_current
     has_reporting_cycle_taxonomy? &&
+      !is_archive &&
       (draft ||
         (category.present? &&
-          (category.categories.published.length == 1 ||
+          (live_siblings.length == 1 ||
             (date.present? &&
-              category.categories.published.order(newest_first).first == self
+              live_siblings.order(newest_first).first == self
             )
           )
         )
       )
+  end
+
+  # Archiving is a soft delete, so archived siblings drop out of the only-child
+  # count and the ordering alongside drafts.
+  def live_siblings
+    category.categories.published.where(is_archive: false)
   end
 
   # Undated siblings sort last so they cannot displace a dated one, and id
