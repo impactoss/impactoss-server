@@ -373,6 +373,17 @@ RSpec.describe Category, type: :model do
 
         expect(cycle_category.is_current).to eq(true)
       end
+
+      it "promotes the runner-up when the current cycle is archived" do
+        newest = cycle(draft: false, date: Date.new(2025, 1, 1))
+        runner_up = cycle(draft: false, date: Date.new(2023, 1, 1))
+
+        expect(runner_up.is_current).to eq(false)
+
+        newest.update!(is_archive: true)
+
+        expect(runner_up.is_current).to eq(true)
+      end
     end
 
     context "when a sibling is dated in the future" do

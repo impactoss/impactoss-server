@@ -18,7 +18,7 @@ class Category < VersionedRecord
   validate :responsible_has_required_role, if: :manager_id_changed?
 
   scope :draft, -> { where(draft: true) }
-  scope :published, -> { where(draft: false, is_archive: false) }
+  scope :published, -> { where(draft: false) }
 
   def combined_indicator_ids
     (
@@ -45,13 +45,19 @@ class Category < VersionedRecord
     has_reporting_cycle_taxonomy? &&
       (draft ||
         (category.present? &&
-          (category.categories.published.length == 1 ||
+          (live_siblings.length == 1 ||
             (date.present? &&
-              category.categories.published.order(newest_first).first == self
+              live_siblings.order(newest_first).first == self
             )
           )
         )
       )
+  end
+
+  # Archiving is a soft delete, so archived siblings drop out of the only-child
+  # count and the ordering alongside drafts.
+  def live_siblings
+    category.categories.published.where(is_archive: false)
   end
 
   # Undated siblings sort last so they cannot displace a dated one, and id
