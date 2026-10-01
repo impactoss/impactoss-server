@@ -43,6 +43,7 @@ class Category < VersionedRecord
 
   def is_current
     has_reporting_cycle_taxonomy? &&
+      !is_archive &&
       (draft ||
         (category.present? &&
           (live_siblings.length == 1 ||
