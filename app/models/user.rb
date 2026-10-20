@@ -201,4 +201,32 @@ class User < VersionedRecord
       unique_by: :index_token_activities_on_user_and_client
     )
   end
+
+  # Override DTA's clean_old_tokens (devise_token_auth 1.2.6) to compute the
+  # lifespan ceiling the same way token expiries are computed.
+  #
+  # The gem does `Time.now.to_i + DeviseTokenAuth.token_lifespan.to_i` - flat
+  # integer seconds - while TokenFactory.expiry does
+  # `(Time.zone.now + lifespan).to_i`, which is calendar-aware. With a non-UTC
+  # zone (config.time_zone = "Edinburgh") and a lifespan long enough to span a
+  # DST transition, every live token's expiry sits an hour above the ceiling,
+  # tokens_to_keep comes out empty, and the whole tokens hash is wiped. Only
+  # bites once the token count exceeds max_number_of_devices, since the gem
+  # returns early otherwise - so the symptom is a third sign-in silently
+  # logging the user out of everything and returning no auth headers.
+  #
+  # Only the ceiling line differs from the gem; the sort-and-shift below is
+  # copied verbatim. Revisit on any devise_token_auth upgrade.
+  def clean_old_tokens
+    return if tokens.blank? || !max_client_tokens_exceeded?
+
+    max_lifespan_expiry = (Time.zone.now + DeviseTokenAuth.token_lifespan).to_i
+    tokens_to_keep = tokens.select do |_cid, v|
+      expiry = (v[:expiry] || v["expiry"]).to_i
+      expiry <= max_lifespan_expiry
+    end
+
+    self.tokens = tokens_to_keep.sort_by { |_cid, v| v[:expiry] || v["expiry"] }.to_h
+    tokens.shift while max_client_tokens_exceeded?
+  end
 end
