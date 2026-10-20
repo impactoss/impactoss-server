@@ -478,6 +478,7 @@ GEM
 PLATFORMS
   arm64-darwin-23
   arm64-darwin-24
+  arm64-darwin-27
   x86_64-linux
 
 DEPENDENCIES
@@ -528,7 +529,7 @@ DEPENDENCIES
   with_advisory_lock
 
 RUBY VERSION
-   ruby 3.3.7p123
+   ruby 3.3.12p206
 
 BUNDLED WITH
    2.6.6

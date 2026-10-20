@@ -28,7 +28,7 @@ The IMPACT OSS project is maintained by the Impact Open Source Software Trust. T
 
 This project requires:
 
-- Ruby 3.3.7, preferably managed using [rbenv][]
+- Ruby 3.3.12, preferably managed using [rbenv][]
 - PostgreSQL must be installed and accepting connections
 
 On a Mac, you can obtain all of the above packages using [Homebrew][]. If you wish to use Docker, the above dependencies will be provided by the Dockerfile and docker-compose file included in this repository.
