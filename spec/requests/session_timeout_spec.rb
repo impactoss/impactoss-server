@@ -38,6 +38,11 @@ RSpec.describe "Session inactivity timeout", type: :request do
       expect(user.token_activities.count).to eq(2)
       expect(user.reload.tokens.keys.sort).to eq(user.token_activities.pluck(:client_id).sort)
     end
+
+    it "keeps tokens whose expiry matches the calendar-aware lifespan" do
+      3.times { sign_in_headers }
+      expect(user.reload.tokens.keys.length).to eq(2)
+    end
   end
 
   describe "enforcement" do
