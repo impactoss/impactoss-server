@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   post "auth/verify_multi_factor", to: "multi_factor#verify"
   post "auth/resend_multi_factor", to: "multi_factor#resend"
 
+  # Client heartbeat feeding the server-side inactivity timeout.
+  post "auth/activity", to: "token_activities#create"
+
   controllers_config = {
     sessions: "sessions",
     registrations: "registrations",

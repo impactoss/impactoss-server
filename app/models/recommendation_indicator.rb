@@ -2,6 +2,7 @@ class RecommendationIndicator < VersionedRecord
   belongs_to :recommendation, inverse_of: :recommendation_indicators, optional: true
   belongs_to :indicator, inverse_of: :recommendation_indicators, optional: true
 
+  validates :recommendation_id, uniqueness: {scope: :indicator_id}
   validates :recommendation_id, presence: true
   validates :indicator_id, presence: true
   validate :recommendation_must_exist, on: :create

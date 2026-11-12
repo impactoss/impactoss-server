@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-
   before_action :set_and_authorize_user, only: [:update]
+  before_action :require_current_password!, only: [:update], if: :email_change_requested?
 
   # GET /users
   def index
@@ -40,5 +40,10 @@ class UsersController < ApplicationController
   def set_and_authorize_user
     @user = policy_scope(base_object).find(params[:id])
     authorize @user
+  end
+
+  def email_change_requested?
+    new_email = permitted_attributes(@user)[:email]
+    new_email.present? && new_email != @user.email
   end
 end

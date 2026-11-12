@@ -16,7 +16,7 @@ class RecommendationIndicatorsController < ApplicationController
     if @recommendation_indicator.save
       render json: serialize(@recommendation_indicator), status: :created, location: @recommendation_indicator
     else
-      render json: @recommendation_indicator.errors, status: :unprocessable_entity
+      render_connection_create_errors(@recommendation_indicator)
     end
   end
 

@@ -30,17 +30,24 @@ en:
         confirm_account_link: "Confirm my account"
       reset_password_instructions:
         subject: "Reset password instructions"
-        request_reset_link_msg: "Someone has requested a link to change your password. You can do this through the link below."
+        request_reset_link_msg: "We received a request to reset your Human Rights Tracker password."
+        request_reset_link_msg_2: "To create a new password, select the link below:"
         password_change_link: "Change my password"
-        ignore_mail_msg: "If you didn't request this, please ignore this email."
-        no_changes_msg: "Your password won't change until you access the link above and create a new one."
+        ignore_mail_msg: "If you did not request a password reset, you can safely ignore this email."
+        no_changes_msg: "No changes will be made to your account unless you use the link above to create a new one."
+        expiry: "For security reasons, this link will expire after %{expiry}."
       unlock_instructions:
         subject: "Unlock instructions"
         account_lock_msg: "Your account has been locked for 5 minutes due to too many failed login attempts."
         unlock_link_msg: "Click the link below to unlock your account:"
         unlock_link: "Unlock my account"
       password_change:
-        subject: "Password Changed"
+        subject: "Password changed"
+        password_changed_msg: "Your password has been successfully changed."
+        no_change_warning_msg: "If you made this change, no further action is required."
+        no_change_warning_msg_2: >
+          If you did not make this change, your account may have been compromised. Please
+          reset your password immediately and contact your system administrator.
     omniauth_callbacks:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."

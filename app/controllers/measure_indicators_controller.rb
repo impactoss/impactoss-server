@@ -18,7 +18,7 @@ class MeasureIndicatorsController < ApplicationController
     if @measure_indicator.save
       render json: serialize(@measure_indicator), status: :created, location: @measure_indicator
     else
-      render json: @measure_indicator.errors, status: :unprocessable_entity
+      render_connection_create_errors(@measure_indicator)
     end
   end
 
