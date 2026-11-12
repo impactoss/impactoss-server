@@ -207,9 +207,10 @@ class User < VersionedRecord
   #
   # The gem does `Time.now.to_i + DeviseTokenAuth.token_lifespan.to_i` - flat
   # integer seconds - while TokenFactory.expiry does
-  # `(Time.zone.now + lifespan).to_i`, which is calendar-aware. With a non-UTC
-  # zone (config.time_zone = "Edinburgh") and a lifespan long enough to span a
-  # DST transition, every live token's expiry sits an hour above the ceiling,
+  # `(Time.zone.now + lifespan).to_i`, which is calendar-aware. In any zone
+  # with DST (Edinburgh here, Pacific/Auckland on master and the NZ
+  # deployments), once a transition falls inside the lifespan window, every
+  # live token's expiry sits an hour above the ceiling,
   # tokens_to_keep comes out empty, and the whole tokens hash is wiped. Only
   # bites once the token count exceeds max_number_of_devices, since the gem
   # returns early otherwise - so the symptom is a third sign-in silently
