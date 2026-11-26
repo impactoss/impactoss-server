@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe "Session inactivity timeout", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:password) { "SecurePassword123!" }
   let(:user) { FactoryBot.create(:user, password:, password_confirmation: password) }
 
@@ -37,6 +39,18 @@ RSpec.describe "Session inactivity timeout", type: :request do
       3.times { sign_in_headers }
       expect(user.token_activities.count).to eq(2)
       expect(user.reload.tokens.keys.sort).to eq(user.token_activities.pluck(:client_id).sort)
+    end
+
+    it "keeps tokens when the lifespan spans a DST transition" do
+      # The gem's flat-seconds ceiling diverges from a calendar-aware expiry
+      # whenever a DST transition falls inside token_lifespan. Zone and date
+      # pinned here so this holds regardless of how a deployment is configured.
+      Time.use_zone("Edinburgh") do
+        travel_to Time.zone.local(2026, 10, 20, 12) do
+          3.times { sign_in_headers }
+          expect(user.reload.tokens.keys.length).to eq(2)
+        end
+      end
     end
   end
 
