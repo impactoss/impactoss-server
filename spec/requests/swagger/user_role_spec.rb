@@ -43,6 +43,7 @@ RSpec.describe "User Roles API", type: :request do
       parameter name: :user_role, in: :body, schema: {
         type: :object,
         properties: {
+          current_password: {type: :string},
           user_role: {
             type: :object,
             properties: {
@@ -72,6 +73,15 @@ RSpec.describe "User Roles API", type: :request do
         let(:"access-token") { auth["access-token"] }
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
+        let(:user_role) {
+          {
+            current_password: "SecurePassword123!",
+            user_role: {
+              user_id: target_user.id,
+              role_id: contributor_role.id
+            }
+          }
+        }
 
         run_test!
       end
@@ -84,7 +94,7 @@ RSpec.describe "User Roles API", type: :request do
         let(:client) { auth["client"] }
         let(:uid) { auth["uid"] }
         let(:user_role) {
-          {user_role: {user_id: nil, role_id: nil}}
+          {current_password: "SecurePassword123!", user_role: {user_id: nil, role_id: nil}}
         }
 
         run_test!
@@ -102,18 +112,19 @@ RSpec.describe "User Roles API", type: :request do
       tags "User Roles"
       security [{access_token: [], client: [], uid: []}]
 
+      # No 204 example: rswag does not send a request body on DELETE, so the
+      # re-authentication gate rejects it. Success path is covered in
+      # spec/requests/user_roles_require_current_password_spec.rb.
+      parameter name: :user_role, in: :body, schema: {
+        type: :object,
+        properties: {
+          current_password: {type: :string}
+        },
+        required: ["current_password"]
+      }
+
       include_examples "swagger 401" do
         let(:id) { FactoryBot.create(:user, :contributor).user_roles.first.id }
-      end
-
-      response "204", "admin removes a role" do
-        let(:auth) { auth_headers_for(admin) }
-        let(:"access-token") { auth["access-token"] }
-        let(:client) { auth["client"] }
-        let(:uid) { auth["uid"] }
-        let(:id) { FactoryBot.create(:user, :contributor).user_roles.first.id }
-
-        run_test!
       end
 
       include_examples "swagger 403 forbidden" do

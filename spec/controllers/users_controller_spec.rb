@@ -255,6 +255,43 @@ RSpec.describe UsersController, type: :controller do
           end
         end
       end
+
+      context "change password attribute" do
+        let(:target_user) { FactoryBot.create(:user, :contributor) }
+        let(:original_password) { target_user.password }
+
+        it "ignores a password in the update (admin cannot set another user's password)" do
+          admin = FactoryBot.create(:user, :admin)
+          sign_in admin
+
+          response = put :update, format: :json, params: {
+            id: target_user.id,
+            user: {name: "New Name", password: "AttackerSetPass123!"}
+          }
+
+          expect(response).to be_ok
+          expect(target_user.reload.name).to eq("New Name")
+          # Password param is stripped by the policy, so the change is a no-op:
+          # the original password still authenticates, the attempted one does not.
+          expect(target_user.reload.valid_password?(original_password)).to be(true)
+          expect(target_user.reload.valid_password?("AttackerSetPass123!")).to be(false)
+        end
+
+        it "ignores a password in a self-update" do
+          user = FactoryBot.create(:user, :admin)
+          sign_in user
+          original = user.password
+
+          response = put :update, format: :json, params: {
+            id: user.id,
+            user: {name: "Self Renamed", password: "SelfSetPass123!"}
+          }
+
+          expect(response).to be_ok
+          expect(user.reload.valid_password?(original)).to be(true)
+          expect(user.reload.valid_password?("SelfSetPass123!")).to be(false)
+        end
+      end
     end
   end
 end

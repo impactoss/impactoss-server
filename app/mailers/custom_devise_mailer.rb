@@ -4,6 +4,7 @@ class CustomDeviseMailer < Devise::Mailer
   def reset_password_instructions(record, token, opts = {})
     @redirect_url = opts[:redirect_url] || ""
     @client_config = opts[:client_config] || "default"
+    @expiry = ActiveSupport::Duration.build(Devise.reset_password_within).inspect
     super
   end
 

@@ -18,7 +18,7 @@ class RecommendationMeasuresController < ApplicationController
     if @recommendation_measure.save
       render json: serialize(@recommendation_measure), status: :created, location: @recommendation_measure
     else
-      render json: @recommendation_measure.errors, status: :unprocessable_entity
+      render_connection_create_errors(@recommendation_measure)
     end
   end
 

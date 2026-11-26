@@ -46,4 +46,26 @@ class RegistrationsController < DeviseTokenAuth::RegistrationsController
   def destroy
     render json: {error: "Account deletion is not available"}, status: :forbidden
   end
+
+  ##
+  # On a password change, invalidate the user's other sessions by keeping only
+  # the token from the current request and dropping the rest.
+  #
+  # The slice runs before super because devise_token_auth prunes the tokens hash
+  # during the password-change save (inside update_with_password), so reshaping
+  # tokens here means that save persists just the current session. The current
+  # token's value is unchanged, so the browser stays authenticated without
+  # refreshed auth headers (which this controller skips via skip_after_action).
+  #
+  # Guarded on a password being present so that non-password account updates do
+  # not drop the user's other sessions. Only password changes reach this endpoint
+  # in normal app use (profile fields go through UsersController), so the guard is
+  # defensive - it keeps the invalidation tied strictly to password changes should
+  # another update ever be routed here.
+  def update
+    if @resource && @token && account_update_params[:password].present?
+      @resource.tokens = @resource.tokens.slice(@token.client)
+    end
+    super
+  end
 end
