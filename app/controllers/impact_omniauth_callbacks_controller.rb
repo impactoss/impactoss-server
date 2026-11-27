@@ -36,7 +36,9 @@ class ImpactOmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCont
     [
       auth_hash.dig("info", "first_name"),
       auth_hash.dig("info", "last_name")
-    ].reject(&:blank?).join(" ") || auth_hash.dig("info", "name")
+    ].reject(&:blank?).join(" ").presence ||
+      auth_hash.dig("info", "name").presence ||
+      auth_hash.dig("info", "email")
   end
 
   private def azure_groups
