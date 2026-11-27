@@ -31,8 +31,12 @@ RSpec.describe "current_only query count", type: :request do
       .to receive(:reporting_cycle_taxonomy_id)
       .and_return(cycle_taxonomy.id)
 
-    allow(Rails.application.config).to receive(:enable_mfa).and_return(false)
-    post "/auth/sign_in", params: {email: admin.email, password: "SecurePassword123!"}, as: :json
+    # Not every deployment has MFA or the same factory password, so only stub
+    # what exists and sign in with whatever password the factory set.
+    if Rails.application.config.respond_to?(:enable_mfa)
+      allow(Rails.application.config).to receive(:enable_mfa).and_return(false)
+    end
+    post "/auth/sign_in", params: {email: admin.email, password: admin.password}, as: :json
     @headers = {
       "access-token" => response.headers["access-token"],
       "client" => response.headers["client"],
