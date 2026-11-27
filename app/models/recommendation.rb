@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 class Recommendation < VersionedRecord
+  # No ResetsCurrentCycle here: the resolver never reads a Recommendation
+  # attribute, only RecommendationCategory rows (see current_cycle.rb), which
+  # invalidate it on create and on destroy of the join record itself -
+  # reassigning `categories=` removes stale join rows via delete_all, which
+  # fires neither, so that path relies on nothing already having warmed the
+  # resolver in the same unit of work.
+
   has_many :recommendation_measures, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_categories, inverse_of: :recommendation, dependent: :destroy
   has_many :recommendation_indicators, inverse_of: :recommendation, dependent: :destroy
@@ -37,8 +44,9 @@ class Recommendation < VersionedRecord
   validates :title, presence: true
   validates :reference, presence: true, uniqueness: true
 
+  # Current unless every reporting-cycle category it carries is stale.
+  # Resolved for the whole request at once; see CurrentCycle.
   def is_current
-    categories.none?(&:has_reporting_cycle_taxonomy?) ||
-      categories.any?(&:is_current)
+    Current.cycle.recommendation_current?(id)
   end
 end
